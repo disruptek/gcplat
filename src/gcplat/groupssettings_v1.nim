@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588441 = ref object of OpenApiRestCall
+  OpenApiRestCall_578339 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,8 +112,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_GroupsSettingsGroupsUpdate_588993 = ref object of OpenApiRestCall_588441
-proc url_GroupsSettingsGroupsUpdate_588995(protocol: Scheme; host: string;
+  Call_GroupsSettingsGroupsUpdate_578893 = ref object of OpenApiRestCall_578339
+proc url_GroupsSettingsGroupsUpdate_578895(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -124,7 +128,7 @@ proc url_GroupsSettingsGroupsUpdate_588995(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GroupsSettingsGroupsUpdate_588994(path: JsonNode; query: JsonNode;
+proc validate_GroupsSettingsGroupsUpdate_578894(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing resource.
   ## 
@@ -136,63 +140,63 @@ proc validate_GroupsSettingsGroupsUpdate_588994(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `groupUniqueId` field"
-  var valid_588996 = path.getOrDefault("groupUniqueId")
-  valid_588996 = validateParameter(valid_588996, JString, required = true,
+  var valid_578896 = path.getOrDefault("groupUniqueId")
+  valid_578896 = validateParameter(valid_578896, JString, required = true,
                                  default = nil)
-  if valid_588996 != nil:
-    section.add "groupUniqueId", valid_588996
+  if valid_578896 != nil:
+    section.add "groupUniqueId", valid_578896
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588997 = query.getOrDefault("fields")
-  valid_588997 = validateParameter(valid_588997, JString, required = false,
+  var valid_578897 = query.getOrDefault("key")
+  valid_578897 = validateParameter(valid_578897, JString, required = false,
                                  default = nil)
-  if valid_588997 != nil:
-    section.add "fields", valid_588997
-  var valid_588998 = query.getOrDefault("quotaUser")
-  valid_588998 = validateParameter(valid_588998, JString, required = false,
-                                 default = nil)
-  if valid_588998 != nil:
-    section.add "quotaUser", valid_588998
-  var valid_588999 = query.getOrDefault("alt")
-  valid_588999 = validateParameter(valid_588999, JString, required = false,
-                                 default = newJString("atom"))
-  if valid_588999 != nil:
-    section.add "alt", valid_588999
-  var valid_589000 = query.getOrDefault("oauth_token")
-  valid_589000 = validateParameter(valid_589000, JString, required = false,
-                                 default = nil)
-  if valid_589000 != nil:
-    section.add "oauth_token", valid_589000
-  var valid_589001 = query.getOrDefault("userIp")
-  valid_589001 = validateParameter(valid_589001, JString, required = false,
-                                 default = nil)
-  if valid_589001 != nil:
-    section.add "userIp", valid_589001
-  var valid_589002 = query.getOrDefault("key")
-  valid_589002 = validateParameter(valid_589002, JString, required = false,
-                                 default = nil)
-  if valid_589002 != nil:
-    section.add "key", valid_589002
-  var valid_589003 = query.getOrDefault("prettyPrint")
-  valid_589003 = validateParameter(valid_589003, JBool, required = false,
+  if valid_578897 != nil:
+    section.add "key", valid_578897
+  var valid_578898 = query.getOrDefault("prettyPrint")
+  valid_578898 = validateParameter(valid_578898, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589003 != nil:
-    section.add "prettyPrint", valid_589003
+  if valid_578898 != nil:
+    section.add "prettyPrint", valid_578898
+  var valid_578899 = query.getOrDefault("oauth_token")
+  valid_578899 = validateParameter(valid_578899, JString, required = false,
+                                 default = nil)
+  if valid_578899 != nil:
+    section.add "oauth_token", valid_578899
+  var valid_578900 = query.getOrDefault("alt")
+  valid_578900 = validateParameter(valid_578900, JString, required = false,
+                                 default = newJString("atom"))
+  if valid_578900 != nil:
+    section.add "alt", valid_578900
+  var valid_578901 = query.getOrDefault("userIp")
+  valid_578901 = validateParameter(valid_578901, JString, required = false,
+                                 default = nil)
+  if valid_578901 != nil:
+    section.add "userIp", valid_578901
+  var valid_578902 = query.getOrDefault("quotaUser")
+  valid_578902 = validateParameter(valid_578902, JString, required = false,
+                                 default = nil)
+  if valid_578902 != nil:
+    section.add "quotaUser", valid_578902
+  var valid_578903 = query.getOrDefault("fields")
+  valid_578903 = validateParameter(valid_578903, JString, required = false,
+                                 default = nil)
+  if valid_578903 != nil:
+    section.add "fields", valid_578903
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -204,66 +208,66 @@ proc validate_GroupsSettingsGroupsUpdate_588994(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589005: Call_GroupsSettingsGroupsUpdate_588993; path: JsonNode;
+proc call*(call_578905: Call_GroupsSettingsGroupsUpdate_578893; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing resource.
   ## 
-  let valid = call_589005.validator(path, query, header, formData, body)
-  let scheme = call_589005.pickScheme
+  let valid = call_578905.validator(path, query, header, formData, body)
+  let scheme = call_578905.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589005.url(scheme.get, call_589005.host, call_589005.base,
-                         call_589005.route, valid.getOrDefault("path"),
+  let url = call_578905.url(scheme.get, call_578905.host, call_578905.base,
+                         call_578905.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589005, url, valid)
+  result = hook(call_578905, url, valid)
 
-proc call*(call_589006: Call_GroupsSettingsGroupsUpdate_588993;
-          groupUniqueId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "atom"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578906: Call_GroupsSettingsGroupsUpdate_578893;
+          groupUniqueId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "atom"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## groupsSettingsGroupsUpdate
   ## Updates an existing resource.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   groupUniqueId: string (required)
   ##                : The group's email address.
-  var path_589007 = newJObject()
-  var query_589008 = newJObject()
-  var body_589009 = newJObject()
-  add(query_589008, "fields", newJString(fields))
-  add(query_589008, "quotaUser", newJString(quotaUser))
-  add(query_589008, "alt", newJString(alt))
-  add(query_589008, "oauth_token", newJString(oauthToken))
-  add(query_589008, "userIp", newJString(userIp))
-  add(query_589008, "key", newJString(key))
+  var path_578907 = newJObject()
+  var query_578908 = newJObject()
+  var body_578909 = newJObject()
+  add(query_578908, "key", newJString(key))
+  add(query_578908, "prettyPrint", newJBool(prettyPrint))
+  add(query_578908, "oauth_token", newJString(oauthToken))
+  add(query_578908, "alt", newJString(alt))
+  add(query_578908, "userIp", newJString(userIp))
+  add(query_578908, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589009 = body
-  add(query_589008, "prettyPrint", newJBool(prettyPrint))
-  add(path_589007, "groupUniqueId", newJString(groupUniqueId))
-  result = call_589006.call(path_589007, query_589008, nil, nil, body_589009)
+    body_578909 = body
+  add(query_578908, "fields", newJString(fields))
+  add(path_578907, "groupUniqueId", newJString(groupUniqueId))
+  result = call_578906.call(path_578907, query_578908, nil, nil, body_578909)
 
-var groupsSettingsGroupsUpdate* = Call_GroupsSettingsGroupsUpdate_588993(
+var groupsSettingsGroupsUpdate* = Call_GroupsSettingsGroupsUpdate_578893(
     name: "groupsSettingsGroupsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{groupUniqueId}",
-    validator: validate_GroupsSettingsGroupsUpdate_588994,
-    base: "/groups/v1/groups", url: url_GroupsSettingsGroupsUpdate_588995,
+    validator: validate_GroupsSettingsGroupsUpdate_578894,
+    base: "/groups/v1/groups", url: url_GroupsSettingsGroupsUpdate_578895,
     schemes: {Scheme.Https})
 type
-  Call_GroupsSettingsGroupsGet_588709 = ref object of OpenApiRestCall_588441
-proc url_GroupsSettingsGroupsGet_588711(protocol: Scheme; host: string; base: string;
+  Call_GroupsSettingsGroupsGet_578609 = ref object of OpenApiRestCall_578339
+proc url_GroupsSettingsGroupsGet_578611(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -279,7 +283,7 @@ proc url_GroupsSettingsGroupsGet_588711(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GroupsSettingsGroupsGet_588710(path: JsonNode; query: JsonNode;
+proc validate_GroupsSettingsGroupsGet_578610(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets one resource by id.
   ## 
@@ -291,63 +295,63 @@ proc validate_GroupsSettingsGroupsGet_588710(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `groupUniqueId` field"
-  var valid_588837 = path.getOrDefault("groupUniqueId")
-  valid_588837 = validateParameter(valid_588837, JString, required = true,
+  var valid_578737 = path.getOrDefault("groupUniqueId")
+  valid_578737 = validateParameter(valid_578737, JString, required = true,
                                  default = nil)
-  if valid_588837 != nil:
-    section.add "groupUniqueId", valid_588837
+  if valid_578737 != nil:
+    section.add "groupUniqueId", valid_578737
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588838 = query.getOrDefault("fields")
-  valid_588838 = validateParameter(valid_588838, JString, required = false,
+  var valid_578738 = query.getOrDefault("key")
+  valid_578738 = validateParameter(valid_578738, JString, required = false,
                                  default = nil)
-  if valid_588838 != nil:
-    section.add "fields", valid_588838
-  var valid_588839 = query.getOrDefault("quotaUser")
-  valid_588839 = validateParameter(valid_588839, JString, required = false,
-                                 default = nil)
-  if valid_588839 != nil:
-    section.add "quotaUser", valid_588839
-  var valid_588853 = query.getOrDefault("alt")
-  valid_588853 = validateParameter(valid_588853, JString, required = false,
-                                 default = newJString("atom"))
-  if valid_588853 != nil:
-    section.add "alt", valid_588853
-  var valid_588854 = query.getOrDefault("oauth_token")
-  valid_588854 = validateParameter(valid_588854, JString, required = false,
-                                 default = nil)
-  if valid_588854 != nil:
-    section.add "oauth_token", valid_588854
-  var valid_588855 = query.getOrDefault("userIp")
-  valid_588855 = validateParameter(valid_588855, JString, required = false,
-                                 default = nil)
-  if valid_588855 != nil:
-    section.add "userIp", valid_588855
-  var valid_588856 = query.getOrDefault("key")
-  valid_588856 = validateParameter(valid_588856, JString, required = false,
-                                 default = nil)
-  if valid_588856 != nil:
-    section.add "key", valid_588856
-  var valid_588857 = query.getOrDefault("prettyPrint")
-  valid_588857 = validateParameter(valid_588857, JBool, required = false,
+  if valid_578738 != nil:
+    section.add "key", valid_578738
+  var valid_578752 = query.getOrDefault("prettyPrint")
+  valid_578752 = validateParameter(valid_578752, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588857 != nil:
-    section.add "prettyPrint", valid_588857
+  if valid_578752 != nil:
+    section.add "prettyPrint", valid_578752
+  var valid_578753 = query.getOrDefault("oauth_token")
+  valid_578753 = validateParameter(valid_578753, JString, required = false,
+                                 default = nil)
+  if valid_578753 != nil:
+    section.add "oauth_token", valid_578753
+  var valid_578754 = query.getOrDefault("alt")
+  valid_578754 = validateParameter(valid_578754, JString, required = false,
+                                 default = newJString("atom"))
+  if valid_578754 != nil:
+    section.add "alt", valid_578754
+  var valid_578755 = query.getOrDefault("userIp")
+  valid_578755 = validateParameter(valid_578755, JString, required = false,
+                                 default = nil)
+  if valid_578755 != nil:
+    section.add "userIp", valid_578755
+  var valid_578756 = query.getOrDefault("quotaUser")
+  valid_578756 = validateParameter(valid_578756, JString, required = false,
+                                 default = nil)
+  if valid_578756 != nil:
+    section.add "quotaUser", valid_578756
+  var valid_578757 = query.getOrDefault("fields")
+  valid_578757 = validateParameter(valid_578757, JString, required = false,
+                                 default = nil)
+  if valid_578757 != nil:
+    section.add "fields", valid_578757
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -356,61 +360,61 @@ proc validate_GroupsSettingsGroupsGet_588710(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588880: Call_GroupsSettingsGroupsGet_588709; path: JsonNode;
+proc call*(call_578780: Call_GroupsSettingsGroupsGet_578609; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets one resource by id.
   ## 
-  let valid = call_588880.validator(path, query, header, formData, body)
-  let scheme = call_588880.pickScheme
+  let valid = call_578780.validator(path, query, header, formData, body)
+  let scheme = call_578780.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588880.url(scheme.get, call_588880.host, call_588880.base,
-                         call_588880.route, valid.getOrDefault("path"),
+  let url = call_578780.url(scheme.get, call_578780.host, call_578780.base,
+                         call_578780.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588880, url, valid)
+  result = hook(call_578780, url, valid)
 
-proc call*(call_588951: Call_GroupsSettingsGroupsGet_588709; groupUniqueId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "atom";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578851: Call_GroupsSettingsGroupsGet_578609; groupUniqueId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "atom"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## groupsSettingsGroupsGet
   ## Gets one resource by id.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   groupUniqueId: string (required)
   ##                : The group's email address.
-  var path_588952 = newJObject()
-  var query_588954 = newJObject()
-  add(query_588954, "fields", newJString(fields))
-  add(query_588954, "quotaUser", newJString(quotaUser))
-  add(query_588954, "alt", newJString(alt))
-  add(query_588954, "oauth_token", newJString(oauthToken))
-  add(query_588954, "userIp", newJString(userIp))
-  add(query_588954, "key", newJString(key))
-  add(query_588954, "prettyPrint", newJBool(prettyPrint))
-  add(path_588952, "groupUniqueId", newJString(groupUniqueId))
-  result = call_588951.call(path_588952, query_588954, nil, nil, nil)
+  var path_578852 = newJObject()
+  var query_578854 = newJObject()
+  add(query_578854, "key", newJString(key))
+  add(query_578854, "prettyPrint", newJBool(prettyPrint))
+  add(query_578854, "oauth_token", newJString(oauthToken))
+  add(query_578854, "alt", newJString(alt))
+  add(query_578854, "userIp", newJString(userIp))
+  add(query_578854, "quotaUser", newJString(quotaUser))
+  add(query_578854, "fields", newJString(fields))
+  add(path_578852, "groupUniqueId", newJString(groupUniqueId))
+  result = call_578851.call(path_578852, query_578854, nil, nil, nil)
 
-var groupsSettingsGroupsGet* = Call_GroupsSettingsGroupsGet_588709(
+var groupsSettingsGroupsGet* = Call_GroupsSettingsGroupsGet_578609(
     name: "groupsSettingsGroupsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{groupUniqueId}",
-    validator: validate_GroupsSettingsGroupsGet_588710, base: "/groups/v1/groups",
-    url: url_GroupsSettingsGroupsGet_588711, schemes: {Scheme.Https})
+    validator: validate_GroupsSettingsGroupsGet_578610, base: "/groups/v1/groups",
+    url: url_GroupsSettingsGroupsGet_578611, schemes: {Scheme.Https})
 type
-  Call_GroupsSettingsGroupsPatch_589010 = ref object of OpenApiRestCall_588441
-proc url_GroupsSettingsGroupsPatch_589012(protocol: Scheme; host: string;
+  Call_GroupsSettingsGroupsPatch_578910 = ref object of OpenApiRestCall_578339
+proc url_GroupsSettingsGroupsPatch_578912(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -425,7 +429,7 @@ proc url_GroupsSettingsGroupsPatch_589012(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GroupsSettingsGroupsPatch_589011(path: JsonNode; query: JsonNode;
+proc validate_GroupsSettingsGroupsPatch_578911(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an existing resource. This method supports patch semantics.
   ## 
@@ -437,63 +441,63 @@ proc validate_GroupsSettingsGroupsPatch_589011(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `groupUniqueId` field"
-  var valid_589013 = path.getOrDefault("groupUniqueId")
-  valid_589013 = validateParameter(valid_589013, JString, required = true,
+  var valid_578913 = path.getOrDefault("groupUniqueId")
+  valid_578913 = validateParameter(valid_578913, JString, required = true,
                                  default = nil)
-  if valid_589013 != nil:
-    section.add "groupUniqueId", valid_589013
+  if valid_578913 != nil:
+    section.add "groupUniqueId", valid_578913
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589014 = query.getOrDefault("fields")
-  valid_589014 = validateParameter(valid_589014, JString, required = false,
+  var valid_578914 = query.getOrDefault("key")
+  valid_578914 = validateParameter(valid_578914, JString, required = false,
                                  default = nil)
-  if valid_589014 != nil:
-    section.add "fields", valid_589014
-  var valid_589015 = query.getOrDefault("quotaUser")
-  valid_589015 = validateParameter(valid_589015, JString, required = false,
-                                 default = nil)
-  if valid_589015 != nil:
-    section.add "quotaUser", valid_589015
-  var valid_589016 = query.getOrDefault("alt")
-  valid_589016 = validateParameter(valid_589016, JString, required = false,
-                                 default = newJString("atom"))
-  if valid_589016 != nil:
-    section.add "alt", valid_589016
-  var valid_589017 = query.getOrDefault("oauth_token")
-  valid_589017 = validateParameter(valid_589017, JString, required = false,
-                                 default = nil)
-  if valid_589017 != nil:
-    section.add "oauth_token", valid_589017
-  var valid_589018 = query.getOrDefault("userIp")
-  valid_589018 = validateParameter(valid_589018, JString, required = false,
-                                 default = nil)
-  if valid_589018 != nil:
-    section.add "userIp", valid_589018
-  var valid_589019 = query.getOrDefault("key")
-  valid_589019 = validateParameter(valid_589019, JString, required = false,
-                                 default = nil)
-  if valid_589019 != nil:
-    section.add "key", valid_589019
-  var valid_589020 = query.getOrDefault("prettyPrint")
-  valid_589020 = validateParameter(valid_589020, JBool, required = false,
+  if valid_578914 != nil:
+    section.add "key", valid_578914
+  var valid_578915 = query.getOrDefault("prettyPrint")
+  valid_578915 = validateParameter(valid_578915, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589020 != nil:
-    section.add "prettyPrint", valid_589020
+  if valid_578915 != nil:
+    section.add "prettyPrint", valid_578915
+  var valid_578916 = query.getOrDefault("oauth_token")
+  valid_578916 = validateParameter(valid_578916, JString, required = false,
+                                 default = nil)
+  if valid_578916 != nil:
+    section.add "oauth_token", valid_578916
+  var valid_578917 = query.getOrDefault("alt")
+  valid_578917 = validateParameter(valid_578917, JString, required = false,
+                                 default = newJString("atom"))
+  if valid_578917 != nil:
+    section.add "alt", valid_578917
+  var valid_578918 = query.getOrDefault("userIp")
+  valid_578918 = validateParameter(valid_578918, JString, required = false,
+                                 default = nil)
+  if valid_578918 != nil:
+    section.add "userIp", valid_578918
+  var valid_578919 = query.getOrDefault("quotaUser")
+  valid_578919 = validateParameter(valid_578919, JString, required = false,
+                                 default = nil)
+  if valid_578919 != nil:
+    section.add "quotaUser", valid_578919
+  var valid_578920 = query.getOrDefault("fields")
+  valid_578920 = validateParameter(valid_578920, JString, required = false,
+                                 default = nil)
+  if valid_578920 != nil:
+    section.add "fields", valid_578920
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -505,62 +509,62 @@ proc validate_GroupsSettingsGroupsPatch_589011(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589022: Call_GroupsSettingsGroupsPatch_589010; path: JsonNode;
+proc call*(call_578922: Call_GroupsSettingsGroupsPatch_578910; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an existing resource. This method supports patch semantics.
   ## 
-  let valid = call_589022.validator(path, query, header, formData, body)
-  let scheme = call_589022.pickScheme
+  let valid = call_578922.validator(path, query, header, formData, body)
+  let scheme = call_578922.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589022.url(scheme.get, call_589022.host, call_589022.base,
-                         call_589022.route, valid.getOrDefault("path"),
+  let url = call_578922.url(scheme.get, call_578922.host, call_578922.base,
+                         call_578922.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589022, url, valid)
+  result = hook(call_578922, url, valid)
 
-proc call*(call_589023: Call_GroupsSettingsGroupsPatch_589010;
-          groupUniqueId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "atom"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578923: Call_GroupsSettingsGroupsPatch_578910;
+          groupUniqueId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "atom"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## groupsSettingsGroupsPatch
   ## Updates an existing resource. This method supports patch semantics.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   groupUniqueId: string (required)
   ##                : The group's email address.
-  var path_589024 = newJObject()
-  var query_589025 = newJObject()
-  var body_589026 = newJObject()
-  add(query_589025, "fields", newJString(fields))
-  add(query_589025, "quotaUser", newJString(quotaUser))
-  add(query_589025, "alt", newJString(alt))
-  add(query_589025, "oauth_token", newJString(oauthToken))
-  add(query_589025, "userIp", newJString(userIp))
-  add(query_589025, "key", newJString(key))
+  var path_578924 = newJObject()
+  var query_578925 = newJObject()
+  var body_578926 = newJObject()
+  add(query_578925, "key", newJString(key))
+  add(query_578925, "prettyPrint", newJBool(prettyPrint))
+  add(query_578925, "oauth_token", newJString(oauthToken))
+  add(query_578925, "alt", newJString(alt))
+  add(query_578925, "userIp", newJString(userIp))
+  add(query_578925, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589026 = body
-  add(query_589025, "prettyPrint", newJBool(prettyPrint))
-  add(path_589024, "groupUniqueId", newJString(groupUniqueId))
-  result = call_589023.call(path_589024, query_589025, nil, nil, body_589026)
+    body_578926 = body
+  add(query_578925, "fields", newJString(fields))
+  add(path_578924, "groupUniqueId", newJString(groupUniqueId))
+  result = call_578923.call(path_578924, query_578925, nil, nil, body_578926)
 
-var groupsSettingsGroupsPatch* = Call_GroupsSettingsGroupsPatch_589010(
+var groupsSettingsGroupsPatch* = Call_GroupsSettingsGroupsPatch_578910(
     name: "groupsSettingsGroupsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/{groupUniqueId}",
-    validator: validate_GroupsSettingsGroupsPatch_589011,
-    base: "/groups/v1/groups", url: url_GroupsSettingsGroupsPatch_589012,
+    validator: validate_GroupsSettingsGroupsPatch_578911,
+    base: "/groups/v1/groups", url: url_GroupsSettingsGroupsPatch_578912,
     schemes: {Scheme.Https})
 export
   rest

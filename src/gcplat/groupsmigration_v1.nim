@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588441 = ref object of OpenApiRestCall
+  OpenApiRestCall_578339 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,8 +112,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_GroupsmigrationArchiveInsert_588709 = ref object of OpenApiRestCall_588441
-proc url_GroupsmigrationArchiveInsert_588711(protocol: Scheme; host: string;
+  Call_GroupsmigrationArchiveInsert_578609 = ref object of OpenApiRestCall_578339
+proc url_GroupsmigrationArchiveInsert_578611(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -125,7 +129,7 @@ proc url_GroupsmigrationArchiveInsert_588711(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GroupsmigrationArchiveInsert_588710(path: JsonNode; query: JsonNode;
+proc validate_GroupsmigrationArchiveInsert_578610(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Inserts a new mail into the archive of the Google group.
   ## 
@@ -136,63 +140,63 @@ proc validate_GroupsmigrationArchiveInsert_588710(path: JsonNode; query: JsonNod
   ##          : The group ID
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `groupId` field"
-  var valid_588837 = path.getOrDefault("groupId")
-  valid_588837 = validateParameter(valid_588837, JString, required = true,
+  var valid_578737 = path.getOrDefault("groupId")
+  valid_578737 = validateParameter(valid_578737, JString, required = true,
                                  default = nil)
-  if valid_588837 != nil:
-    section.add "groupId", valid_588837
+  if valid_578737 != nil:
+    section.add "groupId", valid_578737
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588838 = query.getOrDefault("fields")
-  valid_588838 = validateParameter(valid_588838, JString, required = false,
+  var valid_578738 = query.getOrDefault("key")
+  valid_578738 = validateParameter(valid_578738, JString, required = false,
                                  default = nil)
-  if valid_588838 != nil:
-    section.add "fields", valid_588838
-  var valid_588839 = query.getOrDefault("quotaUser")
-  valid_588839 = validateParameter(valid_588839, JString, required = false,
-                                 default = nil)
-  if valid_588839 != nil:
-    section.add "quotaUser", valid_588839
-  var valid_588853 = query.getOrDefault("alt")
-  valid_588853 = validateParameter(valid_588853, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588853 != nil:
-    section.add "alt", valid_588853
-  var valid_588854 = query.getOrDefault("oauth_token")
-  valid_588854 = validateParameter(valid_588854, JString, required = false,
-                                 default = nil)
-  if valid_588854 != nil:
-    section.add "oauth_token", valid_588854
-  var valid_588855 = query.getOrDefault("userIp")
-  valid_588855 = validateParameter(valid_588855, JString, required = false,
-                                 default = nil)
-  if valid_588855 != nil:
-    section.add "userIp", valid_588855
-  var valid_588856 = query.getOrDefault("key")
-  valid_588856 = validateParameter(valid_588856, JString, required = false,
-                                 default = nil)
-  if valid_588856 != nil:
-    section.add "key", valid_588856
-  var valid_588857 = query.getOrDefault("prettyPrint")
-  valid_588857 = validateParameter(valid_588857, JBool, required = false,
+  if valid_578738 != nil:
+    section.add "key", valid_578738
+  var valid_578752 = query.getOrDefault("prettyPrint")
+  valid_578752 = validateParameter(valid_578752, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588857 != nil:
-    section.add "prettyPrint", valid_588857
+  if valid_578752 != nil:
+    section.add "prettyPrint", valid_578752
+  var valid_578753 = query.getOrDefault("oauth_token")
+  valid_578753 = validateParameter(valid_578753, JString, required = false,
+                                 default = nil)
+  if valid_578753 != nil:
+    section.add "oauth_token", valid_578753
+  var valid_578754 = query.getOrDefault("alt")
+  valid_578754 = validateParameter(valid_578754, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578754 != nil:
+    section.add "alt", valid_578754
+  var valid_578755 = query.getOrDefault("userIp")
+  valid_578755 = validateParameter(valid_578755, JString, required = false,
+                                 default = nil)
+  if valid_578755 != nil:
+    section.add "userIp", valid_578755
+  var valid_578756 = query.getOrDefault("quotaUser")
+  valid_578756 = validateParameter(valid_578756, JString, required = false,
+                                 default = nil)
+  if valid_578756 != nil:
+    section.add "quotaUser", valid_578756
+  var valid_578757 = query.getOrDefault("fields")
+  valid_578757 = validateParameter(valid_578757, JString, required = false,
+                                 default = nil)
+  if valid_578757 != nil:
+    section.add "fields", valid_578757
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -201,58 +205,58 @@ proc validate_GroupsmigrationArchiveInsert_588710(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_588880: Call_GroupsmigrationArchiveInsert_588709; path: JsonNode;
+proc call*(call_578780: Call_GroupsmigrationArchiveInsert_578609; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Inserts a new mail into the archive of the Google group.
   ## 
-  let valid = call_588880.validator(path, query, header, formData, body)
-  let scheme = call_588880.pickScheme
+  let valid = call_578780.validator(path, query, header, formData, body)
+  let scheme = call_578780.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588880.url(scheme.get, call_588880.host, call_588880.base,
-                         call_588880.route, valid.getOrDefault("path"),
+  let url = call_578780.url(scheme.get, call_578780.host, call_578780.base,
+                         call_578780.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588880, url, valid)
+  result = hook(call_578780, url, valid)
 
-proc call*(call_588951: Call_GroupsmigrationArchiveInsert_588709; groupId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578851: Call_GroupsmigrationArchiveInsert_578609; groupId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## groupsmigrationArchiveInsert
   ## Inserts a new mail into the archive of the Google group.
-  ##   groupId: string (required)
-  ##          : The group ID
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_588952 = newJObject()
-  var query_588954 = newJObject()
-  add(path_588952, "groupId", newJString(groupId))
-  add(query_588954, "fields", newJString(fields))
-  add(query_588954, "quotaUser", newJString(quotaUser))
-  add(query_588954, "alt", newJString(alt))
-  add(query_588954, "oauth_token", newJString(oauthToken))
-  add(query_588954, "userIp", newJString(userIp))
-  add(query_588954, "key", newJString(key))
-  add(query_588954, "prettyPrint", newJBool(prettyPrint))
-  result = call_588951.call(path_588952, query_588954, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   groupId: string (required)
+  ##          : The group ID
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578852 = newJObject()
+  var query_578854 = newJObject()
+  add(query_578854, "key", newJString(key))
+  add(query_578854, "prettyPrint", newJBool(prettyPrint))
+  add(query_578854, "oauth_token", newJString(oauthToken))
+  add(path_578852, "groupId", newJString(groupId))
+  add(query_578854, "alt", newJString(alt))
+  add(query_578854, "userIp", newJString(userIp))
+  add(query_578854, "quotaUser", newJString(quotaUser))
+  add(query_578854, "fields", newJString(fields))
+  result = call_578851.call(path_578852, query_578854, nil, nil, nil)
 
-var groupsmigrationArchiveInsert* = Call_GroupsmigrationArchiveInsert_588709(
+var groupsmigrationArchiveInsert* = Call_GroupsmigrationArchiveInsert_578609(
     name: "groupsmigrationArchiveInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{groupId}/archive",
-    validator: validate_GroupsmigrationArchiveInsert_588710,
-    base: "/groups/v1/groups", url: url_GroupsmigrationArchiveInsert_588711,
+    validator: validate_GroupsmigrationArchiveInsert_578610,
+    base: "/groups/v1/groups", url: url_GroupsmigrationArchiveInsert_578611,
     schemes: {Scheme.Https})
 export
   rest

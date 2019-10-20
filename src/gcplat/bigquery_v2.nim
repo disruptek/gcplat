@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588466 = ref object of OpenApiRestCall
+  OpenApiRestCall_578364 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588466](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578364](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588466): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578364): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,15 +112,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_BigqueryProjectsList_588734 = ref object of OpenApiRestCall_588466
-proc url_BigqueryProjectsList_588736(protocol: Scheme; host: string; base: string;
+  Call_BigqueryProjectsList_578634 = ref object of OpenApiRestCall_578364
+proc url_BigqueryProjectsList_578636(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_BigqueryProjectsList_588735(path: JsonNode; query: JsonNode;
+proc validate_BigqueryProjectsList_578635(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all projects to which you have been granted any project role.
   ## 
@@ -125,69 +129,69 @@ proc validate_BigqueryProjectsList_588735(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Page token, returned by a previous call, to request the next page of results
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : Maximum number of results to return
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : Page token, returned by a previous call, to request the next page of results
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : Maximum number of results to return
   section = newJObject()
-  var valid_588848 = query.getOrDefault("fields")
-  valid_588848 = validateParameter(valid_588848, JString, required = false,
+  var valid_578748 = query.getOrDefault("key")
+  valid_578748 = validateParameter(valid_578748, JString, required = false,
                                  default = nil)
-  if valid_588848 != nil:
-    section.add "fields", valid_588848
-  var valid_588849 = query.getOrDefault("pageToken")
-  valid_588849 = validateParameter(valid_588849, JString, required = false,
-                                 default = nil)
-  if valid_588849 != nil:
-    section.add "pageToken", valid_588849
-  var valid_588850 = query.getOrDefault("quotaUser")
-  valid_588850 = validateParameter(valid_588850, JString, required = false,
-                                 default = nil)
-  if valid_588850 != nil:
-    section.add "quotaUser", valid_588850
-  var valid_588864 = query.getOrDefault("alt")
-  valid_588864 = validateParameter(valid_588864, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588864 != nil:
-    section.add "alt", valid_588864
-  var valid_588865 = query.getOrDefault("oauth_token")
-  valid_588865 = validateParameter(valid_588865, JString, required = false,
-                                 default = nil)
-  if valid_588865 != nil:
-    section.add "oauth_token", valid_588865
-  var valid_588866 = query.getOrDefault("userIp")
-  valid_588866 = validateParameter(valid_588866, JString, required = false,
-                                 default = nil)
-  if valid_588866 != nil:
-    section.add "userIp", valid_588866
-  var valid_588867 = query.getOrDefault("maxResults")
-  valid_588867 = validateParameter(valid_588867, JInt, required = false, default = nil)
-  if valid_588867 != nil:
-    section.add "maxResults", valid_588867
-  var valid_588868 = query.getOrDefault("key")
-  valid_588868 = validateParameter(valid_588868, JString, required = false,
-                                 default = nil)
-  if valid_588868 != nil:
-    section.add "key", valid_588868
-  var valid_588869 = query.getOrDefault("prettyPrint")
-  valid_588869 = validateParameter(valid_588869, JBool, required = false,
+  if valid_578748 != nil:
+    section.add "key", valid_578748
+  var valid_578762 = query.getOrDefault("prettyPrint")
+  valid_578762 = validateParameter(valid_578762, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588869 != nil:
-    section.add "prettyPrint", valid_588869
+  if valid_578762 != nil:
+    section.add "prettyPrint", valid_578762
+  var valid_578763 = query.getOrDefault("oauth_token")
+  valid_578763 = validateParameter(valid_578763, JString, required = false,
+                                 default = nil)
+  if valid_578763 != nil:
+    section.add "oauth_token", valid_578763
+  var valid_578764 = query.getOrDefault("alt")
+  valid_578764 = validateParameter(valid_578764, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578764 != nil:
+    section.add "alt", valid_578764
+  var valid_578765 = query.getOrDefault("userIp")
+  valid_578765 = validateParameter(valid_578765, JString, required = false,
+                                 default = nil)
+  if valid_578765 != nil:
+    section.add "userIp", valid_578765
+  var valid_578766 = query.getOrDefault("quotaUser")
+  valid_578766 = validateParameter(valid_578766, JString, required = false,
+                                 default = nil)
+  if valid_578766 != nil:
+    section.add "quotaUser", valid_578766
+  var valid_578767 = query.getOrDefault("pageToken")
+  valid_578767 = validateParameter(valid_578767, JString, required = false,
+                                 default = nil)
+  if valid_578767 != nil:
+    section.add "pageToken", valid_578767
+  var valid_578768 = query.getOrDefault("fields")
+  valid_578768 = validateParameter(valid_578768, JString, required = false,
+                                 default = nil)
+  if valid_578768 != nil:
+    section.add "fields", valid_578768
+  var valid_578769 = query.getOrDefault("maxResults")
+  valid_578769 = validateParameter(valid_578769, JInt, required = false, default = nil)
+  if valid_578769 != nil:
+    section.add "maxResults", valid_578769
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -196,63 +200,63 @@ proc validate_BigqueryProjectsList_588735(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588892: Call_BigqueryProjectsList_588734; path: JsonNode;
+proc call*(call_578792: Call_BigqueryProjectsList_578634; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all projects to which you have been granted any project role.
   ## 
-  let valid = call_588892.validator(path, query, header, formData, body)
-  let scheme = call_588892.pickScheme
+  let valid = call_578792.validator(path, query, header, formData, body)
+  let scheme = call_578792.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588892.url(scheme.get, call_588892.host, call_588892.base,
-                         call_588892.route, valid.getOrDefault("path"),
+  let url = call_578792.url(scheme.get, call_578792.host, call_578792.base,
+                         call_578792.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588892, url, valid)
+  result = hook(call_578792, url, valid)
 
-proc call*(call_588963: Call_BigqueryProjectsList_588734; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; maxResults: int = 0;
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_578863: Call_BigqueryProjectsList_578634; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
+          fields: string = ""; maxResults: int = 0): Recallable =
   ## bigqueryProjectsList
   ## Lists all projects to which you have been granted any project role.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Page token, returned by a previous call, to request the next page of results
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : Maximum number of results to return
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_588964 = newJObject()
-  add(query_588964, "fields", newJString(fields))
-  add(query_588964, "pageToken", newJString(pageToken))
-  add(query_588964, "quotaUser", newJString(quotaUser))
-  add(query_588964, "alt", newJString(alt))
-  add(query_588964, "oauth_token", newJString(oauthToken))
-  add(query_588964, "userIp", newJString(userIp))
-  add(query_588964, "maxResults", newJInt(maxResults))
-  add(query_588964, "key", newJString(key))
-  add(query_588964, "prettyPrint", newJBool(prettyPrint))
-  result = call_588963.call(nil, query_588964, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : Page token, returned by a previous call, to request the next page of results
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: int
+  ##             : Maximum number of results to return
+  var query_578864 = newJObject()
+  add(query_578864, "key", newJString(key))
+  add(query_578864, "prettyPrint", newJBool(prettyPrint))
+  add(query_578864, "oauth_token", newJString(oauthToken))
+  add(query_578864, "alt", newJString(alt))
+  add(query_578864, "userIp", newJString(userIp))
+  add(query_578864, "quotaUser", newJString(quotaUser))
+  add(query_578864, "pageToken", newJString(pageToken))
+  add(query_578864, "fields", newJString(fields))
+  add(query_578864, "maxResults", newJInt(maxResults))
+  result = call_578863.call(nil, query_578864, nil, nil, nil)
 
-var bigqueryProjectsList* = Call_BigqueryProjectsList_588734(
+var bigqueryProjectsList* = Call_BigqueryProjectsList_578634(
     name: "bigqueryProjectsList", meth: HttpMethod.HttpGet,
     host: "bigquery.googleapis.com", route: "/projects",
-    validator: validate_BigqueryProjectsList_588735, base: "/bigquery/v2",
-    url: url_BigqueryProjectsList_588736, schemes: {Scheme.Https})
+    validator: validate_BigqueryProjectsList_578635, base: "/bigquery/v2",
+    url: url_BigqueryProjectsList_578636, schemes: {Scheme.Https})
 type
-  Call_BigqueryDatasetsInsert_589037 = ref object of OpenApiRestCall_588466
-proc url_BigqueryDatasetsInsert_589039(protocol: Scheme; host: string; base: string;
+  Call_BigqueryDatasetsInsert_578937 = ref object of OpenApiRestCall_578364
+proc url_BigqueryDatasetsInsert_578939(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -268,7 +272,7 @@ proc url_BigqueryDatasetsInsert_589039(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryDatasetsInsert_589038(path: JsonNode; query: JsonNode;
+proc validate_BigqueryDatasetsInsert_578938(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new empty dataset.
   ## 
@@ -279,63 +283,63 @@ proc validate_BigqueryDatasetsInsert_589038(path: JsonNode; query: JsonNode;
   ##            : Project ID of the new dataset
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `projectId` field"
-  var valid_589040 = path.getOrDefault("projectId")
-  valid_589040 = validateParameter(valid_589040, JString, required = true,
+  var valid_578940 = path.getOrDefault("projectId")
+  valid_578940 = validateParameter(valid_578940, JString, required = true,
                                  default = nil)
-  if valid_589040 != nil:
-    section.add "projectId", valid_589040
+  if valid_578940 != nil:
+    section.add "projectId", valid_578940
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589041 = query.getOrDefault("fields")
-  valid_589041 = validateParameter(valid_589041, JString, required = false,
+  var valid_578941 = query.getOrDefault("key")
+  valid_578941 = validateParameter(valid_578941, JString, required = false,
                                  default = nil)
-  if valid_589041 != nil:
-    section.add "fields", valid_589041
-  var valid_589042 = query.getOrDefault("quotaUser")
-  valid_589042 = validateParameter(valid_589042, JString, required = false,
-                                 default = nil)
-  if valid_589042 != nil:
-    section.add "quotaUser", valid_589042
-  var valid_589043 = query.getOrDefault("alt")
-  valid_589043 = validateParameter(valid_589043, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589043 != nil:
-    section.add "alt", valid_589043
-  var valid_589044 = query.getOrDefault("oauth_token")
-  valid_589044 = validateParameter(valid_589044, JString, required = false,
-                                 default = nil)
-  if valid_589044 != nil:
-    section.add "oauth_token", valid_589044
-  var valid_589045 = query.getOrDefault("userIp")
-  valid_589045 = validateParameter(valid_589045, JString, required = false,
-                                 default = nil)
-  if valid_589045 != nil:
-    section.add "userIp", valid_589045
-  var valid_589046 = query.getOrDefault("key")
-  valid_589046 = validateParameter(valid_589046, JString, required = false,
-                                 default = nil)
-  if valid_589046 != nil:
-    section.add "key", valid_589046
-  var valid_589047 = query.getOrDefault("prettyPrint")
-  valid_589047 = validateParameter(valid_589047, JBool, required = false,
+  if valid_578941 != nil:
+    section.add "key", valid_578941
+  var valid_578942 = query.getOrDefault("prettyPrint")
+  valid_578942 = validateParameter(valid_578942, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589047 != nil:
-    section.add "prettyPrint", valid_589047
+  if valid_578942 != nil:
+    section.add "prettyPrint", valid_578942
+  var valid_578943 = query.getOrDefault("oauth_token")
+  valid_578943 = validateParameter(valid_578943, JString, required = false,
+                                 default = nil)
+  if valid_578943 != nil:
+    section.add "oauth_token", valid_578943
+  var valid_578944 = query.getOrDefault("alt")
+  valid_578944 = validateParameter(valid_578944, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578944 != nil:
+    section.add "alt", valid_578944
+  var valid_578945 = query.getOrDefault("userIp")
+  valid_578945 = validateParameter(valid_578945, JString, required = false,
+                                 default = nil)
+  if valid_578945 != nil:
+    section.add "userIp", valid_578945
+  var valid_578946 = query.getOrDefault("quotaUser")
+  valid_578946 = validateParameter(valid_578946, JString, required = false,
+                                 default = nil)
+  if valid_578946 != nil:
+    section.add "quotaUser", valid_578946
+  var valid_578947 = query.getOrDefault("fields")
+  valid_578947 = validateParameter(valid_578947, JString, required = false,
+                                 default = nil)
+  if valid_578947 != nil:
+    section.add "fields", valid_578947
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -347,65 +351,65 @@ proc validate_BigqueryDatasetsInsert_589038(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589049: Call_BigqueryDatasetsInsert_589037; path: JsonNode;
+proc call*(call_578949: Call_BigqueryDatasetsInsert_578937; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new empty dataset.
   ## 
-  let valid = call_589049.validator(path, query, header, formData, body)
-  let scheme = call_589049.pickScheme
+  let valid = call_578949.validator(path, query, header, formData, body)
+  let scheme = call_578949.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589049.url(scheme.get, call_589049.host, call_589049.base,
-                         call_589049.route, valid.getOrDefault("path"),
+  let url = call_578949.url(scheme.get, call_578949.host, call_578949.base,
+                         call_578949.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589049, url, valid)
+  result = hook(call_578949, url, valid)
 
-proc call*(call_589050: Call_BigqueryDatasetsInsert_589037; projectId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578950: Call_BigqueryDatasetsInsert_578937; projectId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## bigqueryDatasetsInsert
   ## Creates a new empty dataset.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the new dataset
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589051 = newJObject()
-  var query_589052 = newJObject()
-  var body_589053 = newJObject()
-  add(query_589052, "fields", newJString(fields))
-  add(query_589052, "quotaUser", newJString(quotaUser))
-  add(query_589052, "alt", newJString(alt))
-  add(query_589052, "oauth_token", newJString(oauthToken))
-  add(query_589052, "userIp", newJString(userIp))
-  add(query_589052, "key", newJString(key))
-  add(path_589051, "projectId", newJString(projectId))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the new dataset
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578951 = newJObject()
+  var query_578952 = newJObject()
+  var body_578953 = newJObject()
+  add(query_578952, "key", newJString(key))
+  add(query_578952, "prettyPrint", newJBool(prettyPrint))
+  add(query_578952, "oauth_token", newJString(oauthToken))
+  add(path_578951, "projectId", newJString(projectId))
+  add(query_578952, "alt", newJString(alt))
+  add(query_578952, "userIp", newJString(userIp))
+  add(query_578952, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589053 = body
-  add(query_589052, "prettyPrint", newJBool(prettyPrint))
-  result = call_589050.call(path_589051, query_589052, nil, nil, body_589053)
+    body_578953 = body
+  add(query_578952, "fields", newJString(fields))
+  result = call_578950.call(path_578951, query_578952, nil, nil, body_578953)
 
-var bigqueryDatasetsInsert* = Call_BigqueryDatasetsInsert_589037(
+var bigqueryDatasetsInsert* = Call_BigqueryDatasetsInsert_578937(
     name: "bigqueryDatasetsInsert", meth: HttpMethod.HttpPost,
     host: "bigquery.googleapis.com", route: "/projects/{projectId}/datasets",
-    validator: validate_BigqueryDatasetsInsert_589038, base: "/bigquery/v2",
-    url: url_BigqueryDatasetsInsert_589039, schemes: {Scheme.Https})
+    validator: validate_BigqueryDatasetsInsert_578938, base: "/bigquery/v2",
+    url: url_BigqueryDatasetsInsert_578939, schemes: {Scheme.Https})
 type
-  Call_BigqueryDatasetsList_589004 = ref object of OpenApiRestCall_588466
-proc url_BigqueryDatasetsList_589006(protocol: Scheme; host: string; base: string;
+  Call_BigqueryDatasetsList_578904 = ref object of OpenApiRestCall_578364
+proc url_BigqueryDatasetsList_578906(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -421,7 +425,7 @@ proc url_BigqueryDatasetsList_589006(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryDatasetsList_589005(path: JsonNode; query: JsonNode;
+proc validate_BigqueryDatasetsList_578905(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all datasets in the specified project to which you have been granted the READER dataset role.
   ## 
@@ -432,89 +436,89 @@ proc validate_BigqueryDatasetsList_589005(path: JsonNode; query: JsonNode;
   ##            : Project ID of the datasets to be listed
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `projectId` field"
-  var valid_589021 = path.getOrDefault("projectId")
-  valid_589021 = validateParameter(valid_589021, JString, required = true,
+  var valid_578921 = path.getOrDefault("projectId")
+  valid_578921 = validateParameter(valid_578921, JString, required = true,
                                  default = nil)
-  if valid_589021 != nil:
-    section.add "projectId", valid_589021
+  if valid_578921 != nil:
+    section.add "projectId", valid_578921
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Page token, returned by a previous call, to request the next page of results
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   all: JBool
-  ##      : Whether to list all datasets, including hidden ones
-  ##   maxResults: JInt
-  ##             : The maximum number of results to return
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   all: JBool
+  ##      : Whether to list all datasets, including hidden ones
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   filter: JString
   ##         : An expression for filtering the results of the request by label. The syntax is "labels.<name>[:<value>]". Multiple filters can be ANDed together by connecting with a space. Example: "labels.department:receiving labels.active". See Filtering datasets using labels for details.
+  ##   pageToken: JString
+  ##            : Page token, returned by a previous call, to request the next page of results
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : The maximum number of results to return
   section = newJObject()
-  var valid_589022 = query.getOrDefault("fields")
-  valid_589022 = validateParameter(valid_589022, JString, required = false,
+  var valid_578922 = query.getOrDefault("key")
+  valid_578922 = validateParameter(valid_578922, JString, required = false,
                                  default = nil)
-  if valid_589022 != nil:
-    section.add "fields", valid_589022
-  var valid_589023 = query.getOrDefault("pageToken")
-  valid_589023 = validateParameter(valid_589023, JString, required = false,
-                                 default = nil)
-  if valid_589023 != nil:
-    section.add "pageToken", valid_589023
-  var valid_589024 = query.getOrDefault("quotaUser")
-  valid_589024 = validateParameter(valid_589024, JString, required = false,
-                                 default = nil)
-  if valid_589024 != nil:
-    section.add "quotaUser", valid_589024
-  var valid_589025 = query.getOrDefault("alt")
-  valid_589025 = validateParameter(valid_589025, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589025 != nil:
-    section.add "alt", valid_589025
-  var valid_589026 = query.getOrDefault("oauth_token")
-  valid_589026 = validateParameter(valid_589026, JString, required = false,
-                                 default = nil)
-  if valid_589026 != nil:
-    section.add "oauth_token", valid_589026
-  var valid_589027 = query.getOrDefault("userIp")
-  valid_589027 = validateParameter(valid_589027, JString, required = false,
-                                 default = nil)
-  if valid_589027 != nil:
-    section.add "userIp", valid_589027
-  var valid_589028 = query.getOrDefault("all")
-  valid_589028 = validateParameter(valid_589028, JBool, required = false, default = nil)
-  if valid_589028 != nil:
-    section.add "all", valid_589028
-  var valid_589029 = query.getOrDefault("maxResults")
-  valid_589029 = validateParameter(valid_589029, JInt, required = false, default = nil)
-  if valid_589029 != nil:
-    section.add "maxResults", valid_589029
-  var valid_589030 = query.getOrDefault("key")
-  valid_589030 = validateParameter(valid_589030, JString, required = false,
-                                 default = nil)
-  if valid_589030 != nil:
-    section.add "key", valid_589030
-  var valid_589031 = query.getOrDefault("prettyPrint")
-  valid_589031 = validateParameter(valid_589031, JBool, required = false,
+  if valid_578922 != nil:
+    section.add "key", valid_578922
+  var valid_578923 = query.getOrDefault("prettyPrint")
+  valid_578923 = validateParameter(valid_578923, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589031 != nil:
-    section.add "prettyPrint", valid_589031
-  var valid_589032 = query.getOrDefault("filter")
-  valid_589032 = validateParameter(valid_589032, JString, required = false,
+  if valid_578923 != nil:
+    section.add "prettyPrint", valid_578923
+  var valid_578924 = query.getOrDefault("oauth_token")
+  valid_578924 = validateParameter(valid_578924, JString, required = false,
                                  default = nil)
-  if valid_589032 != nil:
-    section.add "filter", valid_589032
+  if valid_578924 != nil:
+    section.add "oauth_token", valid_578924
+  var valid_578925 = query.getOrDefault("all")
+  valid_578925 = validateParameter(valid_578925, JBool, required = false, default = nil)
+  if valid_578925 != nil:
+    section.add "all", valid_578925
+  var valid_578926 = query.getOrDefault("alt")
+  valid_578926 = validateParameter(valid_578926, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578926 != nil:
+    section.add "alt", valid_578926
+  var valid_578927 = query.getOrDefault("userIp")
+  valid_578927 = validateParameter(valid_578927, JString, required = false,
+                                 default = nil)
+  if valid_578927 != nil:
+    section.add "userIp", valid_578927
+  var valid_578928 = query.getOrDefault("quotaUser")
+  valid_578928 = validateParameter(valid_578928, JString, required = false,
+                                 default = nil)
+  if valid_578928 != nil:
+    section.add "quotaUser", valid_578928
+  var valid_578929 = query.getOrDefault("filter")
+  valid_578929 = validateParameter(valid_578929, JString, required = false,
+                                 default = nil)
+  if valid_578929 != nil:
+    section.add "filter", valid_578929
+  var valid_578930 = query.getOrDefault("pageToken")
+  valid_578930 = validateParameter(valid_578930, JString, required = false,
+                                 default = nil)
+  if valid_578930 != nil:
+    section.add "pageToken", valid_578930
+  var valid_578931 = query.getOrDefault("fields")
+  valid_578931 = validateParameter(valid_578931, JString, required = false,
+                                 default = nil)
+  if valid_578931 != nil:
+    section.add "fields", valid_578931
+  var valid_578932 = query.getOrDefault("maxResults")
+  valid_578932 = validateParameter(valid_578932, JInt, required = false, default = nil)
+  if valid_578932 != nil:
+    section.add "maxResults", valid_578932
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -523,74 +527,74 @@ proc validate_BigqueryDatasetsList_589005(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589033: Call_BigqueryDatasetsList_589004; path: JsonNode;
+proc call*(call_578933: Call_BigqueryDatasetsList_578904; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all datasets in the specified project to which you have been granted the READER dataset role.
   ## 
-  let valid = call_589033.validator(path, query, header, formData, body)
-  let scheme = call_589033.pickScheme
+  let valid = call_578933.validator(path, query, header, formData, body)
+  let scheme = call_578933.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589033.url(scheme.get, call_589033.host, call_589033.base,
-                         call_589033.route, valid.getOrDefault("path"),
+  let url = call_578933.url(scheme.get, call_578933.host, call_578933.base,
+                         call_578933.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589033, url, valid)
+  result = hook(call_578933, url, valid)
 
-proc call*(call_589034: Call_BigqueryDatasetsList_589004; projectId: string;
-          fields: string = ""; pageToken: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          all: bool = false; maxResults: int = 0; key: string = "";
-          prettyPrint: bool = true; filter: string = ""): Recallable =
+proc call*(call_578934: Call_BigqueryDatasetsList_578904; projectId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          all: bool = false; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; filter: string = ""; pageToken: string = "";
+          fields: string = ""; maxResults: int = 0): Recallable =
   ## bigqueryDatasetsList
   ## Lists all datasets in the specified project to which you have been granted the READER dataset role.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Page token, returned by a previous call, to request the next page of results
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   all: bool
-  ##      : Whether to list all datasets, including hidden ones
-  ##   maxResults: int
-  ##             : The maximum number of results to return
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the datasets to be listed
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the datasets to be listed
+  ##   all: bool
+  ##      : Whether to list all datasets, including hidden ones
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   filter: string
   ##         : An expression for filtering the results of the request by label. The syntax is "labels.<name>[:<value>]". Multiple filters can be ANDed together by connecting with a space. Example: "labels.department:receiving labels.active". See Filtering datasets using labels for details.
-  var path_589035 = newJObject()
-  var query_589036 = newJObject()
-  add(query_589036, "fields", newJString(fields))
-  add(query_589036, "pageToken", newJString(pageToken))
-  add(query_589036, "quotaUser", newJString(quotaUser))
-  add(query_589036, "alt", newJString(alt))
-  add(query_589036, "oauth_token", newJString(oauthToken))
-  add(query_589036, "userIp", newJString(userIp))
-  add(query_589036, "all", newJBool(all))
-  add(query_589036, "maxResults", newJInt(maxResults))
-  add(query_589036, "key", newJString(key))
-  add(path_589035, "projectId", newJString(projectId))
-  add(query_589036, "prettyPrint", newJBool(prettyPrint))
-  add(query_589036, "filter", newJString(filter))
-  result = call_589034.call(path_589035, query_589036, nil, nil, nil)
+  ##   pageToken: string
+  ##            : Page token, returned by a previous call, to request the next page of results
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: int
+  ##             : The maximum number of results to return
+  var path_578935 = newJObject()
+  var query_578936 = newJObject()
+  add(query_578936, "key", newJString(key))
+  add(query_578936, "prettyPrint", newJBool(prettyPrint))
+  add(query_578936, "oauth_token", newJString(oauthToken))
+  add(path_578935, "projectId", newJString(projectId))
+  add(query_578936, "all", newJBool(all))
+  add(query_578936, "alt", newJString(alt))
+  add(query_578936, "userIp", newJString(userIp))
+  add(query_578936, "quotaUser", newJString(quotaUser))
+  add(query_578936, "filter", newJString(filter))
+  add(query_578936, "pageToken", newJString(pageToken))
+  add(query_578936, "fields", newJString(fields))
+  add(query_578936, "maxResults", newJInt(maxResults))
+  result = call_578934.call(path_578935, query_578936, nil, nil, nil)
 
-var bigqueryDatasetsList* = Call_BigqueryDatasetsList_589004(
+var bigqueryDatasetsList* = Call_BigqueryDatasetsList_578904(
     name: "bigqueryDatasetsList", meth: HttpMethod.HttpGet,
     host: "bigquery.googleapis.com", route: "/projects/{projectId}/datasets",
-    validator: validate_BigqueryDatasetsList_589005, base: "/bigquery/v2",
-    url: url_BigqueryDatasetsList_589006, schemes: {Scheme.Https})
+    validator: validate_BigqueryDatasetsList_578905, base: "/bigquery/v2",
+    url: url_BigqueryDatasetsList_578906, schemes: {Scheme.Https})
 type
-  Call_BigqueryDatasetsUpdate_589070 = ref object of OpenApiRestCall_588466
-proc url_BigqueryDatasetsUpdate_589072(protocol: Scheme; host: string; base: string;
+  Call_BigqueryDatasetsUpdate_578970 = ref object of OpenApiRestCall_578364
+proc url_BigqueryDatasetsUpdate_578972(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -608,81 +612,81 @@ proc url_BigqueryDatasetsUpdate_589072(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryDatasetsUpdate_589071(path: JsonNode; query: JsonNode;
+proc validate_BigqueryDatasetsUpdate_578971(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates information in an existing dataset. The update method replaces the entire dataset resource, whereas the patch method only replaces fields that are provided in the submitted dataset resource.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Dataset ID of the dataset being updated
   ##   projectId: JString (required)
   ##            : Project ID of the dataset being updated
+  ##   datasetId: JString (required)
+  ##            : Dataset ID of the dataset being updated
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589073 = path.getOrDefault("datasetId")
-  valid_589073 = validateParameter(valid_589073, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_578973 = path.getOrDefault("projectId")
+  valid_578973 = validateParameter(valid_578973, JString, required = true,
                                  default = nil)
-  if valid_589073 != nil:
-    section.add "datasetId", valid_589073
-  var valid_589074 = path.getOrDefault("projectId")
-  valid_589074 = validateParameter(valid_589074, JString, required = true,
+  if valid_578973 != nil:
+    section.add "projectId", valid_578973
+  var valid_578974 = path.getOrDefault("datasetId")
+  valid_578974 = validateParameter(valid_578974, JString, required = true,
                                  default = nil)
-  if valid_589074 != nil:
-    section.add "projectId", valid_589074
+  if valid_578974 != nil:
+    section.add "datasetId", valid_578974
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589075 = query.getOrDefault("fields")
-  valid_589075 = validateParameter(valid_589075, JString, required = false,
+  var valid_578975 = query.getOrDefault("key")
+  valid_578975 = validateParameter(valid_578975, JString, required = false,
                                  default = nil)
-  if valid_589075 != nil:
-    section.add "fields", valid_589075
-  var valid_589076 = query.getOrDefault("quotaUser")
-  valid_589076 = validateParameter(valid_589076, JString, required = false,
-                                 default = nil)
-  if valid_589076 != nil:
-    section.add "quotaUser", valid_589076
-  var valid_589077 = query.getOrDefault("alt")
-  valid_589077 = validateParameter(valid_589077, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589077 != nil:
-    section.add "alt", valid_589077
-  var valid_589078 = query.getOrDefault("oauth_token")
-  valid_589078 = validateParameter(valid_589078, JString, required = false,
-                                 default = nil)
-  if valid_589078 != nil:
-    section.add "oauth_token", valid_589078
-  var valid_589079 = query.getOrDefault("userIp")
-  valid_589079 = validateParameter(valid_589079, JString, required = false,
-                                 default = nil)
-  if valid_589079 != nil:
-    section.add "userIp", valid_589079
-  var valid_589080 = query.getOrDefault("key")
-  valid_589080 = validateParameter(valid_589080, JString, required = false,
-                                 default = nil)
-  if valid_589080 != nil:
-    section.add "key", valid_589080
-  var valid_589081 = query.getOrDefault("prettyPrint")
-  valid_589081 = validateParameter(valid_589081, JBool, required = false,
+  if valid_578975 != nil:
+    section.add "key", valid_578975
+  var valid_578976 = query.getOrDefault("prettyPrint")
+  valid_578976 = validateParameter(valid_578976, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589081 != nil:
-    section.add "prettyPrint", valid_589081
+  if valid_578976 != nil:
+    section.add "prettyPrint", valid_578976
+  var valid_578977 = query.getOrDefault("oauth_token")
+  valid_578977 = validateParameter(valid_578977, JString, required = false,
+                                 default = nil)
+  if valid_578977 != nil:
+    section.add "oauth_token", valid_578977
+  var valid_578978 = query.getOrDefault("alt")
+  valid_578978 = validateParameter(valid_578978, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578978 != nil:
+    section.add "alt", valid_578978
+  var valid_578979 = query.getOrDefault("userIp")
+  valid_578979 = validateParameter(valid_578979, JString, required = false,
+                                 default = nil)
+  if valid_578979 != nil:
+    section.add "userIp", valid_578979
+  var valid_578980 = query.getOrDefault("quotaUser")
+  valid_578980 = validateParameter(valid_578980, JString, required = false,
+                                 default = nil)
+  if valid_578980 != nil:
+    section.add "quotaUser", valid_578980
+  var valid_578981 = query.getOrDefault("fields")
+  valid_578981 = validateParameter(valid_578981, JString, required = false,
+                                 default = nil)
+  if valid_578981 != nil:
+    section.add "fields", valid_578981
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -694,69 +698,69 @@ proc validate_BigqueryDatasetsUpdate_589071(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589083: Call_BigqueryDatasetsUpdate_589070; path: JsonNode;
+proc call*(call_578983: Call_BigqueryDatasetsUpdate_578970; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates information in an existing dataset. The update method replaces the entire dataset resource, whereas the patch method only replaces fields that are provided in the submitted dataset resource.
   ## 
-  let valid = call_589083.validator(path, query, header, formData, body)
-  let scheme = call_589083.pickScheme
+  let valid = call_578983.validator(path, query, header, formData, body)
+  let scheme = call_578983.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589083.url(scheme.get, call_589083.host, call_589083.base,
-                         call_589083.route, valid.getOrDefault("path"),
+  let url = call_578983.url(scheme.get, call_578983.host, call_578983.base,
+                         call_578983.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589083, url, valid)
+  result = hook(call_578983, url, valid)
 
-proc call*(call_589084: Call_BigqueryDatasetsUpdate_589070; datasetId: string;
-          projectId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578984: Call_BigqueryDatasetsUpdate_578970; projectId: string;
+          datasetId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## bigqueryDatasetsUpdate
   ## Updates information in an existing dataset. The update method replaces the entire dataset resource, whereas the patch method only replaces fields that are provided in the submitted dataset resource.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Dataset ID of the dataset being updated
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the dataset being updated
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589085 = newJObject()
-  var query_589086 = newJObject()
-  var body_589087 = newJObject()
-  add(query_589086, "fields", newJString(fields))
-  add(query_589086, "quotaUser", newJString(quotaUser))
-  add(query_589086, "alt", newJString(alt))
-  add(query_589086, "oauth_token", newJString(oauthToken))
-  add(query_589086, "userIp", newJString(userIp))
-  add(path_589085, "datasetId", newJString(datasetId))
-  add(query_589086, "key", newJString(key))
-  add(path_589085, "projectId", newJString(projectId))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the dataset being updated
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Dataset ID of the dataset being updated
+  var path_578985 = newJObject()
+  var query_578986 = newJObject()
+  var body_578987 = newJObject()
+  add(query_578986, "key", newJString(key))
+  add(query_578986, "prettyPrint", newJBool(prettyPrint))
+  add(query_578986, "oauth_token", newJString(oauthToken))
+  add(path_578985, "projectId", newJString(projectId))
+  add(query_578986, "alt", newJString(alt))
+  add(query_578986, "userIp", newJString(userIp))
+  add(query_578986, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589087 = body
-  add(query_589086, "prettyPrint", newJBool(prettyPrint))
-  result = call_589084.call(path_589085, query_589086, nil, nil, body_589087)
+    body_578987 = body
+  add(query_578986, "fields", newJString(fields))
+  add(path_578985, "datasetId", newJString(datasetId))
+  result = call_578984.call(path_578985, query_578986, nil, nil, body_578987)
 
-var bigqueryDatasetsUpdate* = Call_BigqueryDatasetsUpdate_589070(
+var bigqueryDatasetsUpdate* = Call_BigqueryDatasetsUpdate_578970(
     name: "bigqueryDatasetsUpdate", meth: HttpMethod.HttpPut,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}",
-    validator: validate_BigqueryDatasetsUpdate_589071, base: "/bigquery/v2",
-    url: url_BigqueryDatasetsUpdate_589072, schemes: {Scheme.Https})
+    validator: validate_BigqueryDatasetsUpdate_578971, base: "/bigquery/v2",
+    url: url_BigqueryDatasetsUpdate_578972, schemes: {Scheme.Https})
 type
-  Call_BigqueryDatasetsGet_589054 = ref object of OpenApiRestCall_588466
-proc url_BigqueryDatasetsGet_589056(protocol: Scheme; host: string; base: string;
+  Call_BigqueryDatasetsGet_578954 = ref object of OpenApiRestCall_578364
+proc url_BigqueryDatasetsGet_578956(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -774,7 +778,7 @@ proc url_BigqueryDatasetsGet_589056(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryDatasetsGet_589055(path: JsonNode; query: JsonNode;
+proc validate_BigqueryDatasetsGet_578955(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Returns the dataset specified by datasetID.
@@ -782,74 +786,74 @@ proc validate_BigqueryDatasetsGet_589055(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Dataset ID of the requested dataset
   ##   projectId: JString (required)
   ##            : Project ID of the requested dataset
+  ##   datasetId: JString (required)
+  ##            : Dataset ID of the requested dataset
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589057 = path.getOrDefault("datasetId")
-  valid_589057 = validateParameter(valid_589057, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_578957 = path.getOrDefault("projectId")
+  valid_578957 = validateParameter(valid_578957, JString, required = true,
                                  default = nil)
-  if valid_589057 != nil:
-    section.add "datasetId", valid_589057
-  var valid_589058 = path.getOrDefault("projectId")
-  valid_589058 = validateParameter(valid_589058, JString, required = true,
+  if valid_578957 != nil:
+    section.add "projectId", valid_578957
+  var valid_578958 = path.getOrDefault("datasetId")
+  valid_578958 = validateParameter(valid_578958, JString, required = true,
                                  default = nil)
-  if valid_589058 != nil:
-    section.add "projectId", valid_589058
+  if valid_578958 != nil:
+    section.add "datasetId", valid_578958
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589059 = query.getOrDefault("fields")
-  valid_589059 = validateParameter(valid_589059, JString, required = false,
+  var valid_578959 = query.getOrDefault("key")
+  valid_578959 = validateParameter(valid_578959, JString, required = false,
                                  default = nil)
-  if valid_589059 != nil:
-    section.add "fields", valid_589059
-  var valid_589060 = query.getOrDefault("quotaUser")
-  valid_589060 = validateParameter(valid_589060, JString, required = false,
-                                 default = nil)
-  if valid_589060 != nil:
-    section.add "quotaUser", valid_589060
-  var valid_589061 = query.getOrDefault("alt")
-  valid_589061 = validateParameter(valid_589061, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589061 != nil:
-    section.add "alt", valid_589061
-  var valid_589062 = query.getOrDefault("oauth_token")
-  valid_589062 = validateParameter(valid_589062, JString, required = false,
-                                 default = nil)
-  if valid_589062 != nil:
-    section.add "oauth_token", valid_589062
-  var valid_589063 = query.getOrDefault("userIp")
-  valid_589063 = validateParameter(valid_589063, JString, required = false,
-                                 default = nil)
-  if valid_589063 != nil:
-    section.add "userIp", valid_589063
-  var valid_589064 = query.getOrDefault("key")
-  valid_589064 = validateParameter(valid_589064, JString, required = false,
-                                 default = nil)
-  if valid_589064 != nil:
-    section.add "key", valid_589064
-  var valid_589065 = query.getOrDefault("prettyPrint")
-  valid_589065 = validateParameter(valid_589065, JBool, required = false,
+  if valid_578959 != nil:
+    section.add "key", valid_578959
+  var valid_578960 = query.getOrDefault("prettyPrint")
+  valid_578960 = validateParameter(valid_578960, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589065 != nil:
-    section.add "prettyPrint", valid_589065
+  if valid_578960 != nil:
+    section.add "prettyPrint", valid_578960
+  var valid_578961 = query.getOrDefault("oauth_token")
+  valid_578961 = validateParameter(valid_578961, JString, required = false,
+                                 default = nil)
+  if valid_578961 != nil:
+    section.add "oauth_token", valid_578961
+  var valid_578962 = query.getOrDefault("alt")
+  valid_578962 = validateParameter(valid_578962, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578962 != nil:
+    section.add "alt", valid_578962
+  var valid_578963 = query.getOrDefault("userIp")
+  valid_578963 = validateParameter(valid_578963, JString, required = false,
+                                 default = nil)
+  if valid_578963 != nil:
+    section.add "userIp", valid_578963
+  var valid_578964 = query.getOrDefault("quotaUser")
+  valid_578964 = validateParameter(valid_578964, JString, required = false,
+                                 default = nil)
+  if valid_578964 != nil:
+    section.add "quotaUser", valid_578964
+  var valid_578965 = query.getOrDefault("fields")
+  valid_578965 = validateParameter(valid_578965, JString, required = false,
+                                 default = nil)
+  if valid_578965 != nil:
+    section.add "fields", valid_578965
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -858,65 +862,65 @@ proc validate_BigqueryDatasetsGet_589055(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589066: Call_BigqueryDatasetsGet_589054; path: JsonNode;
+proc call*(call_578966: Call_BigqueryDatasetsGet_578954; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns the dataset specified by datasetID.
   ## 
-  let valid = call_589066.validator(path, query, header, formData, body)
-  let scheme = call_589066.pickScheme
+  let valid = call_578966.validator(path, query, header, formData, body)
+  let scheme = call_578966.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589066.url(scheme.get, call_589066.host, call_589066.base,
-                         call_589066.route, valid.getOrDefault("path"),
+  let url = call_578966.url(scheme.get, call_578966.host, call_578966.base,
+                         call_578966.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589066, url, valid)
+  result = hook(call_578966, url, valid)
 
-proc call*(call_589067: Call_BigqueryDatasetsGet_589054; datasetId: string;
-          projectId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_578967: Call_BigqueryDatasetsGet_578954; projectId: string;
+          datasetId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; fields: string = ""): Recallable =
   ## bigqueryDatasetsGet
   ## Returns the dataset specified by datasetID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Dataset ID of the requested dataset
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the requested dataset
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589068 = newJObject()
-  var query_589069 = newJObject()
-  add(query_589069, "fields", newJString(fields))
-  add(query_589069, "quotaUser", newJString(quotaUser))
-  add(query_589069, "alt", newJString(alt))
-  add(query_589069, "oauth_token", newJString(oauthToken))
-  add(query_589069, "userIp", newJString(userIp))
-  add(path_589068, "datasetId", newJString(datasetId))
-  add(query_589069, "key", newJString(key))
-  add(path_589068, "projectId", newJString(projectId))
-  add(query_589069, "prettyPrint", newJBool(prettyPrint))
-  result = call_589067.call(path_589068, query_589069, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the requested dataset
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Dataset ID of the requested dataset
+  var path_578968 = newJObject()
+  var query_578969 = newJObject()
+  add(query_578969, "key", newJString(key))
+  add(query_578969, "prettyPrint", newJBool(prettyPrint))
+  add(query_578969, "oauth_token", newJString(oauthToken))
+  add(path_578968, "projectId", newJString(projectId))
+  add(query_578969, "alt", newJString(alt))
+  add(query_578969, "userIp", newJString(userIp))
+  add(query_578969, "quotaUser", newJString(quotaUser))
+  add(query_578969, "fields", newJString(fields))
+  add(path_578968, "datasetId", newJString(datasetId))
+  result = call_578967.call(path_578968, query_578969, nil, nil, nil)
 
-var bigqueryDatasetsGet* = Call_BigqueryDatasetsGet_589054(
+var bigqueryDatasetsGet* = Call_BigqueryDatasetsGet_578954(
     name: "bigqueryDatasetsGet", meth: HttpMethod.HttpGet,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}",
-    validator: validate_BigqueryDatasetsGet_589055, base: "/bigquery/v2",
-    url: url_BigqueryDatasetsGet_589056, schemes: {Scheme.Https})
+    validator: validate_BigqueryDatasetsGet_578955, base: "/bigquery/v2",
+    url: url_BigqueryDatasetsGet_578956, schemes: {Scheme.Https})
 type
-  Call_BigqueryDatasetsPatch_589105 = ref object of OpenApiRestCall_588466
-proc url_BigqueryDatasetsPatch_589107(protocol: Scheme; host: string; base: string;
+  Call_BigqueryDatasetsPatch_579005 = ref object of OpenApiRestCall_578364
+proc url_BigqueryDatasetsPatch_579007(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -934,81 +938,81 @@ proc url_BigqueryDatasetsPatch_589107(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryDatasetsPatch_589106(path: JsonNode; query: JsonNode;
+proc validate_BigqueryDatasetsPatch_579006(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates information in an existing dataset. The update method replaces the entire dataset resource, whereas the patch method only replaces fields that are provided in the submitted dataset resource. This method supports patch semantics.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Dataset ID of the dataset being updated
   ##   projectId: JString (required)
   ##            : Project ID of the dataset being updated
+  ##   datasetId: JString (required)
+  ##            : Dataset ID of the dataset being updated
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589108 = path.getOrDefault("datasetId")
-  valid_589108 = validateParameter(valid_589108, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579008 = path.getOrDefault("projectId")
+  valid_579008 = validateParameter(valid_579008, JString, required = true,
                                  default = nil)
-  if valid_589108 != nil:
-    section.add "datasetId", valid_589108
-  var valid_589109 = path.getOrDefault("projectId")
-  valid_589109 = validateParameter(valid_589109, JString, required = true,
+  if valid_579008 != nil:
+    section.add "projectId", valid_579008
+  var valid_579009 = path.getOrDefault("datasetId")
+  valid_579009 = validateParameter(valid_579009, JString, required = true,
                                  default = nil)
-  if valid_589109 != nil:
-    section.add "projectId", valid_589109
+  if valid_579009 != nil:
+    section.add "datasetId", valid_579009
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589110 = query.getOrDefault("fields")
-  valid_589110 = validateParameter(valid_589110, JString, required = false,
+  var valid_579010 = query.getOrDefault("key")
+  valid_579010 = validateParameter(valid_579010, JString, required = false,
                                  default = nil)
-  if valid_589110 != nil:
-    section.add "fields", valid_589110
-  var valid_589111 = query.getOrDefault("quotaUser")
-  valid_589111 = validateParameter(valid_589111, JString, required = false,
-                                 default = nil)
-  if valid_589111 != nil:
-    section.add "quotaUser", valid_589111
-  var valid_589112 = query.getOrDefault("alt")
-  valid_589112 = validateParameter(valid_589112, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589112 != nil:
-    section.add "alt", valid_589112
-  var valid_589113 = query.getOrDefault("oauth_token")
-  valid_589113 = validateParameter(valid_589113, JString, required = false,
-                                 default = nil)
-  if valid_589113 != nil:
-    section.add "oauth_token", valid_589113
-  var valid_589114 = query.getOrDefault("userIp")
-  valid_589114 = validateParameter(valid_589114, JString, required = false,
-                                 default = nil)
-  if valid_589114 != nil:
-    section.add "userIp", valid_589114
-  var valid_589115 = query.getOrDefault("key")
-  valid_589115 = validateParameter(valid_589115, JString, required = false,
-                                 default = nil)
-  if valid_589115 != nil:
-    section.add "key", valid_589115
-  var valid_589116 = query.getOrDefault("prettyPrint")
-  valid_589116 = validateParameter(valid_589116, JBool, required = false,
+  if valid_579010 != nil:
+    section.add "key", valid_579010
+  var valid_579011 = query.getOrDefault("prettyPrint")
+  valid_579011 = validateParameter(valid_579011, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589116 != nil:
-    section.add "prettyPrint", valid_589116
+  if valid_579011 != nil:
+    section.add "prettyPrint", valid_579011
+  var valid_579012 = query.getOrDefault("oauth_token")
+  valid_579012 = validateParameter(valid_579012, JString, required = false,
+                                 default = nil)
+  if valid_579012 != nil:
+    section.add "oauth_token", valid_579012
+  var valid_579013 = query.getOrDefault("alt")
+  valid_579013 = validateParameter(valid_579013, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579013 != nil:
+    section.add "alt", valid_579013
+  var valid_579014 = query.getOrDefault("userIp")
+  valid_579014 = validateParameter(valid_579014, JString, required = false,
+                                 default = nil)
+  if valid_579014 != nil:
+    section.add "userIp", valid_579014
+  var valid_579015 = query.getOrDefault("quotaUser")
+  valid_579015 = validateParameter(valid_579015, JString, required = false,
+                                 default = nil)
+  if valid_579015 != nil:
+    section.add "quotaUser", valid_579015
+  var valid_579016 = query.getOrDefault("fields")
+  valid_579016 = validateParameter(valid_579016, JString, required = false,
+                                 default = nil)
+  if valid_579016 != nil:
+    section.add "fields", valid_579016
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1020,69 +1024,69 @@ proc validate_BigqueryDatasetsPatch_589106(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589118: Call_BigqueryDatasetsPatch_589105; path: JsonNode;
+proc call*(call_579018: Call_BigqueryDatasetsPatch_579005; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates information in an existing dataset. The update method replaces the entire dataset resource, whereas the patch method only replaces fields that are provided in the submitted dataset resource. This method supports patch semantics.
   ## 
-  let valid = call_589118.validator(path, query, header, formData, body)
-  let scheme = call_589118.pickScheme
+  let valid = call_579018.validator(path, query, header, formData, body)
+  let scheme = call_579018.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589118.url(scheme.get, call_589118.host, call_589118.base,
-                         call_589118.route, valid.getOrDefault("path"),
+  let url = call_579018.url(scheme.get, call_579018.host, call_579018.base,
+                         call_579018.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589118, url, valid)
+  result = hook(call_579018, url, valid)
 
-proc call*(call_589119: Call_BigqueryDatasetsPatch_589105; datasetId: string;
-          projectId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579019: Call_BigqueryDatasetsPatch_579005; projectId: string;
+          datasetId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## bigqueryDatasetsPatch
   ## Updates information in an existing dataset. The update method replaces the entire dataset resource, whereas the patch method only replaces fields that are provided in the submitted dataset resource. This method supports patch semantics.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Dataset ID of the dataset being updated
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the dataset being updated
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589120 = newJObject()
-  var query_589121 = newJObject()
-  var body_589122 = newJObject()
-  add(query_589121, "fields", newJString(fields))
-  add(query_589121, "quotaUser", newJString(quotaUser))
-  add(query_589121, "alt", newJString(alt))
-  add(query_589121, "oauth_token", newJString(oauthToken))
-  add(query_589121, "userIp", newJString(userIp))
-  add(path_589120, "datasetId", newJString(datasetId))
-  add(query_589121, "key", newJString(key))
-  add(path_589120, "projectId", newJString(projectId))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the dataset being updated
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Dataset ID of the dataset being updated
+  var path_579020 = newJObject()
+  var query_579021 = newJObject()
+  var body_579022 = newJObject()
+  add(query_579021, "key", newJString(key))
+  add(query_579021, "prettyPrint", newJBool(prettyPrint))
+  add(query_579021, "oauth_token", newJString(oauthToken))
+  add(path_579020, "projectId", newJString(projectId))
+  add(query_579021, "alt", newJString(alt))
+  add(query_579021, "userIp", newJString(userIp))
+  add(query_579021, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589122 = body
-  add(query_589121, "prettyPrint", newJBool(prettyPrint))
-  result = call_589119.call(path_589120, query_589121, nil, nil, body_589122)
+    body_579022 = body
+  add(query_579021, "fields", newJString(fields))
+  add(path_579020, "datasetId", newJString(datasetId))
+  result = call_579019.call(path_579020, query_579021, nil, nil, body_579022)
 
-var bigqueryDatasetsPatch* = Call_BigqueryDatasetsPatch_589105(
+var bigqueryDatasetsPatch* = Call_BigqueryDatasetsPatch_579005(
     name: "bigqueryDatasetsPatch", meth: HttpMethod.HttpPatch,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}",
-    validator: validate_BigqueryDatasetsPatch_589106, base: "/bigquery/v2",
-    url: url_BigqueryDatasetsPatch_589107, schemes: {Scheme.Https})
+    validator: validate_BigqueryDatasetsPatch_579006, base: "/bigquery/v2",
+    url: url_BigqueryDatasetsPatch_579007, schemes: {Scheme.Https})
 type
-  Call_BigqueryDatasetsDelete_589088 = ref object of OpenApiRestCall_588466
-proc url_BigqueryDatasetsDelete_589090(protocol: Scheme; host: string; base: string;
+  Call_BigqueryDatasetsDelete_578988 = ref object of OpenApiRestCall_578364
+proc url_BigqueryDatasetsDelete_578990(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1100,87 +1104,87 @@ proc url_BigqueryDatasetsDelete_589090(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryDatasetsDelete_589089(path: JsonNode; query: JsonNode;
+proc validate_BigqueryDatasetsDelete_578989(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the dataset specified by the datasetId value. Before you can delete a dataset, you must delete all its tables, either manually or by specifying deleteContents. Immediately after deletion, you can create another dataset with the same name.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Dataset ID of dataset being deleted
   ##   projectId: JString (required)
   ##            : Project ID of the dataset being deleted
+  ##   datasetId: JString (required)
+  ##            : Dataset ID of dataset being deleted
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589091 = path.getOrDefault("datasetId")
-  valid_589091 = validateParameter(valid_589091, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_578991 = path.getOrDefault("projectId")
+  valid_578991 = validateParameter(valid_578991, JString, required = true,
                                  default = nil)
-  if valid_589091 != nil:
-    section.add "datasetId", valid_589091
-  var valid_589092 = path.getOrDefault("projectId")
-  valid_589092 = validateParameter(valid_589092, JString, required = true,
+  if valid_578991 != nil:
+    section.add "projectId", valid_578991
+  var valid_578992 = path.getOrDefault("datasetId")
+  valid_578992 = validateParameter(valid_578992, JString, required = true,
                                  default = nil)
-  if valid_589092 != nil:
-    section.add "projectId", valid_589092
+  if valid_578992 != nil:
+    section.add "datasetId", valid_578992
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   deleteContents: JBool
-  ##                 : If True, delete all the tables in the dataset. If False and the dataset contains tables, the request will fail. Default is False
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   deleteContents: JBool
+  ##                 : If True, delete all the tables in the dataset. If False and the dataset contains tables, the request will fail. Default is False
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589093 = query.getOrDefault("fields")
-  valid_589093 = validateParameter(valid_589093, JString, required = false,
+  var valid_578993 = query.getOrDefault("key")
+  valid_578993 = validateParameter(valid_578993, JString, required = false,
                                  default = nil)
-  if valid_589093 != nil:
-    section.add "fields", valid_589093
-  var valid_589094 = query.getOrDefault("quotaUser")
-  valid_589094 = validateParameter(valid_589094, JString, required = false,
-                                 default = nil)
-  if valid_589094 != nil:
-    section.add "quotaUser", valid_589094
-  var valid_589095 = query.getOrDefault("alt")
-  valid_589095 = validateParameter(valid_589095, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589095 != nil:
-    section.add "alt", valid_589095
-  var valid_589096 = query.getOrDefault("deleteContents")
-  valid_589096 = validateParameter(valid_589096, JBool, required = false, default = nil)
-  if valid_589096 != nil:
-    section.add "deleteContents", valid_589096
-  var valid_589097 = query.getOrDefault("oauth_token")
-  valid_589097 = validateParameter(valid_589097, JString, required = false,
-                                 default = nil)
-  if valid_589097 != nil:
-    section.add "oauth_token", valid_589097
-  var valid_589098 = query.getOrDefault("userIp")
-  valid_589098 = validateParameter(valid_589098, JString, required = false,
-                                 default = nil)
-  if valid_589098 != nil:
-    section.add "userIp", valid_589098
-  var valid_589099 = query.getOrDefault("key")
-  valid_589099 = validateParameter(valid_589099, JString, required = false,
-                                 default = nil)
-  if valid_589099 != nil:
-    section.add "key", valid_589099
-  var valid_589100 = query.getOrDefault("prettyPrint")
-  valid_589100 = validateParameter(valid_589100, JBool, required = false,
+  if valid_578993 != nil:
+    section.add "key", valid_578993
+  var valid_578994 = query.getOrDefault("prettyPrint")
+  valid_578994 = validateParameter(valid_578994, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589100 != nil:
-    section.add "prettyPrint", valid_589100
+  if valid_578994 != nil:
+    section.add "prettyPrint", valid_578994
+  var valid_578995 = query.getOrDefault("oauth_token")
+  valid_578995 = validateParameter(valid_578995, JString, required = false,
+                                 default = nil)
+  if valid_578995 != nil:
+    section.add "oauth_token", valid_578995
+  var valid_578996 = query.getOrDefault("deleteContents")
+  valid_578996 = validateParameter(valid_578996, JBool, required = false, default = nil)
+  if valid_578996 != nil:
+    section.add "deleteContents", valid_578996
+  var valid_578997 = query.getOrDefault("alt")
+  valid_578997 = validateParameter(valid_578997, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578997 != nil:
+    section.add "alt", valid_578997
+  var valid_578998 = query.getOrDefault("userIp")
+  valid_578998 = validateParameter(valid_578998, JString, required = false,
+                                 default = nil)
+  if valid_578998 != nil:
+    section.add "userIp", valid_578998
+  var valid_578999 = query.getOrDefault("quotaUser")
+  valid_578999 = validateParameter(valid_578999, JString, required = false,
+                                 default = nil)
+  if valid_578999 != nil:
+    section.add "quotaUser", valid_578999
+  var valid_579000 = query.getOrDefault("fields")
+  valid_579000 = validateParameter(valid_579000, JString, required = false,
+                                 default = nil)
+  if valid_579000 != nil:
+    section.add "fields", valid_579000
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1189,68 +1193,68 @@ proc validate_BigqueryDatasetsDelete_589089(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589101: Call_BigqueryDatasetsDelete_589088; path: JsonNode;
+proc call*(call_579001: Call_BigqueryDatasetsDelete_578988; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes the dataset specified by the datasetId value. Before you can delete a dataset, you must delete all its tables, either manually or by specifying deleteContents. Immediately after deletion, you can create another dataset with the same name.
   ## 
-  let valid = call_589101.validator(path, query, header, formData, body)
-  let scheme = call_589101.pickScheme
+  let valid = call_579001.validator(path, query, header, formData, body)
+  let scheme = call_579001.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589101.url(scheme.get, call_589101.host, call_589101.base,
-                         call_589101.route, valid.getOrDefault("path"),
+  let url = call_579001.url(scheme.get, call_579001.host, call_579001.base,
+                         call_579001.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589101, url, valid)
+  result = hook(call_579001, url, valid)
 
-proc call*(call_589102: Call_BigqueryDatasetsDelete_589088; datasetId: string;
-          projectId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; deleteContents: bool = false; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579002: Call_BigqueryDatasetsDelete_578988; projectId: string;
+          datasetId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; deleteContents: bool = false; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## bigqueryDatasetsDelete
   ## Deletes the dataset specified by the datasetId value. Before you can delete a dataset, you must delete all its tables, either manually or by specifying deleteContents. Immediately after deletion, you can create another dataset with the same name.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   deleteContents: bool
-  ##                 : If True, delete all the tables in the dataset. If False and the dataset contains tables, the request will fail. Default is False
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Dataset ID of dataset being deleted
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the dataset being deleted
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589103 = newJObject()
-  var query_589104 = newJObject()
-  add(query_589104, "fields", newJString(fields))
-  add(query_589104, "quotaUser", newJString(quotaUser))
-  add(query_589104, "alt", newJString(alt))
-  add(query_589104, "deleteContents", newJBool(deleteContents))
-  add(query_589104, "oauth_token", newJString(oauthToken))
-  add(query_589104, "userIp", newJString(userIp))
-  add(path_589103, "datasetId", newJString(datasetId))
-  add(query_589104, "key", newJString(key))
-  add(path_589103, "projectId", newJString(projectId))
-  add(query_589104, "prettyPrint", newJBool(prettyPrint))
-  result = call_589102.call(path_589103, query_589104, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the dataset being deleted
+  ##   deleteContents: bool
+  ##                 : If True, delete all the tables in the dataset. If False and the dataset contains tables, the request will fail. Default is False
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Dataset ID of dataset being deleted
+  var path_579003 = newJObject()
+  var query_579004 = newJObject()
+  add(query_579004, "key", newJString(key))
+  add(query_579004, "prettyPrint", newJBool(prettyPrint))
+  add(query_579004, "oauth_token", newJString(oauthToken))
+  add(path_579003, "projectId", newJString(projectId))
+  add(query_579004, "deleteContents", newJBool(deleteContents))
+  add(query_579004, "alt", newJString(alt))
+  add(query_579004, "userIp", newJString(userIp))
+  add(query_579004, "quotaUser", newJString(quotaUser))
+  add(query_579004, "fields", newJString(fields))
+  add(path_579003, "datasetId", newJString(datasetId))
+  result = call_579002.call(path_579003, query_579004, nil, nil, nil)
 
-var bigqueryDatasetsDelete* = Call_BigqueryDatasetsDelete_589088(
+var bigqueryDatasetsDelete* = Call_BigqueryDatasetsDelete_578988(
     name: "bigqueryDatasetsDelete", meth: HttpMethod.HttpDelete,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}",
-    validator: validate_BigqueryDatasetsDelete_589089, base: "/bigquery/v2",
-    url: url_BigqueryDatasetsDelete_589090, schemes: {Scheme.Https})
+    validator: validate_BigqueryDatasetsDelete_578989, base: "/bigquery/v2",
+    url: url_BigqueryDatasetsDelete_578990, schemes: {Scheme.Https})
 type
-  Call_BigqueryModelsList_589123 = ref object of OpenApiRestCall_588466
-proc url_BigqueryModelsList_589125(protocol: Scheme; host: string; base: string;
+  Call_BigqueryModelsList_579023 = ref object of OpenApiRestCall_578364
+proc url_BigqueryModelsList_579025(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1269,7 +1273,7 @@ proc url_BigqueryModelsList_589125(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryModelsList_589124(path: JsonNode; query: JsonNode;
+proc validate_BigqueryModelsList_579024(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Lists all models in the specified dataset. Requires the READER dataset
@@ -1278,89 +1282,89 @@ proc validate_BigqueryModelsList_589124(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Required. Dataset ID of the models to list.
   ##   projectId: JString (required)
   ##            : Required. Project ID of the models to list.
+  ##   datasetId: JString (required)
+  ##            : Required. Dataset ID of the models to list.
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589126 = path.getOrDefault("datasetId")
-  valid_589126 = validateParameter(valid_589126, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579026 = path.getOrDefault("projectId")
+  valid_579026 = validateParameter(valid_579026, JString, required = true,
                                  default = nil)
-  if valid_589126 != nil:
-    section.add "datasetId", valid_589126
-  var valid_589127 = path.getOrDefault("projectId")
-  valid_589127 = validateParameter(valid_589127, JString, required = true,
+  if valid_579026 != nil:
+    section.add "projectId", valid_579026
+  var valid_579027 = path.getOrDefault("datasetId")
+  valid_579027 = validateParameter(valid_579027, JString, required = true,
                                  default = nil)
-  if valid_589127 != nil:
-    section.add "projectId", valid_589127
+  if valid_579027 != nil:
+    section.add "datasetId", valid_579027
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Page token, returned by a previous call to request the next page of
-  ## results
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of results to return in a single response page.
-  ## Leverage the page tokens to iterate through the entire collection.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : Page token, returned by a previous call to request the next page of
+  ## results
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : The maximum number of results to return in a single response page.
+  ## Leverage the page tokens to iterate through the entire collection.
   section = newJObject()
-  var valid_589128 = query.getOrDefault("fields")
-  valid_589128 = validateParameter(valid_589128, JString, required = false,
+  var valid_579028 = query.getOrDefault("key")
+  valid_579028 = validateParameter(valid_579028, JString, required = false,
                                  default = nil)
-  if valid_589128 != nil:
-    section.add "fields", valid_589128
-  var valid_589129 = query.getOrDefault("pageToken")
-  valid_589129 = validateParameter(valid_589129, JString, required = false,
-                                 default = nil)
-  if valid_589129 != nil:
-    section.add "pageToken", valid_589129
-  var valid_589130 = query.getOrDefault("quotaUser")
-  valid_589130 = validateParameter(valid_589130, JString, required = false,
-                                 default = nil)
-  if valid_589130 != nil:
-    section.add "quotaUser", valid_589130
-  var valid_589131 = query.getOrDefault("alt")
-  valid_589131 = validateParameter(valid_589131, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589131 != nil:
-    section.add "alt", valid_589131
-  var valid_589132 = query.getOrDefault("oauth_token")
-  valid_589132 = validateParameter(valid_589132, JString, required = false,
-                                 default = nil)
-  if valid_589132 != nil:
-    section.add "oauth_token", valid_589132
-  var valid_589133 = query.getOrDefault("userIp")
-  valid_589133 = validateParameter(valid_589133, JString, required = false,
-                                 default = nil)
-  if valid_589133 != nil:
-    section.add "userIp", valid_589133
-  var valid_589134 = query.getOrDefault("maxResults")
-  valid_589134 = validateParameter(valid_589134, JInt, required = false, default = nil)
-  if valid_589134 != nil:
-    section.add "maxResults", valid_589134
-  var valid_589135 = query.getOrDefault("key")
-  valid_589135 = validateParameter(valid_589135, JString, required = false,
-                                 default = nil)
-  if valid_589135 != nil:
-    section.add "key", valid_589135
-  var valid_589136 = query.getOrDefault("prettyPrint")
-  valid_589136 = validateParameter(valid_589136, JBool, required = false,
+  if valid_579028 != nil:
+    section.add "key", valid_579028
+  var valid_579029 = query.getOrDefault("prettyPrint")
+  valid_579029 = validateParameter(valid_579029, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589136 != nil:
-    section.add "prettyPrint", valid_589136
+  if valid_579029 != nil:
+    section.add "prettyPrint", valid_579029
+  var valid_579030 = query.getOrDefault("oauth_token")
+  valid_579030 = validateParameter(valid_579030, JString, required = false,
+                                 default = nil)
+  if valid_579030 != nil:
+    section.add "oauth_token", valid_579030
+  var valid_579031 = query.getOrDefault("alt")
+  valid_579031 = validateParameter(valid_579031, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579031 != nil:
+    section.add "alt", valid_579031
+  var valid_579032 = query.getOrDefault("userIp")
+  valid_579032 = validateParameter(valid_579032, JString, required = false,
+                                 default = nil)
+  if valid_579032 != nil:
+    section.add "userIp", valid_579032
+  var valid_579033 = query.getOrDefault("quotaUser")
+  valid_579033 = validateParameter(valid_579033, JString, required = false,
+                                 default = nil)
+  if valid_579033 != nil:
+    section.add "quotaUser", valid_579033
+  var valid_579034 = query.getOrDefault("pageToken")
+  valid_579034 = validateParameter(valid_579034, JString, required = false,
+                                 default = nil)
+  if valid_579034 != nil:
+    section.add "pageToken", valid_579034
+  var valid_579035 = query.getOrDefault("fields")
+  valid_579035 = validateParameter(valid_579035, JString, required = false,
+                                 default = nil)
+  if valid_579035 != nil:
+    section.add "fields", valid_579035
+  var valid_579036 = query.getOrDefault("maxResults")
+  valid_579036 = validateParameter(valid_579036, JInt, required = false, default = nil)
+  if valid_579036 != nil:
+    section.add "maxResults", valid_579036
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1369,76 +1373,76 @@ proc validate_BigqueryModelsList_589124(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589137: Call_BigqueryModelsList_589123; path: JsonNode;
+proc call*(call_579037: Call_BigqueryModelsList_579023; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all models in the specified dataset. Requires the READER dataset
   ## role.
   ## 
-  let valid = call_589137.validator(path, query, header, formData, body)
-  let scheme = call_589137.pickScheme
+  let valid = call_579037.validator(path, query, header, formData, body)
+  let scheme = call_579037.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589137.url(scheme.get, call_589137.host, call_589137.base,
-                         call_589137.route, valid.getOrDefault("path"),
+  let url = call_579037.url(scheme.get, call_579037.host, call_579037.base,
+                         call_579037.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589137, url, valid)
+  result = hook(call_579037, url, valid)
 
-proc call*(call_589138: Call_BigqueryModelsList_589123; datasetId: string;
-          projectId: string; fields: string = ""; pageToken: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; maxResults: int = 0; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579038: Call_BigqueryModelsList_579023; projectId: string;
+          datasetId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; pageToken: string = ""; fields: string = "";
+          maxResults: int = 0): Recallable =
   ## bigqueryModelsList
   ## Lists all models in the specified dataset. Requires the READER dataset
   ## role.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Required. Project ID of the models to list.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   pageToken: string
   ##            : Page token, returned by a previous call to request the next page of
   ## results
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Required. Dataset ID of the models to list.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: int
   ##             : The maximum number of results to return in a single response page.
   ## Leverage the page tokens to iterate through the entire collection.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Required. Project ID of the models to list.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589139 = newJObject()
-  var query_589140 = newJObject()
-  add(query_589140, "fields", newJString(fields))
-  add(query_589140, "pageToken", newJString(pageToken))
-  add(query_589140, "quotaUser", newJString(quotaUser))
-  add(query_589140, "alt", newJString(alt))
-  add(query_589140, "oauth_token", newJString(oauthToken))
-  add(query_589140, "userIp", newJString(userIp))
-  add(path_589139, "datasetId", newJString(datasetId))
-  add(query_589140, "maxResults", newJInt(maxResults))
-  add(query_589140, "key", newJString(key))
-  add(path_589139, "projectId", newJString(projectId))
-  add(query_589140, "prettyPrint", newJBool(prettyPrint))
-  result = call_589138.call(path_589139, query_589140, nil, nil, nil)
+  ##   datasetId: string (required)
+  ##            : Required. Dataset ID of the models to list.
+  var path_579039 = newJObject()
+  var query_579040 = newJObject()
+  add(query_579040, "key", newJString(key))
+  add(query_579040, "prettyPrint", newJBool(prettyPrint))
+  add(query_579040, "oauth_token", newJString(oauthToken))
+  add(path_579039, "projectId", newJString(projectId))
+  add(query_579040, "alt", newJString(alt))
+  add(query_579040, "userIp", newJString(userIp))
+  add(query_579040, "quotaUser", newJString(quotaUser))
+  add(query_579040, "pageToken", newJString(pageToken))
+  add(query_579040, "fields", newJString(fields))
+  add(query_579040, "maxResults", newJInt(maxResults))
+  add(path_579039, "datasetId", newJString(datasetId))
+  result = call_579038.call(path_579039, query_579040, nil, nil, nil)
 
-var bigqueryModelsList* = Call_BigqueryModelsList_589123(
+var bigqueryModelsList* = Call_BigqueryModelsList_579023(
     name: "bigqueryModelsList", meth: HttpMethod.HttpGet,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/models",
-    validator: validate_BigqueryModelsList_589124, base: "/bigquery/v2",
-    url: url_BigqueryModelsList_589125, schemes: {Scheme.Https})
+    validator: validate_BigqueryModelsList_579024, base: "/bigquery/v2",
+    url: url_BigqueryModelsList_579025, schemes: {Scheme.Https})
 type
-  Call_BigqueryModelsGet_589141 = ref object of OpenApiRestCall_588466
-proc url_BigqueryModelsGet_589143(protocol: Scheme; host: string; base: string;
+  Call_BigqueryModelsGet_579041 = ref object of OpenApiRestCall_578364
+proc url_BigqueryModelsGet_579043(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1459,7 +1463,7 @@ proc url_BigqueryModelsGet_589143(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryModelsGet_589142(path: JsonNode; query: JsonNode;
+proc validate_BigqueryModelsGet_579042(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Gets the specified model resource by model ID.
@@ -1467,81 +1471,81 @@ proc validate_BigqueryModelsGet_589142(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Required. Dataset ID of the requested model.
   ##   projectId: JString (required)
   ##            : Required. Project ID of the requested model.
   ##   modelId: JString (required)
   ##          : Required. Model ID of the requested model.
+  ##   datasetId: JString (required)
+  ##            : Required. Dataset ID of the requested model.
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589144 = path.getOrDefault("datasetId")
-  valid_589144 = validateParameter(valid_589144, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579044 = path.getOrDefault("projectId")
+  valid_579044 = validateParameter(valid_579044, JString, required = true,
                                  default = nil)
-  if valid_589144 != nil:
-    section.add "datasetId", valid_589144
-  var valid_589145 = path.getOrDefault("projectId")
-  valid_589145 = validateParameter(valid_589145, JString, required = true,
+  if valid_579044 != nil:
+    section.add "projectId", valid_579044
+  var valid_579045 = path.getOrDefault("modelId")
+  valid_579045 = validateParameter(valid_579045, JString, required = true,
                                  default = nil)
-  if valid_589145 != nil:
-    section.add "projectId", valid_589145
-  var valid_589146 = path.getOrDefault("modelId")
-  valid_589146 = validateParameter(valid_589146, JString, required = true,
+  if valid_579045 != nil:
+    section.add "modelId", valid_579045
+  var valid_579046 = path.getOrDefault("datasetId")
+  valid_579046 = validateParameter(valid_579046, JString, required = true,
                                  default = nil)
-  if valid_589146 != nil:
-    section.add "modelId", valid_589146
+  if valid_579046 != nil:
+    section.add "datasetId", valid_579046
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589147 = query.getOrDefault("fields")
-  valid_589147 = validateParameter(valid_589147, JString, required = false,
+  var valid_579047 = query.getOrDefault("key")
+  valid_579047 = validateParameter(valid_579047, JString, required = false,
                                  default = nil)
-  if valid_589147 != nil:
-    section.add "fields", valid_589147
-  var valid_589148 = query.getOrDefault("quotaUser")
-  valid_589148 = validateParameter(valid_589148, JString, required = false,
-                                 default = nil)
-  if valid_589148 != nil:
-    section.add "quotaUser", valid_589148
-  var valid_589149 = query.getOrDefault("alt")
-  valid_589149 = validateParameter(valid_589149, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589149 != nil:
-    section.add "alt", valid_589149
-  var valid_589150 = query.getOrDefault("oauth_token")
-  valid_589150 = validateParameter(valid_589150, JString, required = false,
-                                 default = nil)
-  if valid_589150 != nil:
-    section.add "oauth_token", valid_589150
-  var valid_589151 = query.getOrDefault("userIp")
-  valid_589151 = validateParameter(valid_589151, JString, required = false,
-                                 default = nil)
-  if valid_589151 != nil:
-    section.add "userIp", valid_589151
-  var valid_589152 = query.getOrDefault("key")
-  valid_589152 = validateParameter(valid_589152, JString, required = false,
-                                 default = nil)
-  if valid_589152 != nil:
-    section.add "key", valid_589152
-  var valid_589153 = query.getOrDefault("prettyPrint")
-  valid_589153 = validateParameter(valid_589153, JBool, required = false,
+  if valid_579047 != nil:
+    section.add "key", valid_579047
+  var valid_579048 = query.getOrDefault("prettyPrint")
+  valid_579048 = validateParameter(valid_579048, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589153 != nil:
-    section.add "prettyPrint", valid_589153
+  if valid_579048 != nil:
+    section.add "prettyPrint", valid_579048
+  var valid_579049 = query.getOrDefault("oauth_token")
+  valid_579049 = validateParameter(valid_579049, JString, required = false,
+                                 default = nil)
+  if valid_579049 != nil:
+    section.add "oauth_token", valid_579049
+  var valid_579050 = query.getOrDefault("alt")
+  valid_579050 = validateParameter(valid_579050, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579050 != nil:
+    section.add "alt", valid_579050
+  var valid_579051 = query.getOrDefault("userIp")
+  valid_579051 = validateParameter(valid_579051, JString, required = false,
+                                 default = nil)
+  if valid_579051 != nil:
+    section.add "userIp", valid_579051
+  var valid_579052 = query.getOrDefault("quotaUser")
+  valid_579052 = validateParameter(valid_579052, JString, required = false,
+                                 default = nil)
+  if valid_579052 != nil:
+    section.add "quotaUser", valid_579052
+  var valid_579053 = query.getOrDefault("fields")
+  valid_579053 = validateParameter(valid_579053, JString, required = false,
+                                 default = nil)
+  if valid_579053 != nil:
+    section.add "fields", valid_579053
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1550,67 +1554,67 @@ proc validate_BigqueryModelsGet_589142(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589154: Call_BigqueryModelsGet_589141; path: JsonNode;
+proc call*(call_579054: Call_BigqueryModelsGet_579041; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the specified model resource by model ID.
   ## 
-  let valid = call_589154.validator(path, query, header, formData, body)
-  let scheme = call_589154.pickScheme
+  let valid = call_579054.validator(path, query, header, formData, body)
+  let scheme = call_579054.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589154.url(scheme.get, call_589154.host, call_589154.base,
-                         call_589154.route, valid.getOrDefault("path"),
+  let url = call_579054.url(scheme.get, call_579054.host, call_579054.base,
+                         call_579054.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589154, url, valid)
+  result = hook(call_579054, url, valid)
 
-proc call*(call_589155: Call_BigqueryModelsGet_589141; datasetId: string;
-          projectId: string; modelId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579055: Call_BigqueryModelsGet_579041; projectId: string;
+          modelId: string; datasetId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## bigqueryModelsGet
   ## Gets the specified model resource by model ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Required. Dataset ID of the requested model.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Required. Project ID of the requested model.
-  ##   modelId: string (required)
-  ##          : Required. Model ID of the requested model.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589156 = newJObject()
-  var query_589157 = newJObject()
-  add(query_589157, "fields", newJString(fields))
-  add(query_589157, "quotaUser", newJString(quotaUser))
-  add(query_589157, "alt", newJString(alt))
-  add(query_589157, "oauth_token", newJString(oauthToken))
-  add(query_589157, "userIp", newJString(userIp))
-  add(path_589156, "datasetId", newJString(datasetId))
-  add(query_589157, "key", newJString(key))
-  add(path_589156, "projectId", newJString(projectId))
-  add(path_589156, "modelId", newJString(modelId))
-  add(query_589157, "prettyPrint", newJBool(prettyPrint))
-  result = call_589155.call(path_589156, query_589157, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Required. Project ID of the requested model.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   modelId: string (required)
+  ##          : Required. Model ID of the requested model.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Required. Dataset ID of the requested model.
+  var path_579056 = newJObject()
+  var query_579057 = newJObject()
+  add(query_579057, "key", newJString(key))
+  add(query_579057, "prettyPrint", newJBool(prettyPrint))
+  add(query_579057, "oauth_token", newJString(oauthToken))
+  add(path_579056, "projectId", newJString(projectId))
+  add(query_579057, "alt", newJString(alt))
+  add(query_579057, "userIp", newJString(userIp))
+  add(query_579057, "quotaUser", newJString(quotaUser))
+  add(path_579056, "modelId", newJString(modelId))
+  add(query_579057, "fields", newJString(fields))
+  add(path_579056, "datasetId", newJString(datasetId))
+  result = call_579055.call(path_579056, query_579057, nil, nil, nil)
 
-var bigqueryModelsGet* = Call_BigqueryModelsGet_589141(name: "bigqueryModelsGet",
+var bigqueryModelsGet* = Call_BigqueryModelsGet_579041(name: "bigqueryModelsGet",
     meth: HttpMethod.HttpGet, host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/models/{modelId}",
-    validator: validate_BigqueryModelsGet_589142, base: "/bigquery/v2",
-    url: url_BigqueryModelsGet_589143, schemes: {Scheme.Https})
+    validator: validate_BigqueryModelsGet_579042, base: "/bigquery/v2",
+    url: url_BigqueryModelsGet_579043, schemes: {Scheme.Https})
 type
-  Call_BigqueryModelsPatch_589175 = ref object of OpenApiRestCall_588466
-proc url_BigqueryModelsPatch_589177(protocol: Scheme; host: string; base: string;
+  Call_BigqueryModelsPatch_579075 = ref object of OpenApiRestCall_578364
+proc url_BigqueryModelsPatch_579077(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1631,7 +1635,7 @@ proc url_BigqueryModelsPatch_589177(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryModelsPatch_589176(path: JsonNode; query: JsonNode;
+proc validate_BigqueryModelsPatch_579076(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Patch specific fields in the specified model.
@@ -1639,81 +1643,81 @@ proc validate_BigqueryModelsPatch_589176(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Required. Dataset ID of the model to patch.
   ##   projectId: JString (required)
   ##            : Required. Project ID of the model to patch.
   ##   modelId: JString (required)
   ##          : Required. Model ID of the model to patch.
+  ##   datasetId: JString (required)
+  ##            : Required. Dataset ID of the model to patch.
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589178 = path.getOrDefault("datasetId")
-  valid_589178 = validateParameter(valid_589178, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579078 = path.getOrDefault("projectId")
+  valid_579078 = validateParameter(valid_579078, JString, required = true,
                                  default = nil)
-  if valid_589178 != nil:
-    section.add "datasetId", valid_589178
-  var valid_589179 = path.getOrDefault("projectId")
-  valid_589179 = validateParameter(valid_589179, JString, required = true,
+  if valid_579078 != nil:
+    section.add "projectId", valid_579078
+  var valid_579079 = path.getOrDefault("modelId")
+  valid_579079 = validateParameter(valid_579079, JString, required = true,
                                  default = nil)
-  if valid_589179 != nil:
-    section.add "projectId", valid_589179
-  var valid_589180 = path.getOrDefault("modelId")
-  valid_589180 = validateParameter(valid_589180, JString, required = true,
+  if valid_579079 != nil:
+    section.add "modelId", valid_579079
+  var valid_579080 = path.getOrDefault("datasetId")
+  valid_579080 = validateParameter(valid_579080, JString, required = true,
                                  default = nil)
-  if valid_589180 != nil:
-    section.add "modelId", valid_589180
+  if valid_579080 != nil:
+    section.add "datasetId", valid_579080
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589181 = query.getOrDefault("fields")
-  valid_589181 = validateParameter(valid_589181, JString, required = false,
+  var valid_579081 = query.getOrDefault("key")
+  valid_579081 = validateParameter(valid_579081, JString, required = false,
                                  default = nil)
-  if valid_589181 != nil:
-    section.add "fields", valid_589181
-  var valid_589182 = query.getOrDefault("quotaUser")
-  valid_589182 = validateParameter(valid_589182, JString, required = false,
-                                 default = nil)
-  if valid_589182 != nil:
-    section.add "quotaUser", valid_589182
-  var valid_589183 = query.getOrDefault("alt")
-  valid_589183 = validateParameter(valid_589183, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589183 != nil:
-    section.add "alt", valid_589183
-  var valid_589184 = query.getOrDefault("oauth_token")
-  valid_589184 = validateParameter(valid_589184, JString, required = false,
-                                 default = nil)
-  if valid_589184 != nil:
-    section.add "oauth_token", valid_589184
-  var valid_589185 = query.getOrDefault("userIp")
-  valid_589185 = validateParameter(valid_589185, JString, required = false,
-                                 default = nil)
-  if valid_589185 != nil:
-    section.add "userIp", valid_589185
-  var valid_589186 = query.getOrDefault("key")
-  valid_589186 = validateParameter(valid_589186, JString, required = false,
-                                 default = nil)
-  if valid_589186 != nil:
-    section.add "key", valid_589186
-  var valid_589187 = query.getOrDefault("prettyPrint")
-  valid_589187 = validateParameter(valid_589187, JBool, required = false,
+  if valid_579081 != nil:
+    section.add "key", valid_579081
+  var valid_579082 = query.getOrDefault("prettyPrint")
+  valid_579082 = validateParameter(valid_579082, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589187 != nil:
-    section.add "prettyPrint", valid_589187
+  if valid_579082 != nil:
+    section.add "prettyPrint", valid_579082
+  var valid_579083 = query.getOrDefault("oauth_token")
+  valid_579083 = validateParameter(valid_579083, JString, required = false,
+                                 default = nil)
+  if valid_579083 != nil:
+    section.add "oauth_token", valid_579083
+  var valid_579084 = query.getOrDefault("alt")
+  valid_579084 = validateParameter(valid_579084, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579084 != nil:
+    section.add "alt", valid_579084
+  var valid_579085 = query.getOrDefault("userIp")
+  valid_579085 = validateParameter(valid_579085, JString, required = false,
+                                 default = nil)
+  if valid_579085 != nil:
+    section.add "userIp", valid_579085
+  var valid_579086 = query.getOrDefault("quotaUser")
+  valid_579086 = validateParameter(valid_579086, JString, required = false,
+                                 default = nil)
+  if valid_579086 != nil:
+    section.add "quotaUser", valid_579086
+  var valid_579087 = query.getOrDefault("fields")
+  valid_579087 = validateParameter(valid_579087, JString, required = false,
+                                 default = nil)
+  if valid_579087 != nil:
+    section.add "fields", valid_579087
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1725,73 +1729,73 @@ proc validate_BigqueryModelsPatch_589176(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589189: Call_BigqueryModelsPatch_589175; path: JsonNode;
+proc call*(call_579089: Call_BigqueryModelsPatch_579075; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Patch specific fields in the specified model.
   ## 
-  let valid = call_589189.validator(path, query, header, formData, body)
-  let scheme = call_589189.pickScheme
+  let valid = call_579089.validator(path, query, header, formData, body)
+  let scheme = call_579089.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589189.url(scheme.get, call_589189.host, call_589189.base,
-                         call_589189.route, valid.getOrDefault("path"),
+  let url = call_579089.url(scheme.get, call_579089.host, call_579089.base,
+                         call_579089.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589189, url, valid)
+  result = hook(call_579089, url, valid)
 
-proc call*(call_589190: Call_BigqueryModelsPatch_589175; datasetId: string;
-          projectId: string; modelId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579090: Call_BigqueryModelsPatch_579075; projectId: string;
+          modelId: string; datasetId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## bigqueryModelsPatch
   ## Patch specific fields in the specified model.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Required. Dataset ID of the model to patch.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Required. Project ID of the model to patch.
-  ##   modelId: string (required)
-  ##          : Required. Model ID of the model to patch.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589191 = newJObject()
-  var query_589192 = newJObject()
-  var body_589193 = newJObject()
-  add(query_589192, "fields", newJString(fields))
-  add(query_589192, "quotaUser", newJString(quotaUser))
-  add(query_589192, "alt", newJString(alt))
-  add(query_589192, "oauth_token", newJString(oauthToken))
-  add(query_589192, "userIp", newJString(userIp))
-  add(path_589191, "datasetId", newJString(datasetId))
-  add(query_589192, "key", newJString(key))
-  add(path_589191, "projectId", newJString(projectId))
-  add(path_589191, "modelId", newJString(modelId))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Required. Project ID of the model to patch.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   modelId: string (required)
+  ##          : Required. Model ID of the model to patch.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Required. Dataset ID of the model to patch.
+  var path_579091 = newJObject()
+  var query_579092 = newJObject()
+  var body_579093 = newJObject()
+  add(query_579092, "key", newJString(key))
+  add(query_579092, "prettyPrint", newJBool(prettyPrint))
+  add(query_579092, "oauth_token", newJString(oauthToken))
+  add(path_579091, "projectId", newJString(projectId))
+  add(query_579092, "alt", newJString(alt))
+  add(query_579092, "userIp", newJString(userIp))
+  add(query_579092, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589193 = body
-  add(query_589192, "prettyPrint", newJBool(prettyPrint))
-  result = call_589190.call(path_589191, query_589192, nil, nil, body_589193)
+    body_579093 = body
+  add(path_579091, "modelId", newJString(modelId))
+  add(query_579092, "fields", newJString(fields))
+  add(path_579091, "datasetId", newJString(datasetId))
+  result = call_579090.call(path_579091, query_579092, nil, nil, body_579093)
 
-var bigqueryModelsPatch* = Call_BigqueryModelsPatch_589175(
+var bigqueryModelsPatch* = Call_BigqueryModelsPatch_579075(
     name: "bigqueryModelsPatch", meth: HttpMethod.HttpPatch,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/models/{modelId}",
-    validator: validate_BigqueryModelsPatch_589176, base: "/bigquery/v2",
-    url: url_BigqueryModelsPatch_589177, schemes: {Scheme.Https})
+    validator: validate_BigqueryModelsPatch_579076, base: "/bigquery/v2",
+    url: url_BigqueryModelsPatch_579077, schemes: {Scheme.Https})
 type
-  Call_BigqueryModelsDelete_589158 = ref object of OpenApiRestCall_588466
-proc url_BigqueryModelsDelete_589160(protocol: Scheme; host: string; base: string;
+  Call_BigqueryModelsDelete_579058 = ref object of OpenApiRestCall_578364
+proc url_BigqueryModelsDelete_579060(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1812,88 +1816,88 @@ proc url_BigqueryModelsDelete_589160(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryModelsDelete_589159(path: JsonNode; query: JsonNode;
+proc validate_BigqueryModelsDelete_579059(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the model specified by modelId from the dataset.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Required. Dataset ID of the model to delete.
   ##   projectId: JString (required)
   ##            : Required. Project ID of the model to delete.
   ##   modelId: JString (required)
   ##          : Required. Model ID of the model to delete.
+  ##   datasetId: JString (required)
+  ##            : Required. Dataset ID of the model to delete.
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589161 = path.getOrDefault("datasetId")
-  valid_589161 = validateParameter(valid_589161, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579061 = path.getOrDefault("projectId")
+  valid_579061 = validateParameter(valid_579061, JString, required = true,
                                  default = nil)
-  if valid_589161 != nil:
-    section.add "datasetId", valid_589161
-  var valid_589162 = path.getOrDefault("projectId")
-  valid_589162 = validateParameter(valid_589162, JString, required = true,
+  if valid_579061 != nil:
+    section.add "projectId", valid_579061
+  var valid_579062 = path.getOrDefault("modelId")
+  valid_579062 = validateParameter(valid_579062, JString, required = true,
                                  default = nil)
-  if valid_589162 != nil:
-    section.add "projectId", valid_589162
-  var valid_589163 = path.getOrDefault("modelId")
-  valid_589163 = validateParameter(valid_589163, JString, required = true,
+  if valid_579062 != nil:
+    section.add "modelId", valid_579062
+  var valid_579063 = path.getOrDefault("datasetId")
+  valid_579063 = validateParameter(valid_579063, JString, required = true,
                                  default = nil)
-  if valid_589163 != nil:
-    section.add "modelId", valid_589163
+  if valid_579063 != nil:
+    section.add "datasetId", valid_579063
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589164 = query.getOrDefault("fields")
-  valid_589164 = validateParameter(valid_589164, JString, required = false,
+  var valid_579064 = query.getOrDefault("key")
+  valid_579064 = validateParameter(valid_579064, JString, required = false,
                                  default = nil)
-  if valid_589164 != nil:
-    section.add "fields", valid_589164
-  var valid_589165 = query.getOrDefault("quotaUser")
-  valid_589165 = validateParameter(valid_589165, JString, required = false,
-                                 default = nil)
-  if valid_589165 != nil:
-    section.add "quotaUser", valid_589165
-  var valid_589166 = query.getOrDefault("alt")
-  valid_589166 = validateParameter(valid_589166, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589166 != nil:
-    section.add "alt", valid_589166
-  var valid_589167 = query.getOrDefault("oauth_token")
-  valid_589167 = validateParameter(valid_589167, JString, required = false,
-                                 default = nil)
-  if valid_589167 != nil:
-    section.add "oauth_token", valid_589167
-  var valid_589168 = query.getOrDefault("userIp")
-  valid_589168 = validateParameter(valid_589168, JString, required = false,
-                                 default = nil)
-  if valid_589168 != nil:
-    section.add "userIp", valid_589168
-  var valid_589169 = query.getOrDefault("key")
-  valid_589169 = validateParameter(valid_589169, JString, required = false,
-                                 default = nil)
-  if valid_589169 != nil:
-    section.add "key", valid_589169
-  var valid_589170 = query.getOrDefault("prettyPrint")
-  valid_589170 = validateParameter(valid_589170, JBool, required = false,
+  if valid_579064 != nil:
+    section.add "key", valid_579064
+  var valid_579065 = query.getOrDefault("prettyPrint")
+  valid_579065 = validateParameter(valid_579065, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589170 != nil:
-    section.add "prettyPrint", valid_589170
+  if valid_579065 != nil:
+    section.add "prettyPrint", valid_579065
+  var valid_579066 = query.getOrDefault("oauth_token")
+  valid_579066 = validateParameter(valid_579066, JString, required = false,
+                                 default = nil)
+  if valid_579066 != nil:
+    section.add "oauth_token", valid_579066
+  var valid_579067 = query.getOrDefault("alt")
+  valid_579067 = validateParameter(valid_579067, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579067 != nil:
+    section.add "alt", valid_579067
+  var valid_579068 = query.getOrDefault("userIp")
+  valid_579068 = validateParameter(valid_579068, JString, required = false,
+                                 default = nil)
+  if valid_579068 != nil:
+    section.add "userIp", valid_579068
+  var valid_579069 = query.getOrDefault("quotaUser")
+  valid_579069 = validateParameter(valid_579069, JString, required = false,
+                                 default = nil)
+  if valid_579069 != nil:
+    section.add "quotaUser", valid_579069
+  var valid_579070 = query.getOrDefault("fields")
+  valid_579070 = validateParameter(valid_579070, JString, required = false,
+                                 default = nil)
+  if valid_579070 != nil:
+    section.add "fields", valid_579070
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1902,68 +1906,68 @@ proc validate_BigqueryModelsDelete_589159(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589171: Call_BigqueryModelsDelete_589158; path: JsonNode;
+proc call*(call_579071: Call_BigqueryModelsDelete_579058; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes the model specified by modelId from the dataset.
   ## 
-  let valid = call_589171.validator(path, query, header, formData, body)
-  let scheme = call_589171.pickScheme
+  let valid = call_579071.validator(path, query, header, formData, body)
+  let scheme = call_579071.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589171.url(scheme.get, call_589171.host, call_589171.base,
-                         call_589171.route, valid.getOrDefault("path"),
+  let url = call_579071.url(scheme.get, call_579071.host, call_579071.base,
+                         call_579071.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589171, url, valid)
+  result = hook(call_579071, url, valid)
 
-proc call*(call_589172: Call_BigqueryModelsDelete_589158; datasetId: string;
-          projectId: string; modelId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579072: Call_BigqueryModelsDelete_579058; projectId: string;
+          modelId: string; datasetId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## bigqueryModelsDelete
   ## Deletes the model specified by modelId from the dataset.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Required. Dataset ID of the model to delete.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Required. Project ID of the model to delete.
-  ##   modelId: string (required)
-  ##          : Required. Model ID of the model to delete.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589173 = newJObject()
-  var query_589174 = newJObject()
-  add(query_589174, "fields", newJString(fields))
-  add(query_589174, "quotaUser", newJString(quotaUser))
-  add(query_589174, "alt", newJString(alt))
-  add(query_589174, "oauth_token", newJString(oauthToken))
-  add(query_589174, "userIp", newJString(userIp))
-  add(path_589173, "datasetId", newJString(datasetId))
-  add(query_589174, "key", newJString(key))
-  add(path_589173, "projectId", newJString(projectId))
-  add(path_589173, "modelId", newJString(modelId))
-  add(query_589174, "prettyPrint", newJBool(prettyPrint))
-  result = call_589172.call(path_589173, query_589174, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Required. Project ID of the model to delete.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   modelId: string (required)
+  ##          : Required. Model ID of the model to delete.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Required. Dataset ID of the model to delete.
+  var path_579073 = newJObject()
+  var query_579074 = newJObject()
+  add(query_579074, "key", newJString(key))
+  add(query_579074, "prettyPrint", newJBool(prettyPrint))
+  add(query_579074, "oauth_token", newJString(oauthToken))
+  add(path_579073, "projectId", newJString(projectId))
+  add(query_579074, "alt", newJString(alt))
+  add(query_579074, "userIp", newJString(userIp))
+  add(query_579074, "quotaUser", newJString(quotaUser))
+  add(path_579073, "modelId", newJString(modelId))
+  add(query_579074, "fields", newJString(fields))
+  add(path_579073, "datasetId", newJString(datasetId))
+  result = call_579072.call(path_579073, query_579074, nil, nil, nil)
 
-var bigqueryModelsDelete* = Call_BigqueryModelsDelete_589158(
+var bigqueryModelsDelete* = Call_BigqueryModelsDelete_579058(
     name: "bigqueryModelsDelete", meth: HttpMethod.HttpDelete,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/models/{modelId}",
-    validator: validate_BigqueryModelsDelete_589159, base: "/bigquery/v2",
-    url: url_BigqueryModelsDelete_589160, schemes: {Scheme.Https})
+    validator: validate_BigqueryModelsDelete_579059, base: "/bigquery/v2",
+    url: url_BigqueryModelsDelete_579060, schemes: {Scheme.Https})
 type
-  Call_BigqueryRoutinesInsert_589212 = ref object of OpenApiRestCall_588466
-proc url_BigqueryRoutinesInsert_589214(protocol: Scheme; host: string; base: string;
+  Call_BigqueryRoutinesInsert_579112 = ref object of OpenApiRestCall_578364
+proc url_BigqueryRoutinesInsert_579114(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1982,81 +1986,81 @@ proc url_BigqueryRoutinesInsert_589214(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryRoutinesInsert_589213(path: JsonNode; query: JsonNode;
+proc validate_BigqueryRoutinesInsert_579113(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new routine in the dataset.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Required. Dataset ID of the new routine
   ##   projectId: JString (required)
   ##            : Required. Project ID of the new routine
+  ##   datasetId: JString (required)
+  ##            : Required. Dataset ID of the new routine
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589215 = path.getOrDefault("datasetId")
-  valid_589215 = validateParameter(valid_589215, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579115 = path.getOrDefault("projectId")
+  valid_579115 = validateParameter(valid_579115, JString, required = true,
                                  default = nil)
-  if valid_589215 != nil:
-    section.add "datasetId", valid_589215
-  var valid_589216 = path.getOrDefault("projectId")
-  valid_589216 = validateParameter(valid_589216, JString, required = true,
+  if valid_579115 != nil:
+    section.add "projectId", valid_579115
+  var valid_579116 = path.getOrDefault("datasetId")
+  valid_579116 = validateParameter(valid_579116, JString, required = true,
                                  default = nil)
-  if valid_589216 != nil:
-    section.add "projectId", valid_589216
+  if valid_579116 != nil:
+    section.add "datasetId", valid_579116
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589217 = query.getOrDefault("fields")
-  valid_589217 = validateParameter(valid_589217, JString, required = false,
+  var valid_579117 = query.getOrDefault("key")
+  valid_579117 = validateParameter(valid_579117, JString, required = false,
                                  default = nil)
-  if valid_589217 != nil:
-    section.add "fields", valid_589217
-  var valid_589218 = query.getOrDefault("quotaUser")
-  valid_589218 = validateParameter(valid_589218, JString, required = false,
-                                 default = nil)
-  if valid_589218 != nil:
-    section.add "quotaUser", valid_589218
-  var valid_589219 = query.getOrDefault("alt")
-  valid_589219 = validateParameter(valid_589219, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589219 != nil:
-    section.add "alt", valid_589219
-  var valid_589220 = query.getOrDefault("oauth_token")
-  valid_589220 = validateParameter(valid_589220, JString, required = false,
-                                 default = nil)
-  if valid_589220 != nil:
-    section.add "oauth_token", valid_589220
-  var valid_589221 = query.getOrDefault("userIp")
-  valid_589221 = validateParameter(valid_589221, JString, required = false,
-                                 default = nil)
-  if valid_589221 != nil:
-    section.add "userIp", valid_589221
-  var valid_589222 = query.getOrDefault("key")
-  valid_589222 = validateParameter(valid_589222, JString, required = false,
-                                 default = nil)
-  if valid_589222 != nil:
-    section.add "key", valid_589222
-  var valid_589223 = query.getOrDefault("prettyPrint")
-  valid_589223 = validateParameter(valid_589223, JBool, required = false,
+  if valid_579117 != nil:
+    section.add "key", valid_579117
+  var valid_579118 = query.getOrDefault("prettyPrint")
+  valid_579118 = validateParameter(valid_579118, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589223 != nil:
-    section.add "prettyPrint", valid_589223
+  if valid_579118 != nil:
+    section.add "prettyPrint", valid_579118
+  var valid_579119 = query.getOrDefault("oauth_token")
+  valid_579119 = validateParameter(valid_579119, JString, required = false,
+                                 default = nil)
+  if valid_579119 != nil:
+    section.add "oauth_token", valid_579119
+  var valid_579120 = query.getOrDefault("alt")
+  valid_579120 = validateParameter(valid_579120, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579120 != nil:
+    section.add "alt", valid_579120
+  var valid_579121 = query.getOrDefault("userIp")
+  valid_579121 = validateParameter(valid_579121, JString, required = false,
+                                 default = nil)
+  if valid_579121 != nil:
+    section.add "userIp", valid_579121
+  var valid_579122 = query.getOrDefault("quotaUser")
+  valid_579122 = validateParameter(valid_579122, JString, required = false,
+                                 default = nil)
+  if valid_579122 != nil:
+    section.add "quotaUser", valid_579122
+  var valid_579123 = query.getOrDefault("fields")
+  valid_579123 = validateParameter(valid_579123, JString, required = false,
+                                 default = nil)
+  if valid_579123 != nil:
+    section.add "fields", valid_579123
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2068,69 +2072,69 @@ proc validate_BigqueryRoutinesInsert_589213(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589225: Call_BigqueryRoutinesInsert_589212; path: JsonNode;
+proc call*(call_579125: Call_BigqueryRoutinesInsert_579112; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new routine in the dataset.
   ## 
-  let valid = call_589225.validator(path, query, header, formData, body)
-  let scheme = call_589225.pickScheme
+  let valid = call_579125.validator(path, query, header, formData, body)
+  let scheme = call_579125.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589225.url(scheme.get, call_589225.host, call_589225.base,
-                         call_589225.route, valid.getOrDefault("path"),
+  let url = call_579125.url(scheme.get, call_579125.host, call_579125.base,
+                         call_579125.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589225, url, valid)
+  result = hook(call_579125, url, valid)
 
-proc call*(call_589226: Call_BigqueryRoutinesInsert_589212; datasetId: string;
-          projectId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579126: Call_BigqueryRoutinesInsert_579112; projectId: string;
+          datasetId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## bigqueryRoutinesInsert
   ## Creates a new routine in the dataset.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Required. Dataset ID of the new routine
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Required. Project ID of the new routine
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589227 = newJObject()
-  var query_589228 = newJObject()
-  var body_589229 = newJObject()
-  add(query_589228, "fields", newJString(fields))
-  add(query_589228, "quotaUser", newJString(quotaUser))
-  add(query_589228, "alt", newJString(alt))
-  add(query_589228, "oauth_token", newJString(oauthToken))
-  add(query_589228, "userIp", newJString(userIp))
-  add(path_589227, "datasetId", newJString(datasetId))
-  add(query_589228, "key", newJString(key))
-  add(path_589227, "projectId", newJString(projectId))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Required. Project ID of the new routine
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Required. Dataset ID of the new routine
+  var path_579127 = newJObject()
+  var query_579128 = newJObject()
+  var body_579129 = newJObject()
+  add(query_579128, "key", newJString(key))
+  add(query_579128, "prettyPrint", newJBool(prettyPrint))
+  add(query_579128, "oauth_token", newJString(oauthToken))
+  add(path_579127, "projectId", newJString(projectId))
+  add(query_579128, "alt", newJString(alt))
+  add(query_579128, "userIp", newJString(userIp))
+  add(query_579128, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589229 = body
-  add(query_589228, "prettyPrint", newJBool(prettyPrint))
-  result = call_589226.call(path_589227, query_589228, nil, nil, body_589229)
+    body_579129 = body
+  add(query_579128, "fields", newJString(fields))
+  add(path_579127, "datasetId", newJString(datasetId))
+  result = call_579126.call(path_579127, query_579128, nil, nil, body_579129)
 
-var bigqueryRoutinesInsert* = Call_BigqueryRoutinesInsert_589212(
+var bigqueryRoutinesInsert* = Call_BigqueryRoutinesInsert_579112(
     name: "bigqueryRoutinesInsert", meth: HttpMethod.HttpPost,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/routines",
-    validator: validate_BigqueryRoutinesInsert_589213, base: "/bigquery/v2",
-    url: url_BigqueryRoutinesInsert_589214, schemes: {Scheme.Https})
+    validator: validate_BigqueryRoutinesInsert_579113, base: "/bigquery/v2",
+    url: url_BigqueryRoutinesInsert_579114, schemes: {Scheme.Https})
 type
-  Call_BigqueryRoutinesList_589194 = ref object of OpenApiRestCall_588466
-proc url_BigqueryRoutinesList_589196(protocol: Scheme; host: string; base: string;
+  Call_BigqueryRoutinesList_579094 = ref object of OpenApiRestCall_578364
+proc url_BigqueryRoutinesList_579096(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2149,7 +2153,7 @@ proc url_BigqueryRoutinesList_589196(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryRoutinesList_589195(path: JsonNode; query: JsonNode;
+proc validate_BigqueryRoutinesList_579095(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all routines in the specified dataset. Requires the READER dataset
   ## role.
@@ -2157,89 +2161,89 @@ proc validate_BigqueryRoutinesList_589195(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Required. Dataset ID of the routines to list
   ##   projectId: JString (required)
   ##            : Required. Project ID of the routines to list
+  ##   datasetId: JString (required)
+  ##            : Required. Dataset ID of the routines to list
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589197 = path.getOrDefault("datasetId")
-  valid_589197 = validateParameter(valid_589197, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579097 = path.getOrDefault("projectId")
+  valid_579097 = validateParameter(valid_579097, JString, required = true,
                                  default = nil)
-  if valid_589197 != nil:
-    section.add "datasetId", valid_589197
-  var valid_589198 = path.getOrDefault("projectId")
-  valid_589198 = validateParameter(valid_589198, JString, required = true,
+  if valid_579097 != nil:
+    section.add "projectId", valid_579097
+  var valid_579098 = path.getOrDefault("datasetId")
+  valid_579098 = validateParameter(valid_579098, JString, required = true,
                                  default = nil)
-  if valid_589198 != nil:
-    section.add "projectId", valid_589198
+  if valid_579098 != nil:
+    section.add "datasetId", valid_579098
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Page token, returned by a previous call, to request the next page of
-  ## results
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of results to return in a single response page.
-  ## Leverage the page tokens to iterate through the entire collection.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : Page token, returned by a previous call, to request the next page of
+  ## results
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : The maximum number of results to return in a single response page.
+  ## Leverage the page tokens to iterate through the entire collection.
   section = newJObject()
-  var valid_589199 = query.getOrDefault("fields")
-  valid_589199 = validateParameter(valid_589199, JString, required = false,
+  var valid_579099 = query.getOrDefault("key")
+  valid_579099 = validateParameter(valid_579099, JString, required = false,
                                  default = nil)
-  if valid_589199 != nil:
-    section.add "fields", valid_589199
-  var valid_589200 = query.getOrDefault("pageToken")
-  valid_589200 = validateParameter(valid_589200, JString, required = false,
-                                 default = nil)
-  if valid_589200 != nil:
-    section.add "pageToken", valid_589200
-  var valid_589201 = query.getOrDefault("quotaUser")
-  valid_589201 = validateParameter(valid_589201, JString, required = false,
-                                 default = nil)
-  if valid_589201 != nil:
-    section.add "quotaUser", valid_589201
-  var valid_589202 = query.getOrDefault("alt")
-  valid_589202 = validateParameter(valid_589202, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589202 != nil:
-    section.add "alt", valid_589202
-  var valid_589203 = query.getOrDefault("oauth_token")
-  valid_589203 = validateParameter(valid_589203, JString, required = false,
-                                 default = nil)
-  if valid_589203 != nil:
-    section.add "oauth_token", valid_589203
-  var valid_589204 = query.getOrDefault("userIp")
-  valid_589204 = validateParameter(valid_589204, JString, required = false,
-                                 default = nil)
-  if valid_589204 != nil:
-    section.add "userIp", valid_589204
-  var valid_589205 = query.getOrDefault("maxResults")
-  valid_589205 = validateParameter(valid_589205, JInt, required = false, default = nil)
-  if valid_589205 != nil:
-    section.add "maxResults", valid_589205
-  var valid_589206 = query.getOrDefault("key")
-  valid_589206 = validateParameter(valid_589206, JString, required = false,
-                                 default = nil)
-  if valid_589206 != nil:
-    section.add "key", valid_589206
-  var valid_589207 = query.getOrDefault("prettyPrint")
-  valid_589207 = validateParameter(valid_589207, JBool, required = false,
+  if valid_579099 != nil:
+    section.add "key", valid_579099
+  var valid_579100 = query.getOrDefault("prettyPrint")
+  valid_579100 = validateParameter(valid_579100, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589207 != nil:
-    section.add "prettyPrint", valid_589207
+  if valid_579100 != nil:
+    section.add "prettyPrint", valid_579100
+  var valid_579101 = query.getOrDefault("oauth_token")
+  valid_579101 = validateParameter(valid_579101, JString, required = false,
+                                 default = nil)
+  if valid_579101 != nil:
+    section.add "oauth_token", valid_579101
+  var valid_579102 = query.getOrDefault("alt")
+  valid_579102 = validateParameter(valid_579102, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579102 != nil:
+    section.add "alt", valid_579102
+  var valid_579103 = query.getOrDefault("userIp")
+  valid_579103 = validateParameter(valid_579103, JString, required = false,
+                                 default = nil)
+  if valid_579103 != nil:
+    section.add "userIp", valid_579103
+  var valid_579104 = query.getOrDefault("quotaUser")
+  valid_579104 = validateParameter(valid_579104, JString, required = false,
+                                 default = nil)
+  if valid_579104 != nil:
+    section.add "quotaUser", valid_579104
+  var valid_579105 = query.getOrDefault("pageToken")
+  valid_579105 = validateParameter(valid_579105, JString, required = false,
+                                 default = nil)
+  if valid_579105 != nil:
+    section.add "pageToken", valid_579105
+  var valid_579106 = query.getOrDefault("fields")
+  valid_579106 = validateParameter(valid_579106, JString, required = false,
+                                 default = nil)
+  if valid_579106 != nil:
+    section.add "fields", valid_579106
+  var valid_579107 = query.getOrDefault("maxResults")
+  valid_579107 = validateParameter(valid_579107, JInt, required = false, default = nil)
+  if valid_579107 != nil:
+    section.add "maxResults", valid_579107
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2248,76 +2252,76 @@ proc validate_BigqueryRoutinesList_589195(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589208: Call_BigqueryRoutinesList_589194; path: JsonNode;
+proc call*(call_579108: Call_BigqueryRoutinesList_579094; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all routines in the specified dataset. Requires the READER dataset
   ## role.
   ## 
-  let valid = call_589208.validator(path, query, header, formData, body)
-  let scheme = call_589208.pickScheme
+  let valid = call_579108.validator(path, query, header, formData, body)
+  let scheme = call_579108.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589208.url(scheme.get, call_589208.host, call_589208.base,
-                         call_589208.route, valid.getOrDefault("path"),
+  let url = call_579108.url(scheme.get, call_579108.host, call_579108.base,
+                         call_579108.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589208, url, valid)
+  result = hook(call_579108, url, valid)
 
-proc call*(call_589209: Call_BigqueryRoutinesList_589194; datasetId: string;
-          projectId: string; fields: string = ""; pageToken: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; maxResults: int = 0; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579109: Call_BigqueryRoutinesList_579094; projectId: string;
+          datasetId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; pageToken: string = ""; fields: string = "";
+          maxResults: int = 0): Recallable =
   ## bigqueryRoutinesList
   ## Lists all routines in the specified dataset. Requires the READER dataset
   ## role.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Required. Project ID of the routines to list
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   pageToken: string
   ##            : Page token, returned by a previous call, to request the next page of
   ## results
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Required. Dataset ID of the routines to list
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: int
   ##             : The maximum number of results to return in a single response page.
   ## Leverage the page tokens to iterate through the entire collection.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Required. Project ID of the routines to list
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589210 = newJObject()
-  var query_589211 = newJObject()
-  add(query_589211, "fields", newJString(fields))
-  add(query_589211, "pageToken", newJString(pageToken))
-  add(query_589211, "quotaUser", newJString(quotaUser))
-  add(query_589211, "alt", newJString(alt))
-  add(query_589211, "oauth_token", newJString(oauthToken))
-  add(query_589211, "userIp", newJString(userIp))
-  add(path_589210, "datasetId", newJString(datasetId))
-  add(query_589211, "maxResults", newJInt(maxResults))
-  add(query_589211, "key", newJString(key))
-  add(path_589210, "projectId", newJString(projectId))
-  add(query_589211, "prettyPrint", newJBool(prettyPrint))
-  result = call_589209.call(path_589210, query_589211, nil, nil, nil)
+  ##   datasetId: string (required)
+  ##            : Required. Dataset ID of the routines to list
+  var path_579110 = newJObject()
+  var query_579111 = newJObject()
+  add(query_579111, "key", newJString(key))
+  add(query_579111, "prettyPrint", newJBool(prettyPrint))
+  add(query_579111, "oauth_token", newJString(oauthToken))
+  add(path_579110, "projectId", newJString(projectId))
+  add(query_579111, "alt", newJString(alt))
+  add(query_579111, "userIp", newJString(userIp))
+  add(query_579111, "quotaUser", newJString(quotaUser))
+  add(query_579111, "pageToken", newJString(pageToken))
+  add(query_579111, "fields", newJString(fields))
+  add(query_579111, "maxResults", newJInt(maxResults))
+  add(path_579110, "datasetId", newJString(datasetId))
+  result = call_579109.call(path_579110, query_579111, nil, nil, nil)
 
-var bigqueryRoutinesList* = Call_BigqueryRoutinesList_589194(
+var bigqueryRoutinesList* = Call_BigqueryRoutinesList_579094(
     name: "bigqueryRoutinesList", meth: HttpMethod.HttpGet,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/routines",
-    validator: validate_BigqueryRoutinesList_589195, base: "/bigquery/v2",
-    url: url_BigqueryRoutinesList_589196, schemes: {Scheme.Https})
+    validator: validate_BigqueryRoutinesList_579095, base: "/bigquery/v2",
+    url: url_BigqueryRoutinesList_579096, schemes: {Scheme.Https})
 type
-  Call_BigqueryRoutinesUpdate_589248 = ref object of OpenApiRestCall_588466
-proc url_BigqueryRoutinesUpdate_589250(protocol: Scheme; host: string; base: string;
+  Call_BigqueryRoutinesUpdate_579148 = ref object of OpenApiRestCall_578364
+proc url_BigqueryRoutinesUpdate_579150(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2338,7 +2342,7 @@ proc url_BigqueryRoutinesUpdate_589250(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryRoutinesUpdate_589249(path: JsonNode; query: JsonNode;
+proc validate_BigqueryRoutinesUpdate_579149(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates information in an existing routine. The update method replaces the
   ## entire Routine resource.
@@ -2346,81 +2350,81 @@ proc validate_BigqueryRoutinesUpdate_589249(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Required. Dataset ID of the routine to update
   ##   projectId: JString (required)
   ##            : Required. Project ID of the routine to update
   ##   routineId: JString (required)
   ##            : Required. Routine ID of the routine to update
+  ##   datasetId: JString (required)
+  ##            : Required. Dataset ID of the routine to update
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589251 = path.getOrDefault("datasetId")
-  valid_589251 = validateParameter(valid_589251, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579151 = path.getOrDefault("projectId")
+  valid_579151 = validateParameter(valid_579151, JString, required = true,
                                  default = nil)
-  if valid_589251 != nil:
-    section.add "datasetId", valid_589251
-  var valid_589252 = path.getOrDefault("projectId")
-  valid_589252 = validateParameter(valid_589252, JString, required = true,
+  if valid_579151 != nil:
+    section.add "projectId", valid_579151
+  var valid_579152 = path.getOrDefault("routineId")
+  valid_579152 = validateParameter(valid_579152, JString, required = true,
                                  default = nil)
-  if valid_589252 != nil:
-    section.add "projectId", valid_589252
-  var valid_589253 = path.getOrDefault("routineId")
-  valid_589253 = validateParameter(valid_589253, JString, required = true,
+  if valid_579152 != nil:
+    section.add "routineId", valid_579152
+  var valid_579153 = path.getOrDefault("datasetId")
+  valid_579153 = validateParameter(valid_579153, JString, required = true,
                                  default = nil)
-  if valid_589253 != nil:
-    section.add "routineId", valid_589253
+  if valid_579153 != nil:
+    section.add "datasetId", valid_579153
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589254 = query.getOrDefault("fields")
-  valid_589254 = validateParameter(valid_589254, JString, required = false,
+  var valid_579154 = query.getOrDefault("key")
+  valid_579154 = validateParameter(valid_579154, JString, required = false,
                                  default = nil)
-  if valid_589254 != nil:
-    section.add "fields", valid_589254
-  var valid_589255 = query.getOrDefault("quotaUser")
-  valid_589255 = validateParameter(valid_589255, JString, required = false,
-                                 default = nil)
-  if valid_589255 != nil:
-    section.add "quotaUser", valid_589255
-  var valid_589256 = query.getOrDefault("alt")
-  valid_589256 = validateParameter(valid_589256, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589256 != nil:
-    section.add "alt", valid_589256
-  var valid_589257 = query.getOrDefault("oauth_token")
-  valid_589257 = validateParameter(valid_589257, JString, required = false,
-                                 default = nil)
-  if valid_589257 != nil:
-    section.add "oauth_token", valid_589257
-  var valid_589258 = query.getOrDefault("userIp")
-  valid_589258 = validateParameter(valid_589258, JString, required = false,
-                                 default = nil)
-  if valid_589258 != nil:
-    section.add "userIp", valid_589258
-  var valid_589259 = query.getOrDefault("key")
-  valid_589259 = validateParameter(valid_589259, JString, required = false,
-                                 default = nil)
-  if valid_589259 != nil:
-    section.add "key", valid_589259
-  var valid_589260 = query.getOrDefault("prettyPrint")
-  valid_589260 = validateParameter(valid_589260, JBool, required = false,
+  if valid_579154 != nil:
+    section.add "key", valid_579154
+  var valid_579155 = query.getOrDefault("prettyPrint")
+  valid_579155 = validateParameter(valid_579155, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589260 != nil:
-    section.add "prettyPrint", valid_589260
+  if valid_579155 != nil:
+    section.add "prettyPrint", valid_579155
+  var valid_579156 = query.getOrDefault("oauth_token")
+  valid_579156 = validateParameter(valid_579156, JString, required = false,
+                                 default = nil)
+  if valid_579156 != nil:
+    section.add "oauth_token", valid_579156
+  var valid_579157 = query.getOrDefault("alt")
+  valid_579157 = validateParameter(valid_579157, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579157 != nil:
+    section.add "alt", valid_579157
+  var valid_579158 = query.getOrDefault("userIp")
+  valid_579158 = validateParameter(valid_579158, JString, required = false,
+                                 default = nil)
+  if valid_579158 != nil:
+    section.add "userIp", valid_579158
+  var valid_579159 = query.getOrDefault("quotaUser")
+  valid_579159 = validateParameter(valid_579159, JString, required = false,
+                                 default = nil)
+  if valid_579159 != nil:
+    section.add "quotaUser", valid_579159
+  var valid_579160 = query.getOrDefault("fields")
+  valid_579160 = validateParameter(valid_579160, JString, required = false,
+                                 default = nil)
+  if valid_579160 != nil:
+    section.add "fields", valid_579160
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2432,75 +2436,75 @@ proc validate_BigqueryRoutinesUpdate_589249(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589262: Call_BigqueryRoutinesUpdate_589248; path: JsonNode;
+proc call*(call_579162: Call_BigqueryRoutinesUpdate_579148; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates information in an existing routine. The update method replaces the
   ## entire Routine resource.
   ## 
-  let valid = call_589262.validator(path, query, header, formData, body)
-  let scheme = call_589262.pickScheme
+  let valid = call_579162.validator(path, query, header, formData, body)
+  let scheme = call_579162.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589262.url(scheme.get, call_589262.host, call_589262.base,
-                         call_589262.route, valid.getOrDefault("path"),
+  let url = call_579162.url(scheme.get, call_579162.host, call_579162.base,
+                         call_579162.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589262, url, valid)
+  result = hook(call_579162, url, valid)
 
-proc call*(call_589263: Call_BigqueryRoutinesUpdate_589248; datasetId: string;
-          projectId: string; routineId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579163: Call_BigqueryRoutinesUpdate_579148; projectId: string;
+          routineId: string; datasetId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## bigqueryRoutinesUpdate
   ## Updates information in an existing routine. The update method replaces the
   ## entire Routine resource.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Required. Dataset ID of the routine to update
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   projectId: string (required)
   ##            : Required. Project ID of the routine to update
   ##   routineId: string (required)
   ##            : Required. Routine ID of the routine to update
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589264 = newJObject()
-  var query_589265 = newJObject()
-  var body_589266 = newJObject()
-  add(query_589265, "fields", newJString(fields))
-  add(query_589265, "quotaUser", newJString(quotaUser))
-  add(query_589265, "alt", newJString(alt))
-  add(query_589265, "oauth_token", newJString(oauthToken))
-  add(query_589265, "userIp", newJString(userIp))
-  add(path_589264, "datasetId", newJString(datasetId))
-  add(query_589265, "key", newJString(key))
-  add(path_589264, "projectId", newJString(projectId))
-  add(path_589264, "routineId", newJString(routineId))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Required. Dataset ID of the routine to update
+  var path_579164 = newJObject()
+  var query_579165 = newJObject()
+  var body_579166 = newJObject()
+  add(query_579165, "key", newJString(key))
+  add(query_579165, "prettyPrint", newJBool(prettyPrint))
+  add(query_579165, "oauth_token", newJString(oauthToken))
+  add(path_579164, "projectId", newJString(projectId))
+  add(path_579164, "routineId", newJString(routineId))
+  add(query_579165, "alt", newJString(alt))
+  add(query_579165, "userIp", newJString(userIp))
+  add(query_579165, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589266 = body
-  add(query_589265, "prettyPrint", newJBool(prettyPrint))
-  result = call_589263.call(path_589264, query_589265, nil, nil, body_589266)
+    body_579166 = body
+  add(query_579165, "fields", newJString(fields))
+  add(path_579164, "datasetId", newJString(datasetId))
+  result = call_579163.call(path_579164, query_579165, nil, nil, body_579166)
 
-var bigqueryRoutinesUpdate* = Call_BigqueryRoutinesUpdate_589248(
+var bigqueryRoutinesUpdate* = Call_BigqueryRoutinesUpdate_579148(
     name: "bigqueryRoutinesUpdate", meth: HttpMethod.HttpPut,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/routines/{routineId}",
-    validator: validate_BigqueryRoutinesUpdate_589249, base: "/bigquery/v2",
-    url: url_BigqueryRoutinesUpdate_589250, schemes: {Scheme.Https})
+    validator: validate_BigqueryRoutinesUpdate_579149, base: "/bigquery/v2",
+    url: url_BigqueryRoutinesUpdate_579150, schemes: {Scheme.Https})
 type
-  Call_BigqueryRoutinesGet_589230 = ref object of OpenApiRestCall_588466
-proc url_BigqueryRoutinesGet_589232(protocol: Scheme; host: string; base: string;
+  Call_BigqueryRoutinesGet_579130 = ref object of OpenApiRestCall_578364
+proc url_BigqueryRoutinesGet_579132(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2521,7 +2525,7 @@ proc url_BigqueryRoutinesGet_589232(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryRoutinesGet_589231(path: JsonNode; query: JsonNode;
+proc validate_BigqueryRoutinesGet_579131(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Gets the specified routine resource by routine ID.
@@ -2529,89 +2533,89 @@ proc validate_BigqueryRoutinesGet_589231(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Required. Dataset ID of the requested routine
   ##   projectId: JString (required)
   ##            : Required. Project ID of the requested routine
   ##   routineId: JString (required)
   ##            : Required. Routine ID of the requested routine
+  ##   datasetId: JString (required)
+  ##            : Required. Dataset ID of the requested routine
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589233 = path.getOrDefault("datasetId")
-  valid_589233 = validateParameter(valid_589233, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579133 = path.getOrDefault("projectId")
+  valid_579133 = validateParameter(valid_579133, JString, required = true,
                                  default = nil)
-  if valid_589233 != nil:
-    section.add "datasetId", valid_589233
-  var valid_589234 = path.getOrDefault("projectId")
-  valid_589234 = validateParameter(valid_589234, JString, required = true,
+  if valid_579133 != nil:
+    section.add "projectId", valid_579133
+  var valid_579134 = path.getOrDefault("routineId")
+  valid_579134 = validateParameter(valid_579134, JString, required = true,
                                  default = nil)
-  if valid_589234 != nil:
-    section.add "projectId", valid_589234
-  var valid_589235 = path.getOrDefault("routineId")
-  valid_589235 = validateParameter(valid_589235, JString, required = true,
+  if valid_579134 != nil:
+    section.add "routineId", valid_579134
+  var valid_579135 = path.getOrDefault("datasetId")
+  valid_579135 = validateParameter(valid_579135, JString, required = true,
                                  default = nil)
-  if valid_589235 != nil:
-    section.add "routineId", valid_589235
+  if valid_579135 != nil:
+    section.add "datasetId", valid_579135
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   fieldMask: JString
   ##            : If set, only the Routine fields in the field mask are returned in the
   ## response. If unset, all Routine fields are returned.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589236 = query.getOrDefault("fields")
-  valid_589236 = validateParameter(valid_589236, JString, required = false,
+  var valid_579136 = query.getOrDefault("key")
+  valid_579136 = validateParameter(valid_579136, JString, required = false,
                                  default = nil)
-  if valid_589236 != nil:
-    section.add "fields", valid_589236
-  var valid_589237 = query.getOrDefault("quotaUser")
-  valid_589237 = validateParameter(valid_589237, JString, required = false,
-                                 default = nil)
-  if valid_589237 != nil:
-    section.add "quotaUser", valid_589237
-  var valid_589238 = query.getOrDefault("alt")
-  valid_589238 = validateParameter(valid_589238, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589238 != nil:
-    section.add "alt", valid_589238
-  var valid_589239 = query.getOrDefault("oauth_token")
-  valid_589239 = validateParameter(valid_589239, JString, required = false,
-                                 default = nil)
-  if valid_589239 != nil:
-    section.add "oauth_token", valid_589239
-  var valid_589240 = query.getOrDefault("userIp")
-  valid_589240 = validateParameter(valid_589240, JString, required = false,
-                                 default = nil)
-  if valid_589240 != nil:
-    section.add "userIp", valid_589240
-  var valid_589241 = query.getOrDefault("key")
-  valid_589241 = validateParameter(valid_589241, JString, required = false,
-                                 default = nil)
-  if valid_589241 != nil:
-    section.add "key", valid_589241
-  var valid_589242 = query.getOrDefault("fieldMask")
-  valid_589242 = validateParameter(valid_589242, JString, required = false,
-                                 default = nil)
-  if valid_589242 != nil:
-    section.add "fieldMask", valid_589242
-  var valid_589243 = query.getOrDefault("prettyPrint")
-  valid_589243 = validateParameter(valid_589243, JBool, required = false,
+  if valid_579136 != nil:
+    section.add "key", valid_579136
+  var valid_579137 = query.getOrDefault("prettyPrint")
+  valid_579137 = validateParameter(valid_579137, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589243 != nil:
-    section.add "prettyPrint", valid_589243
+  if valid_579137 != nil:
+    section.add "prettyPrint", valid_579137
+  var valid_579138 = query.getOrDefault("oauth_token")
+  valid_579138 = validateParameter(valid_579138, JString, required = false,
+                                 default = nil)
+  if valid_579138 != nil:
+    section.add "oauth_token", valid_579138
+  var valid_579139 = query.getOrDefault("alt")
+  valid_579139 = validateParameter(valid_579139, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579139 != nil:
+    section.add "alt", valid_579139
+  var valid_579140 = query.getOrDefault("userIp")
+  valid_579140 = validateParameter(valid_579140, JString, required = false,
+                                 default = nil)
+  if valid_579140 != nil:
+    section.add "userIp", valid_579140
+  var valid_579141 = query.getOrDefault("quotaUser")
+  valid_579141 = validateParameter(valid_579141, JString, required = false,
+                                 default = nil)
+  if valid_579141 != nil:
+    section.add "quotaUser", valid_579141
+  var valid_579142 = query.getOrDefault("fieldMask")
+  valid_579142 = validateParameter(valid_579142, JString, required = false,
+                                 default = nil)
+  if valid_579142 != nil:
+    section.add "fieldMask", valid_579142
+  var valid_579143 = query.getOrDefault("fields")
+  valid_579143 = validateParameter(valid_579143, JString, required = false,
+                                 default = nil)
+  if valid_579143 != nil:
+    section.add "fields", valid_579143
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2620,73 +2624,73 @@ proc validate_BigqueryRoutinesGet_589231(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589244: Call_BigqueryRoutinesGet_589230; path: JsonNode;
+proc call*(call_579144: Call_BigqueryRoutinesGet_579130; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the specified routine resource by routine ID.
   ## 
-  let valid = call_589244.validator(path, query, header, formData, body)
-  let scheme = call_589244.pickScheme
+  let valid = call_579144.validator(path, query, header, formData, body)
+  let scheme = call_579144.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589244.url(scheme.get, call_589244.host, call_589244.base,
-                         call_589244.route, valid.getOrDefault("path"),
+  let url = call_579144.url(scheme.get, call_579144.host, call_579144.base,
+                         call_579144.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589244, url, valid)
+  result = hook(call_579144, url, valid)
 
-proc call*(call_589245: Call_BigqueryRoutinesGet_589230; datasetId: string;
-          projectId: string; routineId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; fieldMask: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579145: Call_BigqueryRoutinesGet_579130; projectId: string;
+          routineId: string; datasetId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fieldMask: string = "";
+          fields: string = ""): Recallable =
   ## bigqueryRoutinesGet
   ## Gets the specified routine resource by routine ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Required. Dataset ID of the requested routine
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   fieldMask: string
-  ##            : If set, only the Routine fields in the field mask are returned in the
-  ## response. If unset, all Routine fields are returned.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   projectId: string (required)
   ##            : Required. Project ID of the requested routine
   ##   routineId: string (required)
   ##            : Required. Routine ID of the requested routine
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589246 = newJObject()
-  var query_589247 = newJObject()
-  add(query_589247, "fields", newJString(fields))
-  add(query_589247, "quotaUser", newJString(quotaUser))
-  add(query_589247, "alt", newJString(alt))
-  add(query_589247, "oauth_token", newJString(oauthToken))
-  add(query_589247, "userIp", newJString(userIp))
-  add(path_589246, "datasetId", newJString(datasetId))
-  add(query_589247, "key", newJString(key))
-  add(query_589247, "fieldMask", newJString(fieldMask))
-  add(path_589246, "projectId", newJString(projectId))
-  add(path_589246, "routineId", newJString(routineId))
-  add(query_589247, "prettyPrint", newJBool(prettyPrint))
-  result = call_589245.call(path_589246, query_589247, nil, nil, nil)
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fieldMask: string
+  ##            : If set, only the Routine fields in the field mask are returned in the
+  ## response. If unset, all Routine fields are returned.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Required. Dataset ID of the requested routine
+  var path_579146 = newJObject()
+  var query_579147 = newJObject()
+  add(query_579147, "key", newJString(key))
+  add(query_579147, "prettyPrint", newJBool(prettyPrint))
+  add(query_579147, "oauth_token", newJString(oauthToken))
+  add(path_579146, "projectId", newJString(projectId))
+  add(path_579146, "routineId", newJString(routineId))
+  add(query_579147, "alt", newJString(alt))
+  add(query_579147, "userIp", newJString(userIp))
+  add(query_579147, "quotaUser", newJString(quotaUser))
+  add(query_579147, "fieldMask", newJString(fieldMask))
+  add(query_579147, "fields", newJString(fields))
+  add(path_579146, "datasetId", newJString(datasetId))
+  result = call_579145.call(path_579146, query_579147, nil, nil, nil)
 
-var bigqueryRoutinesGet* = Call_BigqueryRoutinesGet_589230(
+var bigqueryRoutinesGet* = Call_BigqueryRoutinesGet_579130(
     name: "bigqueryRoutinesGet", meth: HttpMethod.HttpGet,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/routines/{routineId}",
-    validator: validate_BigqueryRoutinesGet_589231, base: "/bigquery/v2",
-    url: url_BigqueryRoutinesGet_589232, schemes: {Scheme.Https})
+    validator: validate_BigqueryRoutinesGet_579131, base: "/bigquery/v2",
+    url: url_BigqueryRoutinesGet_579132, schemes: {Scheme.Https})
 type
-  Call_BigqueryRoutinesDelete_589267 = ref object of OpenApiRestCall_588466
-proc url_BigqueryRoutinesDelete_589269(protocol: Scheme; host: string; base: string;
+  Call_BigqueryRoutinesDelete_579167 = ref object of OpenApiRestCall_578364
+proc url_BigqueryRoutinesDelete_579169(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2707,88 +2711,88 @@ proc url_BigqueryRoutinesDelete_589269(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryRoutinesDelete_589268(path: JsonNode; query: JsonNode;
+proc validate_BigqueryRoutinesDelete_579168(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the routine specified by routineId from the dataset.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Required. Dataset ID of the routine to delete
   ##   projectId: JString (required)
   ##            : Required. Project ID of the routine to delete
   ##   routineId: JString (required)
   ##            : Required. Routine ID of the routine to delete
+  ##   datasetId: JString (required)
+  ##            : Required. Dataset ID of the routine to delete
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589270 = path.getOrDefault("datasetId")
-  valid_589270 = validateParameter(valid_589270, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579170 = path.getOrDefault("projectId")
+  valid_579170 = validateParameter(valid_579170, JString, required = true,
                                  default = nil)
-  if valid_589270 != nil:
-    section.add "datasetId", valid_589270
-  var valid_589271 = path.getOrDefault("projectId")
-  valid_589271 = validateParameter(valid_589271, JString, required = true,
+  if valid_579170 != nil:
+    section.add "projectId", valid_579170
+  var valid_579171 = path.getOrDefault("routineId")
+  valid_579171 = validateParameter(valid_579171, JString, required = true,
                                  default = nil)
-  if valid_589271 != nil:
-    section.add "projectId", valid_589271
-  var valid_589272 = path.getOrDefault("routineId")
-  valid_589272 = validateParameter(valid_589272, JString, required = true,
+  if valid_579171 != nil:
+    section.add "routineId", valid_579171
+  var valid_579172 = path.getOrDefault("datasetId")
+  valid_579172 = validateParameter(valid_579172, JString, required = true,
                                  default = nil)
-  if valid_589272 != nil:
-    section.add "routineId", valid_589272
+  if valid_579172 != nil:
+    section.add "datasetId", valid_579172
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589273 = query.getOrDefault("fields")
-  valid_589273 = validateParameter(valid_589273, JString, required = false,
+  var valid_579173 = query.getOrDefault("key")
+  valid_579173 = validateParameter(valid_579173, JString, required = false,
                                  default = nil)
-  if valid_589273 != nil:
-    section.add "fields", valid_589273
-  var valid_589274 = query.getOrDefault("quotaUser")
-  valid_589274 = validateParameter(valid_589274, JString, required = false,
-                                 default = nil)
-  if valid_589274 != nil:
-    section.add "quotaUser", valid_589274
-  var valid_589275 = query.getOrDefault("alt")
-  valid_589275 = validateParameter(valid_589275, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589275 != nil:
-    section.add "alt", valid_589275
-  var valid_589276 = query.getOrDefault("oauth_token")
-  valid_589276 = validateParameter(valid_589276, JString, required = false,
-                                 default = nil)
-  if valid_589276 != nil:
-    section.add "oauth_token", valid_589276
-  var valid_589277 = query.getOrDefault("userIp")
-  valid_589277 = validateParameter(valid_589277, JString, required = false,
-                                 default = nil)
-  if valid_589277 != nil:
-    section.add "userIp", valid_589277
-  var valid_589278 = query.getOrDefault("key")
-  valid_589278 = validateParameter(valid_589278, JString, required = false,
-                                 default = nil)
-  if valid_589278 != nil:
-    section.add "key", valid_589278
-  var valid_589279 = query.getOrDefault("prettyPrint")
-  valid_589279 = validateParameter(valid_589279, JBool, required = false,
+  if valid_579173 != nil:
+    section.add "key", valid_579173
+  var valid_579174 = query.getOrDefault("prettyPrint")
+  valid_579174 = validateParameter(valid_579174, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589279 != nil:
-    section.add "prettyPrint", valid_589279
+  if valid_579174 != nil:
+    section.add "prettyPrint", valid_579174
+  var valid_579175 = query.getOrDefault("oauth_token")
+  valid_579175 = validateParameter(valid_579175, JString, required = false,
+                                 default = nil)
+  if valid_579175 != nil:
+    section.add "oauth_token", valid_579175
+  var valid_579176 = query.getOrDefault("alt")
+  valid_579176 = validateParameter(valid_579176, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579176 != nil:
+    section.add "alt", valid_579176
+  var valid_579177 = query.getOrDefault("userIp")
+  valid_579177 = validateParameter(valid_579177, JString, required = false,
+                                 default = nil)
+  if valid_579177 != nil:
+    section.add "userIp", valid_579177
+  var valid_579178 = query.getOrDefault("quotaUser")
+  valid_579178 = validateParameter(valid_579178, JString, required = false,
+                                 default = nil)
+  if valid_579178 != nil:
+    section.add "quotaUser", valid_579178
+  var valid_579179 = query.getOrDefault("fields")
+  valid_579179 = validateParameter(valid_579179, JString, required = false,
+                                 default = nil)
+  if valid_579179 != nil:
+    section.add "fields", valid_579179
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2797,68 +2801,68 @@ proc validate_BigqueryRoutinesDelete_589268(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589280: Call_BigqueryRoutinesDelete_589267; path: JsonNode;
+proc call*(call_579180: Call_BigqueryRoutinesDelete_579167; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes the routine specified by routineId from the dataset.
   ## 
-  let valid = call_589280.validator(path, query, header, formData, body)
-  let scheme = call_589280.pickScheme
+  let valid = call_579180.validator(path, query, header, formData, body)
+  let scheme = call_579180.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589280.url(scheme.get, call_589280.host, call_589280.base,
-                         call_589280.route, valid.getOrDefault("path"),
+  let url = call_579180.url(scheme.get, call_579180.host, call_579180.base,
+                         call_579180.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589280, url, valid)
+  result = hook(call_579180, url, valid)
 
-proc call*(call_589281: Call_BigqueryRoutinesDelete_589267; datasetId: string;
-          projectId: string; routineId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579181: Call_BigqueryRoutinesDelete_579167; projectId: string;
+          routineId: string; datasetId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## bigqueryRoutinesDelete
   ## Deletes the routine specified by routineId from the dataset.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Required. Dataset ID of the routine to delete
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   projectId: string (required)
   ##            : Required. Project ID of the routine to delete
   ##   routineId: string (required)
   ##            : Required. Routine ID of the routine to delete
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589282 = newJObject()
-  var query_589283 = newJObject()
-  add(query_589283, "fields", newJString(fields))
-  add(query_589283, "quotaUser", newJString(quotaUser))
-  add(query_589283, "alt", newJString(alt))
-  add(query_589283, "oauth_token", newJString(oauthToken))
-  add(query_589283, "userIp", newJString(userIp))
-  add(path_589282, "datasetId", newJString(datasetId))
-  add(query_589283, "key", newJString(key))
-  add(path_589282, "projectId", newJString(projectId))
-  add(path_589282, "routineId", newJString(routineId))
-  add(query_589283, "prettyPrint", newJBool(prettyPrint))
-  result = call_589281.call(path_589282, query_589283, nil, nil, nil)
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Required. Dataset ID of the routine to delete
+  var path_579182 = newJObject()
+  var query_579183 = newJObject()
+  add(query_579183, "key", newJString(key))
+  add(query_579183, "prettyPrint", newJBool(prettyPrint))
+  add(query_579183, "oauth_token", newJString(oauthToken))
+  add(path_579182, "projectId", newJString(projectId))
+  add(path_579182, "routineId", newJString(routineId))
+  add(query_579183, "alt", newJString(alt))
+  add(query_579183, "userIp", newJString(userIp))
+  add(query_579183, "quotaUser", newJString(quotaUser))
+  add(query_579183, "fields", newJString(fields))
+  add(path_579182, "datasetId", newJString(datasetId))
+  result = call_579181.call(path_579182, query_579183, nil, nil, nil)
 
-var bigqueryRoutinesDelete* = Call_BigqueryRoutinesDelete_589267(
+var bigqueryRoutinesDelete* = Call_BigqueryRoutinesDelete_579167(
     name: "bigqueryRoutinesDelete", meth: HttpMethod.HttpDelete,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/routines/{routineId}",
-    validator: validate_BigqueryRoutinesDelete_589268, base: "/bigquery/v2",
-    url: url_BigqueryRoutinesDelete_589269, schemes: {Scheme.Https})
+    validator: validate_BigqueryRoutinesDelete_579168, base: "/bigquery/v2",
+    url: url_BigqueryRoutinesDelete_579169, schemes: {Scheme.Https})
 type
-  Call_BigqueryTablesInsert_589302 = ref object of OpenApiRestCall_588466
-proc url_BigqueryTablesInsert_589304(protocol: Scheme; host: string; base: string;
+  Call_BigqueryTablesInsert_579202 = ref object of OpenApiRestCall_578364
+proc url_BigqueryTablesInsert_579204(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2877,81 +2881,81 @@ proc url_BigqueryTablesInsert_589304(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryTablesInsert_589303(path: JsonNode; query: JsonNode;
+proc validate_BigqueryTablesInsert_579203(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new, empty table in the dataset.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Dataset ID of the new table
   ##   projectId: JString (required)
   ##            : Project ID of the new table
+  ##   datasetId: JString (required)
+  ##            : Dataset ID of the new table
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589305 = path.getOrDefault("datasetId")
-  valid_589305 = validateParameter(valid_589305, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579205 = path.getOrDefault("projectId")
+  valid_579205 = validateParameter(valid_579205, JString, required = true,
                                  default = nil)
-  if valid_589305 != nil:
-    section.add "datasetId", valid_589305
-  var valid_589306 = path.getOrDefault("projectId")
-  valid_589306 = validateParameter(valid_589306, JString, required = true,
+  if valid_579205 != nil:
+    section.add "projectId", valid_579205
+  var valid_579206 = path.getOrDefault("datasetId")
+  valid_579206 = validateParameter(valid_579206, JString, required = true,
                                  default = nil)
-  if valid_589306 != nil:
-    section.add "projectId", valid_589306
+  if valid_579206 != nil:
+    section.add "datasetId", valid_579206
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589307 = query.getOrDefault("fields")
-  valid_589307 = validateParameter(valid_589307, JString, required = false,
+  var valid_579207 = query.getOrDefault("key")
+  valid_579207 = validateParameter(valid_579207, JString, required = false,
                                  default = nil)
-  if valid_589307 != nil:
-    section.add "fields", valid_589307
-  var valid_589308 = query.getOrDefault("quotaUser")
-  valid_589308 = validateParameter(valid_589308, JString, required = false,
-                                 default = nil)
-  if valid_589308 != nil:
-    section.add "quotaUser", valid_589308
-  var valid_589309 = query.getOrDefault("alt")
-  valid_589309 = validateParameter(valid_589309, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589309 != nil:
-    section.add "alt", valid_589309
-  var valid_589310 = query.getOrDefault("oauth_token")
-  valid_589310 = validateParameter(valid_589310, JString, required = false,
-                                 default = nil)
-  if valid_589310 != nil:
-    section.add "oauth_token", valid_589310
-  var valid_589311 = query.getOrDefault("userIp")
-  valid_589311 = validateParameter(valid_589311, JString, required = false,
-                                 default = nil)
-  if valid_589311 != nil:
-    section.add "userIp", valid_589311
-  var valid_589312 = query.getOrDefault("key")
-  valid_589312 = validateParameter(valid_589312, JString, required = false,
-                                 default = nil)
-  if valid_589312 != nil:
-    section.add "key", valid_589312
-  var valid_589313 = query.getOrDefault("prettyPrint")
-  valid_589313 = validateParameter(valid_589313, JBool, required = false,
+  if valid_579207 != nil:
+    section.add "key", valid_579207
+  var valid_579208 = query.getOrDefault("prettyPrint")
+  valid_579208 = validateParameter(valid_579208, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589313 != nil:
-    section.add "prettyPrint", valid_589313
+  if valid_579208 != nil:
+    section.add "prettyPrint", valid_579208
+  var valid_579209 = query.getOrDefault("oauth_token")
+  valid_579209 = validateParameter(valid_579209, JString, required = false,
+                                 default = nil)
+  if valid_579209 != nil:
+    section.add "oauth_token", valid_579209
+  var valid_579210 = query.getOrDefault("alt")
+  valid_579210 = validateParameter(valid_579210, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579210 != nil:
+    section.add "alt", valid_579210
+  var valid_579211 = query.getOrDefault("userIp")
+  valid_579211 = validateParameter(valid_579211, JString, required = false,
+                                 default = nil)
+  if valid_579211 != nil:
+    section.add "userIp", valid_579211
+  var valid_579212 = query.getOrDefault("quotaUser")
+  valid_579212 = validateParameter(valid_579212, JString, required = false,
+                                 default = nil)
+  if valid_579212 != nil:
+    section.add "quotaUser", valid_579212
+  var valid_579213 = query.getOrDefault("fields")
+  valid_579213 = validateParameter(valid_579213, JString, required = false,
+                                 default = nil)
+  if valid_579213 != nil:
+    section.add "fields", valid_579213
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2963,69 +2967,69 @@ proc validate_BigqueryTablesInsert_589303(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589315: Call_BigqueryTablesInsert_589302; path: JsonNode;
+proc call*(call_579215: Call_BigqueryTablesInsert_579202; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new, empty table in the dataset.
   ## 
-  let valid = call_589315.validator(path, query, header, formData, body)
-  let scheme = call_589315.pickScheme
+  let valid = call_579215.validator(path, query, header, formData, body)
+  let scheme = call_579215.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589315.url(scheme.get, call_589315.host, call_589315.base,
-                         call_589315.route, valid.getOrDefault("path"),
+  let url = call_579215.url(scheme.get, call_579215.host, call_579215.base,
+                         call_579215.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589315, url, valid)
+  result = hook(call_579215, url, valid)
 
-proc call*(call_589316: Call_BigqueryTablesInsert_589302; datasetId: string;
-          projectId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579216: Call_BigqueryTablesInsert_579202; projectId: string;
+          datasetId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## bigqueryTablesInsert
   ## Creates a new, empty table in the dataset.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Dataset ID of the new table
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the new table
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589317 = newJObject()
-  var query_589318 = newJObject()
-  var body_589319 = newJObject()
-  add(query_589318, "fields", newJString(fields))
-  add(query_589318, "quotaUser", newJString(quotaUser))
-  add(query_589318, "alt", newJString(alt))
-  add(query_589318, "oauth_token", newJString(oauthToken))
-  add(query_589318, "userIp", newJString(userIp))
-  add(path_589317, "datasetId", newJString(datasetId))
-  add(query_589318, "key", newJString(key))
-  add(path_589317, "projectId", newJString(projectId))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the new table
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Dataset ID of the new table
+  var path_579217 = newJObject()
+  var query_579218 = newJObject()
+  var body_579219 = newJObject()
+  add(query_579218, "key", newJString(key))
+  add(query_579218, "prettyPrint", newJBool(prettyPrint))
+  add(query_579218, "oauth_token", newJString(oauthToken))
+  add(path_579217, "projectId", newJString(projectId))
+  add(query_579218, "alt", newJString(alt))
+  add(query_579218, "userIp", newJString(userIp))
+  add(query_579218, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589319 = body
-  add(query_589318, "prettyPrint", newJBool(prettyPrint))
-  result = call_589316.call(path_589317, query_589318, nil, nil, body_589319)
+    body_579219 = body
+  add(query_579218, "fields", newJString(fields))
+  add(path_579217, "datasetId", newJString(datasetId))
+  result = call_579216.call(path_579217, query_579218, nil, nil, body_579219)
 
-var bigqueryTablesInsert* = Call_BigqueryTablesInsert_589302(
+var bigqueryTablesInsert* = Call_BigqueryTablesInsert_579202(
     name: "bigqueryTablesInsert", meth: HttpMethod.HttpPost,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/tables",
-    validator: validate_BigqueryTablesInsert_589303, base: "/bigquery/v2",
-    url: url_BigqueryTablesInsert_589304, schemes: {Scheme.Https})
+    validator: validate_BigqueryTablesInsert_579203, base: "/bigquery/v2",
+    url: url_BigqueryTablesInsert_579204, schemes: {Scheme.Https})
 type
-  Call_BigqueryTablesList_589284 = ref object of OpenApiRestCall_588466
-proc url_BigqueryTablesList_589286(protocol: Scheme; host: string; base: string;
+  Call_BigqueryTablesList_579184 = ref object of OpenApiRestCall_578364
+proc url_BigqueryTablesList_579186(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3044,7 +3048,7 @@ proc url_BigqueryTablesList_589286(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryTablesList_589285(path: JsonNode; query: JsonNode;
+proc validate_BigqueryTablesList_579185(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Lists all tables in the specified dataset. Requires the READER dataset role.
@@ -3052,87 +3056,87 @@ proc validate_BigqueryTablesList_589285(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   datasetId: JString (required)
-  ##            : Dataset ID of the tables to list
   ##   projectId: JString (required)
   ##            : Project ID of the tables to list
+  ##   datasetId: JString (required)
+  ##            : Dataset ID of the tables to list
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `datasetId` field"
-  var valid_589287 = path.getOrDefault("datasetId")
-  valid_589287 = validateParameter(valid_589287, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579187 = path.getOrDefault("projectId")
+  valid_579187 = validateParameter(valid_579187, JString, required = true,
                                  default = nil)
-  if valid_589287 != nil:
-    section.add "datasetId", valid_589287
-  var valid_589288 = path.getOrDefault("projectId")
-  valid_589288 = validateParameter(valid_589288, JString, required = true,
+  if valid_579187 != nil:
+    section.add "projectId", valid_579187
+  var valid_579188 = path.getOrDefault("datasetId")
+  valid_579188 = validateParameter(valid_579188, JString, required = true,
                                  default = nil)
-  if valid_589288 != nil:
-    section.add "projectId", valid_589288
+  if valid_579188 != nil:
+    section.add "datasetId", valid_579188
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Page token, returned by a previous call, to request the next page of results
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : Maximum number of results to return
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : Page token, returned by a previous call, to request the next page of results
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : Maximum number of results to return
   section = newJObject()
-  var valid_589289 = query.getOrDefault("fields")
-  valid_589289 = validateParameter(valid_589289, JString, required = false,
+  var valid_579189 = query.getOrDefault("key")
+  valid_579189 = validateParameter(valid_579189, JString, required = false,
                                  default = nil)
-  if valid_589289 != nil:
-    section.add "fields", valid_589289
-  var valid_589290 = query.getOrDefault("pageToken")
-  valid_589290 = validateParameter(valid_589290, JString, required = false,
-                                 default = nil)
-  if valid_589290 != nil:
-    section.add "pageToken", valid_589290
-  var valid_589291 = query.getOrDefault("quotaUser")
-  valid_589291 = validateParameter(valid_589291, JString, required = false,
-                                 default = nil)
-  if valid_589291 != nil:
-    section.add "quotaUser", valid_589291
-  var valid_589292 = query.getOrDefault("alt")
-  valid_589292 = validateParameter(valid_589292, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589292 != nil:
-    section.add "alt", valid_589292
-  var valid_589293 = query.getOrDefault("oauth_token")
-  valid_589293 = validateParameter(valid_589293, JString, required = false,
-                                 default = nil)
-  if valid_589293 != nil:
-    section.add "oauth_token", valid_589293
-  var valid_589294 = query.getOrDefault("userIp")
-  valid_589294 = validateParameter(valid_589294, JString, required = false,
-                                 default = nil)
-  if valid_589294 != nil:
-    section.add "userIp", valid_589294
-  var valid_589295 = query.getOrDefault("maxResults")
-  valid_589295 = validateParameter(valid_589295, JInt, required = false, default = nil)
-  if valid_589295 != nil:
-    section.add "maxResults", valid_589295
-  var valid_589296 = query.getOrDefault("key")
-  valid_589296 = validateParameter(valid_589296, JString, required = false,
-                                 default = nil)
-  if valid_589296 != nil:
-    section.add "key", valid_589296
-  var valid_589297 = query.getOrDefault("prettyPrint")
-  valid_589297 = validateParameter(valid_589297, JBool, required = false,
+  if valid_579189 != nil:
+    section.add "key", valid_579189
+  var valid_579190 = query.getOrDefault("prettyPrint")
+  valid_579190 = validateParameter(valid_579190, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589297 != nil:
-    section.add "prettyPrint", valid_589297
+  if valid_579190 != nil:
+    section.add "prettyPrint", valid_579190
+  var valid_579191 = query.getOrDefault("oauth_token")
+  valid_579191 = validateParameter(valid_579191, JString, required = false,
+                                 default = nil)
+  if valid_579191 != nil:
+    section.add "oauth_token", valid_579191
+  var valid_579192 = query.getOrDefault("alt")
+  valid_579192 = validateParameter(valid_579192, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579192 != nil:
+    section.add "alt", valid_579192
+  var valid_579193 = query.getOrDefault("userIp")
+  valid_579193 = validateParameter(valid_579193, JString, required = false,
+                                 default = nil)
+  if valid_579193 != nil:
+    section.add "userIp", valid_579193
+  var valid_579194 = query.getOrDefault("quotaUser")
+  valid_579194 = validateParameter(valid_579194, JString, required = false,
+                                 default = nil)
+  if valid_579194 != nil:
+    section.add "quotaUser", valid_579194
+  var valid_579195 = query.getOrDefault("pageToken")
+  valid_579195 = validateParameter(valid_579195, JString, required = false,
+                                 default = nil)
+  if valid_579195 != nil:
+    section.add "pageToken", valid_579195
+  var valid_579196 = query.getOrDefault("fields")
+  valid_579196 = validateParameter(valid_579196, JString, required = false,
+                                 default = nil)
+  if valid_579196 != nil:
+    section.add "fields", valid_579196
+  var valid_579197 = query.getOrDefault("maxResults")
+  valid_579197 = validateParameter(valid_579197, JInt, required = false, default = nil)
+  if valid_579197 != nil:
+    section.add "maxResults", valid_579197
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3141,72 +3145,72 @@ proc validate_BigqueryTablesList_589285(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589298: Call_BigqueryTablesList_589284; path: JsonNode;
+proc call*(call_579198: Call_BigqueryTablesList_579184; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all tables in the specified dataset. Requires the READER dataset role.
   ## 
-  let valid = call_589298.validator(path, query, header, formData, body)
-  let scheme = call_589298.pickScheme
+  let valid = call_579198.validator(path, query, header, formData, body)
+  let scheme = call_579198.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589298.url(scheme.get, call_589298.host, call_589298.base,
-                         call_589298.route, valid.getOrDefault("path"),
+  let url = call_579198.url(scheme.get, call_579198.host, call_579198.base,
+                         call_579198.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589298, url, valid)
+  result = hook(call_579198, url, valid)
 
-proc call*(call_589299: Call_BigqueryTablesList_589284; datasetId: string;
-          projectId: string; fields: string = ""; pageToken: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; maxResults: int = 0; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579199: Call_BigqueryTablesList_579184; projectId: string;
+          datasetId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; pageToken: string = ""; fields: string = "";
+          maxResults: int = 0): Recallable =
   ## bigqueryTablesList
   ## Lists all tables in the specified dataset. Requires the READER dataset role.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Page token, returned by a previous call, to request the next page of results
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Dataset ID of the tables to list
-  ##   maxResults: int
-  ##             : Maximum number of results to return
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the tables to list
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589300 = newJObject()
-  var query_589301 = newJObject()
-  add(query_589301, "fields", newJString(fields))
-  add(query_589301, "pageToken", newJString(pageToken))
-  add(query_589301, "quotaUser", newJString(quotaUser))
-  add(query_589301, "alt", newJString(alt))
-  add(query_589301, "oauth_token", newJString(oauthToken))
-  add(query_589301, "userIp", newJString(userIp))
-  add(path_589300, "datasetId", newJString(datasetId))
-  add(query_589301, "maxResults", newJInt(maxResults))
-  add(query_589301, "key", newJString(key))
-  add(path_589300, "projectId", newJString(projectId))
-  add(query_589301, "prettyPrint", newJBool(prettyPrint))
-  result = call_589299.call(path_589300, query_589301, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the tables to list
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : Page token, returned by a previous call, to request the next page of results
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: int
+  ##             : Maximum number of results to return
+  ##   datasetId: string (required)
+  ##            : Dataset ID of the tables to list
+  var path_579200 = newJObject()
+  var query_579201 = newJObject()
+  add(query_579201, "key", newJString(key))
+  add(query_579201, "prettyPrint", newJBool(prettyPrint))
+  add(query_579201, "oauth_token", newJString(oauthToken))
+  add(path_579200, "projectId", newJString(projectId))
+  add(query_579201, "alt", newJString(alt))
+  add(query_579201, "userIp", newJString(userIp))
+  add(query_579201, "quotaUser", newJString(quotaUser))
+  add(query_579201, "pageToken", newJString(pageToken))
+  add(query_579201, "fields", newJString(fields))
+  add(query_579201, "maxResults", newJInt(maxResults))
+  add(path_579200, "datasetId", newJString(datasetId))
+  result = call_579199.call(path_579200, query_579201, nil, nil, nil)
 
-var bigqueryTablesList* = Call_BigqueryTablesList_589284(
+var bigqueryTablesList* = Call_BigqueryTablesList_579184(
     name: "bigqueryTablesList", meth: HttpMethod.HttpGet,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/tables",
-    validator: validate_BigqueryTablesList_589285, base: "/bigquery/v2",
-    url: url_BigqueryTablesList_589286, schemes: {Scheme.Https})
+    validator: validate_BigqueryTablesList_579185, base: "/bigquery/v2",
+    url: url_BigqueryTablesList_579186, schemes: {Scheme.Https})
 type
-  Call_BigqueryTablesUpdate_589338 = ref object of OpenApiRestCall_588466
-proc url_BigqueryTablesUpdate_589340(protocol: Scheme; host: string; base: string;
+  Call_BigqueryTablesUpdate_579238 = ref object of OpenApiRestCall_578364
+proc url_BigqueryTablesUpdate_579240(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3227,88 +3231,88 @@ proc url_BigqueryTablesUpdate_589340(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryTablesUpdate_589339(path: JsonNode; query: JsonNode;
+proc validate_BigqueryTablesUpdate_579239(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates information in an existing table. The update method replaces the entire table resource, whereas the patch method only replaces fields that are provided in the submitted table resource.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
+  ##   projectId: JString (required)
+  ##            : Project ID of the table to update
   ##   tableId: JString (required)
   ##          : Table ID of the table to update
   ##   datasetId: JString (required)
   ##            : Dataset ID of the table to update
-  ##   projectId: JString (required)
-  ##            : Project ID of the table to update
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_589341 = path.getOrDefault("tableId")
-  valid_589341 = validateParameter(valid_589341, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579241 = path.getOrDefault("projectId")
+  valid_579241 = validateParameter(valid_579241, JString, required = true,
                                  default = nil)
-  if valid_589341 != nil:
-    section.add "tableId", valid_589341
-  var valid_589342 = path.getOrDefault("datasetId")
-  valid_589342 = validateParameter(valid_589342, JString, required = true,
+  if valid_579241 != nil:
+    section.add "projectId", valid_579241
+  var valid_579242 = path.getOrDefault("tableId")
+  valid_579242 = validateParameter(valid_579242, JString, required = true,
                                  default = nil)
-  if valid_589342 != nil:
-    section.add "datasetId", valid_589342
-  var valid_589343 = path.getOrDefault("projectId")
-  valid_589343 = validateParameter(valid_589343, JString, required = true,
+  if valid_579242 != nil:
+    section.add "tableId", valid_579242
+  var valid_579243 = path.getOrDefault("datasetId")
+  valid_579243 = validateParameter(valid_579243, JString, required = true,
                                  default = nil)
-  if valid_589343 != nil:
-    section.add "projectId", valid_589343
+  if valid_579243 != nil:
+    section.add "datasetId", valid_579243
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589344 = query.getOrDefault("fields")
-  valid_589344 = validateParameter(valid_589344, JString, required = false,
+  var valid_579244 = query.getOrDefault("key")
+  valid_579244 = validateParameter(valid_579244, JString, required = false,
                                  default = nil)
-  if valid_589344 != nil:
-    section.add "fields", valid_589344
-  var valid_589345 = query.getOrDefault("quotaUser")
-  valid_589345 = validateParameter(valid_589345, JString, required = false,
-                                 default = nil)
-  if valid_589345 != nil:
-    section.add "quotaUser", valid_589345
-  var valid_589346 = query.getOrDefault("alt")
-  valid_589346 = validateParameter(valid_589346, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589346 != nil:
-    section.add "alt", valid_589346
-  var valid_589347 = query.getOrDefault("oauth_token")
-  valid_589347 = validateParameter(valid_589347, JString, required = false,
-                                 default = nil)
-  if valid_589347 != nil:
-    section.add "oauth_token", valid_589347
-  var valid_589348 = query.getOrDefault("userIp")
-  valid_589348 = validateParameter(valid_589348, JString, required = false,
-                                 default = nil)
-  if valid_589348 != nil:
-    section.add "userIp", valid_589348
-  var valid_589349 = query.getOrDefault("key")
-  valid_589349 = validateParameter(valid_589349, JString, required = false,
-                                 default = nil)
-  if valid_589349 != nil:
-    section.add "key", valid_589349
-  var valid_589350 = query.getOrDefault("prettyPrint")
-  valid_589350 = validateParameter(valid_589350, JBool, required = false,
+  if valid_579244 != nil:
+    section.add "key", valid_579244
+  var valid_579245 = query.getOrDefault("prettyPrint")
+  valid_579245 = validateParameter(valid_579245, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589350 != nil:
-    section.add "prettyPrint", valid_589350
+  if valid_579245 != nil:
+    section.add "prettyPrint", valid_579245
+  var valid_579246 = query.getOrDefault("oauth_token")
+  valid_579246 = validateParameter(valid_579246, JString, required = false,
+                                 default = nil)
+  if valid_579246 != nil:
+    section.add "oauth_token", valid_579246
+  var valid_579247 = query.getOrDefault("alt")
+  valid_579247 = validateParameter(valid_579247, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579247 != nil:
+    section.add "alt", valid_579247
+  var valid_579248 = query.getOrDefault("userIp")
+  valid_579248 = validateParameter(valid_579248, JString, required = false,
+                                 default = nil)
+  if valid_579248 != nil:
+    section.add "userIp", valid_579248
+  var valid_579249 = query.getOrDefault("quotaUser")
+  valid_579249 = validateParameter(valid_579249, JString, required = false,
+                                 default = nil)
+  if valid_579249 != nil:
+    section.add "quotaUser", valid_579249
+  var valid_579250 = query.getOrDefault("fields")
+  valid_579250 = validateParameter(valid_579250, JString, required = false,
+                                 default = nil)
+  if valid_579250 != nil:
+    section.add "fields", valid_579250
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3320,73 +3324,73 @@ proc validate_BigqueryTablesUpdate_589339(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589352: Call_BigqueryTablesUpdate_589338; path: JsonNode;
+proc call*(call_579252: Call_BigqueryTablesUpdate_579238; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates information in an existing table. The update method replaces the entire table resource, whereas the patch method only replaces fields that are provided in the submitted table resource.
   ## 
-  let valid = call_589352.validator(path, query, header, formData, body)
-  let scheme = call_589352.pickScheme
+  let valid = call_579252.validator(path, query, header, formData, body)
+  let scheme = call_579252.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589352.url(scheme.get, call_589352.host, call_589352.base,
-                         call_589352.route, valid.getOrDefault("path"),
+  let url = call_579252.url(scheme.get, call_579252.host, call_579252.base,
+                         call_579252.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589352, url, valid)
+  result = hook(call_579252, url, valid)
 
-proc call*(call_589353: Call_BigqueryTablesUpdate_589338; tableId: string;
-          datasetId: string; projectId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579253: Call_BigqueryTablesUpdate_579238; projectId: string;
+          tableId: string; datasetId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## bigqueryTablesUpdate
   ## Updates information in an existing table. The update method replaces the entire table resource, whereas the patch method only replaces fields that are provided in the submitted table resource.
-  ##   tableId: string (required)
-  ##          : Table ID of the table to update
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Dataset ID of the table to update
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the table to update
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589354 = newJObject()
-  var query_589355 = newJObject()
-  var body_589356 = newJObject()
-  add(path_589354, "tableId", newJString(tableId))
-  add(query_589355, "fields", newJString(fields))
-  add(query_589355, "quotaUser", newJString(quotaUser))
-  add(query_589355, "alt", newJString(alt))
-  add(query_589355, "oauth_token", newJString(oauthToken))
-  add(query_589355, "userIp", newJString(userIp))
-  add(path_589354, "datasetId", newJString(datasetId))
-  add(query_589355, "key", newJString(key))
-  add(path_589354, "projectId", newJString(projectId))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the table to update
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   tableId: string (required)
+  ##          : Table ID of the table to update
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Dataset ID of the table to update
+  var path_579254 = newJObject()
+  var query_579255 = newJObject()
+  var body_579256 = newJObject()
+  add(query_579255, "key", newJString(key))
+  add(query_579255, "prettyPrint", newJBool(prettyPrint))
+  add(query_579255, "oauth_token", newJString(oauthToken))
+  add(path_579254, "projectId", newJString(projectId))
+  add(query_579255, "alt", newJString(alt))
+  add(query_579255, "userIp", newJString(userIp))
+  add(query_579255, "quotaUser", newJString(quotaUser))
+  add(path_579254, "tableId", newJString(tableId))
   if body != nil:
-    body_589356 = body
-  add(query_589355, "prettyPrint", newJBool(prettyPrint))
-  result = call_589353.call(path_589354, query_589355, nil, nil, body_589356)
+    body_579256 = body
+  add(query_579255, "fields", newJString(fields))
+  add(path_579254, "datasetId", newJString(datasetId))
+  result = call_579253.call(path_579254, query_579255, nil, nil, body_579256)
 
-var bigqueryTablesUpdate* = Call_BigqueryTablesUpdate_589338(
+var bigqueryTablesUpdate* = Call_BigqueryTablesUpdate_579238(
     name: "bigqueryTablesUpdate", meth: HttpMethod.HttpPut,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/tables/{tableId}",
-    validator: validate_BigqueryTablesUpdate_589339, base: "/bigquery/v2",
-    url: url_BigqueryTablesUpdate_589340, schemes: {Scheme.Https})
+    validator: validate_BigqueryTablesUpdate_579239, base: "/bigquery/v2",
+    url: url_BigqueryTablesUpdate_579240, schemes: {Scheme.Https})
 type
-  Call_BigqueryTablesGet_589320 = ref object of OpenApiRestCall_588466
-proc url_BigqueryTablesGet_589322(protocol: Scheme; host: string; base: string;
+  Call_BigqueryTablesGet_579220 = ref object of OpenApiRestCall_578364
+proc url_BigqueryTablesGet_579222(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3407,7 +3411,7 @@ proc url_BigqueryTablesGet_589322(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryTablesGet_589321(path: JsonNode; query: JsonNode;
+proc validate_BigqueryTablesGet_579221(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Gets the specified table resource by table ID. This method does not return the data in the table, it only returns the table resource, which describes the structure of this table.
@@ -3415,88 +3419,88 @@ proc validate_BigqueryTablesGet_589321(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
+  ##   projectId: JString (required)
+  ##            : Project ID of the requested table
   ##   tableId: JString (required)
   ##          : Table ID of the requested table
   ##   datasetId: JString (required)
   ##            : Dataset ID of the requested table
-  ##   projectId: JString (required)
-  ##            : Project ID of the requested table
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_589323 = path.getOrDefault("tableId")
-  valid_589323 = validateParameter(valid_589323, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579223 = path.getOrDefault("projectId")
+  valid_579223 = validateParameter(valid_579223, JString, required = true,
                                  default = nil)
-  if valid_589323 != nil:
-    section.add "tableId", valid_589323
-  var valid_589324 = path.getOrDefault("datasetId")
-  valid_589324 = validateParameter(valid_589324, JString, required = true,
+  if valid_579223 != nil:
+    section.add "projectId", valid_579223
+  var valid_579224 = path.getOrDefault("tableId")
+  valid_579224 = validateParameter(valid_579224, JString, required = true,
                                  default = nil)
-  if valid_589324 != nil:
-    section.add "datasetId", valid_589324
-  var valid_589325 = path.getOrDefault("projectId")
-  valid_589325 = validateParameter(valid_589325, JString, required = true,
+  if valid_579224 != nil:
+    section.add "tableId", valid_579224
+  var valid_579225 = path.getOrDefault("datasetId")
+  valid_579225 = validateParameter(valid_579225, JString, required = true,
                                  default = nil)
-  if valid_589325 != nil:
-    section.add "projectId", valid_589325
+  if valid_579225 != nil:
+    section.add "datasetId", valid_579225
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   selectedFields: JString
   ##                 : List of fields to return (comma-separated). If unspecified, all fields are returned
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589326 = query.getOrDefault("fields")
-  valid_589326 = validateParameter(valid_589326, JString, required = false,
+  var valid_579226 = query.getOrDefault("key")
+  valid_579226 = validateParameter(valid_579226, JString, required = false,
                                  default = nil)
-  if valid_589326 != nil:
-    section.add "fields", valid_589326
-  var valid_589327 = query.getOrDefault("quotaUser")
-  valid_589327 = validateParameter(valid_589327, JString, required = false,
-                                 default = nil)
-  if valid_589327 != nil:
-    section.add "quotaUser", valid_589327
-  var valid_589328 = query.getOrDefault("alt")
-  valid_589328 = validateParameter(valid_589328, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589328 != nil:
-    section.add "alt", valid_589328
-  var valid_589329 = query.getOrDefault("oauth_token")
-  valid_589329 = validateParameter(valid_589329, JString, required = false,
-                                 default = nil)
-  if valid_589329 != nil:
-    section.add "oauth_token", valid_589329
-  var valid_589330 = query.getOrDefault("userIp")
-  valid_589330 = validateParameter(valid_589330, JString, required = false,
-                                 default = nil)
-  if valid_589330 != nil:
-    section.add "userIp", valid_589330
-  var valid_589331 = query.getOrDefault("key")
-  valid_589331 = validateParameter(valid_589331, JString, required = false,
-                                 default = nil)
-  if valid_589331 != nil:
-    section.add "key", valid_589331
-  var valid_589332 = query.getOrDefault("prettyPrint")
-  valid_589332 = validateParameter(valid_589332, JBool, required = false,
+  if valid_579226 != nil:
+    section.add "key", valid_579226
+  var valid_579227 = query.getOrDefault("prettyPrint")
+  valid_579227 = validateParameter(valid_579227, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589332 != nil:
-    section.add "prettyPrint", valid_589332
-  var valid_589333 = query.getOrDefault("selectedFields")
-  valid_589333 = validateParameter(valid_589333, JString, required = false,
+  if valid_579227 != nil:
+    section.add "prettyPrint", valid_579227
+  var valid_579228 = query.getOrDefault("oauth_token")
+  valid_579228 = validateParameter(valid_579228, JString, required = false,
                                  default = nil)
-  if valid_589333 != nil:
-    section.add "selectedFields", valid_589333
+  if valid_579228 != nil:
+    section.add "oauth_token", valid_579228
+  var valid_579229 = query.getOrDefault("alt")
+  valid_579229 = validateParameter(valid_579229, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579229 != nil:
+    section.add "alt", valid_579229
+  var valid_579230 = query.getOrDefault("userIp")
+  valid_579230 = validateParameter(valid_579230, JString, required = false,
+                                 default = nil)
+  if valid_579230 != nil:
+    section.add "userIp", valid_579230
+  var valid_579231 = query.getOrDefault("quotaUser")
+  valid_579231 = validateParameter(valid_579231, JString, required = false,
+                                 default = nil)
+  if valid_579231 != nil:
+    section.add "quotaUser", valid_579231
+  var valid_579232 = query.getOrDefault("selectedFields")
+  valid_579232 = validateParameter(valid_579232, JString, required = false,
+                                 default = nil)
+  if valid_579232 != nil:
+    section.add "selectedFields", valid_579232
+  var valid_579233 = query.getOrDefault("fields")
+  valid_579233 = validateParameter(valid_579233, JString, required = false,
+                                 default = nil)
+  if valid_579233 != nil:
+    section.add "fields", valid_579233
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3505,71 +3509,71 @@ proc validate_BigqueryTablesGet_589321(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589334: Call_BigqueryTablesGet_589320; path: JsonNode;
+proc call*(call_579234: Call_BigqueryTablesGet_579220; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the specified table resource by table ID. This method does not return the data in the table, it only returns the table resource, which describes the structure of this table.
   ## 
-  let valid = call_589334.validator(path, query, header, formData, body)
-  let scheme = call_589334.pickScheme
+  let valid = call_579234.validator(path, query, header, formData, body)
+  let scheme = call_579234.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589334.url(scheme.get, call_589334.host, call_589334.base,
-                         call_589334.route, valid.getOrDefault("path"),
+  let url = call_579234.url(scheme.get, call_579234.host, call_579234.base,
+                         call_579234.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589334, url, valid)
+  result = hook(call_579234, url, valid)
 
-proc call*(call_589335: Call_BigqueryTablesGet_589320; tableId: string;
-          datasetId: string; projectId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true;
-          selectedFields: string = ""): Recallable =
+proc call*(call_579235: Call_BigqueryTablesGet_579220; projectId: string;
+          tableId: string; datasetId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; selectedFields: string = "";
+          fields: string = ""): Recallable =
   ## bigqueryTablesGet
   ## Gets the specified table resource by table ID. This method does not return the data in the table, it only returns the table resource, which describes the structure of this table.
-  ##   tableId: string (required)
-  ##          : Table ID of the requested table
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Dataset ID of the requested table
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the requested table
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the requested table
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   tableId: string (required)
+  ##          : Table ID of the requested table
   ##   selectedFields: string
   ##                 : List of fields to return (comma-separated). If unspecified, all fields are returned
-  var path_589336 = newJObject()
-  var query_589337 = newJObject()
-  add(path_589336, "tableId", newJString(tableId))
-  add(query_589337, "fields", newJString(fields))
-  add(query_589337, "quotaUser", newJString(quotaUser))
-  add(query_589337, "alt", newJString(alt))
-  add(query_589337, "oauth_token", newJString(oauthToken))
-  add(query_589337, "userIp", newJString(userIp))
-  add(path_589336, "datasetId", newJString(datasetId))
-  add(query_589337, "key", newJString(key))
-  add(path_589336, "projectId", newJString(projectId))
-  add(query_589337, "prettyPrint", newJBool(prettyPrint))
-  add(query_589337, "selectedFields", newJString(selectedFields))
-  result = call_589335.call(path_589336, query_589337, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Dataset ID of the requested table
+  var path_579236 = newJObject()
+  var query_579237 = newJObject()
+  add(query_579237, "key", newJString(key))
+  add(query_579237, "prettyPrint", newJBool(prettyPrint))
+  add(query_579237, "oauth_token", newJString(oauthToken))
+  add(path_579236, "projectId", newJString(projectId))
+  add(query_579237, "alt", newJString(alt))
+  add(query_579237, "userIp", newJString(userIp))
+  add(query_579237, "quotaUser", newJString(quotaUser))
+  add(path_579236, "tableId", newJString(tableId))
+  add(query_579237, "selectedFields", newJString(selectedFields))
+  add(query_579237, "fields", newJString(fields))
+  add(path_579236, "datasetId", newJString(datasetId))
+  result = call_579235.call(path_579236, query_579237, nil, nil, nil)
 
-var bigqueryTablesGet* = Call_BigqueryTablesGet_589320(name: "bigqueryTablesGet",
+var bigqueryTablesGet* = Call_BigqueryTablesGet_579220(name: "bigqueryTablesGet",
     meth: HttpMethod.HttpGet, host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/tables/{tableId}",
-    validator: validate_BigqueryTablesGet_589321, base: "/bigquery/v2",
-    url: url_BigqueryTablesGet_589322, schemes: {Scheme.Https})
+    validator: validate_BigqueryTablesGet_579221, base: "/bigquery/v2",
+    url: url_BigqueryTablesGet_579222, schemes: {Scheme.Https})
 type
-  Call_BigqueryTablesPatch_589374 = ref object of OpenApiRestCall_588466
-proc url_BigqueryTablesPatch_589376(protocol: Scheme; host: string; base: string;
+  Call_BigqueryTablesPatch_579274 = ref object of OpenApiRestCall_578364
+proc url_BigqueryTablesPatch_579276(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3590,7 +3594,7 @@ proc url_BigqueryTablesPatch_589376(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryTablesPatch_589375(path: JsonNode; query: JsonNode;
+proc validate_BigqueryTablesPatch_579275(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Updates information in an existing table. The update method replaces the entire table resource, whereas the patch method only replaces fields that are provided in the submitted table resource. This method supports patch semantics.
@@ -3598,81 +3602,81 @@ proc validate_BigqueryTablesPatch_589375(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
+  ##   projectId: JString (required)
+  ##            : Project ID of the table to update
   ##   tableId: JString (required)
   ##          : Table ID of the table to update
   ##   datasetId: JString (required)
   ##            : Dataset ID of the table to update
-  ##   projectId: JString (required)
-  ##            : Project ID of the table to update
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_589377 = path.getOrDefault("tableId")
-  valid_589377 = validateParameter(valid_589377, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579277 = path.getOrDefault("projectId")
+  valid_579277 = validateParameter(valid_579277, JString, required = true,
                                  default = nil)
-  if valid_589377 != nil:
-    section.add "tableId", valid_589377
-  var valid_589378 = path.getOrDefault("datasetId")
-  valid_589378 = validateParameter(valid_589378, JString, required = true,
+  if valid_579277 != nil:
+    section.add "projectId", valid_579277
+  var valid_579278 = path.getOrDefault("tableId")
+  valid_579278 = validateParameter(valid_579278, JString, required = true,
                                  default = nil)
-  if valid_589378 != nil:
-    section.add "datasetId", valid_589378
-  var valid_589379 = path.getOrDefault("projectId")
-  valid_589379 = validateParameter(valid_589379, JString, required = true,
+  if valid_579278 != nil:
+    section.add "tableId", valid_579278
+  var valid_579279 = path.getOrDefault("datasetId")
+  valid_579279 = validateParameter(valid_579279, JString, required = true,
                                  default = nil)
-  if valid_589379 != nil:
-    section.add "projectId", valid_589379
+  if valid_579279 != nil:
+    section.add "datasetId", valid_579279
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589380 = query.getOrDefault("fields")
-  valid_589380 = validateParameter(valid_589380, JString, required = false,
+  var valid_579280 = query.getOrDefault("key")
+  valid_579280 = validateParameter(valid_579280, JString, required = false,
                                  default = nil)
-  if valid_589380 != nil:
-    section.add "fields", valid_589380
-  var valid_589381 = query.getOrDefault("quotaUser")
-  valid_589381 = validateParameter(valid_589381, JString, required = false,
-                                 default = nil)
-  if valid_589381 != nil:
-    section.add "quotaUser", valid_589381
-  var valid_589382 = query.getOrDefault("alt")
-  valid_589382 = validateParameter(valid_589382, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589382 != nil:
-    section.add "alt", valid_589382
-  var valid_589383 = query.getOrDefault("oauth_token")
-  valid_589383 = validateParameter(valid_589383, JString, required = false,
-                                 default = nil)
-  if valid_589383 != nil:
-    section.add "oauth_token", valid_589383
-  var valid_589384 = query.getOrDefault("userIp")
-  valid_589384 = validateParameter(valid_589384, JString, required = false,
-                                 default = nil)
-  if valid_589384 != nil:
-    section.add "userIp", valid_589384
-  var valid_589385 = query.getOrDefault("key")
-  valid_589385 = validateParameter(valid_589385, JString, required = false,
-                                 default = nil)
-  if valid_589385 != nil:
-    section.add "key", valid_589385
-  var valid_589386 = query.getOrDefault("prettyPrint")
-  valid_589386 = validateParameter(valid_589386, JBool, required = false,
+  if valid_579280 != nil:
+    section.add "key", valid_579280
+  var valid_579281 = query.getOrDefault("prettyPrint")
+  valid_579281 = validateParameter(valid_579281, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589386 != nil:
-    section.add "prettyPrint", valid_589386
+  if valid_579281 != nil:
+    section.add "prettyPrint", valid_579281
+  var valid_579282 = query.getOrDefault("oauth_token")
+  valid_579282 = validateParameter(valid_579282, JString, required = false,
+                                 default = nil)
+  if valid_579282 != nil:
+    section.add "oauth_token", valid_579282
+  var valid_579283 = query.getOrDefault("alt")
+  valid_579283 = validateParameter(valid_579283, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579283 != nil:
+    section.add "alt", valid_579283
+  var valid_579284 = query.getOrDefault("userIp")
+  valid_579284 = validateParameter(valid_579284, JString, required = false,
+                                 default = nil)
+  if valid_579284 != nil:
+    section.add "userIp", valid_579284
+  var valid_579285 = query.getOrDefault("quotaUser")
+  valid_579285 = validateParameter(valid_579285, JString, required = false,
+                                 default = nil)
+  if valid_579285 != nil:
+    section.add "quotaUser", valid_579285
+  var valid_579286 = query.getOrDefault("fields")
+  valid_579286 = validateParameter(valid_579286, JString, required = false,
+                                 default = nil)
+  if valid_579286 != nil:
+    section.add "fields", valid_579286
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3684,73 +3688,73 @@ proc validate_BigqueryTablesPatch_589375(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589388: Call_BigqueryTablesPatch_589374; path: JsonNode;
+proc call*(call_579288: Call_BigqueryTablesPatch_579274; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates information in an existing table. The update method replaces the entire table resource, whereas the patch method only replaces fields that are provided in the submitted table resource. This method supports patch semantics.
   ## 
-  let valid = call_589388.validator(path, query, header, formData, body)
-  let scheme = call_589388.pickScheme
+  let valid = call_579288.validator(path, query, header, formData, body)
+  let scheme = call_579288.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589388.url(scheme.get, call_589388.host, call_589388.base,
-                         call_589388.route, valid.getOrDefault("path"),
+  let url = call_579288.url(scheme.get, call_579288.host, call_579288.base,
+                         call_579288.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589388, url, valid)
+  result = hook(call_579288, url, valid)
 
-proc call*(call_589389: Call_BigqueryTablesPatch_589374; tableId: string;
-          datasetId: string; projectId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579289: Call_BigqueryTablesPatch_579274; projectId: string;
+          tableId: string; datasetId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## bigqueryTablesPatch
   ## Updates information in an existing table. The update method replaces the entire table resource, whereas the patch method only replaces fields that are provided in the submitted table resource. This method supports patch semantics.
-  ##   tableId: string (required)
-  ##          : Table ID of the table to update
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Dataset ID of the table to update
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the table to update
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589390 = newJObject()
-  var query_589391 = newJObject()
-  var body_589392 = newJObject()
-  add(path_589390, "tableId", newJString(tableId))
-  add(query_589391, "fields", newJString(fields))
-  add(query_589391, "quotaUser", newJString(quotaUser))
-  add(query_589391, "alt", newJString(alt))
-  add(query_589391, "oauth_token", newJString(oauthToken))
-  add(query_589391, "userIp", newJString(userIp))
-  add(path_589390, "datasetId", newJString(datasetId))
-  add(query_589391, "key", newJString(key))
-  add(path_589390, "projectId", newJString(projectId))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the table to update
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   tableId: string (required)
+  ##          : Table ID of the table to update
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Dataset ID of the table to update
+  var path_579290 = newJObject()
+  var query_579291 = newJObject()
+  var body_579292 = newJObject()
+  add(query_579291, "key", newJString(key))
+  add(query_579291, "prettyPrint", newJBool(prettyPrint))
+  add(query_579291, "oauth_token", newJString(oauthToken))
+  add(path_579290, "projectId", newJString(projectId))
+  add(query_579291, "alt", newJString(alt))
+  add(query_579291, "userIp", newJString(userIp))
+  add(query_579291, "quotaUser", newJString(quotaUser))
+  add(path_579290, "tableId", newJString(tableId))
   if body != nil:
-    body_589392 = body
-  add(query_589391, "prettyPrint", newJBool(prettyPrint))
-  result = call_589389.call(path_589390, query_589391, nil, nil, body_589392)
+    body_579292 = body
+  add(query_579291, "fields", newJString(fields))
+  add(path_579290, "datasetId", newJString(datasetId))
+  result = call_579289.call(path_579290, query_579291, nil, nil, body_579292)
 
-var bigqueryTablesPatch* = Call_BigqueryTablesPatch_589374(
+var bigqueryTablesPatch* = Call_BigqueryTablesPatch_579274(
     name: "bigqueryTablesPatch", meth: HttpMethod.HttpPatch,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/tables/{tableId}",
-    validator: validate_BigqueryTablesPatch_589375, base: "/bigquery/v2",
-    url: url_BigqueryTablesPatch_589376, schemes: {Scheme.Https})
+    validator: validate_BigqueryTablesPatch_579275, base: "/bigquery/v2",
+    url: url_BigqueryTablesPatch_579276, schemes: {Scheme.Https})
 type
-  Call_BigqueryTablesDelete_589357 = ref object of OpenApiRestCall_588466
-proc url_BigqueryTablesDelete_589359(protocol: Scheme; host: string; base: string;
+  Call_BigqueryTablesDelete_579257 = ref object of OpenApiRestCall_578364
+proc url_BigqueryTablesDelete_579259(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3771,88 +3775,88 @@ proc url_BigqueryTablesDelete_589359(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryTablesDelete_589358(path: JsonNode; query: JsonNode;
+proc validate_BigqueryTablesDelete_579258(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the table specified by tableId from the dataset. If the table contains data, all the data will be deleted.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
+  ##   projectId: JString (required)
+  ##            : Project ID of the table to delete
   ##   tableId: JString (required)
   ##          : Table ID of the table to delete
   ##   datasetId: JString (required)
   ##            : Dataset ID of the table to delete
-  ##   projectId: JString (required)
-  ##            : Project ID of the table to delete
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_589360 = path.getOrDefault("tableId")
-  valid_589360 = validateParameter(valid_589360, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579260 = path.getOrDefault("projectId")
+  valid_579260 = validateParameter(valid_579260, JString, required = true,
                                  default = nil)
-  if valid_589360 != nil:
-    section.add "tableId", valid_589360
-  var valid_589361 = path.getOrDefault("datasetId")
-  valid_589361 = validateParameter(valid_589361, JString, required = true,
+  if valid_579260 != nil:
+    section.add "projectId", valid_579260
+  var valid_579261 = path.getOrDefault("tableId")
+  valid_579261 = validateParameter(valid_579261, JString, required = true,
                                  default = nil)
-  if valid_589361 != nil:
-    section.add "datasetId", valid_589361
-  var valid_589362 = path.getOrDefault("projectId")
-  valid_589362 = validateParameter(valid_589362, JString, required = true,
+  if valid_579261 != nil:
+    section.add "tableId", valid_579261
+  var valid_579262 = path.getOrDefault("datasetId")
+  valid_579262 = validateParameter(valid_579262, JString, required = true,
                                  default = nil)
-  if valid_589362 != nil:
-    section.add "projectId", valid_589362
+  if valid_579262 != nil:
+    section.add "datasetId", valid_579262
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589363 = query.getOrDefault("fields")
-  valid_589363 = validateParameter(valid_589363, JString, required = false,
+  var valid_579263 = query.getOrDefault("key")
+  valid_579263 = validateParameter(valid_579263, JString, required = false,
                                  default = nil)
-  if valid_589363 != nil:
-    section.add "fields", valid_589363
-  var valid_589364 = query.getOrDefault("quotaUser")
-  valid_589364 = validateParameter(valid_589364, JString, required = false,
-                                 default = nil)
-  if valid_589364 != nil:
-    section.add "quotaUser", valid_589364
-  var valid_589365 = query.getOrDefault("alt")
-  valid_589365 = validateParameter(valid_589365, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589365 != nil:
-    section.add "alt", valid_589365
-  var valid_589366 = query.getOrDefault("oauth_token")
-  valid_589366 = validateParameter(valid_589366, JString, required = false,
-                                 default = nil)
-  if valid_589366 != nil:
-    section.add "oauth_token", valid_589366
-  var valid_589367 = query.getOrDefault("userIp")
-  valid_589367 = validateParameter(valid_589367, JString, required = false,
-                                 default = nil)
-  if valid_589367 != nil:
-    section.add "userIp", valid_589367
-  var valid_589368 = query.getOrDefault("key")
-  valid_589368 = validateParameter(valid_589368, JString, required = false,
-                                 default = nil)
-  if valid_589368 != nil:
-    section.add "key", valid_589368
-  var valid_589369 = query.getOrDefault("prettyPrint")
-  valid_589369 = validateParameter(valid_589369, JBool, required = false,
+  if valid_579263 != nil:
+    section.add "key", valid_579263
+  var valid_579264 = query.getOrDefault("prettyPrint")
+  valid_579264 = validateParameter(valid_579264, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589369 != nil:
-    section.add "prettyPrint", valid_589369
+  if valid_579264 != nil:
+    section.add "prettyPrint", valid_579264
+  var valid_579265 = query.getOrDefault("oauth_token")
+  valid_579265 = validateParameter(valid_579265, JString, required = false,
+                                 default = nil)
+  if valid_579265 != nil:
+    section.add "oauth_token", valid_579265
+  var valid_579266 = query.getOrDefault("alt")
+  valid_579266 = validateParameter(valid_579266, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579266 != nil:
+    section.add "alt", valid_579266
+  var valid_579267 = query.getOrDefault("userIp")
+  valid_579267 = validateParameter(valid_579267, JString, required = false,
+                                 default = nil)
+  if valid_579267 != nil:
+    section.add "userIp", valid_579267
+  var valid_579268 = query.getOrDefault("quotaUser")
+  valid_579268 = validateParameter(valid_579268, JString, required = false,
+                                 default = nil)
+  if valid_579268 != nil:
+    section.add "quotaUser", valid_579268
+  var valid_579269 = query.getOrDefault("fields")
+  valid_579269 = validateParameter(valid_579269, JString, required = false,
+                                 default = nil)
+  if valid_579269 != nil:
+    section.add "fields", valid_579269
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3861,68 +3865,68 @@ proc validate_BigqueryTablesDelete_589358(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589370: Call_BigqueryTablesDelete_589357; path: JsonNode;
+proc call*(call_579270: Call_BigqueryTablesDelete_579257; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes the table specified by tableId from the dataset. If the table contains data, all the data will be deleted.
   ## 
-  let valid = call_589370.validator(path, query, header, formData, body)
-  let scheme = call_589370.pickScheme
+  let valid = call_579270.validator(path, query, header, formData, body)
+  let scheme = call_579270.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589370.url(scheme.get, call_589370.host, call_589370.base,
-                         call_589370.route, valid.getOrDefault("path"),
+  let url = call_579270.url(scheme.get, call_579270.host, call_579270.base,
+                         call_579270.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589370, url, valid)
+  result = hook(call_579270, url, valid)
 
-proc call*(call_589371: Call_BigqueryTablesDelete_589357; tableId: string;
-          datasetId: string; projectId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579271: Call_BigqueryTablesDelete_579257; projectId: string;
+          tableId: string; datasetId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## bigqueryTablesDelete
   ## Deletes the table specified by tableId from the dataset. If the table contains data, all the data will be deleted.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the table to delete
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   tableId: string (required)
   ##          : Table ID of the table to delete
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   datasetId: string (required)
   ##            : Dataset ID of the table to delete
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the table to delete
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589372 = newJObject()
-  var query_589373 = newJObject()
-  add(path_589372, "tableId", newJString(tableId))
-  add(query_589373, "fields", newJString(fields))
-  add(query_589373, "quotaUser", newJString(quotaUser))
-  add(query_589373, "alt", newJString(alt))
-  add(query_589373, "oauth_token", newJString(oauthToken))
-  add(query_589373, "userIp", newJString(userIp))
-  add(path_589372, "datasetId", newJString(datasetId))
-  add(query_589373, "key", newJString(key))
-  add(path_589372, "projectId", newJString(projectId))
-  add(query_589373, "prettyPrint", newJBool(prettyPrint))
-  result = call_589371.call(path_589372, query_589373, nil, nil, nil)
+  var path_579272 = newJObject()
+  var query_579273 = newJObject()
+  add(query_579273, "key", newJString(key))
+  add(query_579273, "prettyPrint", newJBool(prettyPrint))
+  add(query_579273, "oauth_token", newJString(oauthToken))
+  add(path_579272, "projectId", newJString(projectId))
+  add(query_579273, "alt", newJString(alt))
+  add(query_579273, "userIp", newJString(userIp))
+  add(query_579273, "quotaUser", newJString(quotaUser))
+  add(path_579272, "tableId", newJString(tableId))
+  add(query_579273, "fields", newJString(fields))
+  add(path_579272, "datasetId", newJString(datasetId))
+  result = call_579271.call(path_579272, query_579273, nil, nil, nil)
 
-var bigqueryTablesDelete* = Call_BigqueryTablesDelete_589357(
+var bigqueryTablesDelete* = Call_BigqueryTablesDelete_579257(
     name: "bigqueryTablesDelete", meth: HttpMethod.HttpDelete,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/tables/{tableId}",
-    validator: validate_BigqueryTablesDelete_589358, base: "/bigquery/v2",
-    url: url_BigqueryTablesDelete_589359, schemes: {Scheme.Https})
+    validator: validate_BigqueryTablesDelete_579258, base: "/bigquery/v2",
+    url: url_BigqueryTablesDelete_579259, schemes: {Scheme.Https})
 type
-  Call_BigqueryTabledataList_589393 = ref object of OpenApiRestCall_588466
-proc url_BigqueryTabledataList_589395(protocol: Scheme; host: string; base: string;
+  Call_BigqueryTabledataList_579293 = ref object of OpenApiRestCall_578364
+proc url_BigqueryTabledataList_579295(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3944,115 +3948,115 @@ proc url_BigqueryTabledataList_589395(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryTabledataList_589394(path: JsonNode; query: JsonNode;
+proc validate_BigqueryTabledataList_579294(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves table data from a specified set of rows. Requires the READER dataset role.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
+  ##   projectId: JString (required)
+  ##            : Project ID of the table to read
   ##   tableId: JString (required)
   ##          : Table ID of the table to read
   ##   datasetId: JString (required)
   ##            : Dataset ID of the table to read
-  ##   projectId: JString (required)
-  ##            : Project ID of the table to read
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_589396 = path.getOrDefault("tableId")
-  valid_589396 = validateParameter(valid_589396, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579296 = path.getOrDefault("projectId")
+  valid_579296 = validateParameter(valid_579296, JString, required = true,
                                  default = nil)
-  if valid_589396 != nil:
-    section.add "tableId", valid_589396
-  var valid_589397 = path.getOrDefault("datasetId")
-  valid_589397 = validateParameter(valid_589397, JString, required = true,
+  if valid_579296 != nil:
+    section.add "projectId", valid_579296
+  var valid_579297 = path.getOrDefault("tableId")
+  valid_579297 = validateParameter(valid_579297, JString, required = true,
                                  default = nil)
-  if valid_589397 != nil:
-    section.add "datasetId", valid_589397
-  var valid_589398 = path.getOrDefault("projectId")
-  valid_589398 = validateParameter(valid_589398, JString, required = true,
+  if valid_579297 != nil:
+    section.add "tableId", valid_579297
+  var valid_579298 = path.getOrDefault("datasetId")
+  valid_579298 = validateParameter(valid_579298, JString, required = true,
                                  default = nil)
-  if valid_589398 != nil:
-    section.add "projectId", valid_589398
+  if valid_579298 != nil:
+    section.add "datasetId", valid_579298
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Page token, returned by a previous call, identifying the result set
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : Maximum number of results to return
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
-  ##   selectedFields: JString
-  ##                 : List of fields to return (comma-separated). If unspecified, all fields are returned
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   startIndex: JString
   ##             : Zero-based index of the starting row to read
+  ##   pageToken: JString
+  ##            : Page token, returned by a previous call, identifying the result set
+  ##   selectedFields: JString
+  ##                 : List of fields to return (comma-separated). If unspecified, all fields are returned
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : Maximum number of results to return
   section = newJObject()
-  var valid_589399 = query.getOrDefault("fields")
-  valid_589399 = validateParameter(valid_589399, JString, required = false,
+  var valid_579299 = query.getOrDefault("key")
+  valid_579299 = validateParameter(valid_579299, JString, required = false,
                                  default = nil)
-  if valid_589399 != nil:
-    section.add "fields", valid_589399
-  var valid_589400 = query.getOrDefault("pageToken")
-  valid_589400 = validateParameter(valid_589400, JString, required = false,
-                                 default = nil)
-  if valid_589400 != nil:
-    section.add "pageToken", valid_589400
-  var valid_589401 = query.getOrDefault("quotaUser")
-  valid_589401 = validateParameter(valid_589401, JString, required = false,
-                                 default = nil)
-  if valid_589401 != nil:
-    section.add "quotaUser", valid_589401
-  var valid_589402 = query.getOrDefault("alt")
-  valid_589402 = validateParameter(valid_589402, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589402 != nil:
-    section.add "alt", valid_589402
-  var valid_589403 = query.getOrDefault("oauth_token")
-  valid_589403 = validateParameter(valid_589403, JString, required = false,
-                                 default = nil)
-  if valid_589403 != nil:
-    section.add "oauth_token", valid_589403
-  var valid_589404 = query.getOrDefault("userIp")
-  valid_589404 = validateParameter(valid_589404, JString, required = false,
-                                 default = nil)
-  if valid_589404 != nil:
-    section.add "userIp", valid_589404
-  var valid_589405 = query.getOrDefault("maxResults")
-  valid_589405 = validateParameter(valid_589405, JInt, required = false, default = nil)
-  if valid_589405 != nil:
-    section.add "maxResults", valid_589405
-  var valid_589406 = query.getOrDefault("key")
-  valid_589406 = validateParameter(valid_589406, JString, required = false,
-                                 default = nil)
-  if valid_589406 != nil:
-    section.add "key", valid_589406
-  var valid_589407 = query.getOrDefault("prettyPrint")
-  valid_589407 = validateParameter(valid_589407, JBool, required = false,
+  if valid_579299 != nil:
+    section.add "key", valid_579299
+  var valid_579300 = query.getOrDefault("prettyPrint")
+  valid_579300 = validateParameter(valid_579300, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589407 != nil:
-    section.add "prettyPrint", valid_589407
-  var valid_589408 = query.getOrDefault("selectedFields")
-  valid_589408 = validateParameter(valid_589408, JString, required = false,
+  if valid_579300 != nil:
+    section.add "prettyPrint", valid_579300
+  var valid_579301 = query.getOrDefault("oauth_token")
+  valid_579301 = validateParameter(valid_579301, JString, required = false,
                                  default = nil)
-  if valid_589408 != nil:
-    section.add "selectedFields", valid_589408
-  var valid_589409 = query.getOrDefault("startIndex")
-  valid_589409 = validateParameter(valid_589409, JString, required = false,
+  if valid_579301 != nil:
+    section.add "oauth_token", valid_579301
+  var valid_579302 = query.getOrDefault("alt")
+  valid_579302 = validateParameter(valid_579302, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579302 != nil:
+    section.add "alt", valid_579302
+  var valid_579303 = query.getOrDefault("userIp")
+  valid_579303 = validateParameter(valid_579303, JString, required = false,
                                  default = nil)
-  if valid_589409 != nil:
-    section.add "startIndex", valid_589409
+  if valid_579303 != nil:
+    section.add "userIp", valid_579303
+  var valid_579304 = query.getOrDefault("quotaUser")
+  valid_579304 = validateParameter(valid_579304, JString, required = false,
+                                 default = nil)
+  if valid_579304 != nil:
+    section.add "quotaUser", valid_579304
+  var valid_579305 = query.getOrDefault("startIndex")
+  valid_579305 = validateParameter(valid_579305, JString, required = false,
+                                 default = nil)
+  if valid_579305 != nil:
+    section.add "startIndex", valid_579305
+  var valid_579306 = query.getOrDefault("pageToken")
+  valid_579306 = validateParameter(valid_579306, JString, required = false,
+                                 default = nil)
+  if valid_579306 != nil:
+    section.add "pageToken", valid_579306
+  var valid_579307 = query.getOrDefault("selectedFields")
+  valid_579307 = validateParameter(valid_579307, JString, required = false,
+                                 default = nil)
+  if valid_579307 != nil:
+    section.add "selectedFields", valid_579307
+  var valid_579308 = query.getOrDefault("fields")
+  valid_579308 = validateParameter(valid_579308, JString, required = false,
+                                 default = nil)
+  if valid_579308 != nil:
+    section.add "fields", valid_579308
+  var valid_579309 = query.getOrDefault("maxResults")
+  valid_579309 = validateParameter(valid_579309, JInt, required = false, default = nil)
+  if valid_579309 != nil:
+    section.add "maxResults", valid_579309
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4061,82 +4065,82 @@ proc validate_BigqueryTabledataList_589394(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589410: Call_BigqueryTabledataList_589393; path: JsonNode;
+proc call*(call_579310: Call_BigqueryTabledataList_579293; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves table data from a specified set of rows. Requires the READER dataset role.
   ## 
-  let valid = call_589410.validator(path, query, header, formData, body)
-  let scheme = call_589410.pickScheme
+  let valid = call_579310.validator(path, query, header, formData, body)
+  let scheme = call_579310.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589410.url(scheme.get, call_589410.host, call_589410.base,
-                         call_589410.route, valid.getOrDefault("path"),
+  let url = call_579310.url(scheme.get, call_579310.host, call_579310.base,
+                         call_579310.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589410, url, valid)
+  result = hook(call_579310, url, valid)
 
-proc call*(call_589411: Call_BigqueryTabledataList_589393; tableId: string;
-          datasetId: string; projectId: string; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; maxResults: int = 0;
-          key: string = ""; prettyPrint: bool = true; selectedFields: string = "";
-          startIndex: string = ""): Recallable =
+proc call*(call_579311: Call_BigqueryTabledataList_579293; projectId: string;
+          tableId: string; datasetId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; startIndex: string = "";
+          pageToken: string = ""; selectedFields: string = ""; fields: string = "";
+          maxResults: int = 0): Recallable =
   ## bigqueryTabledataList
   ## Retrieves table data from a specified set of rows. Requires the READER dataset role.
-  ##   tableId: string (required)
-  ##          : Table ID of the table to read
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Page token, returned by a previous call, identifying the result set
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Dataset ID of the table to read
-  ##   maxResults: int
-  ##             : Maximum number of results to return
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the table to read
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  ##   selectedFields: string
-  ##                 : List of fields to return (comma-separated). If unspecified, all fields are returned
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the table to read
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   startIndex: string
   ##             : Zero-based index of the starting row to read
-  var path_589412 = newJObject()
-  var query_589413 = newJObject()
-  add(path_589412, "tableId", newJString(tableId))
-  add(query_589413, "fields", newJString(fields))
-  add(query_589413, "pageToken", newJString(pageToken))
-  add(query_589413, "quotaUser", newJString(quotaUser))
-  add(query_589413, "alt", newJString(alt))
-  add(query_589413, "oauth_token", newJString(oauthToken))
-  add(query_589413, "userIp", newJString(userIp))
-  add(path_589412, "datasetId", newJString(datasetId))
-  add(query_589413, "maxResults", newJInt(maxResults))
-  add(query_589413, "key", newJString(key))
-  add(path_589412, "projectId", newJString(projectId))
-  add(query_589413, "prettyPrint", newJBool(prettyPrint))
-  add(query_589413, "selectedFields", newJString(selectedFields))
-  add(query_589413, "startIndex", newJString(startIndex))
-  result = call_589411.call(path_589412, query_589413, nil, nil, nil)
+  ##   pageToken: string
+  ##            : Page token, returned by a previous call, identifying the result set
+  ##   tableId: string (required)
+  ##          : Table ID of the table to read
+  ##   selectedFields: string
+  ##                 : List of fields to return (comma-separated). If unspecified, all fields are returned
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: int
+  ##             : Maximum number of results to return
+  ##   datasetId: string (required)
+  ##            : Dataset ID of the table to read
+  var path_579312 = newJObject()
+  var query_579313 = newJObject()
+  add(query_579313, "key", newJString(key))
+  add(query_579313, "prettyPrint", newJBool(prettyPrint))
+  add(query_579313, "oauth_token", newJString(oauthToken))
+  add(path_579312, "projectId", newJString(projectId))
+  add(query_579313, "alt", newJString(alt))
+  add(query_579313, "userIp", newJString(userIp))
+  add(query_579313, "quotaUser", newJString(quotaUser))
+  add(query_579313, "startIndex", newJString(startIndex))
+  add(query_579313, "pageToken", newJString(pageToken))
+  add(path_579312, "tableId", newJString(tableId))
+  add(query_579313, "selectedFields", newJString(selectedFields))
+  add(query_579313, "fields", newJString(fields))
+  add(query_579313, "maxResults", newJInt(maxResults))
+  add(path_579312, "datasetId", newJString(datasetId))
+  result = call_579311.call(path_579312, query_579313, nil, nil, nil)
 
-var bigqueryTabledataList* = Call_BigqueryTabledataList_589393(
+var bigqueryTabledataList* = Call_BigqueryTabledataList_579293(
     name: "bigqueryTabledataList", meth: HttpMethod.HttpGet,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/datasets/{datasetId}/tables/{tableId}/data",
-    validator: validate_BigqueryTabledataList_589394, base: "/bigquery/v2",
-    url: url_BigqueryTabledataList_589395, schemes: {Scheme.Https})
+    validator: validate_BigqueryTabledataList_579294, base: "/bigquery/v2",
+    url: url_BigqueryTabledataList_579295, schemes: {Scheme.Https})
 type
-  Call_BigqueryTabledataInsertAll_589414 = ref object of OpenApiRestCall_588466
-proc url_BigqueryTabledataInsertAll_589416(protocol: Scheme; host: string;
+  Call_BigqueryTabledataInsertAll_579314 = ref object of OpenApiRestCall_578364
+proc url_BigqueryTabledataInsertAll_579316(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4158,88 +4162,88 @@ proc url_BigqueryTabledataInsertAll_589416(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryTabledataInsertAll_589415(path: JsonNode; query: JsonNode;
+proc validate_BigqueryTabledataInsertAll_579315(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Streams data into BigQuery one record at a time without needing to run a load job. Requires the WRITER dataset role.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
+  ##   projectId: JString (required)
+  ##            : Project ID of the destination table.
   ##   tableId: JString (required)
   ##          : Table ID of the destination table.
   ##   datasetId: JString (required)
   ##            : Dataset ID of the destination table.
-  ##   projectId: JString (required)
-  ##            : Project ID of the destination table.
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `tableId` field"
-  var valid_589417 = path.getOrDefault("tableId")
-  valid_589417 = validateParameter(valid_589417, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579317 = path.getOrDefault("projectId")
+  valid_579317 = validateParameter(valid_579317, JString, required = true,
                                  default = nil)
-  if valid_589417 != nil:
-    section.add "tableId", valid_589417
-  var valid_589418 = path.getOrDefault("datasetId")
-  valid_589418 = validateParameter(valid_589418, JString, required = true,
+  if valid_579317 != nil:
+    section.add "projectId", valid_579317
+  var valid_579318 = path.getOrDefault("tableId")
+  valid_579318 = validateParameter(valid_579318, JString, required = true,
                                  default = nil)
-  if valid_589418 != nil:
-    section.add "datasetId", valid_589418
-  var valid_589419 = path.getOrDefault("projectId")
-  valid_589419 = validateParameter(valid_589419, JString, required = true,
+  if valid_579318 != nil:
+    section.add "tableId", valid_579318
+  var valid_579319 = path.getOrDefault("datasetId")
+  valid_579319 = validateParameter(valid_579319, JString, required = true,
                                  default = nil)
-  if valid_589419 != nil:
-    section.add "projectId", valid_589419
+  if valid_579319 != nil:
+    section.add "datasetId", valid_579319
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589420 = query.getOrDefault("fields")
-  valid_589420 = validateParameter(valid_589420, JString, required = false,
+  var valid_579320 = query.getOrDefault("key")
+  valid_579320 = validateParameter(valid_579320, JString, required = false,
                                  default = nil)
-  if valid_589420 != nil:
-    section.add "fields", valid_589420
-  var valid_589421 = query.getOrDefault("quotaUser")
-  valid_589421 = validateParameter(valid_589421, JString, required = false,
-                                 default = nil)
-  if valid_589421 != nil:
-    section.add "quotaUser", valid_589421
-  var valid_589422 = query.getOrDefault("alt")
-  valid_589422 = validateParameter(valid_589422, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589422 != nil:
-    section.add "alt", valid_589422
-  var valid_589423 = query.getOrDefault("oauth_token")
-  valid_589423 = validateParameter(valid_589423, JString, required = false,
-                                 default = nil)
-  if valid_589423 != nil:
-    section.add "oauth_token", valid_589423
-  var valid_589424 = query.getOrDefault("userIp")
-  valid_589424 = validateParameter(valid_589424, JString, required = false,
-                                 default = nil)
-  if valid_589424 != nil:
-    section.add "userIp", valid_589424
-  var valid_589425 = query.getOrDefault("key")
-  valid_589425 = validateParameter(valid_589425, JString, required = false,
-                                 default = nil)
-  if valid_589425 != nil:
-    section.add "key", valid_589425
-  var valid_589426 = query.getOrDefault("prettyPrint")
-  valid_589426 = validateParameter(valid_589426, JBool, required = false,
+  if valid_579320 != nil:
+    section.add "key", valid_579320
+  var valid_579321 = query.getOrDefault("prettyPrint")
+  valid_579321 = validateParameter(valid_579321, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589426 != nil:
-    section.add "prettyPrint", valid_589426
+  if valid_579321 != nil:
+    section.add "prettyPrint", valid_579321
+  var valid_579322 = query.getOrDefault("oauth_token")
+  valid_579322 = validateParameter(valid_579322, JString, required = false,
+                                 default = nil)
+  if valid_579322 != nil:
+    section.add "oauth_token", valid_579322
+  var valid_579323 = query.getOrDefault("alt")
+  valid_579323 = validateParameter(valid_579323, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579323 != nil:
+    section.add "alt", valid_579323
+  var valid_579324 = query.getOrDefault("userIp")
+  valid_579324 = validateParameter(valid_579324, JString, required = false,
+                                 default = nil)
+  if valid_579324 != nil:
+    section.add "userIp", valid_579324
+  var valid_579325 = query.getOrDefault("quotaUser")
+  valid_579325 = validateParameter(valid_579325, JString, required = false,
+                                 default = nil)
+  if valid_579325 != nil:
+    section.add "quotaUser", valid_579325
+  var valid_579326 = query.getOrDefault("fields")
+  valid_579326 = validateParameter(valid_579326, JString, required = false,
+                                 default = nil)
+  if valid_579326 != nil:
+    section.add "fields", valid_579326
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4251,72 +4255,72 @@ proc validate_BigqueryTabledataInsertAll_589415(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589428: Call_BigqueryTabledataInsertAll_589414; path: JsonNode;
+proc call*(call_579328: Call_BigqueryTabledataInsertAll_579314; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Streams data into BigQuery one record at a time without needing to run a load job. Requires the WRITER dataset role.
   ## 
-  let valid = call_589428.validator(path, query, header, formData, body)
-  let scheme = call_589428.pickScheme
+  let valid = call_579328.validator(path, query, header, formData, body)
+  let scheme = call_579328.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589428.url(scheme.get, call_589428.host, call_589428.base,
-                         call_589428.route, valid.getOrDefault("path"),
+  let url = call_579328.url(scheme.get, call_579328.host, call_579328.base,
+                         call_579328.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589428, url, valid)
+  result = hook(call_579328, url, valid)
 
-proc call*(call_589429: Call_BigqueryTabledataInsertAll_589414; tableId: string;
-          datasetId: string; projectId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579329: Call_BigqueryTabledataInsertAll_579314; projectId: string;
+          tableId: string; datasetId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## bigqueryTabledataInsertAll
   ## Streams data into BigQuery one record at a time without needing to run a load job. Requires the WRITER dataset role.
-  ##   tableId: string (required)
-  ##          : Table ID of the destination table.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   datasetId: string (required)
-  ##            : Dataset ID of the destination table.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the destination table.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589430 = newJObject()
-  var query_589431 = newJObject()
-  var body_589432 = newJObject()
-  add(path_589430, "tableId", newJString(tableId))
-  add(query_589431, "fields", newJString(fields))
-  add(query_589431, "quotaUser", newJString(quotaUser))
-  add(query_589431, "alt", newJString(alt))
-  add(query_589431, "oauth_token", newJString(oauthToken))
-  add(query_589431, "userIp", newJString(userIp))
-  add(path_589430, "datasetId", newJString(datasetId))
-  add(query_589431, "key", newJString(key))
-  add(path_589430, "projectId", newJString(projectId))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the destination table.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   tableId: string (required)
+  ##          : Table ID of the destination table.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   datasetId: string (required)
+  ##            : Dataset ID of the destination table.
+  var path_579330 = newJObject()
+  var query_579331 = newJObject()
+  var body_579332 = newJObject()
+  add(query_579331, "key", newJString(key))
+  add(query_579331, "prettyPrint", newJBool(prettyPrint))
+  add(query_579331, "oauth_token", newJString(oauthToken))
+  add(path_579330, "projectId", newJString(projectId))
+  add(query_579331, "alt", newJString(alt))
+  add(query_579331, "userIp", newJString(userIp))
+  add(query_579331, "quotaUser", newJString(quotaUser))
+  add(path_579330, "tableId", newJString(tableId))
   if body != nil:
-    body_589432 = body
-  add(query_589431, "prettyPrint", newJBool(prettyPrint))
-  result = call_589429.call(path_589430, query_589431, nil, nil, body_589432)
+    body_579332 = body
+  add(query_579331, "fields", newJString(fields))
+  add(path_579330, "datasetId", newJString(datasetId))
+  result = call_579329.call(path_579330, query_579331, nil, nil, body_579332)
 
-var bigqueryTabledataInsertAll* = Call_BigqueryTabledataInsertAll_589414(
+var bigqueryTabledataInsertAll* = Call_BigqueryTabledataInsertAll_579314(
     name: "bigqueryTabledataInsertAll", meth: HttpMethod.HttpPost,
     host: "bigquery.googleapis.com", route: "/projects/{projectId}/datasets/{datasetId}/tables/{tableId}/insertAll",
-    validator: validate_BigqueryTabledataInsertAll_589415, base: "/bigquery/v2",
-    url: url_BigqueryTabledataInsertAll_589416, schemes: {Scheme.Https})
+    validator: validate_BigqueryTabledataInsertAll_579315, base: "/bigquery/v2",
+    url: url_BigqueryTabledataInsertAll_579316, schemes: {Scheme.Https})
 type
-  Call_BigqueryJobsInsert_589456 = ref object of OpenApiRestCall_588466
-proc url_BigqueryJobsInsert_589458(protocol: Scheme; host: string; base: string;
+  Call_BigqueryJobsInsert_579356 = ref object of OpenApiRestCall_578364
+proc url_BigqueryJobsInsert_579358(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4332,7 +4336,7 @@ proc url_BigqueryJobsInsert_589458(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryJobsInsert_589457(path: JsonNode; query: JsonNode;
+proc validate_BigqueryJobsInsert_579357(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Starts a new asynchronous job. Requires the Can View project role.
@@ -4344,63 +4348,63 @@ proc validate_BigqueryJobsInsert_589457(path: JsonNode; query: JsonNode;
   ##            : Project ID of the project that will be billed for the job
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `projectId` field"
-  var valid_589459 = path.getOrDefault("projectId")
-  valid_589459 = validateParameter(valid_589459, JString, required = true,
+  var valid_579359 = path.getOrDefault("projectId")
+  valid_579359 = validateParameter(valid_579359, JString, required = true,
                                  default = nil)
-  if valid_589459 != nil:
-    section.add "projectId", valid_589459
+  if valid_579359 != nil:
+    section.add "projectId", valid_579359
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589460 = query.getOrDefault("fields")
-  valid_589460 = validateParameter(valid_589460, JString, required = false,
+  var valid_579360 = query.getOrDefault("key")
+  valid_579360 = validateParameter(valid_579360, JString, required = false,
                                  default = nil)
-  if valid_589460 != nil:
-    section.add "fields", valid_589460
-  var valid_589461 = query.getOrDefault("quotaUser")
-  valid_589461 = validateParameter(valid_589461, JString, required = false,
-                                 default = nil)
-  if valid_589461 != nil:
-    section.add "quotaUser", valid_589461
-  var valid_589462 = query.getOrDefault("alt")
-  valid_589462 = validateParameter(valid_589462, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589462 != nil:
-    section.add "alt", valid_589462
-  var valid_589463 = query.getOrDefault("oauth_token")
-  valid_589463 = validateParameter(valid_589463, JString, required = false,
-                                 default = nil)
-  if valid_589463 != nil:
-    section.add "oauth_token", valid_589463
-  var valid_589464 = query.getOrDefault("userIp")
-  valid_589464 = validateParameter(valid_589464, JString, required = false,
-                                 default = nil)
-  if valid_589464 != nil:
-    section.add "userIp", valid_589464
-  var valid_589465 = query.getOrDefault("key")
-  valid_589465 = validateParameter(valid_589465, JString, required = false,
-                                 default = nil)
-  if valid_589465 != nil:
-    section.add "key", valid_589465
-  var valid_589466 = query.getOrDefault("prettyPrint")
-  valid_589466 = validateParameter(valid_589466, JBool, required = false,
+  if valid_579360 != nil:
+    section.add "key", valid_579360
+  var valid_579361 = query.getOrDefault("prettyPrint")
+  valid_579361 = validateParameter(valid_579361, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589466 != nil:
-    section.add "prettyPrint", valid_589466
+  if valid_579361 != nil:
+    section.add "prettyPrint", valid_579361
+  var valid_579362 = query.getOrDefault("oauth_token")
+  valid_579362 = validateParameter(valid_579362, JString, required = false,
+                                 default = nil)
+  if valid_579362 != nil:
+    section.add "oauth_token", valid_579362
+  var valid_579363 = query.getOrDefault("alt")
+  valid_579363 = validateParameter(valid_579363, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579363 != nil:
+    section.add "alt", valid_579363
+  var valid_579364 = query.getOrDefault("userIp")
+  valid_579364 = validateParameter(valid_579364, JString, required = false,
+                                 default = nil)
+  if valid_579364 != nil:
+    section.add "userIp", valid_579364
+  var valid_579365 = query.getOrDefault("quotaUser")
+  valid_579365 = validateParameter(valid_579365, JString, required = false,
+                                 default = nil)
+  if valid_579365 != nil:
+    section.add "quotaUser", valid_579365
+  var valid_579366 = query.getOrDefault("fields")
+  valid_579366 = validateParameter(valid_579366, JString, required = false,
+                                 default = nil)
+  if valid_579366 != nil:
+    section.add "fields", valid_579366
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4412,65 +4416,65 @@ proc validate_BigqueryJobsInsert_589457(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589468: Call_BigqueryJobsInsert_589456; path: JsonNode;
+proc call*(call_579368: Call_BigqueryJobsInsert_579356; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Starts a new asynchronous job. Requires the Can View project role.
   ## 
-  let valid = call_589468.validator(path, query, header, formData, body)
-  let scheme = call_589468.pickScheme
+  let valid = call_579368.validator(path, query, header, formData, body)
+  let scheme = call_579368.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589468.url(scheme.get, call_589468.host, call_589468.base,
-                         call_589468.route, valid.getOrDefault("path"),
+  let url = call_579368.url(scheme.get, call_579368.host, call_579368.base,
+                         call_579368.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589468, url, valid)
+  result = hook(call_579368, url, valid)
 
-proc call*(call_589469: Call_BigqueryJobsInsert_589456; projectId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579369: Call_BigqueryJobsInsert_579356; projectId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## bigqueryJobsInsert
   ## Starts a new asynchronous job. Requires the Can View project role.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the project that will be billed for the job
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589470 = newJObject()
-  var query_589471 = newJObject()
-  var body_589472 = newJObject()
-  add(query_589471, "fields", newJString(fields))
-  add(query_589471, "quotaUser", newJString(quotaUser))
-  add(query_589471, "alt", newJString(alt))
-  add(query_589471, "oauth_token", newJString(oauthToken))
-  add(query_589471, "userIp", newJString(userIp))
-  add(query_589471, "key", newJString(key))
-  add(path_589470, "projectId", newJString(projectId))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the project that will be billed for the job
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579370 = newJObject()
+  var query_579371 = newJObject()
+  var body_579372 = newJObject()
+  add(query_579371, "key", newJString(key))
+  add(query_579371, "prettyPrint", newJBool(prettyPrint))
+  add(query_579371, "oauth_token", newJString(oauthToken))
+  add(path_579370, "projectId", newJString(projectId))
+  add(query_579371, "alt", newJString(alt))
+  add(query_579371, "userIp", newJString(userIp))
+  add(query_579371, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589472 = body
-  add(query_589471, "prettyPrint", newJBool(prettyPrint))
-  result = call_589469.call(path_589470, query_589471, nil, nil, body_589472)
+    body_579372 = body
+  add(query_579371, "fields", newJString(fields))
+  result = call_579369.call(path_579370, query_579371, nil, nil, body_579372)
 
-var bigqueryJobsInsert* = Call_BigqueryJobsInsert_589456(
+var bigqueryJobsInsert* = Call_BigqueryJobsInsert_579356(
     name: "bigqueryJobsInsert", meth: HttpMethod.HttpPost,
     host: "bigquery.googleapis.com", route: "/projects/{projectId}/jobs",
-    validator: validate_BigqueryJobsInsert_589457, base: "/bigquery/v2",
-    url: url_BigqueryJobsInsert_589458, schemes: {Scheme.Https})
+    validator: validate_BigqueryJobsInsert_579357, base: "/bigquery/v2",
+    url: url_BigqueryJobsInsert_579358, schemes: {Scheme.Https})
 type
-  Call_BigqueryJobsList_589433 = ref object of OpenApiRestCall_588466
-proc url_BigqueryJobsList_589435(protocol: Scheme; host: string; base: string;
+  Call_BigqueryJobsList_579333 = ref object of OpenApiRestCall_578364
+proc url_BigqueryJobsList_579335(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4486,7 +4490,7 @@ proc url_BigqueryJobsList_589435(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryJobsList_589434(path: JsonNode; query: JsonNode;
+proc validate_BigqueryJobsList_579334(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Lists all jobs that you started in the specified project. Job information is available for a six month period after creation. The job list is sorted in reverse chronological order, by job creation time. Requires the Can View project role, or the Is Owner project role if you set the allUsers property.
@@ -4498,117 +4502,117 @@ proc validate_BigqueryJobsList_589434(path: JsonNode; query: JsonNode;
   ##            : Project ID of the jobs to list
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `projectId` field"
-  var valid_589436 = path.getOrDefault("projectId")
-  valid_589436 = validateParameter(valid_589436, JString, required = true,
+  var valid_579336 = path.getOrDefault("projectId")
+  valid_579336 = validateParameter(valid_579336, JString, required = true,
                                  default = nil)
-  if valid_589436 != nil:
-    section.add "projectId", valid_589436
+  if valid_579336 != nil:
+    section.add "projectId", valid_579336
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Page token, returned by a previous call, to request the next page of results
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   parentJobId: JString
-  ##              : If set, retrieves only jobs whose parent is this job. Otherwise, retrieves only jobs which have no parent
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : Maximum number of results to return
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   minCreationTime: JString
+  ##                  : Min value for job creation time, in milliseconds since the POSIX epoch. If set, only jobs created after or at this timestamp are returned
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   parentJobId: JString
+  ##              : If set, retrieves only jobs whose parent is this job. Otherwise, retrieves only jobs which have no parent
+  ##   pageToken: JString
+  ##            : Page token, returned by a previous call, to request the next page of results
+  ##   stateFilter: JArray
+  ##              : Filter for job state
   ##   allUsers: JBool
   ##           : Whether to display jobs owned by all users in the project. Default false
   ##   projection: JString
   ##             : Restrict information returned to a set of selected fields
-  ##   minCreationTime: JString
-  ##                  : Min value for job creation time, in milliseconds since the POSIX epoch. If set, only jobs created after or at this timestamp are returned
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   ##   maxCreationTime: JString
   ##                  : Max value for job creation time, in milliseconds since the POSIX epoch. If set, only jobs created before or at this timestamp are returned
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
-  ##   stateFilter: JArray
-  ##              : Filter for job state
+  ##   maxResults: JInt
+  ##             : Maximum number of results to return
   section = newJObject()
-  var valid_589437 = query.getOrDefault("fields")
-  valid_589437 = validateParameter(valid_589437, JString, required = false,
+  var valid_579337 = query.getOrDefault("key")
+  valid_579337 = validateParameter(valid_579337, JString, required = false,
                                  default = nil)
-  if valid_589437 != nil:
-    section.add "fields", valid_589437
-  var valid_589438 = query.getOrDefault("pageToken")
-  valid_589438 = validateParameter(valid_589438, JString, required = false,
-                                 default = nil)
-  if valid_589438 != nil:
-    section.add "pageToken", valid_589438
-  var valid_589439 = query.getOrDefault("quotaUser")
-  valid_589439 = validateParameter(valid_589439, JString, required = false,
-                                 default = nil)
-  if valid_589439 != nil:
-    section.add "quotaUser", valid_589439
-  var valid_589440 = query.getOrDefault("alt")
-  valid_589440 = validateParameter(valid_589440, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589440 != nil:
-    section.add "alt", valid_589440
-  var valid_589441 = query.getOrDefault("parentJobId")
-  valid_589441 = validateParameter(valid_589441, JString, required = false,
-                                 default = nil)
-  if valid_589441 != nil:
-    section.add "parentJobId", valid_589441
-  var valid_589442 = query.getOrDefault("oauth_token")
-  valid_589442 = validateParameter(valid_589442, JString, required = false,
-                                 default = nil)
-  if valid_589442 != nil:
-    section.add "oauth_token", valid_589442
-  var valid_589443 = query.getOrDefault("userIp")
-  valid_589443 = validateParameter(valid_589443, JString, required = false,
-                                 default = nil)
-  if valid_589443 != nil:
-    section.add "userIp", valid_589443
-  var valid_589444 = query.getOrDefault("maxResults")
-  valid_589444 = validateParameter(valid_589444, JInt, required = false, default = nil)
-  if valid_589444 != nil:
-    section.add "maxResults", valid_589444
-  var valid_589445 = query.getOrDefault("key")
-  valid_589445 = validateParameter(valid_589445, JString, required = false,
-                                 default = nil)
-  if valid_589445 != nil:
-    section.add "key", valid_589445
-  var valid_589446 = query.getOrDefault("allUsers")
-  valid_589446 = validateParameter(valid_589446, JBool, required = false, default = nil)
-  if valid_589446 != nil:
-    section.add "allUsers", valid_589446
-  var valid_589447 = query.getOrDefault("projection")
-  valid_589447 = validateParameter(valid_589447, JString, required = false,
-                                 default = newJString("full"))
-  if valid_589447 != nil:
-    section.add "projection", valid_589447
-  var valid_589448 = query.getOrDefault("minCreationTime")
-  valid_589448 = validateParameter(valid_589448, JString, required = false,
-                                 default = nil)
-  if valid_589448 != nil:
-    section.add "minCreationTime", valid_589448
-  var valid_589449 = query.getOrDefault("maxCreationTime")
-  valid_589449 = validateParameter(valid_589449, JString, required = false,
-                                 default = nil)
-  if valid_589449 != nil:
-    section.add "maxCreationTime", valid_589449
-  var valid_589450 = query.getOrDefault("prettyPrint")
-  valid_589450 = validateParameter(valid_589450, JBool, required = false,
+  if valid_579337 != nil:
+    section.add "key", valid_579337
+  var valid_579338 = query.getOrDefault("prettyPrint")
+  valid_579338 = validateParameter(valid_579338, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589450 != nil:
-    section.add "prettyPrint", valid_589450
-  var valid_589451 = query.getOrDefault("stateFilter")
-  valid_589451 = validateParameter(valid_589451, JArray, required = false,
+  if valid_579338 != nil:
+    section.add "prettyPrint", valid_579338
+  var valid_579339 = query.getOrDefault("oauth_token")
+  valid_579339 = validateParameter(valid_579339, JString, required = false,
                                  default = nil)
-  if valid_589451 != nil:
-    section.add "stateFilter", valid_589451
+  if valid_579339 != nil:
+    section.add "oauth_token", valid_579339
+  var valid_579340 = query.getOrDefault("minCreationTime")
+  valid_579340 = validateParameter(valid_579340, JString, required = false,
+                                 default = nil)
+  if valid_579340 != nil:
+    section.add "minCreationTime", valid_579340
+  var valid_579341 = query.getOrDefault("alt")
+  valid_579341 = validateParameter(valid_579341, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579341 != nil:
+    section.add "alt", valid_579341
+  var valid_579342 = query.getOrDefault("userIp")
+  valid_579342 = validateParameter(valid_579342, JString, required = false,
+                                 default = nil)
+  if valid_579342 != nil:
+    section.add "userIp", valid_579342
+  var valid_579343 = query.getOrDefault("quotaUser")
+  valid_579343 = validateParameter(valid_579343, JString, required = false,
+                                 default = nil)
+  if valid_579343 != nil:
+    section.add "quotaUser", valid_579343
+  var valid_579344 = query.getOrDefault("parentJobId")
+  valid_579344 = validateParameter(valid_579344, JString, required = false,
+                                 default = nil)
+  if valid_579344 != nil:
+    section.add "parentJobId", valid_579344
+  var valid_579345 = query.getOrDefault("pageToken")
+  valid_579345 = validateParameter(valid_579345, JString, required = false,
+                                 default = nil)
+  if valid_579345 != nil:
+    section.add "pageToken", valid_579345
+  var valid_579346 = query.getOrDefault("stateFilter")
+  valid_579346 = validateParameter(valid_579346, JArray, required = false,
+                                 default = nil)
+  if valid_579346 != nil:
+    section.add "stateFilter", valid_579346
+  var valid_579347 = query.getOrDefault("allUsers")
+  valid_579347 = validateParameter(valid_579347, JBool, required = false, default = nil)
+  if valid_579347 != nil:
+    section.add "allUsers", valid_579347
+  var valid_579348 = query.getOrDefault("projection")
+  valid_579348 = validateParameter(valid_579348, JString, required = false,
+                                 default = newJString("full"))
+  if valid_579348 != nil:
+    section.add "projection", valid_579348
+  var valid_579349 = query.getOrDefault("fields")
+  valid_579349 = validateParameter(valid_579349, JString, required = false,
+                                 default = nil)
+  if valid_579349 != nil:
+    section.add "fields", valid_579349
+  var valid_579350 = query.getOrDefault("maxCreationTime")
+  valid_579350 = validateParameter(valid_579350, JString, required = false,
+                                 default = nil)
+  if valid_579350 != nil:
+    section.add "maxCreationTime", valid_579350
+  var valid_579351 = query.getOrDefault("maxResults")
+  valid_579351 = validateParameter(valid_579351, JInt, required = false, default = nil)
+  if valid_579351 != nil:
+    section.add "maxResults", valid_579351
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4617,88 +4621,88 @@ proc validate_BigqueryJobsList_589434(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589452: Call_BigqueryJobsList_589433; path: JsonNode;
+proc call*(call_579352: Call_BigqueryJobsList_579333; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all jobs that you started in the specified project. Job information is available for a six month period after creation. The job list is sorted in reverse chronological order, by job creation time. Requires the Can View project role, or the Is Owner project role if you set the allUsers property.
   ## 
-  let valid = call_589452.validator(path, query, header, formData, body)
-  let scheme = call_589452.pickScheme
+  let valid = call_579352.validator(path, query, header, formData, body)
+  let scheme = call_579352.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589452.url(scheme.get, call_589452.host, call_589452.base,
-                         call_589452.route, valid.getOrDefault("path"),
+  let url = call_579352.url(scheme.get, call_579352.host, call_579352.base,
+                         call_579352.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589452, url, valid)
+  result = hook(call_579352, url, valid)
 
-proc call*(call_589453: Call_BigqueryJobsList_589433; projectId: string;
-          fields: string = ""; pageToken: string = ""; quotaUser: string = "";
-          alt: string = "json"; parentJobId: string = ""; oauthToken: string = "";
-          userIp: string = ""; maxResults: int = 0; key: string = "";
-          allUsers: bool = false; projection: string = "full";
-          minCreationTime: string = ""; maxCreationTime: string = "";
-          prettyPrint: bool = true; stateFilter: JsonNode = nil): Recallable =
+proc call*(call_579353: Call_BigqueryJobsList_579333; projectId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          minCreationTime: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; parentJobId: string = ""; pageToken: string = "";
+          stateFilter: JsonNode = nil; allUsers: bool = false;
+          projection: string = "full"; fields: string = "";
+          maxCreationTime: string = ""; maxResults: int = 0): Recallable =
   ## bigqueryJobsList
   ## Lists all jobs that you started in the specified project. Job information is available for a six month period after creation. The job list is sorted in reverse chronological order, by job creation time. Requires the Can View project role, or the Is Owner project role if you set the allUsers property.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Page token, returned by a previous call, to request the next page of results
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   parentJobId: string
-  ##              : If set, retrieves only jobs whose parent is this job. Otherwise, retrieves only jobs which have no parent
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : Maximum number of results to return
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   allUsers: bool
-  ##           : Whether to display jobs owned by all users in the project. Default false
-  ##   projectId: string (required)
-  ##            : Project ID of the jobs to list
-  ##   projection: string
-  ##             : Restrict information returned to a set of selected fields
-  ##   minCreationTime: string
-  ##                  : Min value for job creation time, in milliseconds since the POSIX epoch. If set, only jobs created after or at this timestamp are returned
-  ##   maxCreationTime: string
-  ##                  : Max value for job creation time, in milliseconds since the POSIX epoch. If set, only jobs created before or at this timestamp are returned
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the jobs to list
+  ##   minCreationTime: string
+  ##                  : Min value for job creation time, in milliseconds since the POSIX epoch. If set, only jobs created after or at this timestamp are returned
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   parentJobId: string
+  ##              : If set, retrieves only jobs whose parent is this job. Otherwise, retrieves only jobs which have no parent
+  ##   pageToken: string
+  ##            : Page token, returned by a previous call, to request the next page of results
   ##   stateFilter: JArray
   ##              : Filter for job state
-  var path_589454 = newJObject()
-  var query_589455 = newJObject()
-  add(query_589455, "fields", newJString(fields))
-  add(query_589455, "pageToken", newJString(pageToken))
-  add(query_589455, "quotaUser", newJString(quotaUser))
-  add(query_589455, "alt", newJString(alt))
-  add(query_589455, "parentJobId", newJString(parentJobId))
-  add(query_589455, "oauth_token", newJString(oauthToken))
-  add(query_589455, "userIp", newJString(userIp))
-  add(query_589455, "maxResults", newJInt(maxResults))
-  add(query_589455, "key", newJString(key))
-  add(query_589455, "allUsers", newJBool(allUsers))
-  add(path_589454, "projectId", newJString(projectId))
-  add(query_589455, "projection", newJString(projection))
-  add(query_589455, "minCreationTime", newJString(minCreationTime))
-  add(query_589455, "maxCreationTime", newJString(maxCreationTime))
-  add(query_589455, "prettyPrint", newJBool(prettyPrint))
+  ##   allUsers: bool
+  ##           : Whether to display jobs owned by all users in the project. Default false
+  ##   projection: string
+  ##             : Restrict information returned to a set of selected fields
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxCreationTime: string
+  ##                  : Max value for job creation time, in milliseconds since the POSIX epoch. If set, only jobs created before or at this timestamp are returned
+  ##   maxResults: int
+  ##             : Maximum number of results to return
+  var path_579354 = newJObject()
+  var query_579355 = newJObject()
+  add(query_579355, "key", newJString(key))
+  add(query_579355, "prettyPrint", newJBool(prettyPrint))
+  add(query_579355, "oauth_token", newJString(oauthToken))
+  add(path_579354, "projectId", newJString(projectId))
+  add(query_579355, "minCreationTime", newJString(minCreationTime))
+  add(query_579355, "alt", newJString(alt))
+  add(query_579355, "userIp", newJString(userIp))
+  add(query_579355, "quotaUser", newJString(quotaUser))
+  add(query_579355, "parentJobId", newJString(parentJobId))
+  add(query_579355, "pageToken", newJString(pageToken))
   if stateFilter != nil:
-    query_589455.add "stateFilter", stateFilter
-  result = call_589453.call(path_589454, query_589455, nil, nil, nil)
+    query_579355.add "stateFilter", stateFilter
+  add(query_579355, "allUsers", newJBool(allUsers))
+  add(query_579355, "projection", newJString(projection))
+  add(query_579355, "fields", newJString(fields))
+  add(query_579355, "maxCreationTime", newJString(maxCreationTime))
+  add(query_579355, "maxResults", newJInt(maxResults))
+  result = call_579353.call(path_579354, query_579355, nil, nil, nil)
 
-var bigqueryJobsList* = Call_BigqueryJobsList_589433(name: "bigqueryJobsList",
+var bigqueryJobsList* = Call_BigqueryJobsList_579333(name: "bigqueryJobsList",
     meth: HttpMethod.HttpGet, host: "bigquery.googleapis.com",
-    route: "/projects/{projectId}/jobs", validator: validate_BigqueryJobsList_589434,
-    base: "/bigquery/v2", url: url_BigqueryJobsList_589435, schemes: {Scheme.Https})
+    route: "/projects/{projectId}/jobs", validator: validate_BigqueryJobsList_579334,
+    base: "/bigquery/v2", url: url_BigqueryJobsList_579335, schemes: {Scheme.Https})
 type
-  Call_BigqueryJobsGet_589473 = ref object of OpenApiRestCall_588466
-proc url_BigqueryJobsGet_589475(protocol: Scheme; host: string; base: string;
+  Call_BigqueryJobsGet_579373 = ref object of OpenApiRestCall_578364
+proc url_BigqueryJobsGet_579375(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4716,7 +4720,7 @@ proc url_BigqueryJobsGet_589475(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryJobsGet_589474(path: JsonNode; query: JsonNode;
+proc validate_BigqueryJobsGet_579374(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Returns information about a specific job. Job information is available for a six month period after creation. Requires that you're the person who ran the job, or have the Is Owner project role.
@@ -4724,81 +4728,81 @@ proc validate_BigqueryJobsGet_589474(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   jobId: JString (required)
-  ##        : [Required] Job ID of the requested job
   ##   projectId: JString (required)
   ##            : [Required] Project ID of the requested job
+  ##   jobId: JString (required)
+  ##        : [Required] Job ID of the requested job
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `jobId` field"
-  var valid_589476 = path.getOrDefault("jobId")
-  valid_589476 = validateParameter(valid_589476, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579376 = path.getOrDefault("projectId")
+  valid_579376 = validateParameter(valid_579376, JString, required = true,
                                  default = nil)
-  if valid_589476 != nil:
-    section.add "jobId", valid_589476
-  var valid_589477 = path.getOrDefault("projectId")
-  valid_589477 = validateParameter(valid_589477, JString, required = true,
+  if valid_579376 != nil:
+    section.add "projectId", valid_579376
+  var valid_579377 = path.getOrDefault("jobId")
+  valid_579377 = validateParameter(valid_579377, JString, required = true,
                                  default = nil)
-  if valid_589477 != nil:
-    section.add "projectId", valid_589477
+  if valid_579377 != nil:
+    section.add "jobId", valid_579377
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   location: JString
-  ##           : The geographic location of the job. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   location: JString
+  ##           : The geographic location of the job. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589478 = query.getOrDefault("fields")
-  valid_589478 = validateParameter(valid_589478, JString, required = false,
+  var valid_579378 = query.getOrDefault("key")
+  valid_579378 = validateParameter(valid_579378, JString, required = false,
                                  default = nil)
-  if valid_589478 != nil:
-    section.add "fields", valid_589478
-  var valid_589479 = query.getOrDefault("quotaUser")
-  valid_589479 = validateParameter(valid_589479, JString, required = false,
-                                 default = nil)
-  if valid_589479 != nil:
-    section.add "quotaUser", valid_589479
-  var valid_589480 = query.getOrDefault("alt")
-  valid_589480 = validateParameter(valid_589480, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589480 != nil:
-    section.add "alt", valid_589480
-  var valid_589481 = query.getOrDefault("oauth_token")
-  valid_589481 = validateParameter(valid_589481, JString, required = false,
-                                 default = nil)
-  if valid_589481 != nil:
-    section.add "oauth_token", valid_589481
-  var valid_589482 = query.getOrDefault("userIp")
-  valid_589482 = validateParameter(valid_589482, JString, required = false,
-                                 default = nil)
-  if valid_589482 != nil:
-    section.add "userIp", valid_589482
-  var valid_589483 = query.getOrDefault("location")
-  valid_589483 = validateParameter(valid_589483, JString, required = false,
-                                 default = nil)
-  if valid_589483 != nil:
-    section.add "location", valid_589483
-  var valid_589484 = query.getOrDefault("key")
-  valid_589484 = validateParameter(valid_589484, JString, required = false,
-                                 default = nil)
-  if valid_589484 != nil:
-    section.add "key", valid_589484
-  var valid_589485 = query.getOrDefault("prettyPrint")
-  valid_589485 = validateParameter(valid_589485, JBool, required = false,
+  if valid_579378 != nil:
+    section.add "key", valid_579378
+  var valid_579379 = query.getOrDefault("prettyPrint")
+  valid_579379 = validateParameter(valid_579379, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589485 != nil:
-    section.add "prettyPrint", valid_589485
+  if valid_579379 != nil:
+    section.add "prettyPrint", valid_579379
+  var valid_579380 = query.getOrDefault("oauth_token")
+  valid_579380 = validateParameter(valid_579380, JString, required = false,
+                                 default = nil)
+  if valid_579380 != nil:
+    section.add "oauth_token", valid_579380
+  var valid_579381 = query.getOrDefault("alt")
+  valid_579381 = validateParameter(valid_579381, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579381 != nil:
+    section.add "alt", valid_579381
+  var valid_579382 = query.getOrDefault("userIp")
+  valid_579382 = validateParameter(valid_579382, JString, required = false,
+                                 default = nil)
+  if valid_579382 != nil:
+    section.add "userIp", valid_579382
+  var valid_579383 = query.getOrDefault("quotaUser")
+  valid_579383 = validateParameter(valid_579383, JString, required = false,
+                                 default = nil)
+  if valid_579383 != nil:
+    section.add "quotaUser", valid_579383
+  var valid_579384 = query.getOrDefault("location")
+  valid_579384 = validateParameter(valid_579384, JString, required = false,
+                                 default = nil)
+  if valid_579384 != nil:
+    section.add "location", valid_579384
+  var valid_579385 = query.getOrDefault("fields")
+  valid_579385 = validateParameter(valid_579385, JString, required = false,
+                                 default = nil)
+  if valid_579385 != nil:
+    section.add "fields", valid_579385
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4807,67 +4811,67 @@ proc validate_BigqueryJobsGet_589474(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589486: Call_BigqueryJobsGet_589473; path: JsonNode; query: JsonNode;
+proc call*(call_579386: Call_BigqueryJobsGet_579373; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns information about a specific job. Job information is available for a six month period after creation. Requires that you're the person who ran the job, or have the Is Owner project role.
   ## 
-  let valid = call_589486.validator(path, query, header, formData, body)
-  let scheme = call_589486.pickScheme
+  let valid = call_579386.validator(path, query, header, formData, body)
+  let scheme = call_579386.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589486.url(scheme.get, call_589486.host, call_589486.base,
-                         call_589486.route, valid.getOrDefault("path"),
+  let url = call_579386.url(scheme.get, call_579386.host, call_579386.base,
+                         call_579386.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589486, url, valid)
+  result = hook(call_579386, url, valid)
 
-proc call*(call_589487: Call_BigqueryJobsGet_589473; jobId: string;
-          projectId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          location: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579387: Call_BigqueryJobsGet_579373; projectId: string;
+          jobId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; location: string = ""; fields: string = ""): Recallable =
   ## bigqueryJobsGet
   ## Returns information about a specific job. Job information is available for a six month period after creation. Requires that you're the person who ran the job, or have the Is Owner project role.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   jobId: string (required)
-  ##        : [Required] Job ID of the requested job
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   location: string
-  ##           : The geographic location of the job. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : [Required] Project ID of the requested job
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589488 = newJObject()
-  var query_589489 = newJObject()
-  add(query_589489, "fields", newJString(fields))
-  add(query_589489, "quotaUser", newJString(quotaUser))
-  add(query_589489, "alt", newJString(alt))
-  add(path_589488, "jobId", newJString(jobId))
-  add(query_589489, "oauth_token", newJString(oauthToken))
-  add(query_589489, "userIp", newJString(userIp))
-  add(query_589489, "location", newJString(location))
-  add(query_589489, "key", newJString(key))
-  add(path_589488, "projectId", newJString(projectId))
-  add(query_589489, "prettyPrint", newJBool(prettyPrint))
-  result = call_589487.call(path_589488, query_589489, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : [Required] Project ID of the requested job
+  ##   jobId: string (required)
+  ##        : [Required] Job ID of the requested job
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   location: string
+  ##           : The geographic location of the job. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579388 = newJObject()
+  var query_579389 = newJObject()
+  add(query_579389, "key", newJString(key))
+  add(query_579389, "prettyPrint", newJBool(prettyPrint))
+  add(query_579389, "oauth_token", newJString(oauthToken))
+  add(path_579388, "projectId", newJString(projectId))
+  add(path_579388, "jobId", newJString(jobId))
+  add(query_579389, "alt", newJString(alt))
+  add(query_579389, "userIp", newJString(userIp))
+  add(query_579389, "quotaUser", newJString(quotaUser))
+  add(query_579389, "location", newJString(location))
+  add(query_579389, "fields", newJString(fields))
+  result = call_579387.call(path_579388, query_579389, nil, nil, nil)
 
-var bigqueryJobsGet* = Call_BigqueryJobsGet_589473(name: "bigqueryJobsGet",
+var bigqueryJobsGet* = Call_BigqueryJobsGet_579373(name: "bigqueryJobsGet",
     meth: HttpMethod.HttpGet, host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/jobs/{jobId}",
-    validator: validate_BigqueryJobsGet_589474, base: "/bigquery/v2",
-    url: url_BigqueryJobsGet_589475, schemes: {Scheme.Https})
+    validator: validate_BigqueryJobsGet_579374, base: "/bigquery/v2",
+    url: url_BigqueryJobsGet_579375, schemes: {Scheme.Https})
 type
-  Call_BigqueryJobsCancel_589490 = ref object of OpenApiRestCall_588466
-proc url_BigqueryJobsCancel_589492(protocol: Scheme; host: string; base: string;
+  Call_BigqueryJobsCancel_579390 = ref object of OpenApiRestCall_578364
+proc url_BigqueryJobsCancel_579392(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4886,7 +4890,7 @@ proc url_BigqueryJobsCancel_589492(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryJobsCancel_589491(path: JsonNode; query: JsonNode;
+proc validate_BigqueryJobsCancel_579391(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Requests that a job be cancelled. This call will return immediately, and the client will need to poll for the job status to see if the cancel completed successfully. Cancelled jobs may still incur costs.
@@ -4894,81 +4898,81 @@ proc validate_BigqueryJobsCancel_589491(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   jobId: JString (required)
-  ##        : [Required] Job ID of the job to cancel
   ##   projectId: JString (required)
   ##            : [Required] Project ID of the job to cancel
+  ##   jobId: JString (required)
+  ##        : [Required] Job ID of the job to cancel
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `jobId` field"
-  var valid_589493 = path.getOrDefault("jobId")
-  valid_589493 = validateParameter(valid_589493, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579393 = path.getOrDefault("projectId")
+  valid_579393 = validateParameter(valid_579393, JString, required = true,
                                  default = nil)
-  if valid_589493 != nil:
-    section.add "jobId", valid_589493
-  var valid_589494 = path.getOrDefault("projectId")
-  valid_589494 = validateParameter(valid_589494, JString, required = true,
+  if valid_579393 != nil:
+    section.add "projectId", valid_579393
+  var valid_579394 = path.getOrDefault("jobId")
+  valid_579394 = validateParameter(valid_579394, JString, required = true,
                                  default = nil)
-  if valid_589494 != nil:
-    section.add "projectId", valid_589494
+  if valid_579394 != nil:
+    section.add "jobId", valid_579394
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   location: JString
-  ##           : The geographic location of the job. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   location: JString
+  ##           : The geographic location of the job. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589495 = query.getOrDefault("fields")
-  valid_589495 = validateParameter(valid_589495, JString, required = false,
+  var valid_579395 = query.getOrDefault("key")
+  valid_579395 = validateParameter(valid_579395, JString, required = false,
                                  default = nil)
-  if valid_589495 != nil:
-    section.add "fields", valid_589495
-  var valid_589496 = query.getOrDefault("quotaUser")
-  valid_589496 = validateParameter(valid_589496, JString, required = false,
-                                 default = nil)
-  if valid_589496 != nil:
-    section.add "quotaUser", valid_589496
-  var valid_589497 = query.getOrDefault("alt")
-  valid_589497 = validateParameter(valid_589497, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589497 != nil:
-    section.add "alt", valid_589497
-  var valid_589498 = query.getOrDefault("oauth_token")
-  valid_589498 = validateParameter(valid_589498, JString, required = false,
-                                 default = nil)
-  if valid_589498 != nil:
-    section.add "oauth_token", valid_589498
-  var valid_589499 = query.getOrDefault("userIp")
-  valid_589499 = validateParameter(valid_589499, JString, required = false,
-                                 default = nil)
-  if valid_589499 != nil:
-    section.add "userIp", valid_589499
-  var valid_589500 = query.getOrDefault("location")
-  valid_589500 = validateParameter(valid_589500, JString, required = false,
-                                 default = nil)
-  if valid_589500 != nil:
-    section.add "location", valid_589500
-  var valid_589501 = query.getOrDefault("key")
-  valid_589501 = validateParameter(valid_589501, JString, required = false,
-                                 default = nil)
-  if valid_589501 != nil:
-    section.add "key", valid_589501
-  var valid_589502 = query.getOrDefault("prettyPrint")
-  valid_589502 = validateParameter(valid_589502, JBool, required = false,
+  if valid_579395 != nil:
+    section.add "key", valid_579395
+  var valid_579396 = query.getOrDefault("prettyPrint")
+  valid_579396 = validateParameter(valid_579396, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589502 != nil:
-    section.add "prettyPrint", valid_589502
+  if valid_579396 != nil:
+    section.add "prettyPrint", valid_579396
+  var valid_579397 = query.getOrDefault("oauth_token")
+  valid_579397 = validateParameter(valid_579397, JString, required = false,
+                                 default = nil)
+  if valid_579397 != nil:
+    section.add "oauth_token", valid_579397
+  var valid_579398 = query.getOrDefault("alt")
+  valid_579398 = validateParameter(valid_579398, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579398 != nil:
+    section.add "alt", valid_579398
+  var valid_579399 = query.getOrDefault("userIp")
+  valid_579399 = validateParameter(valid_579399, JString, required = false,
+                                 default = nil)
+  if valid_579399 != nil:
+    section.add "userIp", valid_579399
+  var valid_579400 = query.getOrDefault("quotaUser")
+  valid_579400 = validateParameter(valid_579400, JString, required = false,
+                                 default = nil)
+  if valid_579400 != nil:
+    section.add "quotaUser", valid_579400
+  var valid_579401 = query.getOrDefault("location")
+  valid_579401 = validateParameter(valid_579401, JString, required = false,
+                                 default = nil)
+  if valid_579401 != nil:
+    section.add "location", valid_579401
+  var valid_579402 = query.getOrDefault("fields")
+  valid_579402 = validateParameter(valid_579402, JString, required = false,
+                                 default = nil)
+  if valid_579402 != nil:
+    section.add "fields", valid_579402
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4977,68 +4981,68 @@ proc validate_BigqueryJobsCancel_589491(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589503: Call_BigqueryJobsCancel_589490; path: JsonNode;
+proc call*(call_579403: Call_BigqueryJobsCancel_579390; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Requests that a job be cancelled. This call will return immediately, and the client will need to poll for the job status to see if the cancel completed successfully. Cancelled jobs may still incur costs.
   ## 
-  let valid = call_589503.validator(path, query, header, formData, body)
-  let scheme = call_589503.pickScheme
+  let valid = call_579403.validator(path, query, header, formData, body)
+  let scheme = call_579403.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589503.url(scheme.get, call_589503.host, call_589503.base,
-                         call_589503.route, valid.getOrDefault("path"),
+  let url = call_579403.url(scheme.get, call_579403.host, call_579403.base,
+                         call_579403.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589503, url, valid)
+  result = hook(call_579403, url, valid)
 
-proc call*(call_589504: Call_BigqueryJobsCancel_589490; jobId: string;
-          projectId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          location: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579404: Call_BigqueryJobsCancel_579390; projectId: string;
+          jobId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; location: string = ""; fields: string = ""): Recallable =
   ## bigqueryJobsCancel
   ## Requests that a job be cancelled. This call will return immediately, and the client will need to poll for the job status to see if the cancel completed successfully. Cancelled jobs may still incur costs.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   jobId: string (required)
-  ##        : [Required] Job ID of the job to cancel
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   location: string
-  ##           : The geographic location of the job. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : [Required] Project ID of the job to cancel
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589505 = newJObject()
-  var query_589506 = newJObject()
-  add(query_589506, "fields", newJString(fields))
-  add(query_589506, "quotaUser", newJString(quotaUser))
-  add(query_589506, "alt", newJString(alt))
-  add(path_589505, "jobId", newJString(jobId))
-  add(query_589506, "oauth_token", newJString(oauthToken))
-  add(query_589506, "userIp", newJString(userIp))
-  add(query_589506, "location", newJString(location))
-  add(query_589506, "key", newJString(key))
-  add(path_589505, "projectId", newJString(projectId))
-  add(query_589506, "prettyPrint", newJBool(prettyPrint))
-  result = call_589504.call(path_589505, query_589506, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : [Required] Project ID of the job to cancel
+  ##   jobId: string (required)
+  ##        : [Required] Job ID of the job to cancel
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   location: string
+  ##           : The geographic location of the job. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579405 = newJObject()
+  var query_579406 = newJObject()
+  add(query_579406, "key", newJString(key))
+  add(query_579406, "prettyPrint", newJBool(prettyPrint))
+  add(query_579406, "oauth_token", newJString(oauthToken))
+  add(path_579405, "projectId", newJString(projectId))
+  add(path_579405, "jobId", newJString(jobId))
+  add(query_579406, "alt", newJString(alt))
+  add(query_579406, "userIp", newJString(userIp))
+  add(query_579406, "quotaUser", newJString(quotaUser))
+  add(query_579406, "location", newJString(location))
+  add(query_579406, "fields", newJString(fields))
+  result = call_579404.call(path_579405, query_579406, nil, nil, nil)
 
-var bigqueryJobsCancel* = Call_BigqueryJobsCancel_589490(
+var bigqueryJobsCancel* = Call_BigqueryJobsCancel_579390(
     name: "bigqueryJobsCancel", meth: HttpMethod.HttpPost,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/jobs/{jobId}/cancel",
-    validator: validate_BigqueryJobsCancel_589491, base: "/bigquery/v2",
-    url: url_BigqueryJobsCancel_589492, schemes: {Scheme.Https})
+    validator: validate_BigqueryJobsCancel_579391, base: "/bigquery/v2",
+    url: url_BigqueryJobsCancel_579392, schemes: {Scheme.Https})
 type
-  Call_BigqueryJobsQuery_589507 = ref object of OpenApiRestCall_588466
-proc url_BigqueryJobsQuery_589509(protocol: Scheme; host: string; base: string;
+  Call_BigqueryJobsQuery_579407 = ref object of OpenApiRestCall_578364
+proc url_BigqueryJobsQuery_579409(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5054,7 +5058,7 @@ proc url_BigqueryJobsQuery_589509(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryJobsQuery_589508(path: JsonNode; query: JsonNode;
+proc validate_BigqueryJobsQuery_579408(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Runs a BigQuery SQL query synchronously and returns query results if the query completes within a specified timeout.
@@ -5066,63 +5070,63 @@ proc validate_BigqueryJobsQuery_589508(path: JsonNode; query: JsonNode;
   ##            : Project ID of the project billed for the query
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `projectId` field"
-  var valid_589510 = path.getOrDefault("projectId")
-  valid_589510 = validateParameter(valid_589510, JString, required = true,
+  var valid_579410 = path.getOrDefault("projectId")
+  valid_579410 = validateParameter(valid_579410, JString, required = true,
                                  default = nil)
-  if valid_589510 != nil:
-    section.add "projectId", valid_589510
+  if valid_579410 != nil:
+    section.add "projectId", valid_579410
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589511 = query.getOrDefault("fields")
-  valid_589511 = validateParameter(valid_589511, JString, required = false,
+  var valid_579411 = query.getOrDefault("key")
+  valid_579411 = validateParameter(valid_579411, JString, required = false,
                                  default = nil)
-  if valid_589511 != nil:
-    section.add "fields", valid_589511
-  var valid_589512 = query.getOrDefault("quotaUser")
-  valid_589512 = validateParameter(valid_589512, JString, required = false,
-                                 default = nil)
-  if valid_589512 != nil:
-    section.add "quotaUser", valid_589512
-  var valid_589513 = query.getOrDefault("alt")
-  valid_589513 = validateParameter(valid_589513, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589513 != nil:
-    section.add "alt", valid_589513
-  var valid_589514 = query.getOrDefault("oauth_token")
-  valid_589514 = validateParameter(valid_589514, JString, required = false,
-                                 default = nil)
-  if valid_589514 != nil:
-    section.add "oauth_token", valid_589514
-  var valid_589515 = query.getOrDefault("userIp")
-  valid_589515 = validateParameter(valid_589515, JString, required = false,
-                                 default = nil)
-  if valid_589515 != nil:
-    section.add "userIp", valid_589515
-  var valid_589516 = query.getOrDefault("key")
-  valid_589516 = validateParameter(valid_589516, JString, required = false,
-                                 default = nil)
-  if valid_589516 != nil:
-    section.add "key", valid_589516
-  var valid_589517 = query.getOrDefault("prettyPrint")
-  valid_589517 = validateParameter(valid_589517, JBool, required = false,
+  if valid_579411 != nil:
+    section.add "key", valid_579411
+  var valid_579412 = query.getOrDefault("prettyPrint")
+  valid_579412 = validateParameter(valid_579412, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589517 != nil:
-    section.add "prettyPrint", valid_589517
+  if valid_579412 != nil:
+    section.add "prettyPrint", valid_579412
+  var valid_579413 = query.getOrDefault("oauth_token")
+  valid_579413 = validateParameter(valid_579413, JString, required = false,
+                                 default = nil)
+  if valid_579413 != nil:
+    section.add "oauth_token", valid_579413
+  var valid_579414 = query.getOrDefault("alt")
+  valid_579414 = validateParameter(valid_579414, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579414 != nil:
+    section.add "alt", valid_579414
+  var valid_579415 = query.getOrDefault("userIp")
+  valid_579415 = validateParameter(valid_579415, JString, required = false,
+                                 default = nil)
+  if valid_579415 != nil:
+    section.add "userIp", valid_579415
+  var valid_579416 = query.getOrDefault("quotaUser")
+  valid_579416 = validateParameter(valid_579416, JString, required = false,
+                                 default = nil)
+  if valid_579416 != nil:
+    section.add "quotaUser", valid_579416
+  var valid_579417 = query.getOrDefault("fields")
+  valid_579417 = validateParameter(valid_579417, JString, required = false,
+                                 default = nil)
+  if valid_579417 != nil:
+    section.add "fields", valid_579417
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5134,64 +5138,64 @@ proc validate_BigqueryJobsQuery_589508(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589519: Call_BigqueryJobsQuery_589507; path: JsonNode;
+proc call*(call_579419: Call_BigqueryJobsQuery_579407; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Runs a BigQuery SQL query synchronously and returns query results if the query completes within a specified timeout.
   ## 
-  let valid = call_589519.validator(path, query, header, formData, body)
-  let scheme = call_589519.pickScheme
+  let valid = call_579419.validator(path, query, header, formData, body)
+  let scheme = call_579419.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589519.url(scheme.get, call_589519.host, call_589519.base,
-                         call_589519.route, valid.getOrDefault("path"),
+  let url = call_579419.url(scheme.get, call_579419.host, call_579419.base,
+                         call_579419.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589519, url, valid)
+  result = hook(call_579419, url, valid)
 
-proc call*(call_589520: Call_BigqueryJobsQuery_589507; projectId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579420: Call_BigqueryJobsQuery_579407; projectId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## bigqueryJobsQuery
   ## Runs a BigQuery SQL query synchronously and returns query results if the query completes within a specified timeout.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID of the project billed for the query
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589521 = newJObject()
-  var query_589522 = newJObject()
-  var body_589523 = newJObject()
-  add(query_589522, "fields", newJString(fields))
-  add(query_589522, "quotaUser", newJString(quotaUser))
-  add(query_589522, "alt", newJString(alt))
-  add(query_589522, "oauth_token", newJString(oauthToken))
-  add(query_589522, "userIp", newJString(userIp))
-  add(query_589522, "key", newJString(key))
-  add(path_589521, "projectId", newJString(projectId))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID of the project billed for the query
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579421 = newJObject()
+  var query_579422 = newJObject()
+  var body_579423 = newJObject()
+  add(query_579422, "key", newJString(key))
+  add(query_579422, "prettyPrint", newJBool(prettyPrint))
+  add(query_579422, "oauth_token", newJString(oauthToken))
+  add(path_579421, "projectId", newJString(projectId))
+  add(query_579422, "alt", newJString(alt))
+  add(query_579422, "userIp", newJString(userIp))
+  add(query_579422, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589523 = body
-  add(query_589522, "prettyPrint", newJBool(prettyPrint))
-  result = call_589520.call(path_589521, query_589522, nil, nil, body_589523)
+    body_579423 = body
+  add(query_579422, "fields", newJString(fields))
+  result = call_579420.call(path_579421, query_579422, nil, nil, body_579423)
 
-var bigqueryJobsQuery* = Call_BigqueryJobsQuery_589507(name: "bigqueryJobsQuery",
+var bigqueryJobsQuery* = Call_BigqueryJobsQuery_579407(name: "bigqueryJobsQuery",
     meth: HttpMethod.HttpPost, host: "bigquery.googleapis.com",
-    route: "/projects/{projectId}/queries", validator: validate_BigqueryJobsQuery_589508,
-    base: "/bigquery/v2", url: url_BigqueryJobsQuery_589509, schemes: {Scheme.Https})
+    route: "/projects/{projectId}/queries", validator: validate_BigqueryJobsQuery_579408,
+    base: "/bigquery/v2", url: url_BigqueryJobsQuery_579409, schemes: {Scheme.Https})
 type
-  Call_BigqueryJobsGetQueryResults_589524 = ref object of OpenApiRestCall_588466
-proc url_BigqueryJobsGetQueryResults_589526(protocol: Scheme; host: string;
+  Call_BigqueryJobsGetQueryResults_579424 = ref object of OpenApiRestCall_578364
+proc url_BigqueryJobsGetQueryResults_579426(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5209,114 +5213,114 @@ proc url_BigqueryJobsGetQueryResults_589526(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryJobsGetQueryResults_589525(path: JsonNode; query: JsonNode;
+proc validate_BigqueryJobsGetQueryResults_579425(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the results of a query job.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   jobId: JString (required)
-  ##        : [Required] Job ID of the query job
   ##   projectId: JString (required)
   ##            : [Required] Project ID of the query job
+  ##   jobId: JString (required)
+  ##        : [Required] Job ID of the query job
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `jobId` field"
-  var valid_589527 = path.getOrDefault("jobId")
-  valid_589527 = validateParameter(valid_589527, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `projectId` field"
+  var valid_579427 = path.getOrDefault("projectId")
+  valid_579427 = validateParameter(valid_579427, JString, required = true,
                                  default = nil)
-  if valid_589527 != nil:
-    section.add "jobId", valid_589527
-  var valid_589528 = path.getOrDefault("projectId")
-  valid_589528 = validateParameter(valid_589528, JString, required = true,
+  if valid_579427 != nil:
+    section.add "projectId", valid_579427
+  var valid_579428 = path.getOrDefault("jobId")
+  valid_579428 = validateParameter(valid_579428, JString, required = true,
                                  default = nil)
-  if valid_589528 != nil:
-    section.add "projectId", valid_589528
+  if valid_579428 != nil:
+    section.add "jobId", valid_579428
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Page token, returned by a previous call, to request the next page of results
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   location: JString
-  ##           : The geographic location where the job should run. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.
-  ##   maxResults: JInt
-  ##             : Maximum number of results to read
-  ##   timeoutMs: JInt
-  ##            : How long to wait for the query to complete, in milliseconds, before returning. Default is 10 seconds. If the timeout passes before the job completes, the 'jobComplete' field in the response will be false
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   timeoutMs: JInt
+  ##            : How long to wait for the query to complete, in milliseconds, before returning. Default is 10 seconds. If the timeout passes before the job completes, the 'jobComplete' field in the response will be false
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   startIndex: JString
   ##             : Zero-based index of the starting row
+  ##   pageToken: JString
+  ##            : Page token, returned by a previous call, to request the next page of results
+  ##   location: JString
+  ##           : The geographic location where the job should run. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : Maximum number of results to read
   section = newJObject()
-  var valid_589529 = query.getOrDefault("fields")
-  valid_589529 = validateParameter(valid_589529, JString, required = false,
+  var valid_579429 = query.getOrDefault("key")
+  valid_579429 = validateParameter(valid_579429, JString, required = false,
                                  default = nil)
-  if valid_589529 != nil:
-    section.add "fields", valid_589529
-  var valid_589530 = query.getOrDefault("pageToken")
-  valid_589530 = validateParameter(valid_589530, JString, required = false,
-                                 default = nil)
-  if valid_589530 != nil:
-    section.add "pageToken", valid_589530
-  var valid_589531 = query.getOrDefault("quotaUser")
-  valid_589531 = validateParameter(valid_589531, JString, required = false,
-                                 default = nil)
-  if valid_589531 != nil:
-    section.add "quotaUser", valid_589531
-  var valid_589532 = query.getOrDefault("alt")
-  valid_589532 = validateParameter(valid_589532, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589532 != nil:
-    section.add "alt", valid_589532
-  var valid_589533 = query.getOrDefault("oauth_token")
-  valid_589533 = validateParameter(valid_589533, JString, required = false,
-                                 default = nil)
-  if valid_589533 != nil:
-    section.add "oauth_token", valid_589533
-  var valid_589534 = query.getOrDefault("userIp")
-  valid_589534 = validateParameter(valid_589534, JString, required = false,
-                                 default = nil)
-  if valid_589534 != nil:
-    section.add "userIp", valid_589534
-  var valid_589535 = query.getOrDefault("location")
-  valid_589535 = validateParameter(valid_589535, JString, required = false,
-                                 default = nil)
-  if valid_589535 != nil:
-    section.add "location", valid_589535
-  var valid_589536 = query.getOrDefault("maxResults")
-  valid_589536 = validateParameter(valid_589536, JInt, required = false, default = nil)
-  if valid_589536 != nil:
-    section.add "maxResults", valid_589536
-  var valid_589537 = query.getOrDefault("timeoutMs")
-  valid_589537 = validateParameter(valid_589537, JInt, required = false, default = nil)
-  if valid_589537 != nil:
-    section.add "timeoutMs", valid_589537
-  var valid_589538 = query.getOrDefault("key")
-  valid_589538 = validateParameter(valid_589538, JString, required = false,
-                                 default = nil)
-  if valid_589538 != nil:
-    section.add "key", valid_589538
-  var valid_589539 = query.getOrDefault("prettyPrint")
-  valid_589539 = validateParameter(valid_589539, JBool, required = false,
+  if valid_579429 != nil:
+    section.add "key", valid_579429
+  var valid_579430 = query.getOrDefault("prettyPrint")
+  valid_579430 = validateParameter(valid_579430, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589539 != nil:
-    section.add "prettyPrint", valid_589539
-  var valid_589540 = query.getOrDefault("startIndex")
-  valid_589540 = validateParameter(valid_589540, JString, required = false,
+  if valid_579430 != nil:
+    section.add "prettyPrint", valid_579430
+  var valid_579431 = query.getOrDefault("oauth_token")
+  valid_579431 = validateParameter(valid_579431, JString, required = false,
                                  default = nil)
-  if valid_589540 != nil:
-    section.add "startIndex", valid_589540
+  if valid_579431 != nil:
+    section.add "oauth_token", valid_579431
+  var valid_579432 = query.getOrDefault("timeoutMs")
+  valid_579432 = validateParameter(valid_579432, JInt, required = false, default = nil)
+  if valid_579432 != nil:
+    section.add "timeoutMs", valid_579432
+  var valid_579433 = query.getOrDefault("alt")
+  valid_579433 = validateParameter(valid_579433, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579433 != nil:
+    section.add "alt", valid_579433
+  var valid_579434 = query.getOrDefault("userIp")
+  valid_579434 = validateParameter(valid_579434, JString, required = false,
+                                 default = nil)
+  if valid_579434 != nil:
+    section.add "userIp", valid_579434
+  var valid_579435 = query.getOrDefault("quotaUser")
+  valid_579435 = validateParameter(valid_579435, JString, required = false,
+                                 default = nil)
+  if valid_579435 != nil:
+    section.add "quotaUser", valid_579435
+  var valid_579436 = query.getOrDefault("startIndex")
+  valid_579436 = validateParameter(valid_579436, JString, required = false,
+                                 default = nil)
+  if valid_579436 != nil:
+    section.add "startIndex", valid_579436
+  var valid_579437 = query.getOrDefault("pageToken")
+  valid_579437 = validateParameter(valid_579437, JString, required = false,
+                                 default = nil)
+  if valid_579437 != nil:
+    section.add "pageToken", valid_579437
+  var valid_579438 = query.getOrDefault("location")
+  valid_579438 = validateParameter(valid_579438, JString, required = false,
+                                 default = nil)
+  if valid_579438 != nil:
+    section.add "location", valid_579438
+  var valid_579439 = query.getOrDefault("fields")
+  valid_579439 = validateParameter(valid_579439, JString, required = false,
+                                 default = nil)
+  if valid_579439 != nil:
+    section.add "fields", valid_579439
+  var valid_579440 = query.getOrDefault("maxResults")
+  valid_579440 = validateParameter(valid_579440, JInt, required = false, default = nil)
+  if valid_579440 != nil:
+    section.add "maxResults", valid_579440
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5325,82 +5329,82 @@ proc validate_BigqueryJobsGetQueryResults_589525(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_589541: Call_BigqueryJobsGetQueryResults_589524; path: JsonNode;
+proc call*(call_579441: Call_BigqueryJobsGetQueryResults_579424; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the results of a query job.
   ## 
-  let valid = call_589541.validator(path, query, header, formData, body)
-  let scheme = call_589541.pickScheme
+  let valid = call_579441.validator(path, query, header, formData, body)
+  let scheme = call_579441.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589541.url(scheme.get, call_589541.host, call_589541.base,
-                         call_589541.route, valid.getOrDefault("path"),
+  let url = call_579441.url(scheme.get, call_579441.host, call_579441.base,
+                         call_579441.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589541, url, valid)
+  result = hook(call_579441, url, valid)
 
-proc call*(call_589542: Call_BigqueryJobsGetQueryResults_589524; jobId: string;
-          projectId: string; fields: string = ""; pageToken: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; location: string = ""; maxResults: int = 0;
-          timeoutMs: int = 0; key: string = ""; prettyPrint: bool = true;
-          startIndex: string = ""): Recallable =
+proc call*(call_579442: Call_BigqueryJobsGetQueryResults_579424; projectId: string;
+          jobId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; timeoutMs: int = 0; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; startIndex: string = "";
+          pageToken: string = ""; location: string = ""; fields: string = "";
+          maxResults: int = 0): Recallable =
   ## bigqueryJobsGetQueryResults
   ## Retrieves the results of a query job.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Page token, returned by a previous call, to request the next page of results
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   jobId: string (required)
-  ##        : [Required] Job ID of the query job
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   location: string
-  ##           : The geographic location where the job should run. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.
-  ##   maxResults: int
-  ##             : Maximum number of results to read
-  ##   timeoutMs: int
-  ##            : How long to wait for the query to complete, in milliseconds, before returning. Default is 10 seconds. If the timeout passes before the job completes, the 'jobComplete' field in the response will be false
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : [Required] Project ID of the query job
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : [Required] Project ID of the query job
+  ##   jobId: string (required)
+  ##        : [Required] Job ID of the query job
+  ##   timeoutMs: int
+  ##            : How long to wait for the query to complete, in milliseconds, before returning. Default is 10 seconds. If the timeout passes before the job completes, the 'jobComplete' field in the response will be false
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   startIndex: string
   ##             : Zero-based index of the starting row
-  var path_589543 = newJObject()
-  var query_589544 = newJObject()
-  add(query_589544, "fields", newJString(fields))
-  add(query_589544, "pageToken", newJString(pageToken))
-  add(query_589544, "quotaUser", newJString(quotaUser))
-  add(query_589544, "alt", newJString(alt))
-  add(path_589543, "jobId", newJString(jobId))
-  add(query_589544, "oauth_token", newJString(oauthToken))
-  add(query_589544, "userIp", newJString(userIp))
-  add(query_589544, "location", newJString(location))
-  add(query_589544, "maxResults", newJInt(maxResults))
-  add(query_589544, "timeoutMs", newJInt(timeoutMs))
-  add(query_589544, "key", newJString(key))
-  add(path_589543, "projectId", newJString(projectId))
-  add(query_589544, "prettyPrint", newJBool(prettyPrint))
-  add(query_589544, "startIndex", newJString(startIndex))
-  result = call_589542.call(path_589543, query_589544, nil, nil, nil)
+  ##   pageToken: string
+  ##            : Page token, returned by a previous call, to request the next page of results
+  ##   location: string
+  ##           : The geographic location where the job should run. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: int
+  ##             : Maximum number of results to read
+  var path_579443 = newJObject()
+  var query_579444 = newJObject()
+  add(query_579444, "key", newJString(key))
+  add(query_579444, "prettyPrint", newJBool(prettyPrint))
+  add(query_579444, "oauth_token", newJString(oauthToken))
+  add(path_579443, "projectId", newJString(projectId))
+  add(path_579443, "jobId", newJString(jobId))
+  add(query_579444, "timeoutMs", newJInt(timeoutMs))
+  add(query_579444, "alt", newJString(alt))
+  add(query_579444, "userIp", newJString(userIp))
+  add(query_579444, "quotaUser", newJString(quotaUser))
+  add(query_579444, "startIndex", newJString(startIndex))
+  add(query_579444, "pageToken", newJString(pageToken))
+  add(query_579444, "location", newJString(location))
+  add(query_579444, "fields", newJString(fields))
+  add(query_579444, "maxResults", newJInt(maxResults))
+  result = call_579442.call(path_579443, query_579444, nil, nil, nil)
 
-var bigqueryJobsGetQueryResults* = Call_BigqueryJobsGetQueryResults_589524(
+var bigqueryJobsGetQueryResults* = Call_BigqueryJobsGetQueryResults_579424(
     name: "bigqueryJobsGetQueryResults", meth: HttpMethod.HttpGet,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/queries/{jobId}",
-    validator: validate_BigqueryJobsGetQueryResults_589525, base: "/bigquery/v2",
-    url: url_BigqueryJobsGetQueryResults_589526, schemes: {Scheme.Https})
+    validator: validate_BigqueryJobsGetQueryResults_579425, base: "/bigquery/v2",
+    url: url_BigqueryJobsGetQueryResults_579426, schemes: {Scheme.Https})
 type
-  Call_BigqueryProjectsGetServiceAccount_589545 = ref object of OpenApiRestCall_588466
-proc url_BigqueryProjectsGetServiceAccount_589547(protocol: Scheme; host: string;
+  Call_BigqueryProjectsGetServiceAccount_579445 = ref object of OpenApiRestCall_578364
+proc url_BigqueryProjectsGetServiceAccount_579447(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5416,7 +5420,7 @@ proc url_BigqueryProjectsGetServiceAccount_589547(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_BigqueryProjectsGetServiceAccount_589546(path: JsonNode;
+proc validate_BigqueryProjectsGetServiceAccount_579446(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the email address of the service account for your project used for interactions with Google Cloud KMS.
   ## 
@@ -5427,63 +5431,63 @@ proc validate_BigqueryProjectsGetServiceAccount_589546(path: JsonNode;
   ##            : Project ID for which the service account is requested.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `projectId` field"
-  var valid_589548 = path.getOrDefault("projectId")
-  valid_589548 = validateParameter(valid_589548, JString, required = true,
+  var valid_579448 = path.getOrDefault("projectId")
+  valid_579448 = validateParameter(valid_579448, JString, required = true,
                                  default = nil)
-  if valid_589548 != nil:
-    section.add "projectId", valid_589548
+  if valid_579448 != nil:
+    section.add "projectId", valid_579448
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589549 = query.getOrDefault("fields")
-  valid_589549 = validateParameter(valid_589549, JString, required = false,
+  var valid_579449 = query.getOrDefault("key")
+  valid_579449 = validateParameter(valid_579449, JString, required = false,
                                  default = nil)
-  if valid_589549 != nil:
-    section.add "fields", valid_589549
-  var valid_589550 = query.getOrDefault("quotaUser")
-  valid_589550 = validateParameter(valid_589550, JString, required = false,
-                                 default = nil)
-  if valid_589550 != nil:
-    section.add "quotaUser", valid_589550
-  var valid_589551 = query.getOrDefault("alt")
-  valid_589551 = validateParameter(valid_589551, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589551 != nil:
-    section.add "alt", valid_589551
-  var valid_589552 = query.getOrDefault("oauth_token")
-  valid_589552 = validateParameter(valid_589552, JString, required = false,
-                                 default = nil)
-  if valid_589552 != nil:
-    section.add "oauth_token", valid_589552
-  var valid_589553 = query.getOrDefault("userIp")
-  valid_589553 = validateParameter(valid_589553, JString, required = false,
-                                 default = nil)
-  if valid_589553 != nil:
-    section.add "userIp", valid_589553
-  var valid_589554 = query.getOrDefault("key")
-  valid_589554 = validateParameter(valid_589554, JString, required = false,
-                                 default = nil)
-  if valid_589554 != nil:
-    section.add "key", valid_589554
-  var valid_589555 = query.getOrDefault("prettyPrint")
-  valid_589555 = validateParameter(valid_589555, JBool, required = false,
+  if valid_579449 != nil:
+    section.add "key", valid_579449
+  var valid_579450 = query.getOrDefault("prettyPrint")
+  valid_579450 = validateParameter(valid_579450, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589555 != nil:
-    section.add "prettyPrint", valid_589555
+  if valid_579450 != nil:
+    section.add "prettyPrint", valid_579450
+  var valid_579451 = query.getOrDefault("oauth_token")
+  valid_579451 = validateParameter(valid_579451, JString, required = false,
+                                 default = nil)
+  if valid_579451 != nil:
+    section.add "oauth_token", valid_579451
+  var valid_579452 = query.getOrDefault("alt")
+  valid_579452 = validateParameter(valid_579452, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579452 != nil:
+    section.add "alt", valid_579452
+  var valid_579453 = query.getOrDefault("userIp")
+  valid_579453 = validateParameter(valid_579453, JString, required = false,
+                                 default = nil)
+  if valid_579453 != nil:
+    section.add "userIp", valid_579453
+  var valid_579454 = query.getOrDefault("quotaUser")
+  valid_579454 = validateParameter(valid_579454, JString, required = false,
+                                 default = nil)
+  if valid_579454 != nil:
+    section.add "quotaUser", valid_579454
+  var valid_579455 = query.getOrDefault("fields")
+  valid_579455 = validateParameter(valid_579455, JString, required = false,
+                                 default = nil)
+  if valid_579455 != nil:
+    section.add "fields", valid_579455
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5492,60 +5496,60 @@ proc validate_BigqueryProjectsGetServiceAccount_589546(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589556: Call_BigqueryProjectsGetServiceAccount_589545;
+proc call*(call_579456: Call_BigqueryProjectsGetServiceAccount_579445;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns the email address of the service account for your project used for interactions with Google Cloud KMS.
   ## 
-  let valid = call_589556.validator(path, query, header, formData, body)
-  let scheme = call_589556.pickScheme
+  let valid = call_579456.validator(path, query, header, formData, body)
+  let scheme = call_579456.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589556.url(scheme.get, call_589556.host, call_589556.base,
-                         call_589556.route, valid.getOrDefault("path"),
+  let url = call_579456.url(scheme.get, call_579456.host, call_579456.base,
+                         call_579456.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589556, url, valid)
+  result = hook(call_579456, url, valid)
 
-proc call*(call_589557: Call_BigqueryProjectsGetServiceAccount_589545;
-          projectId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579457: Call_BigqueryProjectsGetServiceAccount_579445;
+          projectId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; fields: string = ""): Recallable =
   ## bigqueryProjectsGetServiceAccount
   ## Returns the email address of the service account for your project used for interactions with Google Cloud KMS.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   projectId: string (required)
-  ##            : Project ID for which the service account is requested.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589558 = newJObject()
-  var query_589559 = newJObject()
-  add(query_589559, "fields", newJString(fields))
-  add(query_589559, "quotaUser", newJString(quotaUser))
-  add(query_589559, "alt", newJString(alt))
-  add(query_589559, "oauth_token", newJString(oauthToken))
-  add(query_589559, "userIp", newJString(userIp))
-  add(query_589559, "key", newJString(key))
-  add(path_589558, "projectId", newJString(projectId))
-  add(query_589559, "prettyPrint", newJBool(prettyPrint))
-  result = call_589557.call(path_589558, query_589559, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   projectId: string (required)
+  ##            : Project ID for which the service account is requested.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579458 = newJObject()
+  var query_579459 = newJObject()
+  add(query_579459, "key", newJString(key))
+  add(query_579459, "prettyPrint", newJBool(prettyPrint))
+  add(query_579459, "oauth_token", newJString(oauthToken))
+  add(path_579458, "projectId", newJString(projectId))
+  add(query_579459, "alt", newJString(alt))
+  add(query_579459, "userIp", newJString(userIp))
+  add(query_579459, "quotaUser", newJString(quotaUser))
+  add(query_579459, "fields", newJString(fields))
+  result = call_579457.call(path_579458, query_579459, nil, nil, nil)
 
-var bigqueryProjectsGetServiceAccount* = Call_BigqueryProjectsGetServiceAccount_589545(
+var bigqueryProjectsGetServiceAccount* = Call_BigqueryProjectsGetServiceAccount_579445(
     name: "bigqueryProjectsGetServiceAccount", meth: HttpMethod.HttpGet,
     host: "bigquery.googleapis.com",
     route: "/projects/{projectId}/serviceAccount",
-    validator: validate_BigqueryProjectsGetServiceAccount_589546,
-    base: "/bigquery/v2", url: url_BigqueryProjectsGetServiceAccount_589547,
+    validator: validate_BigqueryProjectsGetServiceAccount_579446,
+    base: "/bigquery/v2", url: url_BigqueryProjectsGetServiceAccount_579447,
     schemes: {Scheme.Https})
 export
   rest

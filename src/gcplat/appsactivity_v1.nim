@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588457 = ref object of OpenApiRestCall
+  OpenApiRestCall_578355 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588457](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578355](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588457): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578355): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,15 +112,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_AppsactivityActivitiesList_588725 = ref object of OpenApiRestCall_588457
-proc url_AppsactivityActivitiesList_588727(protocol: Scheme; host: string;
+  Call_AppsactivityActivitiesList_578625 = ref object of OpenApiRestCall_578355
+proc url_AppsactivityActivitiesList_578627(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AppsactivityActivitiesList_588726(path: JsonNode; query: JsonNode;
+proc validate_AppsactivityActivitiesList_578626(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a list of activities visible to the current logged in user. Visible activities are determined by the visibility settings of the object that was acted on, e.g. Drive files a user can see. An activity is a record of past events. Multiple events may be merged if they are similar. A request is scoped to activities from a given Google service using the source parameter.
   ## 
@@ -125,106 +129,106 @@ proc validate_AppsactivityActivitiesList_588726(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   groupingStrategy: JString
-  ##                   : Indicates the strategy to use when grouping singleEvents items in the associated combinedEvent object.
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : A token to retrieve a specific page of results.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   drive.ancestorId: JString
-  ##                   : Identifies the Drive folder containing the items for which to return activities.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
   ##   oauth_token: JString
   ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
+  ##   userId: JString
+  ##         : The ID used for ACL checks (does not filter the resulting event list by the assigned value). Use the special value me to indicate the currently authenticated user.
+  ##   pageSize: JInt
+  ##           : The maximum number of events to return on a page. The response includes a continuation token if there are more events.
   ##   source: JString
   ##         : The Google service from which to return activities. Possible values of source are: 
   ## - drive.google.com
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : A token to retrieve a specific page of results.
   ##   drive.fileId: JString
   ##               : Identifies the Drive item to return activities for.
-  ##   pageSize: JInt
-  ##           : The maximum number of events to return on a page. The response includes a continuation token if there are more events.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
-  ##   userId: JString
-  ##         : The ID used for ACL checks (does not filter the resulting event list by the assigned value). Use the special value me to indicate the currently authenticated user.
+  ##   groupingStrategy: JString
+  ##                   : Indicates the strategy to use when grouping singleEvents items in the associated combinedEvent object.
+  ##   drive.ancestorId: JString
+  ##                   : Identifies the Drive folder containing the items for which to return activities.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588852 = query.getOrDefault("groupingStrategy")
-  valid_588852 = validateParameter(valid_588852, JString, required = false,
-                                 default = newJString("driveUi"))
-  if valid_588852 != nil:
-    section.add "groupingStrategy", valid_588852
-  var valid_588853 = query.getOrDefault("fields")
-  valid_588853 = validateParameter(valid_588853, JString, required = false,
+  var valid_578739 = query.getOrDefault("key")
+  valid_578739 = validateParameter(valid_578739, JString, required = false,
                                  default = nil)
-  if valid_588853 != nil:
-    section.add "fields", valid_588853
-  var valid_588854 = query.getOrDefault("pageToken")
-  valid_588854 = validateParameter(valid_588854, JString, required = false,
-                                 default = nil)
-  if valid_588854 != nil:
-    section.add "pageToken", valid_588854
-  var valid_588855 = query.getOrDefault("quotaUser")
-  valid_588855 = validateParameter(valid_588855, JString, required = false,
-                                 default = nil)
-  if valid_588855 != nil:
-    section.add "quotaUser", valid_588855
-  var valid_588856 = query.getOrDefault("alt")
-  valid_588856 = validateParameter(valid_588856, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588856 != nil:
-    section.add "alt", valid_588856
-  var valid_588857 = query.getOrDefault("drive.ancestorId")
-  valid_588857 = validateParameter(valid_588857, JString, required = false,
-                                 default = nil)
-  if valid_588857 != nil:
-    section.add "drive.ancestorId", valid_588857
-  var valid_588858 = query.getOrDefault("oauth_token")
-  valid_588858 = validateParameter(valid_588858, JString, required = false,
-                                 default = nil)
-  if valid_588858 != nil:
-    section.add "oauth_token", valid_588858
-  var valid_588859 = query.getOrDefault("userIp")
-  valid_588859 = validateParameter(valid_588859, JString, required = false,
-                                 default = nil)
-  if valid_588859 != nil:
-    section.add "userIp", valid_588859
-  var valid_588860 = query.getOrDefault("source")
-  valid_588860 = validateParameter(valid_588860, JString, required = false,
-                                 default = nil)
-  if valid_588860 != nil:
-    section.add "source", valid_588860
-  var valid_588861 = query.getOrDefault("key")
-  valid_588861 = validateParameter(valid_588861, JString, required = false,
-                                 default = nil)
-  if valid_588861 != nil:
-    section.add "key", valid_588861
-  var valid_588862 = query.getOrDefault("drive.fileId")
-  valid_588862 = validateParameter(valid_588862, JString, required = false,
-                                 default = nil)
-  if valid_588862 != nil:
-    section.add "drive.fileId", valid_588862
-  var valid_588864 = query.getOrDefault("pageSize")
-  valid_588864 = validateParameter(valid_588864, JInt, required = false,
-                                 default = newJInt(50))
-  if valid_588864 != nil:
-    section.add "pageSize", valid_588864
-  var valid_588865 = query.getOrDefault("prettyPrint")
-  valid_588865 = validateParameter(valid_588865, JBool, required = false,
+  if valid_578739 != nil:
+    section.add "key", valid_578739
+  var valid_578753 = query.getOrDefault("prettyPrint")
+  valid_578753 = validateParameter(valid_578753, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588865 != nil:
-    section.add "prettyPrint", valid_588865
-  var valid_588866 = query.getOrDefault("userId")
-  valid_588866 = validateParameter(valid_588866, JString, required = false,
+  if valid_578753 != nil:
+    section.add "prettyPrint", valid_578753
+  var valid_578754 = query.getOrDefault("oauth_token")
+  valid_578754 = validateParameter(valid_578754, JString, required = false,
+                                 default = nil)
+  if valid_578754 != nil:
+    section.add "oauth_token", valid_578754
+  var valid_578755 = query.getOrDefault("userId")
+  valid_578755 = validateParameter(valid_578755, JString, required = false,
                                  default = newJString("me"))
-  if valid_588866 != nil:
-    section.add "userId", valid_588866
+  if valid_578755 != nil:
+    section.add "userId", valid_578755
+  var valid_578757 = query.getOrDefault("pageSize")
+  valid_578757 = validateParameter(valid_578757, JInt, required = false,
+                                 default = newJInt(50))
+  if valid_578757 != nil:
+    section.add "pageSize", valid_578757
+  var valid_578758 = query.getOrDefault("source")
+  valid_578758 = validateParameter(valid_578758, JString, required = false,
+                                 default = nil)
+  if valid_578758 != nil:
+    section.add "source", valid_578758
+  var valid_578759 = query.getOrDefault("alt")
+  valid_578759 = validateParameter(valid_578759, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578759 != nil:
+    section.add "alt", valid_578759
+  var valid_578760 = query.getOrDefault("userIp")
+  valid_578760 = validateParameter(valid_578760, JString, required = false,
+                                 default = nil)
+  if valid_578760 != nil:
+    section.add "userIp", valid_578760
+  var valid_578761 = query.getOrDefault("quotaUser")
+  valid_578761 = validateParameter(valid_578761, JString, required = false,
+                                 default = nil)
+  if valid_578761 != nil:
+    section.add "quotaUser", valid_578761
+  var valid_578762 = query.getOrDefault("pageToken")
+  valid_578762 = validateParameter(valid_578762, JString, required = false,
+                                 default = nil)
+  if valid_578762 != nil:
+    section.add "pageToken", valid_578762
+  var valid_578763 = query.getOrDefault("drive.fileId")
+  valid_578763 = validateParameter(valid_578763, JString, required = false,
+                                 default = nil)
+  if valid_578763 != nil:
+    section.add "drive.fileId", valid_578763
+  var valid_578764 = query.getOrDefault("groupingStrategy")
+  valid_578764 = validateParameter(valid_578764, JString, required = false,
+                                 default = newJString("driveUi"))
+  if valid_578764 != nil:
+    section.add "groupingStrategy", valid_578764
+  var valid_578765 = query.getOrDefault("drive.ancestorId")
+  valid_578765 = validateParameter(valid_578765, JString, required = false,
+                                 default = nil)
+  if valid_578765 != nil:
+    section.add "drive.ancestorId", valid_578765
+  var valid_578766 = query.getOrDefault("fields")
+  valid_578766 = validateParameter(valid_578766, JString, required = false,
+                                 default = nil)
+  if valid_578766 != nil:
+    section.add "fields", valid_578766
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -233,78 +237,78 @@ proc validate_AppsactivityActivitiesList_588726(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588889: Call_AppsactivityActivitiesList_588725; path: JsonNode;
+proc call*(call_578789: Call_AppsactivityActivitiesList_578625; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a list of activities visible to the current logged in user. Visible activities are determined by the visibility settings of the object that was acted on, e.g. Drive files a user can see. An activity is a record of past events. Multiple events may be merged if they are similar. A request is scoped to activities from a given Google service using the source parameter.
   ## 
-  let valid = call_588889.validator(path, query, header, formData, body)
-  let scheme = call_588889.pickScheme
+  let valid = call_578789.validator(path, query, header, formData, body)
+  let scheme = call_578789.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588889.url(scheme.get, call_588889.host, call_588889.base,
-                         call_588889.route, valid.getOrDefault("path"),
+  let url = call_578789.url(scheme.get, call_578789.host, call_578789.base,
+                         call_578789.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588889, url, valid)
+  result = hook(call_578789, url, valid)
 
-proc call*(call_588960: Call_AppsactivityActivitiesList_588725;
-          groupingStrategy: string = "driveUi"; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          driveAncestorId: string = ""; oauthToken: string = ""; userIp: string = "";
-          source: string = ""; key: string = ""; driveFileId: string = "";
-          pageSize: int = 50; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_578860: Call_AppsactivityActivitiesList_578625; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; userId: string = "me";
+          pageSize: int = 50; source: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
+          driveFileId: string = ""; groupingStrategy: string = "driveUi";
+          driveAncestorId: string = ""; fields: string = ""): Recallable =
   ## appsactivityActivitiesList
   ## Returns a list of activities visible to the current logged in user. Visible activities are determined by the visibility settings of the object that was acted on, e.g. Drive files a user can see. An activity is a record of past events. Multiple events may be merged if they are similar. A request is scoped to activities from a given Google service using the source parameter.
-  ##   groupingStrategy: string
-  ##                   : Indicates the strategy to use when grouping singleEvents items in the associated combinedEvent object.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : A token to retrieve a specific page of results.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   driveAncestorId: string
-  ##                  : Identifies the Drive folder containing the items for which to return activities.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
   ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
+  ##   userId: string
+  ##         : The ID used for ACL checks (does not filter the resulting event list by the assigned value). Use the special value me to indicate the currently authenticated user.
+  ##   pageSize: int
+  ##           : The maximum number of events to return on a page. The response includes a continuation token if there are more events.
   ##   source: string
   ##         : The Google service from which to return activities. Possible values of source are: 
   ## - drive.google.com
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : A token to retrieve a specific page of results.
   ##   driveFileId: string
   ##              : Identifies the Drive item to return activities for.
-  ##   pageSize: int
-  ##           : The maximum number of events to return on a page. The response includes a continuation token if there are more events.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  ##   userId: string
-  ##         : The ID used for ACL checks (does not filter the resulting event list by the assigned value). Use the special value me to indicate the currently authenticated user.
-  var query_588961 = newJObject()
-  add(query_588961, "groupingStrategy", newJString(groupingStrategy))
-  add(query_588961, "fields", newJString(fields))
-  add(query_588961, "pageToken", newJString(pageToken))
-  add(query_588961, "quotaUser", newJString(quotaUser))
-  add(query_588961, "alt", newJString(alt))
-  add(query_588961, "drive.ancestorId", newJString(driveAncestorId))
-  add(query_588961, "oauth_token", newJString(oauthToken))
-  add(query_588961, "userIp", newJString(userIp))
-  add(query_588961, "source", newJString(source))
-  add(query_588961, "key", newJString(key))
-  add(query_588961, "drive.fileId", newJString(driveFileId))
-  add(query_588961, "pageSize", newJInt(pageSize))
-  add(query_588961, "prettyPrint", newJBool(prettyPrint))
-  add(query_588961, "userId", newJString(userId))
-  result = call_588960.call(nil, query_588961, nil, nil, nil)
+  ##   groupingStrategy: string
+  ##                   : Indicates the strategy to use when grouping singleEvents items in the associated combinedEvent object.
+  ##   driveAncestorId: string
+  ##                  : Identifies the Drive folder containing the items for which to return activities.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_578861 = newJObject()
+  add(query_578861, "key", newJString(key))
+  add(query_578861, "prettyPrint", newJBool(prettyPrint))
+  add(query_578861, "oauth_token", newJString(oauthToken))
+  add(query_578861, "userId", newJString(userId))
+  add(query_578861, "pageSize", newJInt(pageSize))
+  add(query_578861, "source", newJString(source))
+  add(query_578861, "alt", newJString(alt))
+  add(query_578861, "userIp", newJString(userIp))
+  add(query_578861, "quotaUser", newJString(quotaUser))
+  add(query_578861, "pageToken", newJString(pageToken))
+  add(query_578861, "drive.fileId", newJString(driveFileId))
+  add(query_578861, "groupingStrategy", newJString(groupingStrategy))
+  add(query_578861, "drive.ancestorId", newJString(driveAncestorId))
+  add(query_578861, "fields", newJString(fields))
+  result = call_578860.call(nil, query_578861, nil, nil, nil)
 
-var appsactivityActivitiesList* = Call_AppsactivityActivitiesList_588725(
+var appsactivityActivitiesList* = Call_AppsactivityActivitiesList_578625(
     name: "appsactivityActivitiesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/activities",
-    validator: validate_AppsactivityActivitiesList_588726,
-    base: "/appsactivity/v1", url: url_AppsactivityActivitiesList_588727,
+    validator: validate_AppsactivityActivitiesList_578626,
+    base: "/appsactivity/v1", url: url_AppsactivityActivitiesList_578627,
     schemes: {Scheme.Https})
 export
   rest

@@ -30,15 +30,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588441 = ref object of OpenApiRestCall
+  OpenApiRestCall_578339 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -96,9 +96,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -109,8 +113,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_FirebaserulesProjectsReleasesGet_588710 = ref object of OpenApiRestCall_588441
-proc url_FirebaserulesProjectsReleasesGet_588712(protocol: Scheme; host: string;
+  Call_FirebaserulesProjectsReleasesGet_578610 = ref object of OpenApiRestCall_578339
+proc url_FirebaserulesProjectsReleasesGet_578612(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -125,7 +129,7 @@ proc url_FirebaserulesProjectsReleasesGet_588712(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FirebaserulesProjectsReleasesGet_588711(path: JsonNode;
+proc validate_FirebaserulesProjectsReleasesGet_578611(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get a `Release` by name.
   ## 
@@ -138,91 +142,91 @@ proc validate_FirebaserulesProjectsReleasesGet_588711(path: JsonNode;
   ## Format: `projects/{project_id}/releases/{release_id}`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_588838 = path.getOrDefault("name")
-  valid_588838 = validateParameter(valid_588838, JString, required = true,
+  var valid_578738 = path.getOrDefault("name")
+  valid_578738 = validateParameter(valid_578738, JString, required = true,
                                  default = nil)
-  if valid_588838 != nil:
-    section.add "name", valid_588838
+  if valid_578738 != nil:
+    section.add "name", valid_578738
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_588839 = query.getOrDefault("upload_protocol")
-  valid_588839 = validateParameter(valid_588839, JString, required = false,
+  var valid_578739 = query.getOrDefault("key")
+  valid_578739 = validateParameter(valid_578739, JString, required = false,
                                  default = nil)
-  if valid_588839 != nil:
-    section.add "upload_protocol", valid_588839
-  var valid_588840 = query.getOrDefault("fields")
-  valid_588840 = validateParameter(valid_588840, JString, required = false,
-                                 default = nil)
-  if valid_588840 != nil:
-    section.add "fields", valid_588840
-  var valid_588841 = query.getOrDefault("quotaUser")
-  valid_588841 = validateParameter(valid_588841, JString, required = false,
-                                 default = nil)
-  if valid_588841 != nil:
-    section.add "quotaUser", valid_588841
-  var valid_588855 = query.getOrDefault("alt")
-  valid_588855 = validateParameter(valid_588855, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588855 != nil:
-    section.add "alt", valid_588855
-  var valid_588856 = query.getOrDefault("oauth_token")
-  valid_588856 = validateParameter(valid_588856, JString, required = false,
-                                 default = nil)
-  if valid_588856 != nil:
-    section.add "oauth_token", valid_588856
-  var valid_588857 = query.getOrDefault("callback")
-  valid_588857 = validateParameter(valid_588857, JString, required = false,
-                                 default = nil)
-  if valid_588857 != nil:
-    section.add "callback", valid_588857
-  var valid_588858 = query.getOrDefault("access_token")
-  valid_588858 = validateParameter(valid_588858, JString, required = false,
-                                 default = nil)
-  if valid_588858 != nil:
-    section.add "access_token", valid_588858
-  var valid_588859 = query.getOrDefault("uploadType")
-  valid_588859 = validateParameter(valid_588859, JString, required = false,
-                                 default = nil)
-  if valid_588859 != nil:
-    section.add "uploadType", valid_588859
-  var valid_588860 = query.getOrDefault("key")
-  valid_588860 = validateParameter(valid_588860, JString, required = false,
-                                 default = nil)
-  if valid_588860 != nil:
-    section.add "key", valid_588860
-  var valid_588861 = query.getOrDefault("$.xgafv")
-  valid_588861 = validateParameter(valid_588861, JString, required = false,
-                                 default = newJString("1"))
-  if valid_588861 != nil:
-    section.add "$.xgafv", valid_588861
-  var valid_588862 = query.getOrDefault("prettyPrint")
-  valid_588862 = validateParameter(valid_588862, JBool, required = false,
+  if valid_578739 != nil:
+    section.add "key", valid_578739
+  var valid_578753 = query.getOrDefault("prettyPrint")
+  valid_578753 = validateParameter(valid_578753, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588862 != nil:
-    section.add "prettyPrint", valid_588862
+  if valid_578753 != nil:
+    section.add "prettyPrint", valid_578753
+  var valid_578754 = query.getOrDefault("oauth_token")
+  valid_578754 = validateParameter(valid_578754, JString, required = false,
+                                 default = nil)
+  if valid_578754 != nil:
+    section.add "oauth_token", valid_578754
+  var valid_578755 = query.getOrDefault("$.xgafv")
+  valid_578755 = validateParameter(valid_578755, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578755 != nil:
+    section.add "$.xgafv", valid_578755
+  var valid_578756 = query.getOrDefault("alt")
+  valid_578756 = validateParameter(valid_578756, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578756 != nil:
+    section.add "alt", valid_578756
+  var valid_578757 = query.getOrDefault("uploadType")
+  valid_578757 = validateParameter(valid_578757, JString, required = false,
+                                 default = nil)
+  if valid_578757 != nil:
+    section.add "uploadType", valid_578757
+  var valid_578758 = query.getOrDefault("quotaUser")
+  valid_578758 = validateParameter(valid_578758, JString, required = false,
+                                 default = nil)
+  if valid_578758 != nil:
+    section.add "quotaUser", valid_578758
+  var valid_578759 = query.getOrDefault("callback")
+  valid_578759 = validateParameter(valid_578759, JString, required = false,
+                                 default = nil)
+  if valid_578759 != nil:
+    section.add "callback", valid_578759
+  var valid_578760 = query.getOrDefault("fields")
+  valid_578760 = validateParameter(valid_578760, JString, required = false,
+                                 default = nil)
+  if valid_578760 != nil:
+    section.add "fields", valid_578760
+  var valid_578761 = query.getOrDefault("access_token")
+  valid_578761 = validateParameter(valid_578761, JString, required = false,
+                                 default = nil)
+  if valid_578761 != nil:
+    section.add "access_token", valid_578761
+  var valid_578762 = query.getOrDefault("upload_protocol")
+  valid_578762 = validateParameter(valid_578762, JString, required = false,
+                                 default = nil)
+  if valid_578762 != nil:
+    section.add "upload_protocol", valid_578762
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -231,77 +235,77 @@ proc validate_FirebaserulesProjectsReleasesGet_588711(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588885: Call_FirebaserulesProjectsReleasesGet_588710;
+proc call*(call_578785: Call_FirebaserulesProjectsReleasesGet_578610;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Get a `Release` by name.
   ## 
-  let valid = call_588885.validator(path, query, header, formData, body)
-  let scheme = call_588885.pickScheme
+  let valid = call_578785.validator(path, query, header, formData, body)
+  let scheme = call_578785.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588885.url(scheme.get, call_588885.host, call_588885.base,
-                         call_588885.route, valid.getOrDefault("path"),
+  let url = call_578785.url(scheme.get, call_578785.host, call_578785.base,
+                         call_578785.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588885, url, valid)
+  result = hook(call_578785, url, valid)
 
-proc call*(call_588956: Call_FirebaserulesProjectsReleasesGet_588710; name: string;
-          uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; callback: string = "";
-          accessToken: string = ""; uploadType: string = ""; key: string = "";
-          Xgafv: string = "1"; prettyPrint: bool = true): Recallable =
+proc call*(call_578856: Call_FirebaserulesProjectsReleasesGet_578610; name: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          Xgafv: string = "1"; alt: string = "json"; uploadType: string = "";
+          quotaUser: string = ""; callback: string = ""; fields: string = "";
+          accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## firebaserulesProjectsReleasesGet
   ## Get a `Release` by name.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
   ##       : Resource name of the `Release`.
   ## 
   ## Format: `projects/{project_id}/releases/{release_id}`
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
   ##   callback: string
   ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   accessToken: string
   ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_588957 = newJObject()
-  var query_588959 = newJObject()
-  add(query_588959, "upload_protocol", newJString(uploadProtocol))
-  add(query_588959, "fields", newJString(fields))
-  add(query_588959, "quotaUser", newJString(quotaUser))
-  add(path_588957, "name", newJString(name))
-  add(query_588959, "alt", newJString(alt))
-  add(query_588959, "oauth_token", newJString(oauthToken))
-  add(query_588959, "callback", newJString(callback))
-  add(query_588959, "access_token", newJString(accessToken))
-  add(query_588959, "uploadType", newJString(uploadType))
-  add(query_588959, "key", newJString(key))
-  add(query_588959, "$.xgafv", newJString(Xgafv))
-  add(query_588959, "prettyPrint", newJBool(prettyPrint))
-  result = call_588956.call(path_588957, query_588959, nil, nil, nil)
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_578857 = newJObject()
+  var query_578859 = newJObject()
+  add(query_578859, "key", newJString(key))
+  add(query_578859, "prettyPrint", newJBool(prettyPrint))
+  add(query_578859, "oauth_token", newJString(oauthToken))
+  add(query_578859, "$.xgafv", newJString(Xgafv))
+  add(query_578859, "alt", newJString(alt))
+  add(query_578859, "uploadType", newJString(uploadType))
+  add(query_578859, "quotaUser", newJString(quotaUser))
+  add(path_578857, "name", newJString(name))
+  add(query_578859, "callback", newJString(callback))
+  add(query_578859, "fields", newJString(fields))
+  add(query_578859, "access_token", newJString(accessToken))
+  add(query_578859, "upload_protocol", newJString(uploadProtocol))
+  result = call_578856.call(path_578857, query_578859, nil, nil, nil)
 
-var firebaserulesProjectsReleasesGet* = Call_FirebaserulesProjectsReleasesGet_588710(
+var firebaserulesProjectsReleasesGet* = Call_FirebaserulesProjectsReleasesGet_578610(
     name: "firebaserulesProjectsReleasesGet", meth: HttpMethod.HttpGet,
     host: "firebaserules.googleapis.com", route: "/v1/{name}",
-    validator: validate_FirebaserulesProjectsReleasesGet_588711, base: "/",
-    url: url_FirebaserulesProjectsReleasesGet_588712, schemes: {Scheme.Https})
+    validator: validate_FirebaserulesProjectsReleasesGet_578611, base: "/",
+    url: url_FirebaserulesProjectsReleasesGet_578612, schemes: {Scheme.Https})
 type
-  Call_FirebaserulesProjectsReleasesPatch_589017 = ref object of OpenApiRestCall_588441
-proc url_FirebaserulesProjectsReleasesPatch_589019(protocol: Scheme; host: string;
+  Call_FirebaserulesProjectsReleasesPatch_578917 = ref object of OpenApiRestCall_578339
+proc url_FirebaserulesProjectsReleasesPatch_578919(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -316,7 +320,7 @@ proc url_FirebaserulesProjectsReleasesPatch_589019(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FirebaserulesProjectsReleasesPatch_589018(path: JsonNode;
+proc validate_FirebaserulesProjectsReleasesPatch_578918(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Update a `Release` via PATCH.
   ## 
@@ -333,91 +337,91 @@ proc validate_FirebaserulesProjectsReleasesPatch_589018(path: JsonNode;
   ## Format: `projects/{project_id}`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_589020 = path.getOrDefault("name")
-  valid_589020 = validateParameter(valid_589020, JString, required = true,
+  var valid_578920 = path.getOrDefault("name")
+  valid_578920 = validateParameter(valid_578920, JString, required = true,
                                  default = nil)
-  if valid_589020 != nil:
-    section.add "name", valid_589020
+  if valid_578920 != nil:
+    section.add "name", valid_578920
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589021 = query.getOrDefault("upload_protocol")
-  valid_589021 = validateParameter(valid_589021, JString, required = false,
+  var valid_578921 = query.getOrDefault("key")
+  valid_578921 = validateParameter(valid_578921, JString, required = false,
                                  default = nil)
-  if valid_589021 != nil:
-    section.add "upload_protocol", valid_589021
-  var valid_589022 = query.getOrDefault("fields")
-  valid_589022 = validateParameter(valid_589022, JString, required = false,
-                                 default = nil)
-  if valid_589022 != nil:
-    section.add "fields", valid_589022
-  var valid_589023 = query.getOrDefault("quotaUser")
-  valid_589023 = validateParameter(valid_589023, JString, required = false,
-                                 default = nil)
-  if valid_589023 != nil:
-    section.add "quotaUser", valid_589023
-  var valid_589024 = query.getOrDefault("alt")
-  valid_589024 = validateParameter(valid_589024, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589024 != nil:
-    section.add "alt", valid_589024
-  var valid_589025 = query.getOrDefault("oauth_token")
-  valid_589025 = validateParameter(valid_589025, JString, required = false,
-                                 default = nil)
-  if valid_589025 != nil:
-    section.add "oauth_token", valid_589025
-  var valid_589026 = query.getOrDefault("callback")
-  valid_589026 = validateParameter(valid_589026, JString, required = false,
-                                 default = nil)
-  if valid_589026 != nil:
-    section.add "callback", valid_589026
-  var valid_589027 = query.getOrDefault("access_token")
-  valid_589027 = validateParameter(valid_589027, JString, required = false,
-                                 default = nil)
-  if valid_589027 != nil:
-    section.add "access_token", valid_589027
-  var valid_589028 = query.getOrDefault("uploadType")
-  valid_589028 = validateParameter(valid_589028, JString, required = false,
-                                 default = nil)
-  if valid_589028 != nil:
-    section.add "uploadType", valid_589028
-  var valid_589029 = query.getOrDefault("key")
-  valid_589029 = validateParameter(valid_589029, JString, required = false,
-                                 default = nil)
-  if valid_589029 != nil:
-    section.add "key", valid_589029
-  var valid_589030 = query.getOrDefault("$.xgafv")
-  valid_589030 = validateParameter(valid_589030, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589030 != nil:
-    section.add "$.xgafv", valid_589030
-  var valid_589031 = query.getOrDefault("prettyPrint")
-  valid_589031 = validateParameter(valid_589031, JBool, required = false,
+  if valid_578921 != nil:
+    section.add "key", valid_578921
+  var valid_578922 = query.getOrDefault("prettyPrint")
+  valid_578922 = validateParameter(valid_578922, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589031 != nil:
-    section.add "prettyPrint", valid_589031
+  if valid_578922 != nil:
+    section.add "prettyPrint", valid_578922
+  var valid_578923 = query.getOrDefault("oauth_token")
+  valid_578923 = validateParameter(valid_578923, JString, required = false,
+                                 default = nil)
+  if valid_578923 != nil:
+    section.add "oauth_token", valid_578923
+  var valid_578924 = query.getOrDefault("$.xgafv")
+  valid_578924 = validateParameter(valid_578924, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578924 != nil:
+    section.add "$.xgafv", valid_578924
+  var valid_578925 = query.getOrDefault("alt")
+  valid_578925 = validateParameter(valid_578925, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578925 != nil:
+    section.add "alt", valid_578925
+  var valid_578926 = query.getOrDefault("uploadType")
+  valid_578926 = validateParameter(valid_578926, JString, required = false,
+                                 default = nil)
+  if valid_578926 != nil:
+    section.add "uploadType", valid_578926
+  var valid_578927 = query.getOrDefault("quotaUser")
+  valid_578927 = validateParameter(valid_578927, JString, required = false,
+                                 default = nil)
+  if valid_578927 != nil:
+    section.add "quotaUser", valid_578927
+  var valid_578928 = query.getOrDefault("callback")
+  valid_578928 = validateParameter(valid_578928, JString, required = false,
+                                 default = nil)
+  if valid_578928 != nil:
+    section.add "callback", valid_578928
+  var valid_578929 = query.getOrDefault("fields")
+  valid_578929 = validateParameter(valid_578929, JString, required = false,
+                                 default = nil)
+  if valid_578929 != nil:
+    section.add "fields", valid_578929
+  var valid_578930 = query.getOrDefault("access_token")
+  valid_578930 = validateParameter(valid_578930, JString, required = false,
+                                 default = nil)
+  if valid_578930 != nil:
+    section.add "access_token", valid_578930
+  var valid_578931 = query.getOrDefault("upload_protocol")
+  valid_578931 = validateParameter(valid_578931, JString, required = false,
+                                 default = nil)
+  if valid_578931 != nil:
+    section.add "upload_protocol", valid_578931
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -429,7 +433,7 @@ proc validate_FirebaserulesProjectsReleasesPatch_589018(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589033: Call_FirebaserulesProjectsReleasesPatch_589017;
+proc call*(call_578933: Call_FirebaserulesProjectsReleasesPatch_578917;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Update a `Release` via PATCH.
@@ -438,81 +442,81 @@ proc call*(call_589033: Call_FirebaserulesProjectsReleasesPatch_589017;
   ## honored. `Release` rename is not supported. To create a `Release` use the
   ## CreateRelease method.
   ## 
-  let valid = call_589033.validator(path, query, header, formData, body)
-  let scheme = call_589033.pickScheme
+  let valid = call_578933.validator(path, query, header, formData, body)
+  let scheme = call_578933.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589033.url(scheme.get, call_589033.host, call_589033.base,
-                         call_589033.route, valid.getOrDefault("path"),
+  let url = call_578933.url(scheme.get, call_578933.host, call_578933.base,
+                         call_578933.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589033, url, valid)
+  result = hook(call_578933, url, valid)
 
-proc call*(call_589034: Call_FirebaserulesProjectsReleasesPatch_589017;
-          name: string; uploadProtocol: string = ""; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          callback: string = ""; accessToken: string = ""; uploadType: string = "";
-          key: string = ""; Xgafv: string = "1"; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578934: Call_FirebaserulesProjectsReleasesPatch_578917;
+          name: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          callback: string = ""; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""): Recallable =
   ## firebaserulesProjectsReleasesPatch
   ## Update a `Release` via PATCH.
   ## 
   ## Only updates to the `ruleset_name` and `test_suite_name` fields will be
   ## honored. `Release` rename is not supported. To create a `Release` use the
   ## CreateRelease method.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
   ##       : Resource name for the project which owns this `Release`.
   ## 
   ## Format: `projects/{project_id}`
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
+  ##   body: JObject
   ##   callback: string
   ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   accessToken: string
   ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589035 = newJObject()
-  var query_589036 = newJObject()
-  var body_589037 = newJObject()
-  add(query_589036, "upload_protocol", newJString(uploadProtocol))
-  add(query_589036, "fields", newJString(fields))
-  add(query_589036, "quotaUser", newJString(quotaUser))
-  add(path_589035, "name", newJString(name))
-  add(query_589036, "alt", newJString(alt))
-  add(query_589036, "oauth_token", newJString(oauthToken))
-  add(query_589036, "callback", newJString(callback))
-  add(query_589036, "access_token", newJString(accessToken))
-  add(query_589036, "uploadType", newJString(uploadType))
-  add(query_589036, "key", newJString(key))
-  add(query_589036, "$.xgafv", newJString(Xgafv))
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_578935 = newJObject()
+  var query_578936 = newJObject()
+  var body_578937 = newJObject()
+  add(query_578936, "key", newJString(key))
+  add(query_578936, "prettyPrint", newJBool(prettyPrint))
+  add(query_578936, "oauth_token", newJString(oauthToken))
+  add(query_578936, "$.xgafv", newJString(Xgafv))
+  add(query_578936, "alt", newJString(alt))
+  add(query_578936, "uploadType", newJString(uploadType))
+  add(query_578936, "quotaUser", newJString(quotaUser))
+  add(path_578935, "name", newJString(name))
   if body != nil:
-    body_589037 = body
-  add(query_589036, "prettyPrint", newJBool(prettyPrint))
-  result = call_589034.call(path_589035, query_589036, nil, nil, body_589037)
+    body_578937 = body
+  add(query_578936, "callback", newJString(callback))
+  add(query_578936, "fields", newJString(fields))
+  add(query_578936, "access_token", newJString(accessToken))
+  add(query_578936, "upload_protocol", newJString(uploadProtocol))
+  result = call_578934.call(path_578935, query_578936, nil, nil, body_578937)
 
-var firebaserulesProjectsReleasesPatch* = Call_FirebaserulesProjectsReleasesPatch_589017(
+var firebaserulesProjectsReleasesPatch* = Call_FirebaserulesProjectsReleasesPatch_578917(
     name: "firebaserulesProjectsReleasesPatch", meth: HttpMethod.HttpPatch,
     host: "firebaserules.googleapis.com", route: "/v1/{name}",
-    validator: validate_FirebaserulesProjectsReleasesPatch_589018, base: "/",
-    url: url_FirebaserulesProjectsReleasesPatch_589019, schemes: {Scheme.Https})
+    validator: validate_FirebaserulesProjectsReleasesPatch_578918, base: "/",
+    url: url_FirebaserulesProjectsReleasesPatch_578919, schemes: {Scheme.Https})
 type
-  Call_FirebaserulesProjectsReleasesDelete_588998 = ref object of OpenApiRestCall_588441
-proc url_FirebaserulesProjectsReleasesDelete_589000(protocol: Scheme; host: string;
+  Call_FirebaserulesProjectsReleasesDelete_578898 = ref object of OpenApiRestCall_578339
+proc url_FirebaserulesProjectsReleasesDelete_578900(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -527,7 +531,7 @@ proc url_FirebaserulesProjectsReleasesDelete_589000(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FirebaserulesProjectsReleasesDelete_588999(path: JsonNode;
+proc validate_FirebaserulesProjectsReleasesDelete_578899(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Delete a `Release` by resource name.
   ## 
@@ -540,91 +544,91 @@ proc validate_FirebaserulesProjectsReleasesDelete_588999(path: JsonNode;
   ## Format: `projects/{project_id}/releases/{release_id}`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_589001 = path.getOrDefault("name")
-  valid_589001 = validateParameter(valid_589001, JString, required = true,
+  var valid_578901 = path.getOrDefault("name")
+  valid_578901 = validateParameter(valid_578901, JString, required = true,
                                  default = nil)
-  if valid_589001 != nil:
-    section.add "name", valid_589001
+  if valid_578901 != nil:
+    section.add "name", valid_578901
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589002 = query.getOrDefault("upload_protocol")
-  valid_589002 = validateParameter(valid_589002, JString, required = false,
+  var valid_578902 = query.getOrDefault("key")
+  valid_578902 = validateParameter(valid_578902, JString, required = false,
                                  default = nil)
-  if valid_589002 != nil:
-    section.add "upload_protocol", valid_589002
-  var valid_589003 = query.getOrDefault("fields")
-  valid_589003 = validateParameter(valid_589003, JString, required = false,
-                                 default = nil)
-  if valid_589003 != nil:
-    section.add "fields", valid_589003
-  var valid_589004 = query.getOrDefault("quotaUser")
-  valid_589004 = validateParameter(valid_589004, JString, required = false,
-                                 default = nil)
-  if valid_589004 != nil:
-    section.add "quotaUser", valid_589004
-  var valid_589005 = query.getOrDefault("alt")
-  valid_589005 = validateParameter(valid_589005, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589005 != nil:
-    section.add "alt", valid_589005
-  var valid_589006 = query.getOrDefault("oauth_token")
-  valid_589006 = validateParameter(valid_589006, JString, required = false,
-                                 default = nil)
-  if valid_589006 != nil:
-    section.add "oauth_token", valid_589006
-  var valid_589007 = query.getOrDefault("callback")
-  valid_589007 = validateParameter(valid_589007, JString, required = false,
-                                 default = nil)
-  if valid_589007 != nil:
-    section.add "callback", valid_589007
-  var valid_589008 = query.getOrDefault("access_token")
-  valid_589008 = validateParameter(valid_589008, JString, required = false,
-                                 default = nil)
-  if valid_589008 != nil:
-    section.add "access_token", valid_589008
-  var valid_589009 = query.getOrDefault("uploadType")
-  valid_589009 = validateParameter(valid_589009, JString, required = false,
-                                 default = nil)
-  if valid_589009 != nil:
-    section.add "uploadType", valid_589009
-  var valid_589010 = query.getOrDefault("key")
-  valid_589010 = validateParameter(valid_589010, JString, required = false,
-                                 default = nil)
-  if valid_589010 != nil:
-    section.add "key", valid_589010
-  var valid_589011 = query.getOrDefault("$.xgafv")
-  valid_589011 = validateParameter(valid_589011, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589011 != nil:
-    section.add "$.xgafv", valid_589011
-  var valid_589012 = query.getOrDefault("prettyPrint")
-  valid_589012 = validateParameter(valid_589012, JBool, required = false,
+  if valid_578902 != nil:
+    section.add "key", valid_578902
+  var valid_578903 = query.getOrDefault("prettyPrint")
+  valid_578903 = validateParameter(valid_578903, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589012 != nil:
-    section.add "prettyPrint", valid_589012
+  if valid_578903 != nil:
+    section.add "prettyPrint", valid_578903
+  var valid_578904 = query.getOrDefault("oauth_token")
+  valid_578904 = validateParameter(valid_578904, JString, required = false,
+                                 default = nil)
+  if valid_578904 != nil:
+    section.add "oauth_token", valid_578904
+  var valid_578905 = query.getOrDefault("$.xgafv")
+  valid_578905 = validateParameter(valid_578905, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578905 != nil:
+    section.add "$.xgafv", valid_578905
+  var valid_578906 = query.getOrDefault("alt")
+  valid_578906 = validateParameter(valid_578906, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578906 != nil:
+    section.add "alt", valid_578906
+  var valid_578907 = query.getOrDefault("uploadType")
+  valid_578907 = validateParameter(valid_578907, JString, required = false,
+                                 default = nil)
+  if valid_578907 != nil:
+    section.add "uploadType", valid_578907
+  var valid_578908 = query.getOrDefault("quotaUser")
+  valid_578908 = validateParameter(valid_578908, JString, required = false,
+                                 default = nil)
+  if valid_578908 != nil:
+    section.add "quotaUser", valid_578908
+  var valid_578909 = query.getOrDefault("callback")
+  valid_578909 = validateParameter(valid_578909, JString, required = false,
+                                 default = nil)
+  if valid_578909 != nil:
+    section.add "callback", valid_578909
+  var valid_578910 = query.getOrDefault("fields")
+  valid_578910 = validateParameter(valid_578910, JString, required = false,
+                                 default = nil)
+  if valid_578910 != nil:
+    section.add "fields", valid_578910
+  var valid_578911 = query.getOrDefault("access_token")
+  valid_578911 = validateParameter(valid_578911, JString, required = false,
+                                 default = nil)
+  if valid_578911 != nil:
+    section.add "access_token", valid_578911
+  var valid_578912 = query.getOrDefault("upload_protocol")
+  valid_578912 = validateParameter(valid_578912, JString, required = false,
+                                 default = nil)
+  if valid_578912 != nil:
+    section.add "upload_protocol", valid_578912
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -633,77 +637,77 @@ proc validate_FirebaserulesProjectsReleasesDelete_588999(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589013: Call_FirebaserulesProjectsReleasesDelete_588998;
+proc call*(call_578913: Call_FirebaserulesProjectsReleasesDelete_578898;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Delete a `Release` by resource name.
   ## 
-  let valid = call_589013.validator(path, query, header, formData, body)
-  let scheme = call_589013.pickScheme
+  let valid = call_578913.validator(path, query, header, formData, body)
+  let scheme = call_578913.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589013.url(scheme.get, call_589013.host, call_589013.base,
-                         call_589013.route, valid.getOrDefault("path"),
+  let url = call_578913.url(scheme.get, call_578913.host, call_578913.base,
+                         call_578913.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589013, url, valid)
+  result = hook(call_578913, url, valid)
 
-proc call*(call_589014: Call_FirebaserulesProjectsReleasesDelete_588998;
-          name: string; uploadProtocol: string = ""; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          callback: string = ""; accessToken: string = ""; uploadType: string = "";
-          key: string = ""; Xgafv: string = "1"; prettyPrint: bool = true): Recallable =
+proc call*(call_578914: Call_FirebaserulesProjectsReleasesDelete_578898;
+          name: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; callback: string = "";
+          fields: string = ""; accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## firebaserulesProjectsReleasesDelete
   ## Delete a `Release` by resource name.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
   ##       : Resource name for the `Release` to delete.
   ## 
   ## Format: `projects/{project_id}/releases/{release_id}`
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
   ##   callback: string
   ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   accessToken: string
   ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589015 = newJObject()
-  var query_589016 = newJObject()
-  add(query_589016, "upload_protocol", newJString(uploadProtocol))
-  add(query_589016, "fields", newJString(fields))
-  add(query_589016, "quotaUser", newJString(quotaUser))
-  add(path_589015, "name", newJString(name))
-  add(query_589016, "alt", newJString(alt))
-  add(query_589016, "oauth_token", newJString(oauthToken))
-  add(query_589016, "callback", newJString(callback))
-  add(query_589016, "access_token", newJString(accessToken))
-  add(query_589016, "uploadType", newJString(uploadType))
-  add(query_589016, "key", newJString(key))
-  add(query_589016, "$.xgafv", newJString(Xgafv))
-  add(query_589016, "prettyPrint", newJBool(prettyPrint))
-  result = call_589014.call(path_589015, query_589016, nil, nil, nil)
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_578915 = newJObject()
+  var query_578916 = newJObject()
+  add(query_578916, "key", newJString(key))
+  add(query_578916, "prettyPrint", newJBool(prettyPrint))
+  add(query_578916, "oauth_token", newJString(oauthToken))
+  add(query_578916, "$.xgafv", newJString(Xgafv))
+  add(query_578916, "alt", newJString(alt))
+  add(query_578916, "uploadType", newJString(uploadType))
+  add(query_578916, "quotaUser", newJString(quotaUser))
+  add(path_578915, "name", newJString(name))
+  add(query_578916, "callback", newJString(callback))
+  add(query_578916, "fields", newJString(fields))
+  add(query_578916, "access_token", newJString(accessToken))
+  add(query_578916, "upload_protocol", newJString(uploadProtocol))
+  result = call_578914.call(path_578915, query_578916, nil, nil, nil)
 
-var firebaserulesProjectsReleasesDelete* = Call_FirebaserulesProjectsReleasesDelete_588998(
+var firebaserulesProjectsReleasesDelete* = Call_FirebaserulesProjectsReleasesDelete_578898(
     name: "firebaserulesProjectsReleasesDelete", meth: HttpMethod.HttpDelete,
     host: "firebaserules.googleapis.com", route: "/v1/{name}",
-    validator: validate_FirebaserulesProjectsReleasesDelete_588999, base: "/",
-    url: url_FirebaserulesProjectsReleasesDelete_589000, schemes: {Scheme.Https})
+    validator: validate_FirebaserulesProjectsReleasesDelete_578899, base: "/",
+    url: url_FirebaserulesProjectsReleasesDelete_578900, schemes: {Scheme.Https})
 type
-  Call_FirebaserulesProjectsReleasesCreate_589060 = ref object of OpenApiRestCall_588441
-proc url_FirebaserulesProjectsReleasesCreate_589062(protocol: Scheme; host: string;
+  Call_FirebaserulesProjectsReleasesCreate_578960 = ref object of OpenApiRestCall_578339
+proc url_FirebaserulesProjectsReleasesCreate_578962(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -719,7 +723,7 @@ proc url_FirebaserulesProjectsReleasesCreate_589062(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FirebaserulesProjectsReleasesCreate_589061(path: JsonNode;
+proc validate_FirebaserulesProjectsReleasesCreate_578961(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Create a `Release`.
   ## 
@@ -753,91 +757,91 @@ proc validate_FirebaserulesProjectsReleasesCreate_589061(path: JsonNode;
   ## Format: `projects/{project_id}`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_589063 = path.getOrDefault("name")
-  valid_589063 = validateParameter(valid_589063, JString, required = true,
+  var valid_578963 = path.getOrDefault("name")
+  valid_578963 = validateParameter(valid_578963, JString, required = true,
                                  default = nil)
-  if valid_589063 != nil:
-    section.add "name", valid_589063
+  if valid_578963 != nil:
+    section.add "name", valid_578963
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589064 = query.getOrDefault("upload_protocol")
-  valid_589064 = validateParameter(valid_589064, JString, required = false,
+  var valid_578964 = query.getOrDefault("key")
+  valid_578964 = validateParameter(valid_578964, JString, required = false,
                                  default = nil)
-  if valid_589064 != nil:
-    section.add "upload_protocol", valid_589064
-  var valid_589065 = query.getOrDefault("fields")
-  valid_589065 = validateParameter(valid_589065, JString, required = false,
-                                 default = nil)
-  if valid_589065 != nil:
-    section.add "fields", valid_589065
-  var valid_589066 = query.getOrDefault("quotaUser")
-  valid_589066 = validateParameter(valid_589066, JString, required = false,
-                                 default = nil)
-  if valid_589066 != nil:
-    section.add "quotaUser", valid_589066
-  var valid_589067 = query.getOrDefault("alt")
-  valid_589067 = validateParameter(valid_589067, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589067 != nil:
-    section.add "alt", valid_589067
-  var valid_589068 = query.getOrDefault("oauth_token")
-  valid_589068 = validateParameter(valid_589068, JString, required = false,
-                                 default = nil)
-  if valid_589068 != nil:
-    section.add "oauth_token", valid_589068
-  var valid_589069 = query.getOrDefault("callback")
-  valid_589069 = validateParameter(valid_589069, JString, required = false,
-                                 default = nil)
-  if valid_589069 != nil:
-    section.add "callback", valid_589069
-  var valid_589070 = query.getOrDefault("access_token")
-  valid_589070 = validateParameter(valid_589070, JString, required = false,
-                                 default = nil)
-  if valid_589070 != nil:
-    section.add "access_token", valid_589070
-  var valid_589071 = query.getOrDefault("uploadType")
-  valid_589071 = validateParameter(valid_589071, JString, required = false,
-                                 default = nil)
-  if valid_589071 != nil:
-    section.add "uploadType", valid_589071
-  var valid_589072 = query.getOrDefault("key")
-  valid_589072 = validateParameter(valid_589072, JString, required = false,
-                                 default = nil)
-  if valid_589072 != nil:
-    section.add "key", valid_589072
-  var valid_589073 = query.getOrDefault("$.xgafv")
-  valid_589073 = validateParameter(valid_589073, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589073 != nil:
-    section.add "$.xgafv", valid_589073
-  var valid_589074 = query.getOrDefault("prettyPrint")
-  valid_589074 = validateParameter(valid_589074, JBool, required = false,
+  if valid_578964 != nil:
+    section.add "key", valid_578964
+  var valid_578965 = query.getOrDefault("prettyPrint")
+  valid_578965 = validateParameter(valid_578965, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589074 != nil:
-    section.add "prettyPrint", valid_589074
+  if valid_578965 != nil:
+    section.add "prettyPrint", valid_578965
+  var valid_578966 = query.getOrDefault("oauth_token")
+  valid_578966 = validateParameter(valid_578966, JString, required = false,
+                                 default = nil)
+  if valid_578966 != nil:
+    section.add "oauth_token", valid_578966
+  var valid_578967 = query.getOrDefault("$.xgafv")
+  valid_578967 = validateParameter(valid_578967, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578967 != nil:
+    section.add "$.xgafv", valid_578967
+  var valid_578968 = query.getOrDefault("alt")
+  valid_578968 = validateParameter(valid_578968, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578968 != nil:
+    section.add "alt", valid_578968
+  var valid_578969 = query.getOrDefault("uploadType")
+  valid_578969 = validateParameter(valid_578969, JString, required = false,
+                                 default = nil)
+  if valid_578969 != nil:
+    section.add "uploadType", valid_578969
+  var valid_578970 = query.getOrDefault("quotaUser")
+  valid_578970 = validateParameter(valid_578970, JString, required = false,
+                                 default = nil)
+  if valid_578970 != nil:
+    section.add "quotaUser", valid_578970
+  var valid_578971 = query.getOrDefault("callback")
+  valid_578971 = validateParameter(valid_578971, JString, required = false,
+                                 default = nil)
+  if valid_578971 != nil:
+    section.add "callback", valid_578971
+  var valid_578972 = query.getOrDefault("fields")
+  valid_578972 = validateParameter(valid_578972, JString, required = false,
+                                 default = nil)
+  if valid_578972 != nil:
+    section.add "fields", valid_578972
+  var valid_578973 = query.getOrDefault("access_token")
+  valid_578973 = validateParameter(valid_578973, JString, required = false,
+                                 default = nil)
+  if valid_578973 != nil:
+    section.add "access_token", valid_578973
+  var valid_578974 = query.getOrDefault("upload_protocol")
+  valid_578974 = validateParameter(valid_578974, JString, required = false,
+                                 default = nil)
+  if valid_578974 != nil:
+    section.add "upload_protocol", valid_578974
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -849,7 +853,7 @@ proc validate_FirebaserulesProjectsReleasesCreate_589061(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589076: Call_FirebaserulesProjectsReleasesCreate_589060;
+proc call*(call_578976: Call_FirebaserulesProjectsReleasesCreate_578960;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Create a `Release`.
@@ -875,21 +879,21 @@ proc call*(call_589076: Call_FirebaserulesProjectsReleasesCreate_589060;
   ## refers to a new `Ruleset`. The `Ruleset` reference for a `Release` may be
   ## updated using the UpdateRelease method.
   ## 
-  let valid = call_589076.validator(path, query, header, formData, body)
-  let scheme = call_589076.pickScheme
+  let valid = call_578976.validator(path, query, header, formData, body)
+  let scheme = call_578976.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589076.url(scheme.get, call_589076.host, call_589076.base,
-                         call_589076.route, valid.getOrDefault("path"),
+  let url = call_578976.url(scheme.get, call_578976.host, call_578976.base,
+                         call_578976.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589076, url, valid)
+  result = hook(call_578976, url, valid)
 
-proc call*(call_589077: Call_FirebaserulesProjectsReleasesCreate_589060;
-          name: string; uploadProtocol: string = ""; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          callback: string = ""; accessToken: string = ""; uploadType: string = "";
-          key: string = ""; Xgafv: string = "1"; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578977: Call_FirebaserulesProjectsReleasesCreate_578960;
+          name: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          callback: string = ""; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""): Recallable =
   ## firebaserulesProjectsReleasesCreate
   ## Create a `Release`.
   ## 
@@ -913,60 +917,60 @@ proc call*(call_589077: Call_FirebaserulesProjectsReleasesCreate_589060;
   ## `prod/beta` releases refer to the same `Ruleset`. However, `prod/v23`
   ## refers to a new `Ruleset`. The `Ruleset` reference for a `Release` may be
   ## updated using the UpdateRelease method.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
   ##       : Resource name for the project which owns this `Release`.
   ## 
   ## Format: `projects/{project_id}`
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
+  ##   body: JObject
   ##   callback: string
   ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   accessToken: string
   ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589078 = newJObject()
-  var query_589079 = newJObject()
-  var body_589080 = newJObject()
-  add(query_589079, "upload_protocol", newJString(uploadProtocol))
-  add(query_589079, "fields", newJString(fields))
-  add(query_589079, "quotaUser", newJString(quotaUser))
-  add(path_589078, "name", newJString(name))
-  add(query_589079, "alt", newJString(alt))
-  add(query_589079, "oauth_token", newJString(oauthToken))
-  add(query_589079, "callback", newJString(callback))
-  add(query_589079, "access_token", newJString(accessToken))
-  add(query_589079, "uploadType", newJString(uploadType))
-  add(query_589079, "key", newJString(key))
-  add(query_589079, "$.xgafv", newJString(Xgafv))
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_578978 = newJObject()
+  var query_578979 = newJObject()
+  var body_578980 = newJObject()
+  add(query_578979, "key", newJString(key))
+  add(query_578979, "prettyPrint", newJBool(prettyPrint))
+  add(query_578979, "oauth_token", newJString(oauthToken))
+  add(query_578979, "$.xgafv", newJString(Xgafv))
+  add(query_578979, "alt", newJString(alt))
+  add(query_578979, "uploadType", newJString(uploadType))
+  add(query_578979, "quotaUser", newJString(quotaUser))
+  add(path_578978, "name", newJString(name))
   if body != nil:
-    body_589080 = body
-  add(query_589079, "prettyPrint", newJBool(prettyPrint))
-  result = call_589077.call(path_589078, query_589079, nil, nil, body_589080)
+    body_578980 = body
+  add(query_578979, "callback", newJString(callback))
+  add(query_578979, "fields", newJString(fields))
+  add(query_578979, "access_token", newJString(accessToken))
+  add(query_578979, "upload_protocol", newJString(uploadProtocol))
+  result = call_578977.call(path_578978, query_578979, nil, nil, body_578980)
 
-var firebaserulesProjectsReleasesCreate* = Call_FirebaserulesProjectsReleasesCreate_589060(
+var firebaserulesProjectsReleasesCreate* = Call_FirebaserulesProjectsReleasesCreate_578960(
     name: "firebaserulesProjectsReleasesCreate", meth: HttpMethod.HttpPost,
     host: "firebaserules.googleapis.com", route: "/v1/{name}/releases",
-    validator: validate_FirebaserulesProjectsReleasesCreate_589061, base: "/",
-    url: url_FirebaserulesProjectsReleasesCreate_589062, schemes: {Scheme.Https})
+    validator: validate_FirebaserulesProjectsReleasesCreate_578961, base: "/",
+    url: url_FirebaserulesProjectsReleasesCreate_578962, schemes: {Scheme.Https})
 type
-  Call_FirebaserulesProjectsReleasesList_589038 = ref object of OpenApiRestCall_588441
-proc url_FirebaserulesProjectsReleasesList_589040(protocol: Scheme; host: string;
+  Call_FirebaserulesProjectsReleasesList_578938 = ref object of OpenApiRestCall_578339
+proc url_FirebaserulesProjectsReleasesList_578940(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -982,7 +986,7 @@ proc url_FirebaserulesProjectsReleasesList_589040(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FirebaserulesProjectsReleasesList_589039(path: JsonNode;
+proc validate_FirebaserulesProjectsReleasesList_578939(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List the `Release` values for a project. This list may optionally be
   ## filtered by `Release` name, `Ruleset` name, `TestSuite` name, or any
@@ -997,33 +1001,19 @@ proc validate_FirebaserulesProjectsReleasesList_589039(path: JsonNode;
   ## Format: `projects/{project_id}`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_589041 = path.getOrDefault("name")
-  valid_589041 = validateParameter(valid_589041, JString, required = true,
+  var valid_578941 = path.getOrDefault("name")
+  valid_578941 = validateParameter(valid_578941, JString, required = true,
                                  default = nil)
-  if valid_589041 != nil:
-    section.add "name", valid_589041
+  if valid_578941 != nil:
+    section.add "name", valid_578941
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Next page token for the next batch of `Release` instances.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
   ##   $.xgafv: JString
   ##          : V1 error format.
   ##   pageSize: JInt
@@ -1032,8 +1022,12 @@ proc validate_FirebaserulesProjectsReleasesList_589039(path: JsonNode;
   ## than `page_size` results due to the size of the output. To traverse all of
   ## the releases, the caller should iterate until the `page_token` on the
   ## response is empty.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   filter: JString
   ##         : `Release` filter. The list method supports filters with restrictions on the
   ## `Release.name`, `Release.ruleset_name`, and `Release.test_suite_name`.
@@ -1059,76 +1053,86 @@ proc validate_FirebaserulesProjectsReleasesList_589039(path: JsonNode;
   ## In the examples, the filter parameters refer to the search filters are
   ## relative to the project. Fully qualified prefixed may also be used. e.g.
   ## `test_suite_name=projects/foo/testsuites/uuid1`
+  ##   pageToken: JString
+  ##            : Next page token for the next batch of `Release` instances.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589042 = query.getOrDefault("upload_protocol")
-  valid_589042 = validateParameter(valid_589042, JString, required = false,
+  var valid_578942 = query.getOrDefault("key")
+  valid_578942 = validateParameter(valid_578942, JString, required = false,
                                  default = nil)
-  if valid_589042 != nil:
-    section.add "upload_protocol", valid_589042
-  var valid_589043 = query.getOrDefault("fields")
-  valid_589043 = validateParameter(valid_589043, JString, required = false,
-                                 default = nil)
-  if valid_589043 != nil:
-    section.add "fields", valid_589043
-  var valid_589044 = query.getOrDefault("pageToken")
-  valid_589044 = validateParameter(valid_589044, JString, required = false,
-                                 default = nil)
-  if valid_589044 != nil:
-    section.add "pageToken", valid_589044
-  var valid_589045 = query.getOrDefault("quotaUser")
-  valid_589045 = validateParameter(valid_589045, JString, required = false,
-                                 default = nil)
-  if valid_589045 != nil:
-    section.add "quotaUser", valid_589045
-  var valid_589046 = query.getOrDefault("alt")
-  valid_589046 = validateParameter(valid_589046, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589046 != nil:
-    section.add "alt", valid_589046
-  var valid_589047 = query.getOrDefault("oauth_token")
-  valid_589047 = validateParameter(valid_589047, JString, required = false,
-                                 default = nil)
-  if valid_589047 != nil:
-    section.add "oauth_token", valid_589047
-  var valid_589048 = query.getOrDefault("callback")
-  valid_589048 = validateParameter(valid_589048, JString, required = false,
-                                 default = nil)
-  if valid_589048 != nil:
-    section.add "callback", valid_589048
-  var valid_589049 = query.getOrDefault("access_token")
-  valid_589049 = validateParameter(valid_589049, JString, required = false,
-                                 default = nil)
-  if valid_589049 != nil:
-    section.add "access_token", valid_589049
-  var valid_589050 = query.getOrDefault("uploadType")
-  valid_589050 = validateParameter(valid_589050, JString, required = false,
-                                 default = nil)
-  if valid_589050 != nil:
-    section.add "uploadType", valid_589050
-  var valid_589051 = query.getOrDefault("key")
-  valid_589051 = validateParameter(valid_589051, JString, required = false,
-                                 default = nil)
-  if valid_589051 != nil:
-    section.add "key", valid_589051
-  var valid_589052 = query.getOrDefault("$.xgafv")
-  valid_589052 = validateParameter(valid_589052, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589052 != nil:
-    section.add "$.xgafv", valid_589052
-  var valid_589053 = query.getOrDefault("pageSize")
-  valid_589053 = validateParameter(valid_589053, JInt, required = false, default = nil)
-  if valid_589053 != nil:
-    section.add "pageSize", valid_589053
-  var valid_589054 = query.getOrDefault("prettyPrint")
-  valid_589054 = validateParameter(valid_589054, JBool, required = false,
+  if valid_578942 != nil:
+    section.add "key", valid_578942
+  var valid_578943 = query.getOrDefault("prettyPrint")
+  valid_578943 = validateParameter(valid_578943, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589054 != nil:
-    section.add "prettyPrint", valid_589054
-  var valid_589055 = query.getOrDefault("filter")
-  valid_589055 = validateParameter(valid_589055, JString, required = false,
+  if valid_578943 != nil:
+    section.add "prettyPrint", valid_578943
+  var valid_578944 = query.getOrDefault("oauth_token")
+  valid_578944 = validateParameter(valid_578944, JString, required = false,
                                  default = nil)
-  if valid_589055 != nil:
-    section.add "filter", valid_589055
+  if valid_578944 != nil:
+    section.add "oauth_token", valid_578944
+  var valid_578945 = query.getOrDefault("$.xgafv")
+  valid_578945 = validateParameter(valid_578945, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578945 != nil:
+    section.add "$.xgafv", valid_578945
+  var valid_578946 = query.getOrDefault("pageSize")
+  valid_578946 = validateParameter(valid_578946, JInt, required = false, default = nil)
+  if valid_578946 != nil:
+    section.add "pageSize", valid_578946
+  var valid_578947 = query.getOrDefault("alt")
+  valid_578947 = validateParameter(valid_578947, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578947 != nil:
+    section.add "alt", valid_578947
+  var valid_578948 = query.getOrDefault("uploadType")
+  valid_578948 = validateParameter(valid_578948, JString, required = false,
+                                 default = nil)
+  if valid_578948 != nil:
+    section.add "uploadType", valid_578948
+  var valid_578949 = query.getOrDefault("quotaUser")
+  valid_578949 = validateParameter(valid_578949, JString, required = false,
+                                 default = nil)
+  if valid_578949 != nil:
+    section.add "quotaUser", valid_578949
+  var valid_578950 = query.getOrDefault("filter")
+  valid_578950 = validateParameter(valid_578950, JString, required = false,
+                                 default = nil)
+  if valid_578950 != nil:
+    section.add "filter", valid_578950
+  var valid_578951 = query.getOrDefault("pageToken")
+  valid_578951 = validateParameter(valid_578951, JString, required = false,
+                                 default = nil)
+  if valid_578951 != nil:
+    section.add "pageToken", valid_578951
+  var valid_578952 = query.getOrDefault("callback")
+  valid_578952 = validateParameter(valid_578952, JString, required = false,
+                                 default = nil)
+  if valid_578952 != nil:
+    section.add "callback", valid_578952
+  var valid_578953 = query.getOrDefault("fields")
+  valid_578953 = validateParameter(valid_578953, JString, required = false,
+                                 default = nil)
+  if valid_578953 != nil:
+    section.add "fields", valid_578953
+  var valid_578954 = query.getOrDefault("access_token")
+  valid_578954 = validateParameter(valid_578954, JString, required = false,
+                                 default = nil)
+  if valid_578954 != nil:
+    section.add "access_token", valid_578954
+  var valid_578955 = query.getOrDefault("upload_protocol")
+  valid_578955 = validateParameter(valid_578955, JString, required = false,
+                                 default = nil)
+  if valid_578955 != nil:
+    section.add "upload_protocol", valid_578955
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1137,56 +1141,38 @@ proc validate_FirebaserulesProjectsReleasesList_589039(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589056: Call_FirebaserulesProjectsReleasesList_589038;
+proc call*(call_578956: Call_FirebaserulesProjectsReleasesList_578938;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List the `Release` values for a project. This list may optionally be
   ## filtered by `Release` name, `Ruleset` name, `TestSuite` name, or any
   ## combination thereof.
   ## 
-  let valid = call_589056.validator(path, query, header, formData, body)
-  let scheme = call_589056.pickScheme
+  let valid = call_578956.validator(path, query, header, formData, body)
+  let scheme = call_578956.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589056.url(scheme.get, call_589056.host, call_589056.base,
-                         call_589056.route, valid.getOrDefault("path"),
+  let url = call_578956.url(scheme.get, call_578956.host, call_578956.base,
+                         call_578956.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589056, url, valid)
+  result = hook(call_578956, url, valid)
 
-proc call*(call_589057: Call_FirebaserulesProjectsReleasesList_589038;
-          name: string; uploadProtocol: string = ""; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; callback: string = ""; accessToken: string = "";
-          uploadType: string = ""; key: string = ""; Xgafv: string = "1"; pageSize: int = 0;
-          prettyPrint: bool = true; filter: string = ""): Recallable =
+proc call*(call_578957: Call_FirebaserulesProjectsReleasesList_578938;
+          name: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; pageSize: int = 0;
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          filter: string = ""; pageToken: string = ""; callback: string = "";
+          fields: string = ""; accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## firebaserulesProjectsReleasesList
   ## List the `Release` values for a project. This list may optionally be
   ## filtered by `Release` name, `Ruleset` name, `TestSuite` name, or any
   ## combination thereof.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Next page token for the next batch of `Release` instances.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   name: string (required)
-  ##       : Resource name for the project.
-  ## 
-  ## Format: `projects/{project_id}`
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   Xgafv: string
   ##        : V1 error format.
   ##   pageSize: int
@@ -1195,8 +1181,16 @@ proc call*(call_589057: Call_FirebaserulesProjectsReleasesList_589038;
   ## than `page_size` results due to the size of the output. To traverse all of
   ## the releases, the caller should iterate until the `page_token` on the
   ## response is empty.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   name: string (required)
+  ##       : Resource name for the project.
+  ## 
+  ## Format: `projects/{project_id}`
   ##   filter: string
   ##         : `Release` filter. The list method supports filters with restrictions on the
   ## `Release.name`, `Release.ruleset_name`, and `Release.test_suite_name`.
@@ -1222,33 +1216,43 @@ proc call*(call_589057: Call_FirebaserulesProjectsReleasesList_589038;
   ## In the examples, the filter parameters refer to the search filters are
   ## relative to the project. Fully qualified prefixed may also be used. e.g.
   ## `test_suite_name=projects/foo/testsuites/uuid1`
-  var path_589058 = newJObject()
-  var query_589059 = newJObject()
-  add(query_589059, "upload_protocol", newJString(uploadProtocol))
-  add(query_589059, "fields", newJString(fields))
-  add(query_589059, "pageToken", newJString(pageToken))
-  add(query_589059, "quotaUser", newJString(quotaUser))
-  add(path_589058, "name", newJString(name))
-  add(query_589059, "alt", newJString(alt))
-  add(query_589059, "oauth_token", newJString(oauthToken))
-  add(query_589059, "callback", newJString(callback))
-  add(query_589059, "access_token", newJString(accessToken))
-  add(query_589059, "uploadType", newJString(uploadType))
-  add(query_589059, "key", newJString(key))
-  add(query_589059, "$.xgafv", newJString(Xgafv))
-  add(query_589059, "pageSize", newJInt(pageSize))
-  add(query_589059, "prettyPrint", newJBool(prettyPrint))
-  add(query_589059, "filter", newJString(filter))
-  result = call_589057.call(path_589058, query_589059, nil, nil, nil)
+  ##   pageToken: string
+  ##            : Next page token for the next batch of `Release` instances.
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_578958 = newJObject()
+  var query_578959 = newJObject()
+  add(query_578959, "key", newJString(key))
+  add(query_578959, "prettyPrint", newJBool(prettyPrint))
+  add(query_578959, "oauth_token", newJString(oauthToken))
+  add(query_578959, "$.xgafv", newJString(Xgafv))
+  add(query_578959, "pageSize", newJInt(pageSize))
+  add(query_578959, "alt", newJString(alt))
+  add(query_578959, "uploadType", newJString(uploadType))
+  add(query_578959, "quotaUser", newJString(quotaUser))
+  add(path_578958, "name", newJString(name))
+  add(query_578959, "filter", newJString(filter))
+  add(query_578959, "pageToken", newJString(pageToken))
+  add(query_578959, "callback", newJString(callback))
+  add(query_578959, "fields", newJString(fields))
+  add(query_578959, "access_token", newJString(accessToken))
+  add(query_578959, "upload_protocol", newJString(uploadProtocol))
+  result = call_578957.call(path_578958, query_578959, nil, nil, nil)
 
-var firebaserulesProjectsReleasesList* = Call_FirebaserulesProjectsReleasesList_589038(
+var firebaserulesProjectsReleasesList* = Call_FirebaserulesProjectsReleasesList_578938(
     name: "firebaserulesProjectsReleasesList", meth: HttpMethod.HttpGet,
     host: "firebaserules.googleapis.com", route: "/v1/{name}/releases",
-    validator: validate_FirebaserulesProjectsReleasesList_589039, base: "/",
-    url: url_FirebaserulesProjectsReleasesList_589040, schemes: {Scheme.Https})
+    validator: validate_FirebaserulesProjectsReleasesList_578939, base: "/",
+    url: url_FirebaserulesProjectsReleasesList_578940, schemes: {Scheme.Https})
 type
-  Call_FirebaserulesProjectsRulesetsCreate_589103 = ref object of OpenApiRestCall_588441
-proc url_FirebaserulesProjectsRulesetsCreate_589105(protocol: Scheme; host: string;
+  Call_FirebaserulesProjectsRulesetsCreate_579003 = ref object of OpenApiRestCall_578339
+proc url_FirebaserulesProjectsRulesetsCreate_579005(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1264,7 +1268,7 @@ proc url_FirebaserulesProjectsRulesetsCreate_589105(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FirebaserulesProjectsRulesetsCreate_589104(path: JsonNode;
+proc validate_FirebaserulesProjectsRulesetsCreate_579004(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Create a `Ruleset` from `Source`.
   ## 
@@ -1282,91 +1286,91 @@ proc validate_FirebaserulesProjectsRulesetsCreate_589104(path: JsonNode;
   ## Format: `projects/{project_id}`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_589106 = path.getOrDefault("name")
-  valid_589106 = validateParameter(valid_589106, JString, required = true,
+  var valid_579006 = path.getOrDefault("name")
+  valid_579006 = validateParameter(valid_579006, JString, required = true,
                                  default = nil)
-  if valid_589106 != nil:
-    section.add "name", valid_589106
+  if valid_579006 != nil:
+    section.add "name", valid_579006
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589107 = query.getOrDefault("upload_protocol")
-  valid_589107 = validateParameter(valid_589107, JString, required = false,
+  var valid_579007 = query.getOrDefault("key")
+  valid_579007 = validateParameter(valid_579007, JString, required = false,
                                  default = nil)
-  if valid_589107 != nil:
-    section.add "upload_protocol", valid_589107
-  var valid_589108 = query.getOrDefault("fields")
-  valid_589108 = validateParameter(valid_589108, JString, required = false,
-                                 default = nil)
-  if valid_589108 != nil:
-    section.add "fields", valid_589108
-  var valid_589109 = query.getOrDefault("quotaUser")
-  valid_589109 = validateParameter(valid_589109, JString, required = false,
-                                 default = nil)
-  if valid_589109 != nil:
-    section.add "quotaUser", valid_589109
-  var valid_589110 = query.getOrDefault("alt")
-  valid_589110 = validateParameter(valid_589110, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589110 != nil:
-    section.add "alt", valid_589110
-  var valid_589111 = query.getOrDefault("oauth_token")
-  valid_589111 = validateParameter(valid_589111, JString, required = false,
-                                 default = nil)
-  if valid_589111 != nil:
-    section.add "oauth_token", valid_589111
-  var valid_589112 = query.getOrDefault("callback")
-  valid_589112 = validateParameter(valid_589112, JString, required = false,
-                                 default = nil)
-  if valid_589112 != nil:
-    section.add "callback", valid_589112
-  var valid_589113 = query.getOrDefault("access_token")
-  valid_589113 = validateParameter(valid_589113, JString, required = false,
-                                 default = nil)
-  if valid_589113 != nil:
-    section.add "access_token", valid_589113
-  var valid_589114 = query.getOrDefault("uploadType")
-  valid_589114 = validateParameter(valid_589114, JString, required = false,
-                                 default = nil)
-  if valid_589114 != nil:
-    section.add "uploadType", valid_589114
-  var valid_589115 = query.getOrDefault("key")
-  valid_589115 = validateParameter(valid_589115, JString, required = false,
-                                 default = nil)
-  if valid_589115 != nil:
-    section.add "key", valid_589115
-  var valid_589116 = query.getOrDefault("$.xgafv")
-  valid_589116 = validateParameter(valid_589116, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589116 != nil:
-    section.add "$.xgafv", valid_589116
-  var valid_589117 = query.getOrDefault("prettyPrint")
-  valid_589117 = validateParameter(valid_589117, JBool, required = false,
+  if valid_579007 != nil:
+    section.add "key", valid_579007
+  var valid_579008 = query.getOrDefault("prettyPrint")
+  valid_579008 = validateParameter(valid_579008, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589117 != nil:
-    section.add "prettyPrint", valid_589117
+  if valid_579008 != nil:
+    section.add "prettyPrint", valid_579008
+  var valid_579009 = query.getOrDefault("oauth_token")
+  valid_579009 = validateParameter(valid_579009, JString, required = false,
+                                 default = nil)
+  if valid_579009 != nil:
+    section.add "oauth_token", valid_579009
+  var valid_579010 = query.getOrDefault("$.xgafv")
+  valid_579010 = validateParameter(valid_579010, JString, required = false,
+                                 default = newJString("1"))
+  if valid_579010 != nil:
+    section.add "$.xgafv", valid_579010
+  var valid_579011 = query.getOrDefault("alt")
+  valid_579011 = validateParameter(valid_579011, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579011 != nil:
+    section.add "alt", valid_579011
+  var valid_579012 = query.getOrDefault("uploadType")
+  valid_579012 = validateParameter(valid_579012, JString, required = false,
+                                 default = nil)
+  if valid_579012 != nil:
+    section.add "uploadType", valid_579012
+  var valid_579013 = query.getOrDefault("quotaUser")
+  valid_579013 = validateParameter(valid_579013, JString, required = false,
+                                 default = nil)
+  if valid_579013 != nil:
+    section.add "quotaUser", valid_579013
+  var valid_579014 = query.getOrDefault("callback")
+  valid_579014 = validateParameter(valid_579014, JString, required = false,
+                                 default = nil)
+  if valid_579014 != nil:
+    section.add "callback", valid_579014
+  var valid_579015 = query.getOrDefault("fields")
+  valid_579015 = validateParameter(valid_579015, JString, required = false,
+                                 default = nil)
+  if valid_579015 != nil:
+    section.add "fields", valid_579015
+  var valid_579016 = query.getOrDefault("access_token")
+  valid_579016 = validateParameter(valid_579016, JString, required = false,
+                                 default = nil)
+  if valid_579016 != nil:
+    section.add "access_token", valid_579016
+  var valid_579017 = query.getOrDefault("upload_protocol")
+  valid_579017 = validateParameter(valid_579017, JString, required = false,
+                                 default = nil)
+  if valid_579017 != nil:
+    section.add "upload_protocol", valid_579017
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1378,7 +1382,7 @@ proc validate_FirebaserulesProjectsRulesetsCreate_589104(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589119: Call_FirebaserulesProjectsRulesetsCreate_589103;
+proc call*(call_579019: Call_FirebaserulesProjectsRulesetsCreate_579003;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Create a `Ruleset` from `Source`.
@@ -1388,21 +1392,21 @@ proc call*(call_589119: Call_FirebaserulesProjectsRulesetsCreate_589103;
   ## error response indicating the first error encountered. For a detailed view
   ## of `Source` issues, use TestRuleset.
   ## 
-  let valid = call_589119.validator(path, query, header, formData, body)
-  let scheme = call_589119.pickScheme
+  let valid = call_579019.validator(path, query, header, formData, body)
+  let scheme = call_579019.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589119.url(scheme.get, call_589119.host, call_589119.base,
-                         call_589119.route, valid.getOrDefault("path"),
+  let url = call_579019.url(scheme.get, call_579019.host, call_579019.base,
+                         call_579019.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589119, url, valid)
+  result = hook(call_579019, url, valid)
 
-proc call*(call_589120: Call_FirebaserulesProjectsRulesetsCreate_589103;
-          name: string; uploadProtocol: string = ""; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          callback: string = ""; accessToken: string = ""; uploadType: string = "";
-          key: string = ""; Xgafv: string = "1"; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579020: Call_FirebaserulesProjectsRulesetsCreate_579003;
+          name: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          callback: string = ""; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""): Recallable =
   ## firebaserulesProjectsRulesetsCreate
   ## Create a `Ruleset` from `Source`.
   ## 
@@ -1410,60 +1414,60 @@ proc call*(call_589120: Call_FirebaserulesProjectsRulesetsCreate_589103;
   ## caller. `Source` containing syntactic or semantics errors will result in an
   ## error response indicating the first error encountered. For a detailed view
   ## of `Source` issues, use TestRuleset.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
   ##       : Resource name for Project which owns this `Ruleset`.
   ## 
   ## Format: `projects/{project_id}`
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
+  ##   body: JObject
   ##   callback: string
   ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   accessToken: string
   ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589121 = newJObject()
-  var query_589122 = newJObject()
-  var body_589123 = newJObject()
-  add(query_589122, "upload_protocol", newJString(uploadProtocol))
-  add(query_589122, "fields", newJString(fields))
-  add(query_589122, "quotaUser", newJString(quotaUser))
-  add(path_589121, "name", newJString(name))
-  add(query_589122, "alt", newJString(alt))
-  add(query_589122, "oauth_token", newJString(oauthToken))
-  add(query_589122, "callback", newJString(callback))
-  add(query_589122, "access_token", newJString(accessToken))
-  add(query_589122, "uploadType", newJString(uploadType))
-  add(query_589122, "key", newJString(key))
-  add(query_589122, "$.xgafv", newJString(Xgafv))
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_579021 = newJObject()
+  var query_579022 = newJObject()
+  var body_579023 = newJObject()
+  add(query_579022, "key", newJString(key))
+  add(query_579022, "prettyPrint", newJBool(prettyPrint))
+  add(query_579022, "oauth_token", newJString(oauthToken))
+  add(query_579022, "$.xgafv", newJString(Xgafv))
+  add(query_579022, "alt", newJString(alt))
+  add(query_579022, "uploadType", newJString(uploadType))
+  add(query_579022, "quotaUser", newJString(quotaUser))
+  add(path_579021, "name", newJString(name))
   if body != nil:
-    body_589123 = body
-  add(query_589122, "prettyPrint", newJBool(prettyPrint))
-  result = call_589120.call(path_589121, query_589122, nil, nil, body_589123)
+    body_579023 = body
+  add(query_579022, "callback", newJString(callback))
+  add(query_579022, "fields", newJString(fields))
+  add(query_579022, "access_token", newJString(accessToken))
+  add(query_579022, "upload_protocol", newJString(uploadProtocol))
+  result = call_579020.call(path_579021, query_579022, nil, nil, body_579023)
 
-var firebaserulesProjectsRulesetsCreate* = Call_FirebaserulesProjectsRulesetsCreate_589103(
+var firebaserulesProjectsRulesetsCreate* = Call_FirebaserulesProjectsRulesetsCreate_579003(
     name: "firebaserulesProjectsRulesetsCreate", meth: HttpMethod.HttpPost,
     host: "firebaserules.googleapis.com", route: "/v1/{name}/rulesets",
-    validator: validate_FirebaserulesProjectsRulesetsCreate_589104, base: "/",
-    url: url_FirebaserulesProjectsRulesetsCreate_589105, schemes: {Scheme.Https})
+    validator: validate_FirebaserulesProjectsRulesetsCreate_579004, base: "/",
+    url: url_FirebaserulesProjectsRulesetsCreate_579005, schemes: {Scheme.Https})
 type
-  Call_FirebaserulesProjectsRulesetsList_589081 = ref object of OpenApiRestCall_588441
-proc url_FirebaserulesProjectsRulesetsList_589083(protocol: Scheme; host: string;
+  Call_FirebaserulesProjectsRulesetsList_578981 = ref object of OpenApiRestCall_578339
+proc url_FirebaserulesProjectsRulesetsList_578983(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1479,7 +1483,7 @@ proc url_FirebaserulesProjectsRulesetsList_589083(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FirebaserulesProjectsRulesetsList_589082(path: JsonNode;
+proc validate_FirebaserulesProjectsRulesetsList_578982(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List `Ruleset` metadata only and optionally filter the results by `Ruleset`
   ## name.
@@ -1496,33 +1500,19 @@ proc validate_FirebaserulesProjectsRulesetsList_589082(path: JsonNode;
   ## Format: `projects/{project_id}`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_589084 = path.getOrDefault("name")
-  valid_589084 = validateParameter(valid_589084, JString, required = true,
+  var valid_578984 = path.getOrDefault("name")
+  valid_578984 = validateParameter(valid_578984, JString, required = true,
                                  default = nil)
-  if valid_589084 != nil:
-    section.add "name", valid_589084
+  if valid_578984 != nil:
+    section.add "name", valid_578984
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Next page token for loading the next batch of `Ruleset` instances.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
   ##   $.xgafv: JString
   ##          : V1 error format.
   ##   pageSize: JInt
@@ -1530,8 +1520,12 @@ proc validate_FirebaserulesProjectsRulesetsList_589082(path: JsonNode;
   ## Note: `page_size` is just a hint and the service may choose to load less
   ## than `page_size` due to the size of the output. To traverse all of the
   ## releases, caller should iterate until the `page_token` is empty.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   filter: JString
   ##         : `Ruleset` filter. The list method supports filters with restrictions on
   ## `Ruleset.name`.
@@ -1540,76 +1534,86 @@ proc validate_FirebaserulesProjectsRulesetsList_589082(path: JsonNode;
   ## parses strings that conform to the RFC 3339 date/time specifications.
   ## 
   ## Example: `create_time > date("2017-01-01T00:00:00Z") AND name=UUID-*`
+  ##   pageToken: JString
+  ##            : Next page token for loading the next batch of `Ruleset` instances.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589085 = query.getOrDefault("upload_protocol")
-  valid_589085 = validateParameter(valid_589085, JString, required = false,
+  var valid_578985 = query.getOrDefault("key")
+  valid_578985 = validateParameter(valid_578985, JString, required = false,
                                  default = nil)
-  if valid_589085 != nil:
-    section.add "upload_protocol", valid_589085
-  var valid_589086 = query.getOrDefault("fields")
-  valid_589086 = validateParameter(valid_589086, JString, required = false,
-                                 default = nil)
-  if valid_589086 != nil:
-    section.add "fields", valid_589086
-  var valid_589087 = query.getOrDefault("pageToken")
-  valid_589087 = validateParameter(valid_589087, JString, required = false,
-                                 default = nil)
-  if valid_589087 != nil:
-    section.add "pageToken", valid_589087
-  var valid_589088 = query.getOrDefault("quotaUser")
-  valid_589088 = validateParameter(valid_589088, JString, required = false,
-                                 default = nil)
-  if valid_589088 != nil:
-    section.add "quotaUser", valid_589088
-  var valid_589089 = query.getOrDefault("alt")
-  valid_589089 = validateParameter(valid_589089, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589089 != nil:
-    section.add "alt", valid_589089
-  var valid_589090 = query.getOrDefault("oauth_token")
-  valid_589090 = validateParameter(valid_589090, JString, required = false,
-                                 default = nil)
-  if valid_589090 != nil:
-    section.add "oauth_token", valid_589090
-  var valid_589091 = query.getOrDefault("callback")
-  valid_589091 = validateParameter(valid_589091, JString, required = false,
-                                 default = nil)
-  if valid_589091 != nil:
-    section.add "callback", valid_589091
-  var valid_589092 = query.getOrDefault("access_token")
-  valid_589092 = validateParameter(valid_589092, JString, required = false,
-                                 default = nil)
-  if valid_589092 != nil:
-    section.add "access_token", valid_589092
-  var valid_589093 = query.getOrDefault("uploadType")
-  valid_589093 = validateParameter(valid_589093, JString, required = false,
-                                 default = nil)
-  if valid_589093 != nil:
-    section.add "uploadType", valid_589093
-  var valid_589094 = query.getOrDefault("key")
-  valid_589094 = validateParameter(valid_589094, JString, required = false,
-                                 default = nil)
-  if valid_589094 != nil:
-    section.add "key", valid_589094
-  var valid_589095 = query.getOrDefault("$.xgafv")
-  valid_589095 = validateParameter(valid_589095, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589095 != nil:
-    section.add "$.xgafv", valid_589095
-  var valid_589096 = query.getOrDefault("pageSize")
-  valid_589096 = validateParameter(valid_589096, JInt, required = false, default = nil)
-  if valid_589096 != nil:
-    section.add "pageSize", valid_589096
-  var valid_589097 = query.getOrDefault("prettyPrint")
-  valid_589097 = validateParameter(valid_589097, JBool, required = false,
+  if valid_578985 != nil:
+    section.add "key", valid_578985
+  var valid_578986 = query.getOrDefault("prettyPrint")
+  valid_578986 = validateParameter(valid_578986, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589097 != nil:
-    section.add "prettyPrint", valid_589097
-  var valid_589098 = query.getOrDefault("filter")
-  valid_589098 = validateParameter(valid_589098, JString, required = false,
+  if valid_578986 != nil:
+    section.add "prettyPrint", valid_578986
+  var valid_578987 = query.getOrDefault("oauth_token")
+  valid_578987 = validateParameter(valid_578987, JString, required = false,
                                  default = nil)
-  if valid_589098 != nil:
-    section.add "filter", valid_589098
+  if valid_578987 != nil:
+    section.add "oauth_token", valid_578987
+  var valid_578988 = query.getOrDefault("$.xgafv")
+  valid_578988 = validateParameter(valid_578988, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578988 != nil:
+    section.add "$.xgafv", valid_578988
+  var valid_578989 = query.getOrDefault("pageSize")
+  valid_578989 = validateParameter(valid_578989, JInt, required = false, default = nil)
+  if valid_578989 != nil:
+    section.add "pageSize", valid_578989
+  var valid_578990 = query.getOrDefault("alt")
+  valid_578990 = validateParameter(valid_578990, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578990 != nil:
+    section.add "alt", valid_578990
+  var valid_578991 = query.getOrDefault("uploadType")
+  valid_578991 = validateParameter(valid_578991, JString, required = false,
+                                 default = nil)
+  if valid_578991 != nil:
+    section.add "uploadType", valid_578991
+  var valid_578992 = query.getOrDefault("quotaUser")
+  valid_578992 = validateParameter(valid_578992, JString, required = false,
+                                 default = nil)
+  if valid_578992 != nil:
+    section.add "quotaUser", valid_578992
+  var valid_578993 = query.getOrDefault("filter")
+  valid_578993 = validateParameter(valid_578993, JString, required = false,
+                                 default = nil)
+  if valid_578993 != nil:
+    section.add "filter", valid_578993
+  var valid_578994 = query.getOrDefault("pageToken")
+  valid_578994 = validateParameter(valid_578994, JString, required = false,
+                                 default = nil)
+  if valid_578994 != nil:
+    section.add "pageToken", valid_578994
+  var valid_578995 = query.getOrDefault("callback")
+  valid_578995 = validateParameter(valid_578995, JString, required = false,
+                                 default = nil)
+  if valid_578995 != nil:
+    section.add "callback", valid_578995
+  var valid_578996 = query.getOrDefault("fields")
+  valid_578996 = validateParameter(valid_578996, JString, required = false,
+                                 default = nil)
+  if valid_578996 != nil:
+    section.add "fields", valid_578996
+  var valid_578997 = query.getOrDefault("access_token")
+  valid_578997 = validateParameter(valid_578997, JString, required = false,
+                                 default = nil)
+  if valid_578997 != nil:
+    section.add "access_token", valid_578997
+  var valid_578998 = query.getOrDefault("upload_protocol")
+  valid_578998 = validateParameter(valid_578998, JString, required = false,
+                                 default = nil)
+  if valid_578998 != nil:
+    section.add "upload_protocol", valid_578998
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1618,7 +1622,7 @@ proc validate_FirebaserulesProjectsRulesetsList_589082(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589099: Call_FirebaserulesProjectsRulesetsList_589081;
+proc call*(call_578999: Call_FirebaserulesProjectsRulesetsList_578981;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List `Ruleset` metadata only and optionally filter the results by `Ruleset`
@@ -1627,51 +1631,33 @@ proc call*(call_589099: Call_FirebaserulesProjectsRulesetsList_589081;
   ## The full `Source` contents of a `Ruleset` may be retrieved with
   ## GetRuleset.
   ## 
-  let valid = call_589099.validator(path, query, header, formData, body)
-  let scheme = call_589099.pickScheme
+  let valid = call_578999.validator(path, query, header, formData, body)
+  let scheme = call_578999.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589099.url(scheme.get, call_589099.host, call_589099.base,
-                         call_589099.route, valid.getOrDefault("path"),
+  let url = call_578999.url(scheme.get, call_578999.host, call_578999.base,
+                         call_578999.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589099, url, valid)
+  result = hook(call_578999, url, valid)
 
-proc call*(call_589100: Call_FirebaserulesProjectsRulesetsList_589081;
-          name: string; uploadProtocol: string = ""; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; callback: string = ""; accessToken: string = "";
-          uploadType: string = ""; key: string = ""; Xgafv: string = "1"; pageSize: int = 0;
-          prettyPrint: bool = true; filter: string = ""): Recallable =
+proc call*(call_579000: Call_FirebaserulesProjectsRulesetsList_578981;
+          name: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; pageSize: int = 0;
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          filter: string = ""; pageToken: string = ""; callback: string = "";
+          fields: string = ""; accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## firebaserulesProjectsRulesetsList
   ## List `Ruleset` metadata only and optionally filter the results by `Ruleset`
   ## name.
   ## 
   ## The full `Source` contents of a `Ruleset` may be retrieved with
   ## GetRuleset.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Next page token for loading the next batch of `Ruleset` instances.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   name: string (required)
-  ##       : Resource name for the project.
-  ## 
-  ## Format: `projects/{project_id}`
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   Xgafv: string
   ##        : V1 error format.
   ##   pageSize: int
@@ -1679,8 +1665,16 @@ proc call*(call_589100: Call_FirebaserulesProjectsRulesetsList_589081;
   ## Note: `page_size` is just a hint and the service may choose to load less
   ## than `page_size` due to the size of the output. To traverse all of the
   ## releases, caller should iterate until the `page_token` is empty.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   name: string (required)
+  ##       : Resource name for the project.
+  ## 
+  ## Format: `projects/{project_id}`
   ##   filter: string
   ##         : `Ruleset` filter. The list method supports filters with restrictions on
   ## `Ruleset.name`.
@@ -1689,33 +1683,43 @@ proc call*(call_589100: Call_FirebaserulesProjectsRulesetsList_589081;
   ## parses strings that conform to the RFC 3339 date/time specifications.
   ## 
   ## Example: `create_time > date("2017-01-01T00:00:00Z") AND name=UUID-*`
-  var path_589101 = newJObject()
-  var query_589102 = newJObject()
-  add(query_589102, "upload_protocol", newJString(uploadProtocol))
-  add(query_589102, "fields", newJString(fields))
-  add(query_589102, "pageToken", newJString(pageToken))
-  add(query_589102, "quotaUser", newJString(quotaUser))
-  add(path_589101, "name", newJString(name))
-  add(query_589102, "alt", newJString(alt))
-  add(query_589102, "oauth_token", newJString(oauthToken))
-  add(query_589102, "callback", newJString(callback))
-  add(query_589102, "access_token", newJString(accessToken))
-  add(query_589102, "uploadType", newJString(uploadType))
-  add(query_589102, "key", newJString(key))
-  add(query_589102, "$.xgafv", newJString(Xgafv))
-  add(query_589102, "pageSize", newJInt(pageSize))
-  add(query_589102, "prettyPrint", newJBool(prettyPrint))
-  add(query_589102, "filter", newJString(filter))
-  result = call_589100.call(path_589101, query_589102, nil, nil, nil)
+  ##   pageToken: string
+  ##            : Next page token for loading the next batch of `Ruleset` instances.
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_579001 = newJObject()
+  var query_579002 = newJObject()
+  add(query_579002, "key", newJString(key))
+  add(query_579002, "prettyPrint", newJBool(prettyPrint))
+  add(query_579002, "oauth_token", newJString(oauthToken))
+  add(query_579002, "$.xgafv", newJString(Xgafv))
+  add(query_579002, "pageSize", newJInt(pageSize))
+  add(query_579002, "alt", newJString(alt))
+  add(query_579002, "uploadType", newJString(uploadType))
+  add(query_579002, "quotaUser", newJString(quotaUser))
+  add(path_579001, "name", newJString(name))
+  add(query_579002, "filter", newJString(filter))
+  add(query_579002, "pageToken", newJString(pageToken))
+  add(query_579002, "callback", newJString(callback))
+  add(query_579002, "fields", newJString(fields))
+  add(query_579002, "access_token", newJString(accessToken))
+  add(query_579002, "upload_protocol", newJString(uploadProtocol))
+  result = call_579000.call(path_579001, query_579002, nil, nil, nil)
 
-var firebaserulesProjectsRulesetsList* = Call_FirebaserulesProjectsRulesetsList_589081(
+var firebaserulesProjectsRulesetsList* = Call_FirebaserulesProjectsRulesetsList_578981(
     name: "firebaserulesProjectsRulesetsList", meth: HttpMethod.HttpGet,
     host: "firebaserules.googleapis.com", route: "/v1/{name}/rulesets",
-    validator: validate_FirebaserulesProjectsRulesetsList_589082, base: "/",
-    url: url_FirebaserulesProjectsRulesetsList_589083, schemes: {Scheme.Https})
+    validator: validate_FirebaserulesProjectsRulesetsList_578982, base: "/",
+    url: url_FirebaserulesProjectsRulesetsList_578983, schemes: {Scheme.Https})
 type
-  Call_FirebaserulesProjectsReleasesGetExecutable_589124 = ref object of OpenApiRestCall_588441
-proc url_FirebaserulesProjectsReleasesGetExecutable_589126(protocol: Scheme;
+  Call_FirebaserulesProjectsReleasesGetExecutable_579024 = ref object of OpenApiRestCall_578339
+proc url_FirebaserulesProjectsReleasesGetExecutable_579026(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1731,7 +1735,7 @@ proc url_FirebaserulesProjectsReleasesGetExecutable_589126(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FirebaserulesProjectsReleasesGetExecutable_589125(path: JsonNode;
+proc validate_FirebaserulesProjectsReleasesGetExecutable_579025(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get the `Release` executable to use when enforcing rules.
   ## 
@@ -1744,99 +1748,99 @@ proc validate_FirebaserulesProjectsReleasesGetExecutable_589125(path: JsonNode;
   ## Format: `projects/{project_id}/releases/{release_id}`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_589127 = path.getOrDefault("name")
-  valid_589127 = validateParameter(valid_589127, JString, required = true,
+  var valid_579027 = path.getOrDefault("name")
+  valid_579027 = validateParameter(valid_579027, JString, required = true,
                                  default = nil)
-  if valid_589127 != nil:
-    section.add "name", valid_589127
+  if valid_579027 != nil:
+    section.add "name", valid_579027
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
   ##   oauth_token: JString
   ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
   ##   uploadType: JString
   ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   ##   executableVersion: JString
   ##                    : The requested runtime executable version.
   ## Defaults to FIREBASE_RULES_EXECUTABLE_V1.
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_589128 = query.getOrDefault("upload_protocol")
-  valid_589128 = validateParameter(valid_589128, JString, required = false,
+  var valid_579028 = query.getOrDefault("key")
+  valid_579028 = validateParameter(valid_579028, JString, required = false,
                                  default = nil)
-  if valid_589128 != nil:
-    section.add "upload_protocol", valid_589128
-  var valid_589129 = query.getOrDefault("fields")
-  valid_589129 = validateParameter(valid_589129, JString, required = false,
-                                 default = nil)
-  if valid_589129 != nil:
-    section.add "fields", valid_589129
-  var valid_589130 = query.getOrDefault("quotaUser")
-  valid_589130 = validateParameter(valid_589130, JString, required = false,
-                                 default = nil)
-  if valid_589130 != nil:
-    section.add "quotaUser", valid_589130
-  var valid_589131 = query.getOrDefault("alt")
-  valid_589131 = validateParameter(valid_589131, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589131 != nil:
-    section.add "alt", valid_589131
-  var valid_589132 = query.getOrDefault("oauth_token")
-  valid_589132 = validateParameter(valid_589132, JString, required = false,
-                                 default = nil)
-  if valid_589132 != nil:
-    section.add "oauth_token", valid_589132
-  var valid_589133 = query.getOrDefault("callback")
-  valid_589133 = validateParameter(valid_589133, JString, required = false,
-                                 default = nil)
-  if valid_589133 != nil:
-    section.add "callback", valid_589133
-  var valid_589134 = query.getOrDefault("access_token")
-  valid_589134 = validateParameter(valid_589134, JString, required = false,
-                                 default = nil)
-  if valid_589134 != nil:
-    section.add "access_token", valid_589134
-  var valid_589135 = query.getOrDefault("uploadType")
-  valid_589135 = validateParameter(valid_589135, JString, required = false,
-                                 default = nil)
-  if valid_589135 != nil:
-    section.add "uploadType", valid_589135
-  var valid_589136 = query.getOrDefault("executableVersion")
-  valid_589136 = validateParameter(valid_589136, JString, required = false, default = newJString(
-      "RELEASE_EXECUTABLE_VERSION_UNSPECIFIED"))
-  if valid_589136 != nil:
-    section.add "executableVersion", valid_589136
-  var valid_589137 = query.getOrDefault("key")
-  valid_589137 = validateParameter(valid_589137, JString, required = false,
-                                 default = nil)
-  if valid_589137 != nil:
-    section.add "key", valid_589137
-  var valid_589138 = query.getOrDefault("$.xgafv")
-  valid_589138 = validateParameter(valid_589138, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589138 != nil:
-    section.add "$.xgafv", valid_589138
-  var valid_589139 = query.getOrDefault("prettyPrint")
-  valid_589139 = validateParameter(valid_589139, JBool, required = false,
+  if valid_579028 != nil:
+    section.add "key", valid_579028
+  var valid_579029 = query.getOrDefault("prettyPrint")
+  valid_579029 = validateParameter(valid_579029, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589139 != nil:
-    section.add "prettyPrint", valid_589139
+  if valid_579029 != nil:
+    section.add "prettyPrint", valid_579029
+  var valid_579030 = query.getOrDefault("oauth_token")
+  valid_579030 = validateParameter(valid_579030, JString, required = false,
+                                 default = nil)
+  if valid_579030 != nil:
+    section.add "oauth_token", valid_579030
+  var valid_579031 = query.getOrDefault("$.xgafv")
+  valid_579031 = validateParameter(valid_579031, JString, required = false,
+                                 default = newJString("1"))
+  if valid_579031 != nil:
+    section.add "$.xgafv", valid_579031
+  var valid_579032 = query.getOrDefault("alt")
+  valid_579032 = validateParameter(valid_579032, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579032 != nil:
+    section.add "alt", valid_579032
+  var valid_579033 = query.getOrDefault("uploadType")
+  valid_579033 = validateParameter(valid_579033, JString, required = false,
+                                 default = nil)
+  if valid_579033 != nil:
+    section.add "uploadType", valid_579033
+  var valid_579034 = query.getOrDefault("quotaUser")
+  valid_579034 = validateParameter(valid_579034, JString, required = false,
+                                 default = nil)
+  if valid_579034 != nil:
+    section.add "quotaUser", valid_579034
+  var valid_579035 = query.getOrDefault("callback")
+  valid_579035 = validateParameter(valid_579035, JString, required = false,
+                                 default = nil)
+  if valid_579035 != nil:
+    section.add "callback", valid_579035
+  var valid_579036 = query.getOrDefault("fields")
+  valid_579036 = validateParameter(valid_579036, JString, required = false,
+                                 default = nil)
+  if valid_579036 != nil:
+    section.add "fields", valid_579036
+  var valid_579037 = query.getOrDefault("access_token")
+  valid_579037 = validateParameter(valid_579037, JString, required = false,
+                                 default = nil)
+  if valid_579037 != nil:
+    section.add "access_token", valid_579037
+  var valid_579038 = query.getOrDefault("upload_protocol")
+  valid_579038 = validateParameter(valid_579038, JString, required = false,
+                                 default = nil)
+  if valid_579038 != nil:
+    section.add "upload_protocol", valid_579038
+  var valid_579039 = query.getOrDefault("executableVersion")
+  valid_579039 = validateParameter(valid_579039, JString, required = false, default = newJString(
+      "RELEASE_EXECUTABLE_VERSION_UNSPECIFIED"))
+  if valid_579039 != nil:
+    section.add "executableVersion", valid_579039
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1845,83 +1849,83 @@ proc validate_FirebaserulesProjectsReleasesGetExecutable_589125(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589140: Call_FirebaserulesProjectsReleasesGetExecutable_589124;
+proc call*(call_579040: Call_FirebaserulesProjectsReleasesGetExecutable_579024;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Get the `Release` executable to use when enforcing rules.
   ## 
-  let valid = call_589140.validator(path, query, header, formData, body)
-  let scheme = call_589140.pickScheme
+  let valid = call_579040.validator(path, query, header, formData, body)
+  let scheme = call_579040.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589140.url(scheme.get, call_589140.host, call_589140.base,
-                         call_589140.route, valid.getOrDefault("path"),
+  let url = call_579040.url(scheme.get, call_579040.host, call_579040.base,
+                         call_579040.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589140, url, valid)
+  result = hook(call_579040, url, valid)
 
-proc call*(call_589141: Call_FirebaserulesProjectsReleasesGetExecutable_589124;
-          name: string; uploadProtocol: string = ""; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          callback: string = ""; accessToken: string = ""; uploadType: string = "";
-          executableVersion: string = "RELEASE_EXECUTABLE_VERSION_UNSPECIFIED";
-          key: string = ""; Xgafv: string = "1"; prettyPrint: bool = true): Recallable =
+proc call*(call_579041: Call_FirebaserulesProjectsReleasesGetExecutable_579024;
+          name: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; callback: string = "";
+          fields: string = ""; accessToken: string = ""; uploadProtocol: string = "";
+          executableVersion: string = "RELEASE_EXECUTABLE_VERSION_UNSPECIFIED"): Recallable =
   ## firebaserulesProjectsReleasesGetExecutable
   ## Get the `Release` executable to use when enforcing rules.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
   ##       : Resource name of the `Release`.
   ## 
   ## Format: `projects/{project_id}/releases/{release_id}`
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
   ##   callback: string
   ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   accessToken: string
   ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
   ##   executableVersion: string
   ##                    : The requested runtime executable version.
   ## Defaults to FIREBASE_RULES_EXECUTABLE_V1.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589142 = newJObject()
-  var query_589143 = newJObject()
-  add(query_589143, "upload_protocol", newJString(uploadProtocol))
-  add(query_589143, "fields", newJString(fields))
-  add(query_589143, "quotaUser", newJString(quotaUser))
-  add(path_589142, "name", newJString(name))
-  add(query_589143, "alt", newJString(alt))
-  add(query_589143, "oauth_token", newJString(oauthToken))
-  add(query_589143, "callback", newJString(callback))
-  add(query_589143, "access_token", newJString(accessToken))
-  add(query_589143, "uploadType", newJString(uploadType))
-  add(query_589143, "executableVersion", newJString(executableVersion))
-  add(query_589143, "key", newJString(key))
-  add(query_589143, "$.xgafv", newJString(Xgafv))
-  add(query_589143, "prettyPrint", newJBool(prettyPrint))
-  result = call_589141.call(path_589142, query_589143, nil, nil, nil)
+  var path_579042 = newJObject()
+  var query_579043 = newJObject()
+  add(query_579043, "key", newJString(key))
+  add(query_579043, "prettyPrint", newJBool(prettyPrint))
+  add(query_579043, "oauth_token", newJString(oauthToken))
+  add(query_579043, "$.xgafv", newJString(Xgafv))
+  add(query_579043, "alt", newJString(alt))
+  add(query_579043, "uploadType", newJString(uploadType))
+  add(query_579043, "quotaUser", newJString(quotaUser))
+  add(path_579042, "name", newJString(name))
+  add(query_579043, "callback", newJString(callback))
+  add(query_579043, "fields", newJString(fields))
+  add(query_579043, "access_token", newJString(accessToken))
+  add(query_579043, "upload_protocol", newJString(uploadProtocol))
+  add(query_579043, "executableVersion", newJString(executableVersion))
+  result = call_579041.call(path_579042, query_579043, nil, nil, nil)
 
-var firebaserulesProjectsReleasesGetExecutable* = Call_FirebaserulesProjectsReleasesGetExecutable_589124(
+var firebaserulesProjectsReleasesGetExecutable* = Call_FirebaserulesProjectsReleasesGetExecutable_579024(
     name: "firebaserulesProjectsReleasesGetExecutable", meth: HttpMethod.HttpGet,
     host: "firebaserules.googleapis.com", route: "/v1/{name}:getExecutable",
-    validator: validate_FirebaserulesProjectsReleasesGetExecutable_589125,
-    base: "/", url: url_FirebaserulesProjectsReleasesGetExecutable_589126,
+    validator: validate_FirebaserulesProjectsReleasesGetExecutable_579025,
+    base: "/", url: url_FirebaserulesProjectsReleasesGetExecutable_579026,
     schemes: {Scheme.Https})
 type
-  Call_FirebaserulesProjectsTest_589144 = ref object of OpenApiRestCall_588441
-proc url_FirebaserulesProjectsTest_589146(protocol: Scheme; host: string;
+  Call_FirebaserulesProjectsTest_579044 = ref object of OpenApiRestCall_578339
+proc url_FirebaserulesProjectsTest_579046(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1937,7 +1941,7 @@ proc url_FirebaserulesProjectsTest_589146(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_FirebaserulesProjectsTest_589145(path: JsonNode; query: JsonNode;
+proc validate_FirebaserulesProjectsTest_579045(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Test `Source` for syntactic and semantic correctness. Issues present, if
   ## any, will be returned to the caller with a description, severity, and
@@ -1975,91 +1979,91 @@ proc validate_FirebaserulesProjectsTest_589145(path: JsonNode; query: JsonNode;
   ## Format: `projects/{project_id}/rulesets/{ruleset_id}`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_589147 = path.getOrDefault("name")
-  valid_589147 = validateParameter(valid_589147, JString, required = true,
+  var valid_579047 = path.getOrDefault("name")
+  valid_579047 = validateParameter(valid_579047, JString, required = true,
                                  default = nil)
-  if valid_589147 != nil:
-    section.add "name", valid_589147
+  if valid_579047 != nil:
+    section.add "name", valid_579047
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589148 = query.getOrDefault("upload_protocol")
-  valid_589148 = validateParameter(valid_589148, JString, required = false,
+  var valid_579048 = query.getOrDefault("key")
+  valid_579048 = validateParameter(valid_579048, JString, required = false,
                                  default = nil)
-  if valid_589148 != nil:
-    section.add "upload_protocol", valid_589148
-  var valid_589149 = query.getOrDefault("fields")
-  valid_589149 = validateParameter(valid_589149, JString, required = false,
-                                 default = nil)
-  if valid_589149 != nil:
-    section.add "fields", valid_589149
-  var valid_589150 = query.getOrDefault("quotaUser")
-  valid_589150 = validateParameter(valid_589150, JString, required = false,
-                                 default = nil)
-  if valid_589150 != nil:
-    section.add "quotaUser", valid_589150
-  var valid_589151 = query.getOrDefault("alt")
-  valid_589151 = validateParameter(valid_589151, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589151 != nil:
-    section.add "alt", valid_589151
-  var valid_589152 = query.getOrDefault("oauth_token")
-  valid_589152 = validateParameter(valid_589152, JString, required = false,
-                                 default = nil)
-  if valid_589152 != nil:
-    section.add "oauth_token", valid_589152
-  var valid_589153 = query.getOrDefault("callback")
-  valid_589153 = validateParameter(valid_589153, JString, required = false,
-                                 default = nil)
-  if valid_589153 != nil:
-    section.add "callback", valid_589153
-  var valid_589154 = query.getOrDefault("access_token")
-  valid_589154 = validateParameter(valid_589154, JString, required = false,
-                                 default = nil)
-  if valid_589154 != nil:
-    section.add "access_token", valid_589154
-  var valid_589155 = query.getOrDefault("uploadType")
-  valid_589155 = validateParameter(valid_589155, JString, required = false,
-                                 default = nil)
-  if valid_589155 != nil:
-    section.add "uploadType", valid_589155
-  var valid_589156 = query.getOrDefault("key")
-  valid_589156 = validateParameter(valid_589156, JString, required = false,
-                                 default = nil)
-  if valid_589156 != nil:
-    section.add "key", valid_589156
-  var valid_589157 = query.getOrDefault("$.xgafv")
-  valid_589157 = validateParameter(valid_589157, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589157 != nil:
-    section.add "$.xgafv", valid_589157
-  var valid_589158 = query.getOrDefault("prettyPrint")
-  valid_589158 = validateParameter(valid_589158, JBool, required = false,
+  if valid_579048 != nil:
+    section.add "key", valid_579048
+  var valid_579049 = query.getOrDefault("prettyPrint")
+  valid_579049 = validateParameter(valid_579049, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589158 != nil:
-    section.add "prettyPrint", valid_589158
+  if valid_579049 != nil:
+    section.add "prettyPrint", valid_579049
+  var valid_579050 = query.getOrDefault("oauth_token")
+  valid_579050 = validateParameter(valid_579050, JString, required = false,
+                                 default = nil)
+  if valid_579050 != nil:
+    section.add "oauth_token", valid_579050
+  var valid_579051 = query.getOrDefault("$.xgafv")
+  valid_579051 = validateParameter(valid_579051, JString, required = false,
+                                 default = newJString("1"))
+  if valid_579051 != nil:
+    section.add "$.xgafv", valid_579051
+  var valid_579052 = query.getOrDefault("alt")
+  valid_579052 = validateParameter(valid_579052, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579052 != nil:
+    section.add "alt", valid_579052
+  var valid_579053 = query.getOrDefault("uploadType")
+  valid_579053 = validateParameter(valid_579053, JString, required = false,
+                                 default = nil)
+  if valid_579053 != nil:
+    section.add "uploadType", valid_579053
+  var valid_579054 = query.getOrDefault("quotaUser")
+  valid_579054 = validateParameter(valid_579054, JString, required = false,
+                                 default = nil)
+  if valid_579054 != nil:
+    section.add "quotaUser", valid_579054
+  var valid_579055 = query.getOrDefault("callback")
+  valid_579055 = validateParameter(valid_579055, JString, required = false,
+                                 default = nil)
+  if valid_579055 != nil:
+    section.add "callback", valid_579055
+  var valid_579056 = query.getOrDefault("fields")
+  valid_579056 = validateParameter(valid_579056, JString, required = false,
+                                 default = nil)
+  if valid_579056 != nil:
+    section.add "fields", valid_579056
+  var valid_579057 = query.getOrDefault("access_token")
+  valid_579057 = validateParameter(valid_579057, JString, required = false,
+                                 default = nil)
+  if valid_579057 != nil:
+    section.add "access_token", valid_579057
+  var valid_579058 = query.getOrDefault("upload_protocol")
+  valid_579058 = validateParameter(valid_579058, JString, required = false,
+                                 default = nil)
+  if valid_579058 != nil:
+    section.add "upload_protocol", valid_579058
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2071,7 +2075,7 @@ proc validate_FirebaserulesProjectsTest_589145(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589160: Call_FirebaserulesProjectsTest_589144; path: JsonNode;
+proc call*(call_579060: Call_FirebaserulesProjectsTest_579044; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Test `Source` for syntactic and semantic correctness. Issues present, if
   ## any, will be returned to the caller with a description, severity, and
@@ -2096,20 +2100,20 @@ proc call*(call_589160: Call_FirebaserulesProjectsTest_589144; path: JsonNode;
   ##       }
   ##     }
   ## 
-  let valid = call_589160.validator(path, query, header, formData, body)
-  let scheme = call_589160.pickScheme
+  let valid = call_579060.validator(path, query, header, formData, body)
+  let scheme = call_579060.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589160.url(scheme.get, call_589160.host, call_589160.base,
-                         call_589160.route, valid.getOrDefault("path"),
+  let url = call_579060.url(scheme.get, call_579060.host, call_579060.base,
+                         call_579060.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589160, url, valid)
+  result = hook(call_579060, url, valid)
 
-proc call*(call_589161: Call_FirebaserulesProjectsTest_589144; name: string;
-          uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; callback: string = "";
-          accessToken: string = ""; uploadType: string = ""; key: string = "";
-          Xgafv: string = "1"; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579061: Call_FirebaserulesProjectsTest_579044; name: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          Xgafv: string = "1"; alt: string = "json"; uploadType: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; callback: string = "";
+          fields: string = ""; accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## firebaserulesProjectsTest
   ## Test `Source` for syntactic and semantic correctness. Issues present, if
   ## any, will be returned to the caller with a description, severity, and
@@ -2133,10 +2137,18 @@ proc call*(call_589161: Call_FirebaserulesProjectsTest_589144; name: string;
   ##               && resource.mimeType.matches('^image/')
   ##       }
   ##     }
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
@@ -2147,47 +2159,39 @@ proc call*(call_589161: Call_FirebaserulesProjectsTest_589144; name: string;
   ## 
   ## For tests against a `Ruleset`, this must be the `Ruleset` resource name:
   ## Format: `projects/{project_id}/rulesets/{ruleset_id}`
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
+  ##   body: JObject
   ##   callback: string
   ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   accessToken: string
   ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589162 = newJObject()
-  var query_589163 = newJObject()
-  var body_589164 = newJObject()
-  add(query_589163, "upload_protocol", newJString(uploadProtocol))
-  add(query_589163, "fields", newJString(fields))
-  add(query_589163, "quotaUser", newJString(quotaUser))
-  add(path_589162, "name", newJString(name))
-  add(query_589163, "alt", newJString(alt))
-  add(query_589163, "oauth_token", newJString(oauthToken))
-  add(query_589163, "callback", newJString(callback))
-  add(query_589163, "access_token", newJString(accessToken))
-  add(query_589163, "uploadType", newJString(uploadType))
-  add(query_589163, "key", newJString(key))
-  add(query_589163, "$.xgafv", newJString(Xgafv))
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_579062 = newJObject()
+  var query_579063 = newJObject()
+  var body_579064 = newJObject()
+  add(query_579063, "key", newJString(key))
+  add(query_579063, "prettyPrint", newJBool(prettyPrint))
+  add(query_579063, "oauth_token", newJString(oauthToken))
+  add(query_579063, "$.xgafv", newJString(Xgafv))
+  add(query_579063, "alt", newJString(alt))
+  add(query_579063, "uploadType", newJString(uploadType))
+  add(query_579063, "quotaUser", newJString(quotaUser))
+  add(path_579062, "name", newJString(name))
   if body != nil:
-    body_589164 = body
-  add(query_589163, "prettyPrint", newJBool(prettyPrint))
-  result = call_589161.call(path_589162, query_589163, nil, nil, body_589164)
+    body_579064 = body
+  add(query_579063, "callback", newJString(callback))
+  add(query_579063, "fields", newJString(fields))
+  add(query_579063, "access_token", newJString(accessToken))
+  add(query_579063, "upload_protocol", newJString(uploadProtocol))
+  result = call_579061.call(path_579062, query_579063, nil, nil, body_579064)
 
-var firebaserulesProjectsTest* = Call_FirebaserulesProjectsTest_589144(
+var firebaserulesProjectsTest* = Call_FirebaserulesProjectsTest_579044(
     name: "firebaserulesProjectsTest", meth: HttpMethod.HttpPost,
     host: "firebaserules.googleapis.com", route: "/v1/{name}:test",
-    validator: validate_FirebaserulesProjectsTest_589145, base: "/",
-    url: url_FirebaserulesProjectsTest_589146, schemes: {Scheme.Https})
+    validator: validate_FirebaserulesProjectsTest_579045, base: "/",
+    url: url_FirebaserulesProjectsTest_579046, schemes: {Scheme.Https})
 export
   rest
 

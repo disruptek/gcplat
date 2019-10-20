@@ -30,15 +30,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588441 = ref object of OpenApiRestCall
+  OpenApiRestCall_578339 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -96,9 +96,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -109,15 +113,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_ClouddebuggerControllerDebuggeesRegister_588710 = ref object of OpenApiRestCall_588441
-proc url_ClouddebuggerControllerDebuggeesRegister_588712(protocol: Scheme;
+  Call_ClouddebuggerControllerDebuggeesRegister_578610 = ref object of OpenApiRestCall_578339
+proc url_ClouddebuggerControllerDebuggeesRegister_578612(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ClouddebuggerControllerDebuggeesRegister_588711(path: JsonNode;
+proc validate_ClouddebuggerControllerDebuggeesRegister_578611(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Registers the debuggee with the controller service.
   ## 
@@ -135,84 +139,84 @@ proc validate_ClouddebuggerControllerDebuggeesRegister_588711(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_588824 = query.getOrDefault("upload_protocol")
-  valid_588824 = validateParameter(valid_588824, JString, required = false,
+  var valid_578724 = query.getOrDefault("key")
+  valid_578724 = validateParameter(valid_578724, JString, required = false,
                                  default = nil)
-  if valid_588824 != nil:
-    section.add "upload_protocol", valid_588824
-  var valid_588825 = query.getOrDefault("fields")
-  valid_588825 = validateParameter(valid_588825, JString, required = false,
-                                 default = nil)
-  if valid_588825 != nil:
-    section.add "fields", valid_588825
-  var valid_588826 = query.getOrDefault("quotaUser")
-  valid_588826 = validateParameter(valid_588826, JString, required = false,
-                                 default = nil)
-  if valid_588826 != nil:
-    section.add "quotaUser", valid_588826
-  var valid_588840 = query.getOrDefault("alt")
-  valid_588840 = validateParameter(valid_588840, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588840 != nil:
-    section.add "alt", valid_588840
-  var valid_588841 = query.getOrDefault("oauth_token")
-  valid_588841 = validateParameter(valid_588841, JString, required = false,
-                                 default = nil)
-  if valid_588841 != nil:
-    section.add "oauth_token", valid_588841
-  var valid_588842 = query.getOrDefault("callback")
-  valid_588842 = validateParameter(valid_588842, JString, required = false,
-                                 default = nil)
-  if valid_588842 != nil:
-    section.add "callback", valid_588842
-  var valid_588843 = query.getOrDefault("access_token")
-  valid_588843 = validateParameter(valid_588843, JString, required = false,
-                                 default = nil)
-  if valid_588843 != nil:
-    section.add "access_token", valid_588843
-  var valid_588844 = query.getOrDefault("uploadType")
-  valid_588844 = validateParameter(valid_588844, JString, required = false,
-                                 default = nil)
-  if valid_588844 != nil:
-    section.add "uploadType", valid_588844
-  var valid_588845 = query.getOrDefault("key")
-  valid_588845 = validateParameter(valid_588845, JString, required = false,
-                                 default = nil)
-  if valid_588845 != nil:
-    section.add "key", valid_588845
-  var valid_588846 = query.getOrDefault("$.xgafv")
-  valid_588846 = validateParameter(valid_588846, JString, required = false,
-                                 default = newJString("1"))
-  if valid_588846 != nil:
-    section.add "$.xgafv", valid_588846
-  var valid_588847 = query.getOrDefault("prettyPrint")
-  valid_588847 = validateParameter(valid_588847, JBool, required = false,
+  if valid_578724 != nil:
+    section.add "key", valid_578724
+  var valid_578738 = query.getOrDefault("prettyPrint")
+  valid_578738 = validateParameter(valid_578738, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588847 != nil:
-    section.add "prettyPrint", valid_588847
+  if valid_578738 != nil:
+    section.add "prettyPrint", valid_578738
+  var valid_578739 = query.getOrDefault("oauth_token")
+  valid_578739 = validateParameter(valid_578739, JString, required = false,
+                                 default = nil)
+  if valid_578739 != nil:
+    section.add "oauth_token", valid_578739
+  var valid_578740 = query.getOrDefault("$.xgafv")
+  valid_578740 = validateParameter(valid_578740, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578740 != nil:
+    section.add "$.xgafv", valid_578740
+  var valid_578741 = query.getOrDefault("alt")
+  valid_578741 = validateParameter(valid_578741, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578741 != nil:
+    section.add "alt", valid_578741
+  var valid_578742 = query.getOrDefault("uploadType")
+  valid_578742 = validateParameter(valid_578742, JString, required = false,
+                                 default = nil)
+  if valid_578742 != nil:
+    section.add "uploadType", valid_578742
+  var valid_578743 = query.getOrDefault("quotaUser")
+  valid_578743 = validateParameter(valid_578743, JString, required = false,
+                                 default = nil)
+  if valid_578743 != nil:
+    section.add "quotaUser", valid_578743
+  var valid_578744 = query.getOrDefault("callback")
+  valid_578744 = validateParameter(valid_578744, JString, required = false,
+                                 default = nil)
+  if valid_578744 != nil:
+    section.add "callback", valid_578744
+  var valid_578745 = query.getOrDefault("fields")
+  valid_578745 = validateParameter(valid_578745, JString, required = false,
+                                 default = nil)
+  if valid_578745 != nil:
+    section.add "fields", valid_578745
+  var valid_578746 = query.getOrDefault("access_token")
+  valid_578746 = validateParameter(valid_578746, JString, required = false,
+                                 default = nil)
+  if valid_578746 != nil:
+    section.add "access_token", valid_578746
+  var valid_578747 = query.getOrDefault("upload_protocol")
+  valid_578747 = validateParameter(valid_578747, JString, required = false,
+                                 default = nil)
+  if valid_578747 != nil:
+    section.add "upload_protocol", valid_578747
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -224,7 +228,7 @@ proc validate_ClouddebuggerControllerDebuggeesRegister_588711(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588871: Call_ClouddebuggerControllerDebuggeesRegister_588710;
+proc call*(call_578771: Call_ClouddebuggerControllerDebuggeesRegister_578610;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Registers the debuggee with the controller service.
@@ -238,20 +242,20 @@ proc call*(call_588871: Call_ClouddebuggerControllerDebuggeesRegister_588710;
   ## from data loss, or change the `debuggee_id` format. Agents must handle
   ## `debuggee_id` value changing upon re-registration.
   ## 
-  let valid = call_588871.validator(path, query, header, formData, body)
-  let scheme = call_588871.pickScheme
+  let valid = call_578771.validator(path, query, header, formData, body)
+  let scheme = call_578771.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588871.url(scheme.get, call_588871.host, call_588871.base,
-                         call_588871.route, valid.getOrDefault("path"),
+  let url = call_578771.url(scheme.get, call_578771.host, call_578771.base,
+                         call_578771.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588871, url, valid)
+  result = hook(call_578771, url, valid)
 
-proc call*(call_588942: Call_ClouddebuggerControllerDebuggeesRegister_588710;
-          uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; callback: string = "";
-          accessToken: string = ""; uploadType: string = ""; key: string = "";
-          Xgafv: string = "1"; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578842: Call_ClouddebuggerControllerDebuggeesRegister_578610;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          Xgafv: string = "1"; alt: string = "json"; uploadType: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; callback: string = "";
+          fields: string = ""; accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## clouddebuggerControllerDebuggeesRegister
   ## Registers the debuggee with the controller service.
   ## 
@@ -263,56 +267,56 @@ proc call*(call_588942: Call_ClouddebuggerControllerDebuggeesRegister_588710;
   ## This protocol allows the controller service to disable debuggees, recover
   ## from data loss, or change the `debuggee_id` format. Agents must handle
   ## `debuggee_id` value changing upon re-registration.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_588943 = newJObject()
-  var body_588945 = newJObject()
-  add(query_588943, "upload_protocol", newJString(uploadProtocol))
-  add(query_588943, "fields", newJString(fields))
-  add(query_588943, "quotaUser", newJString(quotaUser))
-  add(query_588943, "alt", newJString(alt))
-  add(query_588943, "oauth_token", newJString(oauthToken))
-  add(query_588943, "callback", newJString(callback))
-  add(query_588943, "access_token", newJString(accessToken))
-  add(query_588943, "uploadType", newJString(uploadType))
-  add(query_588943, "key", newJString(key))
-  add(query_588943, "$.xgafv", newJString(Xgafv))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   body: JObject
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var query_578843 = newJObject()
+  var body_578845 = newJObject()
+  add(query_578843, "key", newJString(key))
+  add(query_578843, "prettyPrint", newJBool(prettyPrint))
+  add(query_578843, "oauth_token", newJString(oauthToken))
+  add(query_578843, "$.xgafv", newJString(Xgafv))
+  add(query_578843, "alt", newJString(alt))
+  add(query_578843, "uploadType", newJString(uploadType))
+  add(query_578843, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_588945 = body
-  add(query_588943, "prettyPrint", newJBool(prettyPrint))
-  result = call_588942.call(nil, query_588943, nil, nil, body_588945)
+    body_578845 = body
+  add(query_578843, "callback", newJString(callback))
+  add(query_578843, "fields", newJString(fields))
+  add(query_578843, "access_token", newJString(accessToken))
+  add(query_578843, "upload_protocol", newJString(uploadProtocol))
+  result = call_578842.call(nil, query_578843, nil, nil, body_578845)
 
-var clouddebuggerControllerDebuggeesRegister* = Call_ClouddebuggerControllerDebuggeesRegister_588710(
+var clouddebuggerControllerDebuggeesRegister* = Call_ClouddebuggerControllerDebuggeesRegister_578610(
     name: "clouddebuggerControllerDebuggeesRegister", meth: HttpMethod.HttpPost,
     host: "clouddebugger.googleapis.com",
     route: "/v2/controller/debuggees/register",
-    validator: validate_ClouddebuggerControllerDebuggeesRegister_588711,
-    base: "/", url: url_ClouddebuggerControllerDebuggeesRegister_588712,
+    validator: validate_ClouddebuggerControllerDebuggeesRegister_578611,
+    base: "/", url: url_ClouddebuggerControllerDebuggeesRegister_578612,
     schemes: {Scheme.Https})
 type
-  Call_ClouddebuggerControllerDebuggeesBreakpointsList_588984 = ref object of OpenApiRestCall_588441
-proc url_ClouddebuggerControllerDebuggeesBreakpointsList_588986(protocol: Scheme;
+  Call_ClouddebuggerControllerDebuggeesBreakpointsList_578884 = ref object of OpenApiRestCall_578339
+proc url_ClouddebuggerControllerDebuggeesBreakpointsList_578886(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -328,7 +332,7 @@ proc url_ClouddebuggerControllerDebuggeesBreakpointsList_588986(protocol: Scheme
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouddebuggerControllerDebuggeesBreakpointsList_588985(
+proc validate_ClouddebuggerControllerDebuggeesBreakpointsList_578885(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Returns the list of all active breakpoints for the debuggee.
@@ -353,31 +357,40 @@ proc validate_ClouddebuggerControllerDebuggeesBreakpointsList_588985(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `debuggeeId` field"
-  var valid_589001 = path.getOrDefault("debuggeeId")
-  valid_589001 = validateParameter(valid_589001, JString, required = true,
+  var valid_578901 = path.getOrDefault("debuggeeId")
+  valid_578901 = validateParameter(valid_578901, JString, required = true,
                                  default = nil)
-  if valid_589001 != nil:
-    section.add "debuggeeId", valid_589001
+  if valid_578901 != nil:
+    section.add "debuggeeId", valid_578901
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
+  ##   waitToken: JString
+  ##            : A token that, if specified, blocks the method call until the list
+  ## of active breakpoints has changed, or a server-selected timeout has
+  ## expired. The value should be set from the `next_wait_token` field in
+  ## the last response. The initial value should be set to `"init"`.
   ##   successOnTimeout: JBool
   ##                   : If set to `true` (recommended), returns `google.rpc.Code.OK` status and
   ## sets the `wait_expired` response field to `true` when the server-selected
@@ -385,80 +398,71 @@ proc validate_ClouddebuggerControllerDebuggeesBreakpointsList_588985(
   ## 
   ## If set to `false` (deprecated), returns `google.rpc.Code.ABORTED` status
   ## when the server-selected timeout has expired.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
-  ##   waitToken: JString
-  ##            : A token that, if specified, blocks the method call until the list
-  ## of active breakpoints has changed, or a server-selected timeout has
-  ## expired. The value should be set from the `next_wait_token` field in
-  ## the last response. The initial value should be set to `"init"`.
   section = newJObject()
-  var valid_589002 = query.getOrDefault("upload_protocol")
-  valid_589002 = validateParameter(valid_589002, JString, required = false,
+  var valid_578902 = query.getOrDefault("key")
+  valid_578902 = validateParameter(valid_578902, JString, required = false,
                                  default = nil)
-  if valid_589002 != nil:
-    section.add "upload_protocol", valid_589002
-  var valid_589003 = query.getOrDefault("fields")
-  valid_589003 = validateParameter(valid_589003, JString, required = false,
-                                 default = nil)
-  if valid_589003 != nil:
-    section.add "fields", valid_589003
-  var valid_589004 = query.getOrDefault("quotaUser")
-  valid_589004 = validateParameter(valid_589004, JString, required = false,
-                                 default = nil)
-  if valid_589004 != nil:
-    section.add "quotaUser", valid_589004
-  var valid_589005 = query.getOrDefault("alt")
-  valid_589005 = validateParameter(valid_589005, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589005 != nil:
-    section.add "alt", valid_589005
-  var valid_589006 = query.getOrDefault("oauth_token")
-  valid_589006 = validateParameter(valid_589006, JString, required = false,
-                                 default = nil)
-  if valid_589006 != nil:
-    section.add "oauth_token", valid_589006
-  var valid_589007 = query.getOrDefault("callback")
-  valid_589007 = validateParameter(valid_589007, JString, required = false,
-                                 default = nil)
-  if valid_589007 != nil:
-    section.add "callback", valid_589007
-  var valid_589008 = query.getOrDefault("access_token")
-  valid_589008 = validateParameter(valid_589008, JString, required = false,
-                                 default = nil)
-  if valid_589008 != nil:
-    section.add "access_token", valid_589008
-  var valid_589009 = query.getOrDefault("uploadType")
-  valid_589009 = validateParameter(valid_589009, JString, required = false,
-                                 default = nil)
-  if valid_589009 != nil:
-    section.add "uploadType", valid_589009
-  var valid_589010 = query.getOrDefault("key")
-  valid_589010 = validateParameter(valid_589010, JString, required = false,
-                                 default = nil)
-  if valid_589010 != nil:
-    section.add "key", valid_589010
-  var valid_589011 = query.getOrDefault("successOnTimeout")
-  valid_589011 = validateParameter(valid_589011, JBool, required = false, default = nil)
-  if valid_589011 != nil:
-    section.add "successOnTimeout", valid_589011
-  var valid_589012 = query.getOrDefault("$.xgafv")
-  valid_589012 = validateParameter(valid_589012, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589012 != nil:
-    section.add "$.xgafv", valid_589012
-  var valid_589013 = query.getOrDefault("prettyPrint")
-  valid_589013 = validateParameter(valid_589013, JBool, required = false,
+  if valid_578902 != nil:
+    section.add "key", valid_578902
+  var valid_578903 = query.getOrDefault("prettyPrint")
+  valid_578903 = validateParameter(valid_578903, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589013 != nil:
-    section.add "prettyPrint", valid_589013
-  var valid_589014 = query.getOrDefault("waitToken")
-  valid_589014 = validateParameter(valid_589014, JString, required = false,
+  if valid_578903 != nil:
+    section.add "prettyPrint", valid_578903
+  var valid_578904 = query.getOrDefault("oauth_token")
+  valid_578904 = validateParameter(valid_578904, JString, required = false,
                                  default = nil)
-  if valid_589014 != nil:
-    section.add "waitToken", valid_589014
+  if valid_578904 != nil:
+    section.add "oauth_token", valid_578904
+  var valid_578905 = query.getOrDefault("$.xgafv")
+  valid_578905 = validateParameter(valid_578905, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578905 != nil:
+    section.add "$.xgafv", valid_578905
+  var valid_578906 = query.getOrDefault("alt")
+  valid_578906 = validateParameter(valid_578906, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578906 != nil:
+    section.add "alt", valid_578906
+  var valid_578907 = query.getOrDefault("uploadType")
+  valid_578907 = validateParameter(valid_578907, JString, required = false,
+                                 default = nil)
+  if valid_578907 != nil:
+    section.add "uploadType", valid_578907
+  var valid_578908 = query.getOrDefault("quotaUser")
+  valid_578908 = validateParameter(valid_578908, JString, required = false,
+                                 default = nil)
+  if valid_578908 != nil:
+    section.add "quotaUser", valid_578908
+  var valid_578909 = query.getOrDefault("callback")
+  valid_578909 = validateParameter(valid_578909, JString, required = false,
+                                 default = nil)
+  if valid_578909 != nil:
+    section.add "callback", valid_578909
+  var valid_578910 = query.getOrDefault("fields")
+  valid_578910 = validateParameter(valid_578910, JString, required = false,
+                                 default = nil)
+  if valid_578910 != nil:
+    section.add "fields", valid_578910
+  var valid_578911 = query.getOrDefault("access_token")
+  valid_578911 = validateParameter(valid_578911, JString, required = false,
+                                 default = nil)
+  if valid_578911 != nil:
+    section.add "access_token", valid_578911
+  var valid_578912 = query.getOrDefault("upload_protocol")
+  valid_578912 = validateParameter(valid_578912, JString, required = false,
+                                 default = nil)
+  if valid_578912 != nil:
+    section.add "upload_protocol", valid_578912
+  var valid_578913 = query.getOrDefault("waitToken")
+  valid_578913 = validateParameter(valid_578913, JString, required = false,
+                                 default = nil)
+  if valid_578913 != nil:
+    section.add "waitToken", valid_578913
+  var valid_578914 = query.getOrDefault("successOnTimeout")
+  valid_578914 = validateParameter(valid_578914, JBool, required = false, default = nil)
+  if valid_578914 != nil:
+    section.add "successOnTimeout", valid_578914
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -467,7 +471,7 @@ proc validate_ClouddebuggerControllerDebuggeesBreakpointsList_588985(
   if body != nil:
     result.add "body", body
 
-proc call*(call_589015: Call_ClouddebuggerControllerDebuggeesBreakpointsList_588984;
+proc call*(call_578915: Call_ClouddebuggerControllerDebuggeesBreakpointsList_578884;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns the list of all active breakpoints for the debuggee.
@@ -484,21 +488,21 @@ proc call*(call_589015: Call_ClouddebuggerControllerDebuggeesBreakpointsList_588
   ## until the controller removes them from the active list to avoid
   ## setting those breakpoints again.
   ## 
-  let valid = call_589015.validator(path, query, header, formData, body)
-  let scheme = call_589015.pickScheme
+  let valid = call_578915.validator(path, query, header, formData, body)
+  let scheme = call_578915.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589015.url(scheme.get, call_589015.host, call_589015.base,
-                         call_589015.route, valid.getOrDefault("path"),
+  let url = call_578915.url(scheme.get, call_578915.host, call_578915.base,
+                         call_578915.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589015, url, valid)
+  result = hook(call_578915, url, valid)
 
-proc call*(call_589016: Call_ClouddebuggerControllerDebuggeesBreakpointsList_588984;
-          debuggeeId: string; uploadProtocol: string = ""; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          callback: string = ""; accessToken: string = ""; uploadType: string = "";
-          key: string = ""; successOnTimeout: bool = false; Xgafv: string = "1";
-          prettyPrint: bool = true; waitToken: string = ""): Recallable =
+proc call*(call_578916: Call_ClouddebuggerControllerDebuggeesBreakpointsList_578884;
+          debuggeeId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; callback: string = "";
+          fields: string = ""; accessToken: string = ""; uploadProtocol: string = "";
+          waitToken: string = ""; successOnTimeout: bool = false): Recallable =
   ## clouddebuggerControllerDebuggeesBreakpointsList
   ## Returns the list of all active breakpoints for the debuggee.
   ## 
@@ -513,26 +517,35 @@ proc call*(call_589016: Call_ClouddebuggerControllerDebuggeesBreakpointsList_588
   ## Moreover, an agent should remember the breakpoints that are completed
   ## until the controller removes them from the active list to avoid
   ## setting those breakpoints again.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   debuggeeId: string (required)
-  ##             : Identifies the debuggee.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   debuggeeId: string (required)
+  ##             : Identifies the debuggee.
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  ##   waitToken: string
+  ##            : A token that, if specified, blocks the method call until the list
+  ## of active breakpoints has changed, or a server-selected timeout has
+  ## expired. The value should be set from the `next_wait_token` field in
+  ## the last response. The initial value should be set to `"init"`.
   ##   successOnTimeout: bool
   ##                   : If set to `true` (recommended), returns `google.rpc.Code.OK` status and
   ## sets the `wait_expired` response field to `true` when the server-selected
@@ -540,43 +553,34 @@ proc call*(call_589016: Call_ClouddebuggerControllerDebuggeesBreakpointsList_588
   ## 
   ## If set to `false` (deprecated), returns `google.rpc.Code.ABORTED` status
   ## when the server-selected timeout has expired.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  ##   waitToken: string
-  ##            : A token that, if specified, blocks the method call until the list
-  ## of active breakpoints has changed, or a server-selected timeout has
-  ## expired. The value should be set from the `next_wait_token` field in
-  ## the last response. The initial value should be set to `"init"`.
-  var path_589017 = newJObject()
-  var query_589018 = newJObject()
-  add(query_589018, "upload_protocol", newJString(uploadProtocol))
-  add(path_589017, "debuggeeId", newJString(debuggeeId))
-  add(query_589018, "fields", newJString(fields))
-  add(query_589018, "quotaUser", newJString(quotaUser))
-  add(query_589018, "alt", newJString(alt))
-  add(query_589018, "oauth_token", newJString(oauthToken))
-  add(query_589018, "callback", newJString(callback))
-  add(query_589018, "access_token", newJString(accessToken))
-  add(query_589018, "uploadType", newJString(uploadType))
-  add(query_589018, "key", newJString(key))
-  add(query_589018, "successOnTimeout", newJBool(successOnTimeout))
-  add(query_589018, "$.xgafv", newJString(Xgafv))
-  add(query_589018, "prettyPrint", newJBool(prettyPrint))
-  add(query_589018, "waitToken", newJString(waitToken))
-  result = call_589016.call(path_589017, query_589018, nil, nil, nil)
+  var path_578917 = newJObject()
+  var query_578918 = newJObject()
+  add(query_578918, "key", newJString(key))
+  add(query_578918, "prettyPrint", newJBool(prettyPrint))
+  add(query_578918, "oauth_token", newJString(oauthToken))
+  add(query_578918, "$.xgafv", newJString(Xgafv))
+  add(query_578918, "alt", newJString(alt))
+  add(query_578918, "uploadType", newJString(uploadType))
+  add(query_578918, "quotaUser", newJString(quotaUser))
+  add(path_578917, "debuggeeId", newJString(debuggeeId))
+  add(query_578918, "callback", newJString(callback))
+  add(query_578918, "fields", newJString(fields))
+  add(query_578918, "access_token", newJString(accessToken))
+  add(query_578918, "upload_protocol", newJString(uploadProtocol))
+  add(query_578918, "waitToken", newJString(waitToken))
+  add(query_578918, "successOnTimeout", newJBool(successOnTimeout))
+  result = call_578916.call(path_578917, query_578918, nil, nil, nil)
 
-var clouddebuggerControllerDebuggeesBreakpointsList* = Call_ClouddebuggerControllerDebuggeesBreakpointsList_588984(
+var clouddebuggerControllerDebuggeesBreakpointsList* = Call_ClouddebuggerControllerDebuggeesBreakpointsList_578884(
     name: "clouddebuggerControllerDebuggeesBreakpointsList",
     meth: HttpMethod.HttpGet, host: "clouddebugger.googleapis.com",
     route: "/v2/controller/debuggees/{debuggeeId}/breakpoints",
-    validator: validate_ClouddebuggerControllerDebuggeesBreakpointsList_588985,
-    base: "/", url: url_ClouddebuggerControllerDebuggeesBreakpointsList_588986,
+    validator: validate_ClouddebuggerControllerDebuggeesBreakpointsList_578885,
+    base: "/", url: url_ClouddebuggerControllerDebuggeesBreakpointsList_578886,
     schemes: {Scheme.Https})
 type
-  Call_ClouddebuggerControllerDebuggeesBreakpointsUpdate_589019 = ref object of OpenApiRestCall_588441
-proc url_ClouddebuggerControllerDebuggeesBreakpointsUpdate_589021(
+  Call_ClouddebuggerControllerDebuggeesBreakpointsUpdate_578919 = ref object of OpenApiRestCall_578339
+proc url_ClouddebuggerControllerDebuggeesBreakpointsUpdate_578921(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -595,7 +599,7 @@ proc url_ClouddebuggerControllerDebuggeesBreakpointsUpdate_589021(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouddebuggerControllerDebuggeesBreakpointsUpdate_589020(
+proc validate_ClouddebuggerControllerDebuggeesBreakpointsUpdate_578920(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Updates the breakpoint state or mutable fields.
@@ -610,103 +614,102 @@ proc validate_ClouddebuggerControllerDebuggeesBreakpointsUpdate_589020(
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   debuggeeId: JString (required)
-  ##             : Identifies the debuggee being debugged.
   ##   id: JString (required)
   ##     : Breakpoint identifier, unique in the scope of the debuggee.
+  ##   debuggeeId: JString (required)
+  ##             : Identifies the debuggee being debugged.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `debuggeeId` field"
-  var valid_589022 = path.getOrDefault("debuggeeId")
-  valid_589022 = validateParameter(valid_589022, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `id` field"
+  var valid_578922 = path.getOrDefault("id")
+  valid_578922 = validateParameter(valid_578922, JString, required = true,
                                  default = nil)
-  if valid_589022 != nil:
-    section.add "debuggeeId", valid_589022
-  var valid_589023 = path.getOrDefault("id")
-  valid_589023 = validateParameter(valid_589023, JString, required = true,
+  if valid_578922 != nil:
+    section.add "id", valid_578922
+  var valid_578923 = path.getOrDefault("debuggeeId")
+  valid_578923 = validateParameter(valid_578923, JString, required = true,
                                  default = nil)
-  if valid_589023 != nil:
-    section.add "id", valid_589023
+  if valid_578923 != nil:
+    section.add "debuggeeId", valid_578923
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589024 = query.getOrDefault("upload_protocol")
-  valid_589024 = validateParameter(valid_589024, JString, required = false,
+  var valid_578924 = query.getOrDefault("key")
+  valid_578924 = validateParameter(valid_578924, JString, required = false,
                                  default = nil)
-  if valid_589024 != nil:
-    section.add "upload_protocol", valid_589024
-  var valid_589025 = query.getOrDefault("fields")
-  valid_589025 = validateParameter(valid_589025, JString, required = false,
-                                 default = nil)
-  if valid_589025 != nil:
-    section.add "fields", valid_589025
-  var valid_589026 = query.getOrDefault("quotaUser")
-  valid_589026 = validateParameter(valid_589026, JString, required = false,
-                                 default = nil)
-  if valid_589026 != nil:
-    section.add "quotaUser", valid_589026
-  var valid_589027 = query.getOrDefault("alt")
-  valid_589027 = validateParameter(valid_589027, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589027 != nil:
-    section.add "alt", valid_589027
-  var valid_589028 = query.getOrDefault("oauth_token")
-  valid_589028 = validateParameter(valid_589028, JString, required = false,
-                                 default = nil)
-  if valid_589028 != nil:
-    section.add "oauth_token", valid_589028
-  var valid_589029 = query.getOrDefault("callback")
-  valid_589029 = validateParameter(valid_589029, JString, required = false,
-                                 default = nil)
-  if valid_589029 != nil:
-    section.add "callback", valid_589029
-  var valid_589030 = query.getOrDefault("access_token")
-  valid_589030 = validateParameter(valid_589030, JString, required = false,
-                                 default = nil)
-  if valid_589030 != nil:
-    section.add "access_token", valid_589030
-  var valid_589031 = query.getOrDefault("uploadType")
-  valid_589031 = validateParameter(valid_589031, JString, required = false,
-                                 default = nil)
-  if valid_589031 != nil:
-    section.add "uploadType", valid_589031
-  var valid_589032 = query.getOrDefault("key")
-  valid_589032 = validateParameter(valid_589032, JString, required = false,
-                                 default = nil)
-  if valid_589032 != nil:
-    section.add "key", valid_589032
-  var valid_589033 = query.getOrDefault("$.xgafv")
-  valid_589033 = validateParameter(valid_589033, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589033 != nil:
-    section.add "$.xgafv", valid_589033
-  var valid_589034 = query.getOrDefault("prettyPrint")
-  valid_589034 = validateParameter(valid_589034, JBool, required = false,
+  if valid_578924 != nil:
+    section.add "key", valid_578924
+  var valid_578925 = query.getOrDefault("prettyPrint")
+  valid_578925 = validateParameter(valid_578925, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589034 != nil:
-    section.add "prettyPrint", valid_589034
+  if valid_578925 != nil:
+    section.add "prettyPrint", valid_578925
+  var valid_578926 = query.getOrDefault("oauth_token")
+  valid_578926 = validateParameter(valid_578926, JString, required = false,
+                                 default = nil)
+  if valid_578926 != nil:
+    section.add "oauth_token", valid_578926
+  var valid_578927 = query.getOrDefault("$.xgafv")
+  valid_578927 = validateParameter(valid_578927, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578927 != nil:
+    section.add "$.xgafv", valid_578927
+  var valid_578928 = query.getOrDefault("alt")
+  valid_578928 = validateParameter(valid_578928, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578928 != nil:
+    section.add "alt", valid_578928
+  var valid_578929 = query.getOrDefault("uploadType")
+  valid_578929 = validateParameter(valid_578929, JString, required = false,
+                                 default = nil)
+  if valid_578929 != nil:
+    section.add "uploadType", valid_578929
+  var valid_578930 = query.getOrDefault("quotaUser")
+  valid_578930 = validateParameter(valid_578930, JString, required = false,
+                                 default = nil)
+  if valid_578930 != nil:
+    section.add "quotaUser", valid_578930
+  var valid_578931 = query.getOrDefault("callback")
+  valid_578931 = validateParameter(valid_578931, JString, required = false,
+                                 default = nil)
+  if valid_578931 != nil:
+    section.add "callback", valid_578931
+  var valid_578932 = query.getOrDefault("fields")
+  valid_578932 = validateParameter(valid_578932, JString, required = false,
+                                 default = nil)
+  if valid_578932 != nil:
+    section.add "fields", valid_578932
+  var valid_578933 = query.getOrDefault("access_token")
+  valid_578933 = validateParameter(valid_578933, JString, required = false,
+                                 default = nil)
+  if valid_578933 != nil:
+    section.add "access_token", valid_578933
+  var valid_578934 = query.getOrDefault("upload_protocol")
+  valid_578934 = validateParameter(valid_578934, JString, required = false,
+                                 default = nil)
+  if valid_578934 != nil:
+    section.add "upload_protocol", valid_578934
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -718,7 +721,7 @@ proc validate_ClouddebuggerControllerDebuggeesBreakpointsUpdate_589020(
   if body != nil:
     result.add "body", body
 
-proc call*(call_589036: Call_ClouddebuggerControllerDebuggeesBreakpointsUpdate_589019;
+proc call*(call_578936: Call_ClouddebuggerControllerDebuggeesBreakpointsUpdate_578919;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates the breakpoint state or mutable fields.
@@ -730,21 +733,21 @@ proc call*(call_589036: Call_ClouddebuggerControllerDebuggeesBreakpointsUpdate_5
   ## semantics. These may only make changes such as canonicalizing a value
   ## or snapping the location to the correct line of code.
   ## 
-  let valid = call_589036.validator(path, query, header, formData, body)
-  let scheme = call_589036.pickScheme
+  let valid = call_578936.validator(path, query, header, formData, body)
+  let scheme = call_578936.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589036.url(scheme.get, call_589036.host, call_589036.base,
-                         call_589036.route, valid.getOrDefault("path"),
+  let url = call_578936.url(scheme.get, call_578936.host, call_578936.base,
+                         call_578936.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589036, url, valid)
+  result = hook(call_578936, url, valid)
 
-proc call*(call_589037: Call_ClouddebuggerControllerDebuggeesBreakpointsUpdate_589019;
-          debuggeeId: string; id: string; uploadProtocol: string = "";
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; callback: string = ""; accessToken: string = "";
-          uploadType: string = ""; key: string = ""; Xgafv: string = "1";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578937: Call_ClouddebuggerControllerDebuggeesBreakpointsUpdate_578919;
+          id: string; debuggeeId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          callback: string = ""; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""): Recallable =
   ## clouddebuggerControllerDebuggeesBreakpointsUpdate
   ## Updates the breakpoint state or mutable fields.
   ## The entire Breakpoint message must be sent back to the controller service.
@@ -754,70 +757,70 @@ proc call*(call_589037: Call_ClouddebuggerControllerDebuggeesBreakpointsUpdate_5
   ## `condition` and `expressions` fields should not alter the breakpoint
   ## semantics. These may only make changes such as canonicalizing a value
   ## or snapping the location to the correct line of code.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   debuggeeId: string (required)
-  ##             : Identifies the debuggee being debugged.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   id: string (required)
-  ##     : Breakpoint identifier, unique in the scope of the debuggee.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589038 = newJObject()
-  var query_589039 = newJObject()
-  var body_589040 = newJObject()
-  add(query_589039, "upload_protocol", newJString(uploadProtocol))
-  add(path_589038, "debuggeeId", newJString(debuggeeId))
-  add(query_589039, "fields", newJString(fields))
-  add(query_589039, "quotaUser", newJString(quotaUser))
-  add(query_589039, "alt", newJString(alt))
-  add(query_589039, "oauth_token", newJString(oauthToken))
-  add(query_589039, "callback", newJString(callback))
-  add(query_589039, "access_token", newJString(accessToken))
-  add(query_589039, "uploadType", newJString(uploadType))
-  add(path_589038, "id", newJString(id))
-  add(query_589039, "key", newJString(key))
-  add(query_589039, "$.xgafv", newJString(Xgafv))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   id: string (required)
+  ##     : Breakpoint identifier, unique in the scope of the debuggee.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   debuggeeId: string (required)
+  ##             : Identifies the debuggee being debugged.
+  ##   body: JObject
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_578938 = newJObject()
+  var query_578939 = newJObject()
+  var body_578940 = newJObject()
+  add(query_578939, "key", newJString(key))
+  add(query_578939, "prettyPrint", newJBool(prettyPrint))
+  add(query_578939, "oauth_token", newJString(oauthToken))
+  add(query_578939, "$.xgafv", newJString(Xgafv))
+  add(path_578938, "id", newJString(id))
+  add(query_578939, "alt", newJString(alt))
+  add(query_578939, "uploadType", newJString(uploadType))
+  add(query_578939, "quotaUser", newJString(quotaUser))
+  add(path_578938, "debuggeeId", newJString(debuggeeId))
   if body != nil:
-    body_589040 = body
-  add(query_589039, "prettyPrint", newJBool(prettyPrint))
-  result = call_589037.call(path_589038, query_589039, nil, nil, body_589040)
+    body_578940 = body
+  add(query_578939, "callback", newJString(callback))
+  add(query_578939, "fields", newJString(fields))
+  add(query_578939, "access_token", newJString(accessToken))
+  add(query_578939, "upload_protocol", newJString(uploadProtocol))
+  result = call_578937.call(path_578938, query_578939, nil, nil, body_578940)
 
-var clouddebuggerControllerDebuggeesBreakpointsUpdate* = Call_ClouddebuggerControllerDebuggeesBreakpointsUpdate_589019(
+var clouddebuggerControllerDebuggeesBreakpointsUpdate* = Call_ClouddebuggerControllerDebuggeesBreakpointsUpdate_578919(
     name: "clouddebuggerControllerDebuggeesBreakpointsUpdate",
     meth: HttpMethod.HttpPut, host: "clouddebugger.googleapis.com",
     route: "/v2/controller/debuggees/{debuggeeId}/breakpoints/{id}",
-    validator: validate_ClouddebuggerControllerDebuggeesBreakpointsUpdate_589020,
-    base: "/", url: url_ClouddebuggerControllerDebuggeesBreakpointsUpdate_589021,
+    validator: validate_ClouddebuggerControllerDebuggeesBreakpointsUpdate_578920,
+    base: "/", url: url_ClouddebuggerControllerDebuggeesBreakpointsUpdate_578921,
     schemes: {Scheme.Https})
 type
-  Call_ClouddebuggerDebuggerDebuggeesList_589041 = ref object of OpenApiRestCall_588441
-proc url_ClouddebuggerDebuggerDebuggeesList_589043(protocol: Scheme; host: string;
+  Call_ClouddebuggerDebuggerDebuggeesList_578941 = ref object of OpenApiRestCall_578339
+proc url_ClouddebuggerDebuggerDebuggeesList_578943(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_ClouddebuggerDebuggerDebuggeesList_589042(path: JsonNode;
+proc validate_ClouddebuggerDebuggerDebuggeesList_578942(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all the debuggees that the user has access to.
   ## 
@@ -826,106 +829,106 @@ proc validate_ClouddebuggerDebuggerDebuggeesList_589042(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
   ##   alt: JString
   ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   project: JString
+  ##          : Project number of a Google Cloud project whose debuggees to list.
+  ##   callback: JString
+  ##           : JSONP
   ##   includeInactive: JBool
   ##                  : When set to `true`, the result includes all debuggees. Otherwise, the
   ## result includes only debuggees that are active.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   ##   access_token: JString
   ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   project: JString
-  ##          : Project number of a Google Cloud project whose debuggees to list.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   ##   clientVersion: JString
   ##                : The client version making the call.
   ## Schema: `domain/type/version` (e.g., `google.com/intellij/v1`).
   section = newJObject()
-  var valid_589044 = query.getOrDefault("upload_protocol")
-  valid_589044 = validateParameter(valid_589044, JString, required = false,
+  var valid_578944 = query.getOrDefault("key")
+  valid_578944 = validateParameter(valid_578944, JString, required = false,
                                  default = nil)
-  if valid_589044 != nil:
-    section.add "upload_protocol", valid_589044
-  var valid_589045 = query.getOrDefault("fields")
-  valid_589045 = validateParameter(valid_589045, JString, required = false,
-                                 default = nil)
-  if valid_589045 != nil:
-    section.add "fields", valid_589045
-  var valid_589046 = query.getOrDefault("quotaUser")
-  valid_589046 = validateParameter(valid_589046, JString, required = false,
-                                 default = nil)
-  if valid_589046 != nil:
-    section.add "quotaUser", valid_589046
-  var valid_589047 = query.getOrDefault("alt")
-  valid_589047 = validateParameter(valid_589047, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589047 != nil:
-    section.add "alt", valid_589047
-  var valid_589048 = query.getOrDefault("includeInactive")
-  valid_589048 = validateParameter(valid_589048, JBool, required = false, default = nil)
-  if valid_589048 != nil:
-    section.add "includeInactive", valid_589048
-  var valid_589049 = query.getOrDefault("oauth_token")
-  valid_589049 = validateParameter(valid_589049, JString, required = false,
-                                 default = nil)
-  if valid_589049 != nil:
-    section.add "oauth_token", valid_589049
-  var valid_589050 = query.getOrDefault("callback")
-  valid_589050 = validateParameter(valid_589050, JString, required = false,
-                                 default = nil)
-  if valid_589050 != nil:
-    section.add "callback", valid_589050
-  var valid_589051 = query.getOrDefault("access_token")
-  valid_589051 = validateParameter(valid_589051, JString, required = false,
-                                 default = nil)
-  if valid_589051 != nil:
-    section.add "access_token", valid_589051
-  var valid_589052 = query.getOrDefault("uploadType")
-  valid_589052 = validateParameter(valid_589052, JString, required = false,
-                                 default = nil)
-  if valid_589052 != nil:
-    section.add "uploadType", valid_589052
-  var valid_589053 = query.getOrDefault("key")
-  valid_589053 = validateParameter(valid_589053, JString, required = false,
-                                 default = nil)
-  if valid_589053 != nil:
-    section.add "key", valid_589053
-  var valid_589054 = query.getOrDefault("$.xgafv")
-  valid_589054 = validateParameter(valid_589054, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589054 != nil:
-    section.add "$.xgafv", valid_589054
-  var valid_589055 = query.getOrDefault("project")
-  valid_589055 = validateParameter(valid_589055, JString, required = false,
-                                 default = nil)
-  if valid_589055 != nil:
-    section.add "project", valid_589055
-  var valid_589056 = query.getOrDefault("prettyPrint")
-  valid_589056 = validateParameter(valid_589056, JBool, required = false,
+  if valid_578944 != nil:
+    section.add "key", valid_578944
+  var valid_578945 = query.getOrDefault("prettyPrint")
+  valid_578945 = validateParameter(valid_578945, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589056 != nil:
-    section.add "prettyPrint", valid_589056
-  var valid_589057 = query.getOrDefault("clientVersion")
-  valid_589057 = validateParameter(valid_589057, JString, required = false,
+  if valid_578945 != nil:
+    section.add "prettyPrint", valid_578945
+  var valid_578946 = query.getOrDefault("oauth_token")
+  valid_578946 = validateParameter(valid_578946, JString, required = false,
                                  default = nil)
-  if valid_589057 != nil:
-    section.add "clientVersion", valid_589057
+  if valid_578946 != nil:
+    section.add "oauth_token", valid_578946
+  var valid_578947 = query.getOrDefault("$.xgafv")
+  valid_578947 = validateParameter(valid_578947, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578947 != nil:
+    section.add "$.xgafv", valid_578947
+  var valid_578948 = query.getOrDefault("alt")
+  valid_578948 = validateParameter(valid_578948, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578948 != nil:
+    section.add "alt", valid_578948
+  var valid_578949 = query.getOrDefault("uploadType")
+  valid_578949 = validateParameter(valid_578949, JString, required = false,
+                                 default = nil)
+  if valid_578949 != nil:
+    section.add "uploadType", valid_578949
+  var valid_578950 = query.getOrDefault("quotaUser")
+  valid_578950 = validateParameter(valid_578950, JString, required = false,
+                                 default = nil)
+  if valid_578950 != nil:
+    section.add "quotaUser", valid_578950
+  var valid_578951 = query.getOrDefault("project")
+  valid_578951 = validateParameter(valid_578951, JString, required = false,
+                                 default = nil)
+  if valid_578951 != nil:
+    section.add "project", valid_578951
+  var valid_578952 = query.getOrDefault("callback")
+  valid_578952 = validateParameter(valid_578952, JString, required = false,
+                                 default = nil)
+  if valid_578952 != nil:
+    section.add "callback", valid_578952
+  var valid_578953 = query.getOrDefault("includeInactive")
+  valid_578953 = validateParameter(valid_578953, JBool, required = false, default = nil)
+  if valid_578953 != nil:
+    section.add "includeInactive", valid_578953
+  var valid_578954 = query.getOrDefault("fields")
+  valid_578954 = validateParameter(valid_578954, JString, required = false,
+                                 default = nil)
+  if valid_578954 != nil:
+    section.add "fields", valid_578954
+  var valid_578955 = query.getOrDefault("access_token")
+  valid_578955 = validateParameter(valid_578955, JString, required = false,
+                                 default = nil)
+  if valid_578955 != nil:
+    section.add "access_token", valid_578955
+  var valid_578956 = query.getOrDefault("upload_protocol")
+  valid_578956 = validateParameter(valid_578956, JString, required = false,
+                                 default = nil)
+  if valid_578956 != nil:
+    section.add "upload_protocol", valid_578956
+  var valid_578957 = query.getOrDefault("clientVersion")
+  valid_578957 = validateParameter(valid_578957, JString, required = false,
+                                 default = nil)
+  if valid_578957 != nil:
+    section.add "clientVersion", valid_578957
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -934,83 +937,83 @@ proc validate_ClouddebuggerDebuggerDebuggeesList_589042(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589058: Call_ClouddebuggerDebuggerDebuggeesList_589041;
+proc call*(call_578958: Call_ClouddebuggerDebuggerDebuggeesList_578941;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all the debuggees that the user has access to.
   ## 
-  let valid = call_589058.validator(path, query, header, formData, body)
-  let scheme = call_589058.pickScheme
+  let valid = call_578958.validator(path, query, header, formData, body)
+  let scheme = call_578958.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589058.url(scheme.get, call_589058.host, call_589058.base,
-                         call_589058.route, valid.getOrDefault("path"),
+  let url = call_578958.url(scheme.get, call_578958.host, call_578958.base,
+                         call_578958.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589058, url, valid)
+  result = hook(call_578958, url, valid)
 
-proc call*(call_589059: Call_ClouddebuggerDebuggerDebuggeesList_589041;
-          uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; includeInactive: bool = false; oauthToken: string = "";
-          callback: string = ""; accessToken: string = ""; uploadType: string = "";
-          key: string = ""; Xgafv: string = "1"; project: string = "";
-          prettyPrint: bool = true; clientVersion: string = ""): Recallable =
+proc call*(call_578959: Call_ClouddebuggerDebuggerDebuggeesList_578941;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          Xgafv: string = "1"; alt: string = "json"; uploadType: string = "";
+          quotaUser: string = ""; project: string = ""; callback: string = "";
+          includeInactive: bool = false; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""; clientVersion: string = ""): Recallable =
   ## clouddebuggerDebuggerDebuggeesList
   ## Lists all the debuggees that the user has access to.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
   ##   alt: string
   ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   project: string
+  ##          : Project number of a Google Cloud project whose debuggees to list.
+  ##   callback: string
+  ##           : JSONP
   ##   includeInactive: bool
   ##                  : When set to `true`, the result includes all debuggees. Otherwise, the
   ## result includes only debuggees that are active.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   accessToken: string
   ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   project: string
-  ##          : Project number of a Google Cloud project whose debuggees to list.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
   ##   clientVersion: string
   ##                : The client version making the call.
   ## Schema: `domain/type/version` (e.g., `google.com/intellij/v1`).
-  var query_589060 = newJObject()
-  add(query_589060, "upload_protocol", newJString(uploadProtocol))
-  add(query_589060, "fields", newJString(fields))
-  add(query_589060, "quotaUser", newJString(quotaUser))
-  add(query_589060, "alt", newJString(alt))
-  add(query_589060, "includeInactive", newJBool(includeInactive))
-  add(query_589060, "oauth_token", newJString(oauthToken))
-  add(query_589060, "callback", newJString(callback))
-  add(query_589060, "access_token", newJString(accessToken))
-  add(query_589060, "uploadType", newJString(uploadType))
-  add(query_589060, "key", newJString(key))
-  add(query_589060, "$.xgafv", newJString(Xgafv))
-  add(query_589060, "project", newJString(project))
-  add(query_589060, "prettyPrint", newJBool(prettyPrint))
-  add(query_589060, "clientVersion", newJString(clientVersion))
-  result = call_589059.call(nil, query_589060, nil, nil, nil)
+  var query_578960 = newJObject()
+  add(query_578960, "key", newJString(key))
+  add(query_578960, "prettyPrint", newJBool(prettyPrint))
+  add(query_578960, "oauth_token", newJString(oauthToken))
+  add(query_578960, "$.xgafv", newJString(Xgafv))
+  add(query_578960, "alt", newJString(alt))
+  add(query_578960, "uploadType", newJString(uploadType))
+  add(query_578960, "quotaUser", newJString(quotaUser))
+  add(query_578960, "project", newJString(project))
+  add(query_578960, "callback", newJString(callback))
+  add(query_578960, "includeInactive", newJBool(includeInactive))
+  add(query_578960, "fields", newJString(fields))
+  add(query_578960, "access_token", newJString(accessToken))
+  add(query_578960, "upload_protocol", newJString(uploadProtocol))
+  add(query_578960, "clientVersion", newJString(clientVersion))
+  result = call_578959.call(nil, query_578960, nil, nil, nil)
 
-var clouddebuggerDebuggerDebuggeesList* = Call_ClouddebuggerDebuggerDebuggeesList_589041(
+var clouddebuggerDebuggerDebuggeesList* = Call_ClouddebuggerDebuggerDebuggeesList_578941(
     name: "clouddebuggerDebuggerDebuggeesList", meth: HttpMethod.HttpGet,
     host: "clouddebugger.googleapis.com", route: "/v2/debugger/debuggees",
-    validator: validate_ClouddebuggerDebuggerDebuggeesList_589042, base: "/",
-    url: url_ClouddebuggerDebuggerDebuggeesList_589043, schemes: {Scheme.Https})
+    validator: validate_ClouddebuggerDebuggerDebuggeesList_578942, base: "/",
+    url: url_ClouddebuggerDebuggerDebuggeesList_578943, schemes: {Scheme.Https})
 type
-  Call_ClouddebuggerDebuggerDebuggeesBreakpointsList_589061 = ref object of OpenApiRestCall_588441
-proc url_ClouddebuggerDebuggerDebuggeesBreakpointsList_589063(protocol: Scheme;
+  Call_ClouddebuggerDebuggerDebuggeesBreakpointsList_578961 = ref object of OpenApiRestCall_578339
+proc url_ClouddebuggerDebuggerDebuggeesBreakpointsList_578963(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1026,7 +1029,7 @@ proc url_ClouddebuggerDebuggerDebuggeesBreakpointsList_589063(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsList_589062(
+proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsList_578962(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Lists all breakpoints for the debuggee.
@@ -1039,138 +1042,138 @@ proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsList_589062(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `debuggeeId` field"
-  var valid_589064 = path.getOrDefault("debuggeeId")
-  valid_589064 = validateParameter(valid_589064, JString, required = true,
+  var valid_578964 = path.getOrDefault("debuggeeId")
+  valid_578964 = validateParameter(valid_578964, JString, required = true,
                                  default = nil)
-  if valid_589064 != nil:
-    section.add "debuggeeId", valid_589064
+  if valid_578964 != nil:
+    section.add "debuggeeId", valid_578964
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   action.value: JString
+  ##               : Only breakpoints with the specified action will pass the filter.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   quotaUser: JString
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   includeAllUsers: JBool
   ##                  : When set to `true`, the response includes the list of breakpoints set by
   ## any user. Otherwise, it includes only breakpoints set by the caller.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   includeInactive: JBool
-  ##                  : When set to `true`, the response includes active and inactive
-  ## breakpoints. Otherwise, it includes only active breakpoints.
-  ##   action.value: JString
-  ##               : Only breakpoints with the specified action will pass the filter.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   stripResults: JBool
   ##               : This field is deprecated. The following fields are always stripped out of
   ## the result: `stack_frames`, `evaluated_expressions` and `variable_table`.
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
-  ##   clientVersion: JString
-  ##                : The client version making the call.
-  ## Schema: `domain/type/version` (e.g., `google.com/intellij/v1`).
+  ##   callback: JString
+  ##           : JSONP
+  ##   includeInactive: JBool
+  ##                  : When set to `true`, the response includes active and inactive
+  ## breakpoints. Otherwise, it includes only active breakpoints.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   ##   waitToken: JString
   ##            : A wait token that, if specified, blocks the call until the breakpoints
   ## list has changed, or a server selected timeout has expired.  The value
   ## should be set from the last response. The error code
   ## `google.rpc.Code.ABORTED` (RPC) is returned on wait timeout, which
   ## should be called again with the same `wait_token`.
+  ##   clientVersion: JString
+  ##                : The client version making the call.
+  ## Schema: `domain/type/version` (e.g., `google.com/intellij/v1`).
   section = newJObject()
-  var valid_589065 = query.getOrDefault("upload_protocol")
-  valid_589065 = validateParameter(valid_589065, JString, required = false,
+  var valid_578965 = query.getOrDefault("key")
+  valid_578965 = validateParameter(valid_578965, JString, required = false,
                                  default = nil)
-  if valid_589065 != nil:
-    section.add "upload_protocol", valid_589065
-  var valid_589066 = query.getOrDefault("fields")
-  valid_589066 = validateParameter(valid_589066, JString, required = false,
-                                 default = nil)
-  if valid_589066 != nil:
-    section.add "fields", valid_589066
-  var valid_589067 = query.getOrDefault("quotaUser")
-  valid_589067 = validateParameter(valid_589067, JString, required = false,
-                                 default = nil)
-  if valid_589067 != nil:
-    section.add "quotaUser", valid_589067
-  var valid_589068 = query.getOrDefault("includeAllUsers")
-  valid_589068 = validateParameter(valid_589068, JBool, required = false, default = nil)
-  if valid_589068 != nil:
-    section.add "includeAllUsers", valid_589068
-  var valid_589069 = query.getOrDefault("alt")
-  valid_589069 = validateParameter(valid_589069, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589069 != nil:
-    section.add "alt", valid_589069
-  var valid_589070 = query.getOrDefault("includeInactive")
-  valid_589070 = validateParameter(valid_589070, JBool, required = false, default = nil)
-  if valid_589070 != nil:
-    section.add "includeInactive", valid_589070
-  var valid_589071 = query.getOrDefault("action.value")
-  valid_589071 = validateParameter(valid_589071, JString, required = false,
-                                 default = newJString("CAPTURE"))
-  if valid_589071 != nil:
-    section.add "action.value", valid_589071
-  var valid_589072 = query.getOrDefault("oauth_token")
-  valid_589072 = validateParameter(valid_589072, JString, required = false,
-                                 default = nil)
-  if valid_589072 != nil:
-    section.add "oauth_token", valid_589072
-  var valid_589073 = query.getOrDefault("callback")
-  valid_589073 = validateParameter(valid_589073, JString, required = false,
-                                 default = nil)
-  if valid_589073 != nil:
-    section.add "callback", valid_589073
-  var valid_589074 = query.getOrDefault("access_token")
-  valid_589074 = validateParameter(valid_589074, JString, required = false,
-                                 default = nil)
-  if valid_589074 != nil:
-    section.add "access_token", valid_589074
-  var valid_589075 = query.getOrDefault("uploadType")
-  valid_589075 = validateParameter(valid_589075, JString, required = false,
-                                 default = nil)
-  if valid_589075 != nil:
-    section.add "uploadType", valid_589075
-  var valid_589076 = query.getOrDefault("stripResults")
-  valid_589076 = validateParameter(valid_589076, JBool, required = false, default = nil)
-  if valid_589076 != nil:
-    section.add "stripResults", valid_589076
-  var valid_589077 = query.getOrDefault("key")
-  valid_589077 = validateParameter(valid_589077, JString, required = false,
-                                 default = nil)
-  if valid_589077 != nil:
-    section.add "key", valid_589077
-  var valid_589078 = query.getOrDefault("$.xgafv")
-  valid_589078 = validateParameter(valid_589078, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589078 != nil:
-    section.add "$.xgafv", valid_589078
-  var valid_589079 = query.getOrDefault("prettyPrint")
-  valid_589079 = validateParameter(valid_589079, JBool, required = false,
+  if valid_578965 != nil:
+    section.add "key", valid_578965
+  var valid_578966 = query.getOrDefault("prettyPrint")
+  valid_578966 = validateParameter(valid_578966, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589079 != nil:
-    section.add "prettyPrint", valid_589079
-  var valid_589080 = query.getOrDefault("clientVersion")
-  valid_589080 = validateParameter(valid_589080, JString, required = false,
+  if valid_578966 != nil:
+    section.add "prettyPrint", valid_578966
+  var valid_578967 = query.getOrDefault("oauth_token")
+  valid_578967 = validateParameter(valid_578967, JString, required = false,
                                  default = nil)
-  if valid_589080 != nil:
-    section.add "clientVersion", valid_589080
-  var valid_589081 = query.getOrDefault("waitToken")
-  valid_589081 = validateParameter(valid_589081, JString, required = false,
+  if valid_578967 != nil:
+    section.add "oauth_token", valid_578967
+  var valid_578968 = query.getOrDefault("$.xgafv")
+  valid_578968 = validateParameter(valid_578968, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578968 != nil:
+    section.add "$.xgafv", valid_578968
+  var valid_578969 = query.getOrDefault("action.value")
+  valid_578969 = validateParameter(valid_578969, JString, required = false,
+                                 default = newJString("CAPTURE"))
+  if valid_578969 != nil:
+    section.add "action.value", valid_578969
+  var valid_578970 = query.getOrDefault("alt")
+  valid_578970 = validateParameter(valid_578970, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578970 != nil:
+    section.add "alt", valid_578970
+  var valid_578971 = query.getOrDefault("uploadType")
+  valid_578971 = validateParameter(valid_578971, JString, required = false,
                                  default = nil)
-  if valid_589081 != nil:
-    section.add "waitToken", valid_589081
+  if valid_578971 != nil:
+    section.add "uploadType", valid_578971
+  var valid_578972 = query.getOrDefault("quotaUser")
+  valid_578972 = validateParameter(valid_578972, JString, required = false,
+                                 default = nil)
+  if valid_578972 != nil:
+    section.add "quotaUser", valid_578972
+  var valid_578973 = query.getOrDefault("includeAllUsers")
+  valid_578973 = validateParameter(valid_578973, JBool, required = false, default = nil)
+  if valid_578973 != nil:
+    section.add "includeAllUsers", valid_578973
+  var valid_578974 = query.getOrDefault("stripResults")
+  valid_578974 = validateParameter(valid_578974, JBool, required = false, default = nil)
+  if valid_578974 != nil:
+    section.add "stripResults", valid_578974
+  var valid_578975 = query.getOrDefault("callback")
+  valid_578975 = validateParameter(valid_578975, JString, required = false,
+                                 default = nil)
+  if valid_578975 != nil:
+    section.add "callback", valid_578975
+  var valid_578976 = query.getOrDefault("includeInactive")
+  valid_578976 = validateParameter(valid_578976, JBool, required = false, default = nil)
+  if valid_578976 != nil:
+    section.add "includeInactive", valid_578976
+  var valid_578977 = query.getOrDefault("fields")
+  valid_578977 = validateParameter(valid_578977, JString, required = false,
+                                 default = nil)
+  if valid_578977 != nil:
+    section.add "fields", valid_578977
+  var valid_578978 = query.getOrDefault("access_token")
+  valid_578978 = validateParameter(valid_578978, JString, required = false,
+                                 default = nil)
+  if valid_578978 != nil:
+    section.add "access_token", valid_578978
+  var valid_578979 = query.getOrDefault("upload_protocol")
+  valid_578979 = validateParameter(valid_578979, JString, required = false,
+                                 default = nil)
+  if valid_578979 != nil:
+    section.add "upload_protocol", valid_578979
+  var valid_578980 = query.getOrDefault("waitToken")
+  valid_578980 = validateParameter(valid_578980, JString, required = false,
+                                 default = nil)
+  if valid_578980 != nil:
+    section.add "waitToken", valid_578980
+  var valid_578981 = query.getOrDefault("clientVersion")
+  valid_578981 = validateParameter(valid_578981, JString, required = false,
+                                 default = nil)
+  if valid_578981 != nil:
+    section.add "clientVersion", valid_578981
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1179,106 +1182,106 @@ proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsList_589062(
   if body != nil:
     result.add "body", body
 
-proc call*(call_589082: Call_ClouddebuggerDebuggerDebuggeesBreakpointsList_589061;
+proc call*(call_578982: Call_ClouddebuggerDebuggerDebuggeesBreakpointsList_578961;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all breakpoints for the debuggee.
   ## 
-  let valid = call_589082.validator(path, query, header, formData, body)
-  let scheme = call_589082.pickScheme
+  let valid = call_578982.validator(path, query, header, formData, body)
+  let scheme = call_578982.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589082.url(scheme.get, call_589082.host, call_589082.base,
-                         call_589082.route, valid.getOrDefault("path"),
+  let url = call_578982.url(scheme.get, call_578982.host, call_578982.base,
+                         call_578982.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589082, url, valid)
+  result = hook(call_578982, url, valid)
 
-proc call*(call_589083: Call_ClouddebuggerDebuggerDebuggeesBreakpointsList_589061;
-          debuggeeId: string; uploadProtocol: string = ""; fields: string = "";
-          quotaUser: string = ""; includeAllUsers: bool = false; alt: string = "json";
-          includeInactive: bool = false; actionValue: string = "CAPTURE";
-          oauthToken: string = ""; callback: string = ""; accessToken: string = "";
-          uploadType: string = ""; stripResults: bool = false; key: string = "";
-          Xgafv: string = "1"; prettyPrint: bool = true; clientVersion: string = "";
-          waitToken: string = ""): Recallable =
+proc call*(call_578983: Call_ClouddebuggerDebuggerDebuggeesBreakpointsList_578961;
+          debuggeeId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; actionValue: string = "CAPTURE";
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          includeAllUsers: bool = false; stripResults: bool = false;
+          callback: string = ""; includeInactive: bool = false; fields: string = "";
+          accessToken: string = ""; uploadProtocol: string = ""; waitToken: string = "";
+          clientVersion: string = ""): Recallable =
   ## clouddebuggerDebuggerDebuggeesBreakpointsList
   ## Lists all breakpoints for the debuggee.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   debuggeeId: string (required)
-  ##             : ID of the debuggee whose breakpoints to list.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   actionValue: string
+  ##              : Only breakpoints with the specified action will pass the filter.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   includeAllUsers: bool
   ##                  : When set to `true`, the response includes the list of breakpoints set by
   ## any user. Otherwise, it includes only breakpoints set by the caller.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   includeInactive: bool
-  ##                  : When set to `true`, the response includes active and inactive
-  ## breakpoints. Otherwise, it includes only active breakpoints.
-  ##   actionValue: string
-  ##              : Only breakpoints with the specified action will pass the filter.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   stripResults: bool
   ##               : This field is deprecated. The following fields are always stripped out of
   ## the result: `stack_frames`, `evaluated_expressions` and `variable_table`.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  ##   clientVersion: string
-  ##                : The client version making the call.
-  ## Schema: `domain/type/version` (e.g., `google.com/intellij/v1`).
+  ##   debuggeeId: string (required)
+  ##             : ID of the debuggee whose breakpoints to list.
+  ##   callback: string
+  ##           : JSONP
+  ##   includeInactive: bool
+  ##                  : When set to `true`, the response includes active and inactive
+  ## breakpoints. Otherwise, it includes only active breakpoints.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
   ##   waitToken: string
   ##            : A wait token that, if specified, blocks the call until the breakpoints
   ## list has changed, or a server selected timeout has expired.  The value
   ## should be set from the last response. The error code
   ## `google.rpc.Code.ABORTED` (RPC) is returned on wait timeout, which
   ## should be called again with the same `wait_token`.
-  var path_589084 = newJObject()
-  var query_589085 = newJObject()
-  add(query_589085, "upload_protocol", newJString(uploadProtocol))
-  add(path_589084, "debuggeeId", newJString(debuggeeId))
-  add(query_589085, "fields", newJString(fields))
-  add(query_589085, "quotaUser", newJString(quotaUser))
-  add(query_589085, "includeAllUsers", newJBool(includeAllUsers))
-  add(query_589085, "alt", newJString(alt))
-  add(query_589085, "includeInactive", newJBool(includeInactive))
-  add(query_589085, "action.value", newJString(actionValue))
-  add(query_589085, "oauth_token", newJString(oauthToken))
-  add(query_589085, "callback", newJString(callback))
-  add(query_589085, "access_token", newJString(accessToken))
-  add(query_589085, "uploadType", newJString(uploadType))
-  add(query_589085, "stripResults", newJBool(stripResults))
-  add(query_589085, "key", newJString(key))
-  add(query_589085, "$.xgafv", newJString(Xgafv))
-  add(query_589085, "prettyPrint", newJBool(prettyPrint))
-  add(query_589085, "clientVersion", newJString(clientVersion))
-  add(query_589085, "waitToken", newJString(waitToken))
-  result = call_589083.call(path_589084, query_589085, nil, nil, nil)
+  ##   clientVersion: string
+  ##                : The client version making the call.
+  ## Schema: `domain/type/version` (e.g., `google.com/intellij/v1`).
+  var path_578984 = newJObject()
+  var query_578985 = newJObject()
+  add(query_578985, "key", newJString(key))
+  add(query_578985, "prettyPrint", newJBool(prettyPrint))
+  add(query_578985, "oauth_token", newJString(oauthToken))
+  add(query_578985, "$.xgafv", newJString(Xgafv))
+  add(query_578985, "action.value", newJString(actionValue))
+  add(query_578985, "alt", newJString(alt))
+  add(query_578985, "uploadType", newJString(uploadType))
+  add(query_578985, "quotaUser", newJString(quotaUser))
+  add(query_578985, "includeAllUsers", newJBool(includeAllUsers))
+  add(query_578985, "stripResults", newJBool(stripResults))
+  add(path_578984, "debuggeeId", newJString(debuggeeId))
+  add(query_578985, "callback", newJString(callback))
+  add(query_578985, "includeInactive", newJBool(includeInactive))
+  add(query_578985, "fields", newJString(fields))
+  add(query_578985, "access_token", newJString(accessToken))
+  add(query_578985, "upload_protocol", newJString(uploadProtocol))
+  add(query_578985, "waitToken", newJString(waitToken))
+  add(query_578985, "clientVersion", newJString(clientVersion))
+  result = call_578983.call(path_578984, query_578985, nil, nil, nil)
 
-var clouddebuggerDebuggerDebuggeesBreakpointsList* = Call_ClouddebuggerDebuggerDebuggeesBreakpointsList_589061(
+var clouddebuggerDebuggerDebuggeesBreakpointsList* = Call_ClouddebuggerDebuggerDebuggeesBreakpointsList_578961(
     name: "clouddebuggerDebuggerDebuggeesBreakpointsList",
     meth: HttpMethod.HttpGet, host: "clouddebugger.googleapis.com",
     route: "/v2/debugger/debuggees/{debuggeeId}/breakpoints",
-    validator: validate_ClouddebuggerDebuggerDebuggeesBreakpointsList_589062,
-    base: "/", url: url_ClouddebuggerDebuggerDebuggeesBreakpointsList_589063,
+    validator: validate_ClouddebuggerDebuggerDebuggeesBreakpointsList_578962,
+    base: "/", url: url_ClouddebuggerDebuggerDebuggeesBreakpointsList_578963,
     schemes: {Scheme.Https})
 type
-  Call_ClouddebuggerDebuggerDebuggeesBreakpointsSet_589086 = ref object of OpenApiRestCall_588441
-proc url_ClouddebuggerDebuggerDebuggeesBreakpointsSet_589088(protocol: Scheme;
+  Call_ClouddebuggerDebuggerDebuggeesBreakpointsSet_578986 = ref object of OpenApiRestCall_578339
+proc url_ClouddebuggerDebuggerDebuggeesBreakpointsSet_578988(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1294,7 +1297,7 @@ proc url_ClouddebuggerDebuggerDebuggeesBreakpointsSet_589088(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsSet_589087(path: JsonNode;
+proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsSet_578987(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets the breakpoint to the debuggee.
   ## 
@@ -1306,99 +1309,99 @@ proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsSet_589087(path: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `debuggeeId` field"
-  var valid_589089 = path.getOrDefault("debuggeeId")
-  valid_589089 = validateParameter(valid_589089, JString, required = true,
+  var valid_578989 = path.getOrDefault("debuggeeId")
+  valid_578989 = validateParameter(valid_578989, JString, required = true,
                                  default = nil)
-  if valid_589089 != nil:
-    section.add "debuggeeId", valid_589089
+  if valid_578989 != nil:
+    section.add "debuggeeId", valid_578989
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   ##   clientVersion: JString
   ##                : The client version making the call.
   ## Schema: `domain/type/version` (e.g., `google.com/intellij/v1`).
   section = newJObject()
-  var valid_589090 = query.getOrDefault("upload_protocol")
-  valid_589090 = validateParameter(valid_589090, JString, required = false,
+  var valid_578990 = query.getOrDefault("key")
+  valid_578990 = validateParameter(valid_578990, JString, required = false,
                                  default = nil)
-  if valid_589090 != nil:
-    section.add "upload_protocol", valid_589090
-  var valid_589091 = query.getOrDefault("fields")
-  valid_589091 = validateParameter(valid_589091, JString, required = false,
-                                 default = nil)
-  if valid_589091 != nil:
-    section.add "fields", valid_589091
-  var valid_589092 = query.getOrDefault("quotaUser")
-  valid_589092 = validateParameter(valid_589092, JString, required = false,
-                                 default = nil)
-  if valid_589092 != nil:
-    section.add "quotaUser", valid_589092
-  var valid_589093 = query.getOrDefault("alt")
-  valid_589093 = validateParameter(valid_589093, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589093 != nil:
-    section.add "alt", valid_589093
-  var valid_589094 = query.getOrDefault("oauth_token")
-  valid_589094 = validateParameter(valid_589094, JString, required = false,
-                                 default = nil)
-  if valid_589094 != nil:
-    section.add "oauth_token", valid_589094
-  var valid_589095 = query.getOrDefault("callback")
-  valid_589095 = validateParameter(valid_589095, JString, required = false,
-                                 default = nil)
-  if valid_589095 != nil:
-    section.add "callback", valid_589095
-  var valid_589096 = query.getOrDefault("access_token")
-  valid_589096 = validateParameter(valid_589096, JString, required = false,
-                                 default = nil)
-  if valid_589096 != nil:
-    section.add "access_token", valid_589096
-  var valid_589097 = query.getOrDefault("uploadType")
-  valid_589097 = validateParameter(valid_589097, JString, required = false,
-                                 default = nil)
-  if valid_589097 != nil:
-    section.add "uploadType", valid_589097
-  var valid_589098 = query.getOrDefault("key")
-  valid_589098 = validateParameter(valid_589098, JString, required = false,
-                                 default = nil)
-  if valid_589098 != nil:
-    section.add "key", valid_589098
-  var valid_589099 = query.getOrDefault("$.xgafv")
-  valid_589099 = validateParameter(valid_589099, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589099 != nil:
-    section.add "$.xgafv", valid_589099
-  var valid_589100 = query.getOrDefault("prettyPrint")
-  valid_589100 = validateParameter(valid_589100, JBool, required = false,
+  if valid_578990 != nil:
+    section.add "key", valid_578990
+  var valid_578991 = query.getOrDefault("prettyPrint")
+  valid_578991 = validateParameter(valid_578991, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589100 != nil:
-    section.add "prettyPrint", valid_589100
-  var valid_589101 = query.getOrDefault("clientVersion")
-  valid_589101 = validateParameter(valid_589101, JString, required = false,
+  if valid_578991 != nil:
+    section.add "prettyPrint", valid_578991
+  var valid_578992 = query.getOrDefault("oauth_token")
+  valid_578992 = validateParameter(valid_578992, JString, required = false,
                                  default = nil)
-  if valid_589101 != nil:
-    section.add "clientVersion", valid_589101
+  if valid_578992 != nil:
+    section.add "oauth_token", valid_578992
+  var valid_578993 = query.getOrDefault("$.xgafv")
+  valid_578993 = validateParameter(valid_578993, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578993 != nil:
+    section.add "$.xgafv", valid_578993
+  var valid_578994 = query.getOrDefault("alt")
+  valid_578994 = validateParameter(valid_578994, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578994 != nil:
+    section.add "alt", valid_578994
+  var valid_578995 = query.getOrDefault("uploadType")
+  valid_578995 = validateParameter(valid_578995, JString, required = false,
+                                 default = nil)
+  if valid_578995 != nil:
+    section.add "uploadType", valid_578995
+  var valid_578996 = query.getOrDefault("quotaUser")
+  valid_578996 = validateParameter(valid_578996, JString, required = false,
+                                 default = nil)
+  if valid_578996 != nil:
+    section.add "quotaUser", valid_578996
+  var valid_578997 = query.getOrDefault("callback")
+  valid_578997 = validateParameter(valid_578997, JString, required = false,
+                                 default = nil)
+  if valid_578997 != nil:
+    section.add "callback", valid_578997
+  var valid_578998 = query.getOrDefault("fields")
+  valid_578998 = validateParameter(valid_578998, JString, required = false,
+                                 default = nil)
+  if valid_578998 != nil:
+    section.add "fields", valid_578998
+  var valid_578999 = query.getOrDefault("access_token")
+  valid_578999 = validateParameter(valid_578999, JString, required = false,
+                                 default = nil)
+  if valid_578999 != nil:
+    section.add "access_token", valid_578999
+  var valid_579000 = query.getOrDefault("upload_protocol")
+  valid_579000 = validateParameter(valid_579000, JString, required = false,
+                                 default = nil)
+  if valid_579000 != nil:
+    section.add "upload_protocol", valid_579000
+  var valid_579001 = query.getOrDefault("clientVersion")
+  valid_579001 = validateParameter(valid_579001, JString, required = false,
+                                 default = nil)
+  if valid_579001 != nil:
+    section.add "clientVersion", valid_579001
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1410,86 +1413,86 @@ proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsSet_589087(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_589103: Call_ClouddebuggerDebuggerDebuggeesBreakpointsSet_589086;
+proc call*(call_579003: Call_ClouddebuggerDebuggerDebuggeesBreakpointsSet_578986;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the breakpoint to the debuggee.
   ## 
-  let valid = call_589103.validator(path, query, header, formData, body)
-  let scheme = call_589103.pickScheme
+  let valid = call_579003.validator(path, query, header, formData, body)
+  let scheme = call_579003.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589103.url(scheme.get, call_589103.host, call_589103.base,
-                         call_589103.route, valid.getOrDefault("path"),
+  let url = call_579003.url(scheme.get, call_579003.host, call_579003.base,
+                         call_579003.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589103, url, valid)
+  result = hook(call_579003, url, valid)
 
-proc call*(call_589104: Call_ClouddebuggerDebuggerDebuggeesBreakpointsSet_589086;
-          debuggeeId: string; uploadProtocol: string = ""; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          callback: string = ""; accessToken: string = ""; uploadType: string = "";
-          key: string = ""; Xgafv: string = "1"; body: JsonNode = nil;
-          prettyPrint: bool = true; clientVersion: string = ""): Recallable =
+proc call*(call_579004: Call_ClouddebuggerDebuggerDebuggeesBreakpointsSet_578986;
+          debuggeeId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          callback: string = ""; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""; clientVersion: string = ""): Recallable =
   ## clouddebuggerDebuggerDebuggeesBreakpointsSet
   ## Sets the breakpoint to the debuggee.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   debuggeeId: string (required)
-  ##             : ID of the debuggee where the breakpoint is to be set.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   debuggeeId: string (required)
+  ##             : ID of the debuggee where the breakpoint is to be set.
+  ##   body: JObject
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
   ##   clientVersion: string
   ##                : The client version making the call.
   ## Schema: `domain/type/version` (e.g., `google.com/intellij/v1`).
-  var path_589105 = newJObject()
-  var query_589106 = newJObject()
-  var body_589107 = newJObject()
-  add(query_589106, "upload_protocol", newJString(uploadProtocol))
-  add(path_589105, "debuggeeId", newJString(debuggeeId))
-  add(query_589106, "fields", newJString(fields))
-  add(query_589106, "quotaUser", newJString(quotaUser))
-  add(query_589106, "alt", newJString(alt))
-  add(query_589106, "oauth_token", newJString(oauthToken))
-  add(query_589106, "callback", newJString(callback))
-  add(query_589106, "access_token", newJString(accessToken))
-  add(query_589106, "uploadType", newJString(uploadType))
-  add(query_589106, "key", newJString(key))
-  add(query_589106, "$.xgafv", newJString(Xgafv))
+  var path_579005 = newJObject()
+  var query_579006 = newJObject()
+  var body_579007 = newJObject()
+  add(query_579006, "key", newJString(key))
+  add(query_579006, "prettyPrint", newJBool(prettyPrint))
+  add(query_579006, "oauth_token", newJString(oauthToken))
+  add(query_579006, "$.xgafv", newJString(Xgafv))
+  add(query_579006, "alt", newJString(alt))
+  add(query_579006, "uploadType", newJString(uploadType))
+  add(query_579006, "quotaUser", newJString(quotaUser))
+  add(path_579005, "debuggeeId", newJString(debuggeeId))
   if body != nil:
-    body_589107 = body
-  add(query_589106, "prettyPrint", newJBool(prettyPrint))
-  add(query_589106, "clientVersion", newJString(clientVersion))
-  result = call_589104.call(path_589105, query_589106, nil, nil, body_589107)
+    body_579007 = body
+  add(query_579006, "callback", newJString(callback))
+  add(query_579006, "fields", newJString(fields))
+  add(query_579006, "access_token", newJString(accessToken))
+  add(query_579006, "upload_protocol", newJString(uploadProtocol))
+  add(query_579006, "clientVersion", newJString(clientVersion))
+  result = call_579004.call(path_579005, query_579006, nil, nil, body_579007)
 
-var clouddebuggerDebuggerDebuggeesBreakpointsSet* = Call_ClouddebuggerDebuggerDebuggeesBreakpointsSet_589086(
+var clouddebuggerDebuggerDebuggeesBreakpointsSet* = Call_ClouddebuggerDebuggerDebuggeesBreakpointsSet_578986(
     name: "clouddebuggerDebuggerDebuggeesBreakpointsSet",
     meth: HttpMethod.HttpPost, host: "clouddebugger.googleapis.com",
     route: "/v2/debugger/debuggees/{debuggeeId}/breakpoints/set",
-    validator: validate_ClouddebuggerDebuggerDebuggeesBreakpointsSet_589087,
-    base: "/", url: url_ClouddebuggerDebuggerDebuggeesBreakpointsSet_589088,
+    validator: validate_ClouddebuggerDebuggerDebuggeesBreakpointsSet_578987,
+    base: "/", url: url_ClouddebuggerDebuggerDebuggeesBreakpointsSet_578988,
     schemes: {Scheme.Https})
 type
-  Call_ClouddebuggerDebuggerDebuggeesBreakpointsGet_589108 = ref object of OpenApiRestCall_588441
-proc url_ClouddebuggerDebuggerDebuggeesBreakpointsGet_589110(protocol: Scheme;
+  Call_ClouddebuggerDebuggerDebuggeesBreakpointsGet_579008 = ref object of OpenApiRestCall_578339
+proc url_ClouddebuggerDebuggerDebuggeesBreakpointsGet_579010(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1507,118 +1510,118 @@ proc url_ClouddebuggerDebuggerDebuggeesBreakpointsGet_589110(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsGet_589109(path: JsonNode;
+proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsGet_579009(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets breakpoint information.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   debuggeeId: JString (required)
-  ##             : ID of the debuggee whose breakpoint to get.
   ##   breakpointId: JString (required)
   ##               : ID of the breakpoint to get.
+  ##   debuggeeId: JString (required)
+  ##             : ID of the debuggee whose breakpoint to get.
   section = newJObject()
   assert path != nil,
-        "path argument is necessary due to required `debuggeeId` field"
-  var valid_589111 = path.getOrDefault("debuggeeId")
-  valid_589111 = validateParameter(valid_589111, JString, required = true,
+        "path argument is necessary due to required `breakpointId` field"
+  var valid_579011 = path.getOrDefault("breakpointId")
+  valid_579011 = validateParameter(valid_579011, JString, required = true,
                                  default = nil)
-  if valid_589111 != nil:
-    section.add "debuggeeId", valid_589111
-  var valid_589112 = path.getOrDefault("breakpointId")
-  valid_589112 = validateParameter(valid_589112, JString, required = true,
+  if valid_579011 != nil:
+    section.add "breakpointId", valid_579011
+  var valid_579012 = path.getOrDefault("debuggeeId")
+  valid_579012 = validateParameter(valid_579012, JString, required = true,
                                  default = nil)
-  if valid_589112 != nil:
-    section.add "breakpointId", valid_589112
+  if valid_579012 != nil:
+    section.add "debuggeeId", valid_579012
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   ##   clientVersion: JString
   ##                : The client version making the call.
   ## Schema: `domain/type/version` (e.g., `google.com/intellij/v1`).
   section = newJObject()
-  var valid_589113 = query.getOrDefault("upload_protocol")
-  valid_589113 = validateParameter(valid_589113, JString, required = false,
+  var valid_579013 = query.getOrDefault("key")
+  valid_579013 = validateParameter(valid_579013, JString, required = false,
                                  default = nil)
-  if valid_589113 != nil:
-    section.add "upload_protocol", valid_589113
-  var valid_589114 = query.getOrDefault("fields")
-  valid_589114 = validateParameter(valid_589114, JString, required = false,
-                                 default = nil)
-  if valid_589114 != nil:
-    section.add "fields", valid_589114
-  var valid_589115 = query.getOrDefault("quotaUser")
-  valid_589115 = validateParameter(valid_589115, JString, required = false,
-                                 default = nil)
-  if valid_589115 != nil:
-    section.add "quotaUser", valid_589115
-  var valid_589116 = query.getOrDefault("alt")
-  valid_589116 = validateParameter(valid_589116, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589116 != nil:
-    section.add "alt", valid_589116
-  var valid_589117 = query.getOrDefault("oauth_token")
-  valid_589117 = validateParameter(valid_589117, JString, required = false,
-                                 default = nil)
-  if valid_589117 != nil:
-    section.add "oauth_token", valid_589117
-  var valid_589118 = query.getOrDefault("callback")
-  valid_589118 = validateParameter(valid_589118, JString, required = false,
-                                 default = nil)
-  if valid_589118 != nil:
-    section.add "callback", valid_589118
-  var valid_589119 = query.getOrDefault("access_token")
-  valid_589119 = validateParameter(valid_589119, JString, required = false,
-                                 default = nil)
-  if valid_589119 != nil:
-    section.add "access_token", valid_589119
-  var valid_589120 = query.getOrDefault("uploadType")
-  valid_589120 = validateParameter(valid_589120, JString, required = false,
-                                 default = nil)
-  if valid_589120 != nil:
-    section.add "uploadType", valid_589120
-  var valid_589121 = query.getOrDefault("key")
-  valid_589121 = validateParameter(valid_589121, JString, required = false,
-                                 default = nil)
-  if valid_589121 != nil:
-    section.add "key", valid_589121
-  var valid_589122 = query.getOrDefault("$.xgafv")
-  valid_589122 = validateParameter(valid_589122, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589122 != nil:
-    section.add "$.xgafv", valid_589122
-  var valid_589123 = query.getOrDefault("prettyPrint")
-  valid_589123 = validateParameter(valid_589123, JBool, required = false,
+  if valid_579013 != nil:
+    section.add "key", valid_579013
+  var valid_579014 = query.getOrDefault("prettyPrint")
+  valid_579014 = validateParameter(valid_579014, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589123 != nil:
-    section.add "prettyPrint", valid_589123
-  var valid_589124 = query.getOrDefault("clientVersion")
-  valid_589124 = validateParameter(valid_589124, JString, required = false,
+  if valid_579014 != nil:
+    section.add "prettyPrint", valid_579014
+  var valid_579015 = query.getOrDefault("oauth_token")
+  valid_579015 = validateParameter(valid_579015, JString, required = false,
                                  default = nil)
-  if valid_589124 != nil:
-    section.add "clientVersion", valid_589124
+  if valid_579015 != nil:
+    section.add "oauth_token", valid_579015
+  var valid_579016 = query.getOrDefault("$.xgafv")
+  valid_579016 = validateParameter(valid_579016, JString, required = false,
+                                 default = newJString("1"))
+  if valid_579016 != nil:
+    section.add "$.xgafv", valid_579016
+  var valid_579017 = query.getOrDefault("alt")
+  valid_579017 = validateParameter(valid_579017, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579017 != nil:
+    section.add "alt", valid_579017
+  var valid_579018 = query.getOrDefault("uploadType")
+  valid_579018 = validateParameter(valid_579018, JString, required = false,
+                                 default = nil)
+  if valid_579018 != nil:
+    section.add "uploadType", valid_579018
+  var valid_579019 = query.getOrDefault("quotaUser")
+  valid_579019 = validateParameter(valid_579019, JString, required = false,
+                                 default = nil)
+  if valid_579019 != nil:
+    section.add "quotaUser", valid_579019
+  var valid_579020 = query.getOrDefault("callback")
+  valid_579020 = validateParameter(valid_579020, JString, required = false,
+                                 default = nil)
+  if valid_579020 != nil:
+    section.add "callback", valid_579020
+  var valid_579021 = query.getOrDefault("fields")
+  valid_579021 = validateParameter(valid_579021, JString, required = false,
+                                 default = nil)
+  if valid_579021 != nil:
+    section.add "fields", valid_579021
+  var valid_579022 = query.getOrDefault("access_token")
+  valid_579022 = validateParameter(valid_579022, JString, required = false,
+                                 default = nil)
+  if valid_579022 != nil:
+    section.add "access_token", valid_579022
+  var valid_579023 = query.getOrDefault("upload_protocol")
+  valid_579023 = validateParameter(valid_579023, JString, required = false,
+                                 default = nil)
+  if valid_579023 != nil:
+    section.add "upload_protocol", valid_579023
+  var valid_579024 = query.getOrDefault("clientVersion")
+  valid_579024 = validateParameter(valid_579024, JString, required = false,
+                                 default = nil)
+  if valid_579024 != nil:
+    section.add "clientVersion", valid_579024
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1627,85 +1630,85 @@ proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsGet_589109(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_589125: Call_ClouddebuggerDebuggerDebuggeesBreakpointsGet_589108;
+proc call*(call_579025: Call_ClouddebuggerDebuggerDebuggeesBreakpointsGet_579008;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets breakpoint information.
   ## 
-  let valid = call_589125.validator(path, query, header, formData, body)
-  let scheme = call_589125.pickScheme
+  let valid = call_579025.validator(path, query, header, formData, body)
+  let scheme = call_579025.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589125.url(scheme.get, call_589125.host, call_589125.base,
-                         call_589125.route, valid.getOrDefault("path"),
+  let url = call_579025.url(scheme.get, call_579025.host, call_579025.base,
+                         call_579025.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589125, url, valid)
+  result = hook(call_579025, url, valid)
 
-proc call*(call_589126: Call_ClouddebuggerDebuggerDebuggeesBreakpointsGet_589108;
-          debuggeeId: string; breakpointId: string; uploadProtocol: string = "";
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; callback: string = ""; accessToken: string = "";
-          uploadType: string = ""; key: string = ""; Xgafv: string = "1";
-          prettyPrint: bool = true; clientVersion: string = ""): Recallable =
+proc call*(call_579026: Call_ClouddebuggerDebuggerDebuggeesBreakpointsGet_579008;
+          breakpointId: string; debuggeeId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; Xgafv: string = "1";
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          callback: string = ""; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""; clientVersion: string = ""): Recallable =
   ## clouddebuggerDebuggerDebuggeesBreakpointsGet
   ## Gets breakpoint information.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   debuggeeId: string (required)
-  ##             : ID of the debuggee whose breakpoint to get.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   breakpointId: string (required)
-  ##               : ID of the breakpoint to get.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   breakpointId: string (required)
+  ##               : ID of the breakpoint to get.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   debuggeeId: string (required)
+  ##             : ID of the debuggee whose breakpoint to get.
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
   ##   clientVersion: string
   ##                : The client version making the call.
   ## Schema: `domain/type/version` (e.g., `google.com/intellij/v1`).
-  var path_589127 = newJObject()
-  var query_589128 = newJObject()
-  add(query_589128, "upload_protocol", newJString(uploadProtocol))
-  add(path_589127, "debuggeeId", newJString(debuggeeId))
-  add(query_589128, "fields", newJString(fields))
-  add(query_589128, "quotaUser", newJString(quotaUser))
-  add(query_589128, "alt", newJString(alt))
-  add(path_589127, "breakpointId", newJString(breakpointId))
-  add(query_589128, "oauth_token", newJString(oauthToken))
-  add(query_589128, "callback", newJString(callback))
-  add(query_589128, "access_token", newJString(accessToken))
-  add(query_589128, "uploadType", newJString(uploadType))
-  add(query_589128, "key", newJString(key))
-  add(query_589128, "$.xgafv", newJString(Xgafv))
-  add(query_589128, "prettyPrint", newJBool(prettyPrint))
-  add(query_589128, "clientVersion", newJString(clientVersion))
-  result = call_589126.call(path_589127, query_589128, nil, nil, nil)
+  var path_579027 = newJObject()
+  var query_579028 = newJObject()
+  add(query_579028, "key", newJString(key))
+  add(query_579028, "prettyPrint", newJBool(prettyPrint))
+  add(query_579028, "oauth_token", newJString(oauthToken))
+  add(query_579028, "$.xgafv", newJString(Xgafv))
+  add(path_579027, "breakpointId", newJString(breakpointId))
+  add(query_579028, "alt", newJString(alt))
+  add(query_579028, "uploadType", newJString(uploadType))
+  add(query_579028, "quotaUser", newJString(quotaUser))
+  add(path_579027, "debuggeeId", newJString(debuggeeId))
+  add(query_579028, "callback", newJString(callback))
+  add(query_579028, "fields", newJString(fields))
+  add(query_579028, "access_token", newJString(accessToken))
+  add(query_579028, "upload_protocol", newJString(uploadProtocol))
+  add(query_579028, "clientVersion", newJString(clientVersion))
+  result = call_579026.call(path_579027, query_579028, nil, nil, nil)
 
-var clouddebuggerDebuggerDebuggeesBreakpointsGet* = Call_ClouddebuggerDebuggerDebuggeesBreakpointsGet_589108(
+var clouddebuggerDebuggerDebuggeesBreakpointsGet* = Call_ClouddebuggerDebuggerDebuggeesBreakpointsGet_579008(
     name: "clouddebuggerDebuggerDebuggeesBreakpointsGet",
     meth: HttpMethod.HttpGet, host: "clouddebugger.googleapis.com",
     route: "/v2/debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}",
-    validator: validate_ClouddebuggerDebuggerDebuggeesBreakpointsGet_589109,
-    base: "/", url: url_ClouddebuggerDebuggerDebuggeesBreakpointsGet_589110,
+    validator: validate_ClouddebuggerDebuggerDebuggeesBreakpointsGet_579009,
+    base: "/", url: url_ClouddebuggerDebuggerDebuggeesBreakpointsGet_579010,
     schemes: {Scheme.Https})
 type
-  Call_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_589129 = ref object of OpenApiRestCall_588441
-proc url_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_589131(protocol: Scheme;
+  Call_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_579029 = ref object of OpenApiRestCall_578339
+proc url_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_579031(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1723,7 +1726,7 @@ proc url_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_589131(protocol: Scheme
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_589130(
+proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_579030(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Deletes the breakpoint from the debuggee.
@@ -1731,111 +1734,111 @@ proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_589130(
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   debuggeeId: JString (required)
-  ##             : ID of the debuggee whose breakpoint to delete.
   ##   breakpointId: JString (required)
   ##               : ID of the breakpoint to delete.
+  ##   debuggeeId: JString (required)
+  ##             : ID of the debuggee whose breakpoint to delete.
   section = newJObject()
   assert path != nil,
-        "path argument is necessary due to required `debuggeeId` field"
-  var valid_589132 = path.getOrDefault("debuggeeId")
-  valid_589132 = validateParameter(valid_589132, JString, required = true,
+        "path argument is necessary due to required `breakpointId` field"
+  var valid_579032 = path.getOrDefault("breakpointId")
+  valid_579032 = validateParameter(valid_579032, JString, required = true,
                                  default = nil)
-  if valid_589132 != nil:
-    section.add "debuggeeId", valid_589132
-  var valid_589133 = path.getOrDefault("breakpointId")
-  valid_589133 = validateParameter(valid_589133, JString, required = true,
+  if valid_579032 != nil:
+    section.add "breakpointId", valid_579032
+  var valid_579033 = path.getOrDefault("debuggeeId")
+  valid_579033 = validateParameter(valid_579033, JString, required = true,
                                  default = nil)
-  if valid_589133 != nil:
-    section.add "breakpointId", valid_589133
+  if valid_579033 != nil:
+    section.add "debuggeeId", valid_579033
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   ##   clientVersion: JString
   ##                : The client version making the call.
   ## Schema: `domain/type/version` (e.g., `google.com/intellij/v1`).
   section = newJObject()
-  var valid_589134 = query.getOrDefault("upload_protocol")
-  valid_589134 = validateParameter(valid_589134, JString, required = false,
+  var valid_579034 = query.getOrDefault("key")
+  valid_579034 = validateParameter(valid_579034, JString, required = false,
                                  default = nil)
-  if valid_589134 != nil:
-    section.add "upload_protocol", valid_589134
-  var valid_589135 = query.getOrDefault("fields")
-  valid_589135 = validateParameter(valid_589135, JString, required = false,
-                                 default = nil)
-  if valid_589135 != nil:
-    section.add "fields", valid_589135
-  var valid_589136 = query.getOrDefault("quotaUser")
-  valid_589136 = validateParameter(valid_589136, JString, required = false,
-                                 default = nil)
-  if valid_589136 != nil:
-    section.add "quotaUser", valid_589136
-  var valid_589137 = query.getOrDefault("alt")
-  valid_589137 = validateParameter(valid_589137, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589137 != nil:
-    section.add "alt", valid_589137
-  var valid_589138 = query.getOrDefault("oauth_token")
-  valid_589138 = validateParameter(valid_589138, JString, required = false,
-                                 default = nil)
-  if valid_589138 != nil:
-    section.add "oauth_token", valid_589138
-  var valid_589139 = query.getOrDefault("callback")
-  valid_589139 = validateParameter(valid_589139, JString, required = false,
-                                 default = nil)
-  if valid_589139 != nil:
-    section.add "callback", valid_589139
-  var valid_589140 = query.getOrDefault("access_token")
-  valid_589140 = validateParameter(valid_589140, JString, required = false,
-                                 default = nil)
-  if valid_589140 != nil:
-    section.add "access_token", valid_589140
-  var valid_589141 = query.getOrDefault("uploadType")
-  valid_589141 = validateParameter(valid_589141, JString, required = false,
-                                 default = nil)
-  if valid_589141 != nil:
-    section.add "uploadType", valid_589141
-  var valid_589142 = query.getOrDefault("key")
-  valid_589142 = validateParameter(valid_589142, JString, required = false,
-                                 default = nil)
-  if valid_589142 != nil:
-    section.add "key", valid_589142
-  var valid_589143 = query.getOrDefault("$.xgafv")
-  valid_589143 = validateParameter(valid_589143, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589143 != nil:
-    section.add "$.xgafv", valid_589143
-  var valid_589144 = query.getOrDefault("prettyPrint")
-  valid_589144 = validateParameter(valid_589144, JBool, required = false,
+  if valid_579034 != nil:
+    section.add "key", valid_579034
+  var valid_579035 = query.getOrDefault("prettyPrint")
+  valid_579035 = validateParameter(valid_579035, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589144 != nil:
-    section.add "prettyPrint", valid_589144
-  var valid_589145 = query.getOrDefault("clientVersion")
-  valid_589145 = validateParameter(valid_589145, JString, required = false,
+  if valid_579035 != nil:
+    section.add "prettyPrint", valid_579035
+  var valid_579036 = query.getOrDefault("oauth_token")
+  valid_579036 = validateParameter(valid_579036, JString, required = false,
                                  default = nil)
-  if valid_589145 != nil:
-    section.add "clientVersion", valid_589145
+  if valid_579036 != nil:
+    section.add "oauth_token", valid_579036
+  var valid_579037 = query.getOrDefault("$.xgafv")
+  valid_579037 = validateParameter(valid_579037, JString, required = false,
+                                 default = newJString("1"))
+  if valid_579037 != nil:
+    section.add "$.xgafv", valid_579037
+  var valid_579038 = query.getOrDefault("alt")
+  valid_579038 = validateParameter(valid_579038, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579038 != nil:
+    section.add "alt", valid_579038
+  var valid_579039 = query.getOrDefault("uploadType")
+  valid_579039 = validateParameter(valid_579039, JString, required = false,
+                                 default = nil)
+  if valid_579039 != nil:
+    section.add "uploadType", valid_579039
+  var valid_579040 = query.getOrDefault("quotaUser")
+  valid_579040 = validateParameter(valid_579040, JString, required = false,
+                                 default = nil)
+  if valid_579040 != nil:
+    section.add "quotaUser", valid_579040
+  var valid_579041 = query.getOrDefault("callback")
+  valid_579041 = validateParameter(valid_579041, JString, required = false,
+                                 default = nil)
+  if valid_579041 != nil:
+    section.add "callback", valid_579041
+  var valid_579042 = query.getOrDefault("fields")
+  valid_579042 = validateParameter(valid_579042, JString, required = false,
+                                 default = nil)
+  if valid_579042 != nil:
+    section.add "fields", valid_579042
+  var valid_579043 = query.getOrDefault("access_token")
+  valid_579043 = validateParameter(valid_579043, JString, required = false,
+                                 default = nil)
+  if valid_579043 != nil:
+    section.add "access_token", valid_579043
+  var valid_579044 = query.getOrDefault("upload_protocol")
+  valid_579044 = validateParameter(valid_579044, JString, required = false,
+                                 default = nil)
+  if valid_579044 != nil:
+    section.add "upload_protocol", valid_579044
+  var valid_579045 = query.getOrDefault("clientVersion")
+  valid_579045 = validateParameter(valid_579045, JString, required = false,
+                                 default = nil)
+  if valid_579045 != nil:
+    section.add "clientVersion", valid_579045
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1844,81 +1847,81 @@ proc validate_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_589130(
   if body != nil:
     result.add "body", body
 
-proc call*(call_589146: Call_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_589129;
+proc call*(call_579046: Call_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_579029;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes the breakpoint from the debuggee.
   ## 
-  let valid = call_589146.validator(path, query, header, formData, body)
-  let scheme = call_589146.pickScheme
+  let valid = call_579046.validator(path, query, header, formData, body)
+  let scheme = call_579046.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589146.url(scheme.get, call_589146.host, call_589146.base,
-                         call_589146.route, valid.getOrDefault("path"),
+  let url = call_579046.url(scheme.get, call_579046.host, call_579046.base,
+                         call_579046.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589146, url, valid)
+  result = hook(call_579046, url, valid)
 
-proc call*(call_589147: Call_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_589129;
-          debuggeeId: string; breakpointId: string; uploadProtocol: string = "";
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; callback: string = ""; accessToken: string = "";
-          uploadType: string = ""; key: string = ""; Xgafv: string = "1";
-          prettyPrint: bool = true; clientVersion: string = ""): Recallable =
+proc call*(call_579047: Call_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_579029;
+          breakpointId: string; debuggeeId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; Xgafv: string = "1";
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          callback: string = ""; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""; clientVersion: string = ""): Recallable =
   ## clouddebuggerDebuggerDebuggeesBreakpointsDelete
   ## Deletes the breakpoint from the debuggee.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   debuggeeId: string (required)
-  ##             : ID of the debuggee whose breakpoint to delete.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   breakpointId: string (required)
-  ##               : ID of the breakpoint to delete.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   breakpointId: string (required)
+  ##               : ID of the breakpoint to delete.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   debuggeeId: string (required)
+  ##             : ID of the debuggee whose breakpoint to delete.
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
   ##   clientVersion: string
   ##                : The client version making the call.
   ## Schema: `domain/type/version` (e.g., `google.com/intellij/v1`).
-  var path_589148 = newJObject()
-  var query_589149 = newJObject()
-  add(query_589149, "upload_protocol", newJString(uploadProtocol))
-  add(path_589148, "debuggeeId", newJString(debuggeeId))
-  add(query_589149, "fields", newJString(fields))
-  add(query_589149, "quotaUser", newJString(quotaUser))
-  add(query_589149, "alt", newJString(alt))
-  add(path_589148, "breakpointId", newJString(breakpointId))
-  add(query_589149, "oauth_token", newJString(oauthToken))
-  add(query_589149, "callback", newJString(callback))
-  add(query_589149, "access_token", newJString(accessToken))
-  add(query_589149, "uploadType", newJString(uploadType))
-  add(query_589149, "key", newJString(key))
-  add(query_589149, "$.xgafv", newJString(Xgafv))
-  add(query_589149, "prettyPrint", newJBool(prettyPrint))
-  add(query_589149, "clientVersion", newJString(clientVersion))
-  result = call_589147.call(path_589148, query_589149, nil, nil, nil)
+  var path_579048 = newJObject()
+  var query_579049 = newJObject()
+  add(query_579049, "key", newJString(key))
+  add(query_579049, "prettyPrint", newJBool(prettyPrint))
+  add(query_579049, "oauth_token", newJString(oauthToken))
+  add(query_579049, "$.xgafv", newJString(Xgafv))
+  add(path_579048, "breakpointId", newJString(breakpointId))
+  add(query_579049, "alt", newJString(alt))
+  add(query_579049, "uploadType", newJString(uploadType))
+  add(query_579049, "quotaUser", newJString(quotaUser))
+  add(path_579048, "debuggeeId", newJString(debuggeeId))
+  add(query_579049, "callback", newJString(callback))
+  add(query_579049, "fields", newJString(fields))
+  add(query_579049, "access_token", newJString(accessToken))
+  add(query_579049, "upload_protocol", newJString(uploadProtocol))
+  add(query_579049, "clientVersion", newJString(clientVersion))
+  result = call_579047.call(path_579048, query_579049, nil, nil, nil)
 
-var clouddebuggerDebuggerDebuggeesBreakpointsDelete* = Call_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_589129(
+var clouddebuggerDebuggerDebuggeesBreakpointsDelete* = Call_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_579029(
     name: "clouddebuggerDebuggerDebuggeesBreakpointsDelete",
     meth: HttpMethod.HttpDelete, host: "clouddebugger.googleapis.com",
     route: "/v2/debugger/debuggees/{debuggeeId}/breakpoints/{breakpointId}",
-    validator: validate_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_589130,
-    base: "/", url: url_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_589131,
+    validator: validate_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_579030,
+    base: "/", url: url_ClouddebuggerDebuggerDebuggeesBreakpointsDelete_579031,
     schemes: {Scheme.Https})
 export
   rest

@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588457 = ref object of OpenApiRestCall
+  OpenApiRestCall_578355 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588457](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578355](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588457): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578355): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,15 +112,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_AnalyticsDataGet_588726 = ref object of OpenApiRestCall_588457
-proc url_AnalyticsDataGet_588728(protocol: Scheme; host: string; base: string;
+  Call_AnalyticsDataGet_578626 = ref object of OpenApiRestCall_578355
+proc url_AnalyticsDataGet_578628(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AnalyticsDataGet_588727(path: JsonNode; query: JsonNode;
+proc validate_AnalyticsDataGet_578627(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Returns Analytics report data for a view (profile).
@@ -126,125 +130,125 @@ proc validate_AnalyticsDataGet_588727(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   sort: JString
-  ##       : A comma-separated list of dimensions or metrics that determine the sort order for the report data.
-  ##   segment: JString
-  ##          : An Analytics advanced segment to be applied to the report data.
-  ##   metrics: JString (required)
-  ##          : A comma-separated list of Analytics metrics. E.g., 'ga:sessions,ga:pageviews'. At least one metric must be specified to retrieve a valid Analytics report.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   dimensions: JString
-  ##             : A comma-separated list of Analytics dimensions. E.g., 'ga:browser,ga:city'.
-  ##   ids: JString (required)
-  ##      : Unique table ID for retrieving report data. Table ID is of the form ga:XXXX, where XXXX is the Analytics view (profile) ID.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   max-results: JInt
-  ##              : The maximum number of entries to include in this feed.
-  ##   end-date: JString (required)
-  ##           : End date for fetching report data. All requests should specify an end date formatted as YYYY-MM-DD.
-  ##   start-date: JString (required)
-  ##             : Start date for fetching report data. All requests should specify a start date formatted as YYYY-MM-DD.
-  ##   filters: JString
-  ##          : A comma-separated list of dimension or metric filters to be applied to the report data.
-  ##   start-index: JInt
-  ##              : An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
+  ##   segment: JString
+  ##          : An Analytics advanced segment to be applied to the report data.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   metrics: JString (required)
+  ##          : A comma-separated list of Analytics metrics. E.g., 'ga:sessions,ga:pageviews'. At least one metric must be specified to retrieve a valid Analytics report.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   dimensions: JString
+  ##             : A comma-separated list of Analytics dimensions. E.g., 'ga:browser,ga:city'.
+  ##   start-index: JInt
+  ##              : An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
+  ##   filters: JString
+  ##          : A comma-separated list of dimension or metric filters to be applied to the report data.
+  ##   max-results: JInt
+  ##              : The maximum number of entries to include in this feed.
+  ##   start-date: JString (required)
+  ##             : Start date for fetching report data. All requests should specify a start date formatted as YYYY-MM-DD.
+  ##   ids: JString (required)
+  ##      : Unique table ID for retrieving report data. Table ID is of the form ga:XXXX, where XXXX is the Analytics view (profile) ID.
+  ##   end-date: JString (required)
+  ##           : End date for fetching report data. All requests should specify an end date formatted as YYYY-MM-DD.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   sort: JString
+  ##       : A comma-separated list of dimensions or metrics that determine the sort order for the report data.
   section = newJObject()
-  var valid_588840 = query.getOrDefault("fields")
-  valid_588840 = validateParameter(valid_588840, JString, required = false,
+  var valid_578740 = query.getOrDefault("key")
+  valid_578740 = validateParameter(valid_578740, JString, required = false,
                                  default = nil)
-  if valid_588840 != nil:
-    section.add "fields", valid_588840
-  var valid_588841 = query.getOrDefault("quotaUser")
-  valid_588841 = validateParameter(valid_588841, JString, required = false,
+  if valid_578740 != nil:
+    section.add "key", valid_578740
+  var valid_578741 = query.getOrDefault("segment")
+  valid_578741 = validateParameter(valid_578741, JString, required = false,
                                  default = nil)
-  if valid_588841 != nil:
-    section.add "quotaUser", valid_588841
-  var valid_588855 = query.getOrDefault("alt")
-  valid_588855 = validateParameter(valid_588855, JString, required = false,
-                                 default = newJString("atom"))
-  if valid_588855 != nil:
-    section.add "alt", valid_588855
-  var valid_588856 = query.getOrDefault("sort")
-  valid_588856 = validateParameter(valid_588856, JString, required = false,
-                                 default = nil)
-  if valid_588856 != nil:
-    section.add "sort", valid_588856
-  var valid_588857 = query.getOrDefault("segment")
-  valid_588857 = validateParameter(valid_588857, JString, required = false,
-                                 default = nil)
-  if valid_588857 != nil:
-    section.add "segment", valid_588857
-  assert query != nil, "query argument is necessary due to required `metrics` field"
-  var valid_588858 = query.getOrDefault("metrics")
-  valid_588858 = validateParameter(valid_588858, JString, required = true,
-                                 default = nil)
-  if valid_588858 != nil:
-    section.add "metrics", valid_588858
-  var valid_588859 = query.getOrDefault("oauth_token")
-  valid_588859 = validateParameter(valid_588859, JString, required = false,
-                                 default = nil)
-  if valid_588859 != nil:
-    section.add "oauth_token", valid_588859
-  var valid_588860 = query.getOrDefault("userIp")
-  valid_588860 = validateParameter(valid_588860, JString, required = false,
-                                 default = nil)
-  if valid_588860 != nil:
-    section.add "userIp", valid_588860
-  var valid_588861 = query.getOrDefault("dimensions")
-  valid_588861 = validateParameter(valid_588861, JString, required = false,
-                                 default = nil)
-  if valid_588861 != nil:
-    section.add "dimensions", valid_588861
-  var valid_588862 = query.getOrDefault("ids")
-  valid_588862 = validateParameter(valid_588862, JString, required = true,
-                                 default = nil)
-  if valid_588862 != nil:
-    section.add "ids", valid_588862
-  var valid_588863 = query.getOrDefault("key")
-  valid_588863 = validateParameter(valid_588863, JString, required = false,
-                                 default = nil)
-  if valid_588863 != nil:
-    section.add "key", valid_588863
-  var valid_588864 = query.getOrDefault("max-results")
-  valid_588864 = validateParameter(valid_588864, JInt, required = false, default = nil)
-  if valid_588864 != nil:
-    section.add "max-results", valid_588864
-  var valid_588865 = query.getOrDefault("end-date")
-  valid_588865 = validateParameter(valid_588865, JString, required = true,
-                                 default = nil)
-  if valid_588865 != nil:
-    section.add "end-date", valid_588865
-  var valid_588866 = query.getOrDefault("start-date")
-  valid_588866 = validateParameter(valid_588866, JString, required = true,
-                                 default = nil)
-  if valid_588866 != nil:
-    section.add "start-date", valid_588866
-  var valid_588867 = query.getOrDefault("filters")
-  valid_588867 = validateParameter(valid_588867, JString, required = false,
-                                 default = nil)
-  if valid_588867 != nil:
-    section.add "filters", valid_588867
-  var valid_588868 = query.getOrDefault("start-index")
-  valid_588868 = validateParameter(valid_588868, JInt, required = false, default = nil)
-  if valid_588868 != nil:
-    section.add "start-index", valid_588868
-  var valid_588869 = query.getOrDefault("prettyPrint")
-  valid_588869 = validateParameter(valid_588869, JBool, required = false,
+  if valid_578741 != nil:
+    section.add "segment", valid_578741
+  var valid_578755 = query.getOrDefault("prettyPrint")
+  valid_578755 = validateParameter(valid_578755, JBool, required = false,
                                  default = newJBool(false))
-  if valid_588869 != nil:
-    section.add "prettyPrint", valid_588869
+  if valid_578755 != nil:
+    section.add "prettyPrint", valid_578755
+  var valid_578756 = query.getOrDefault("oauth_token")
+  valid_578756 = validateParameter(valid_578756, JString, required = false,
+                                 default = nil)
+  if valid_578756 != nil:
+    section.add "oauth_token", valid_578756
+  assert query != nil, "query argument is necessary due to required `metrics` field"
+  var valid_578757 = query.getOrDefault("metrics")
+  valid_578757 = validateParameter(valid_578757, JString, required = true,
+                                 default = nil)
+  if valid_578757 != nil:
+    section.add "metrics", valid_578757
+  var valid_578758 = query.getOrDefault("alt")
+  valid_578758 = validateParameter(valid_578758, JString, required = false,
+                                 default = newJString("atom"))
+  if valid_578758 != nil:
+    section.add "alt", valid_578758
+  var valid_578759 = query.getOrDefault("userIp")
+  valid_578759 = validateParameter(valid_578759, JString, required = false,
+                                 default = nil)
+  if valid_578759 != nil:
+    section.add "userIp", valid_578759
+  var valid_578760 = query.getOrDefault("quotaUser")
+  valid_578760 = validateParameter(valid_578760, JString, required = false,
+                                 default = nil)
+  if valid_578760 != nil:
+    section.add "quotaUser", valid_578760
+  var valid_578761 = query.getOrDefault("dimensions")
+  valid_578761 = validateParameter(valid_578761, JString, required = false,
+                                 default = nil)
+  if valid_578761 != nil:
+    section.add "dimensions", valid_578761
+  var valid_578762 = query.getOrDefault("start-index")
+  valid_578762 = validateParameter(valid_578762, JInt, required = false, default = nil)
+  if valid_578762 != nil:
+    section.add "start-index", valid_578762
+  var valid_578763 = query.getOrDefault("filters")
+  valid_578763 = validateParameter(valid_578763, JString, required = false,
+                                 default = nil)
+  if valid_578763 != nil:
+    section.add "filters", valid_578763
+  var valid_578764 = query.getOrDefault("max-results")
+  valid_578764 = validateParameter(valid_578764, JInt, required = false, default = nil)
+  if valid_578764 != nil:
+    section.add "max-results", valid_578764
+  var valid_578765 = query.getOrDefault("start-date")
+  valid_578765 = validateParameter(valid_578765, JString, required = true,
+                                 default = nil)
+  if valid_578765 != nil:
+    section.add "start-date", valid_578765
+  var valid_578766 = query.getOrDefault("ids")
+  valid_578766 = validateParameter(valid_578766, JString, required = true,
+                                 default = nil)
+  if valid_578766 != nil:
+    section.add "ids", valid_578766
+  var valid_578767 = query.getOrDefault("end-date")
+  valid_578767 = validateParameter(valid_578767, JString, required = true,
+                                 default = nil)
+  if valid_578767 != nil:
+    section.add "end-date", valid_578767
+  var valid_578768 = query.getOrDefault("fields")
+  valid_578768 = validateParameter(valid_578768, JString, required = false,
+                                 default = nil)
+  if valid_578768 != nil:
+    section.add "fields", valid_578768
+  var valid_578769 = query.getOrDefault("sort")
+  valid_578769 = validateParameter(valid_578769, JString, required = false,
+                                 default = nil)
+  if valid_578769 != nil:
+    section.add "sort", valid_578769
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -253,95 +257,95 @@ proc validate_AnalyticsDataGet_588727(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588892: Call_AnalyticsDataGet_588726; path: JsonNode;
+proc call*(call_578792: Call_AnalyticsDataGet_578626; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns Analytics report data for a view (profile).
   ## 
-  let valid = call_588892.validator(path, query, header, formData, body)
-  let scheme = call_588892.pickScheme
+  let valid = call_578792.validator(path, query, header, formData, body)
+  let scheme = call_578792.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588892.url(scheme.get, call_588892.host, call_588892.base,
-                         call_588892.route, valid.getOrDefault("path"),
+  let url = call_578792.url(scheme.get, call_578792.host, call_578792.base,
+                         call_578792.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588892, url, valid)
+  result = hook(call_578792, url, valid)
 
-proc call*(call_588963: Call_AnalyticsDataGet_588726; metrics: string; ids: string;
-          endDate: string; startDate: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "atom"; sort: string = "";
-          segment: string = ""; oauthToken: string = ""; userIp: string = "";
-          dimensions: string = ""; key: string = ""; maxResults: int = 0;
-          filters: string = ""; startIndex: int = 0; prettyPrint: bool = false): Recallable =
+proc call*(call_578863: Call_AnalyticsDataGet_578626; metrics: string;
+          startDate: string; ids: string; endDate: string; key: string = "";
+          segment: string = ""; prettyPrint: bool = false; oauthToken: string = "";
+          alt: string = "atom"; userIp: string = ""; quotaUser: string = "";
+          dimensions: string = ""; startIndex: int = 0; filters: string = "";
+          maxResults: int = 0; fields: string = ""; sort: string = ""): Recallable =
   ## analyticsDataGet
   ## Returns Analytics report data for a view (profile).
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   sort: string
-  ##       : A comma-separated list of dimensions or metrics that determine the sort order for the report data.
-  ##   segment: string
-  ##          : An Analytics advanced segment to be applied to the report data.
-  ##   metrics: string (required)
-  ##          : A comma-separated list of Analytics metrics. E.g., 'ga:sessions,ga:pageviews'. At least one metric must be specified to retrieve a valid Analytics report.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   dimensions: string
-  ##             : A comma-separated list of Analytics dimensions. E.g., 'ga:browser,ga:city'.
-  ##   ids: string (required)
-  ##      : Unique table ID for retrieving report data. Table ID is of the form ga:XXXX, where XXXX is the Analytics view (profile) ID.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   maxResults: int
-  ##             : The maximum number of entries to include in this feed.
-  ##   endDate: string (required)
-  ##          : End date for fetching report data. All requests should specify an end date formatted as YYYY-MM-DD.
-  ##   startDate: string (required)
-  ##            : Start date for fetching report data. All requests should specify a start date formatted as YYYY-MM-DD.
-  ##   filters: string
-  ##          : A comma-separated list of dimension or metric filters to be applied to the report data.
-  ##   startIndex: int
-  ##             : An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
+  ##   segment: string
+  ##          : An Analytics advanced segment to be applied to the report data.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_588964 = newJObject()
-  add(query_588964, "fields", newJString(fields))
-  add(query_588964, "quotaUser", newJString(quotaUser))
-  add(query_588964, "alt", newJString(alt))
-  add(query_588964, "sort", newJString(sort))
-  add(query_588964, "segment", newJString(segment))
-  add(query_588964, "metrics", newJString(metrics))
-  add(query_588964, "oauth_token", newJString(oauthToken))
-  add(query_588964, "userIp", newJString(userIp))
-  add(query_588964, "dimensions", newJString(dimensions))
-  add(query_588964, "ids", newJString(ids))
-  add(query_588964, "key", newJString(key))
-  add(query_588964, "max-results", newJInt(maxResults))
-  add(query_588964, "end-date", newJString(endDate))
-  add(query_588964, "start-date", newJString(startDate))
-  add(query_588964, "filters", newJString(filters))
-  add(query_588964, "start-index", newJInt(startIndex))
-  add(query_588964, "prettyPrint", newJBool(prettyPrint))
-  result = call_588963.call(nil, query_588964, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   metrics: string (required)
+  ##          : A comma-separated list of Analytics metrics. E.g., 'ga:sessions,ga:pageviews'. At least one metric must be specified to retrieve a valid Analytics report.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   dimensions: string
+  ##             : A comma-separated list of Analytics dimensions. E.g., 'ga:browser,ga:city'.
+  ##   startIndex: int
+  ##             : An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
+  ##   filters: string
+  ##          : A comma-separated list of dimension or metric filters to be applied to the report data.
+  ##   maxResults: int
+  ##             : The maximum number of entries to include in this feed.
+  ##   startDate: string (required)
+  ##            : Start date for fetching report data. All requests should specify a start date formatted as YYYY-MM-DD.
+  ##   ids: string (required)
+  ##      : Unique table ID for retrieving report data. Table ID is of the form ga:XXXX, where XXXX is the Analytics view (profile) ID.
+  ##   endDate: string (required)
+  ##          : End date for fetching report data. All requests should specify an end date formatted as YYYY-MM-DD.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   sort: string
+  ##       : A comma-separated list of dimensions or metrics that determine the sort order for the report data.
+  var query_578864 = newJObject()
+  add(query_578864, "key", newJString(key))
+  add(query_578864, "segment", newJString(segment))
+  add(query_578864, "prettyPrint", newJBool(prettyPrint))
+  add(query_578864, "oauth_token", newJString(oauthToken))
+  add(query_578864, "metrics", newJString(metrics))
+  add(query_578864, "alt", newJString(alt))
+  add(query_578864, "userIp", newJString(userIp))
+  add(query_578864, "quotaUser", newJString(quotaUser))
+  add(query_578864, "dimensions", newJString(dimensions))
+  add(query_578864, "start-index", newJInt(startIndex))
+  add(query_578864, "filters", newJString(filters))
+  add(query_578864, "max-results", newJInt(maxResults))
+  add(query_578864, "start-date", newJString(startDate))
+  add(query_578864, "ids", newJString(ids))
+  add(query_578864, "end-date", newJString(endDate))
+  add(query_578864, "fields", newJString(fields))
+  add(query_578864, "sort", newJString(sort))
+  result = call_578863.call(nil, query_578864, nil, nil, nil)
 
-var analyticsDataGet* = Call_AnalyticsDataGet_588726(name: "analyticsDataGet",
+var analyticsDataGet* = Call_AnalyticsDataGet_578626(name: "analyticsDataGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/data",
-    validator: validate_AnalyticsDataGet_588727, base: "/analytics/v2.4",
-    url: url_AnalyticsDataGet_588728, schemes: {Scheme.Https})
+    validator: validate_AnalyticsDataGet_578627, base: "/analytics/v2.4",
+    url: url_AnalyticsDataGet_578628, schemes: {Scheme.Https})
 type
-  Call_AnalyticsManagementAccountsList_589004 = ref object of OpenApiRestCall_588457
-proc url_AnalyticsManagementAccountsList_589006(protocol: Scheme; host: string;
+  Call_AnalyticsManagementAccountsList_578904 = ref object of OpenApiRestCall_578355
+proc url_AnalyticsManagementAccountsList_578906(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AnalyticsManagementAccountsList_589005(path: JsonNode;
+proc validate_AnalyticsManagementAccountsList_578905(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all accounts to which the user has access.
   ## 
@@ -350,68 +354,68 @@ proc validate_AnalyticsManagementAccountsList_589005(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   max-results: JInt
-  ##              : The maximum number of accounts to include in this response.
-  ##   start-index: JInt
-  ##              : An index of the first account to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   start-index: JInt
+  ##              : An index of the first account to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
+  ##   max-results: JInt
+  ##              : The maximum number of accounts to include in this response.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589007 = query.getOrDefault("fields")
-  valid_589007 = validateParameter(valid_589007, JString, required = false,
+  var valid_578907 = query.getOrDefault("key")
+  valid_578907 = validateParameter(valid_578907, JString, required = false,
                                  default = nil)
-  if valid_589007 != nil:
-    section.add "fields", valid_589007
-  var valid_589008 = query.getOrDefault("quotaUser")
-  valid_589008 = validateParameter(valid_589008, JString, required = false,
-                                 default = nil)
-  if valid_589008 != nil:
-    section.add "quotaUser", valid_589008
-  var valid_589009 = query.getOrDefault("alt")
-  valid_589009 = validateParameter(valid_589009, JString, required = false,
-                                 default = newJString("atom"))
-  if valid_589009 != nil:
-    section.add "alt", valid_589009
-  var valid_589010 = query.getOrDefault("oauth_token")
-  valid_589010 = validateParameter(valid_589010, JString, required = false,
-                                 default = nil)
-  if valid_589010 != nil:
-    section.add "oauth_token", valid_589010
-  var valid_589011 = query.getOrDefault("userIp")
-  valid_589011 = validateParameter(valid_589011, JString, required = false,
-                                 default = nil)
-  if valid_589011 != nil:
-    section.add "userIp", valid_589011
-  var valid_589012 = query.getOrDefault("key")
-  valid_589012 = validateParameter(valid_589012, JString, required = false,
-                                 default = nil)
-  if valid_589012 != nil:
-    section.add "key", valid_589012
-  var valid_589013 = query.getOrDefault("max-results")
-  valid_589013 = validateParameter(valid_589013, JInt, required = false, default = nil)
-  if valid_589013 != nil:
-    section.add "max-results", valid_589013
-  var valid_589014 = query.getOrDefault("start-index")
-  valid_589014 = validateParameter(valid_589014, JInt, required = false, default = nil)
-  if valid_589014 != nil:
-    section.add "start-index", valid_589014
-  var valid_589015 = query.getOrDefault("prettyPrint")
-  valid_589015 = validateParameter(valid_589015, JBool, required = false,
+  if valid_578907 != nil:
+    section.add "key", valid_578907
+  var valid_578908 = query.getOrDefault("prettyPrint")
+  valid_578908 = validateParameter(valid_578908, JBool, required = false,
                                  default = newJBool(false))
-  if valid_589015 != nil:
-    section.add "prettyPrint", valid_589015
+  if valid_578908 != nil:
+    section.add "prettyPrint", valid_578908
+  var valid_578909 = query.getOrDefault("oauth_token")
+  valid_578909 = validateParameter(valid_578909, JString, required = false,
+                                 default = nil)
+  if valid_578909 != nil:
+    section.add "oauth_token", valid_578909
+  var valid_578910 = query.getOrDefault("alt")
+  valid_578910 = validateParameter(valid_578910, JString, required = false,
+                                 default = newJString("atom"))
+  if valid_578910 != nil:
+    section.add "alt", valid_578910
+  var valid_578911 = query.getOrDefault("userIp")
+  valid_578911 = validateParameter(valid_578911, JString, required = false,
+                                 default = nil)
+  if valid_578911 != nil:
+    section.add "userIp", valid_578911
+  var valid_578912 = query.getOrDefault("quotaUser")
+  valid_578912 = validateParameter(valid_578912, JString, required = false,
+                                 default = nil)
+  if valid_578912 != nil:
+    section.add "quotaUser", valid_578912
+  var valid_578913 = query.getOrDefault("start-index")
+  valid_578913 = validateParameter(valid_578913, JInt, required = false, default = nil)
+  if valid_578913 != nil:
+    section.add "start-index", valid_578913
+  var valid_578914 = query.getOrDefault("max-results")
+  valid_578914 = validateParameter(valid_578914, JInt, required = false, default = nil)
+  if valid_578914 != nil:
+    section.add "max-results", valid_578914
+  var valid_578915 = query.getOrDefault("fields")
+  valid_578915 = validateParameter(valid_578915, JString, required = false,
+                                 default = nil)
+  if valid_578915 != nil:
+    section.add "fields", valid_578915
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -420,65 +424,65 @@ proc validate_AnalyticsManagementAccountsList_589005(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589016: Call_AnalyticsManagementAccountsList_589004;
+proc call*(call_578916: Call_AnalyticsManagementAccountsList_578904;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all accounts to which the user has access.
   ## 
-  let valid = call_589016.validator(path, query, header, formData, body)
-  let scheme = call_589016.pickScheme
+  let valid = call_578916.validator(path, query, header, formData, body)
+  let scheme = call_578916.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589016.url(scheme.get, call_589016.host, call_589016.base,
-                         call_589016.route, valid.getOrDefault("path"),
+  let url = call_578916.url(scheme.get, call_578916.host, call_578916.base,
+                         call_578916.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589016, url, valid)
+  result = hook(call_578916, url, valid)
 
-proc call*(call_589017: Call_AnalyticsManagementAccountsList_589004;
-          fields: string = ""; quotaUser: string = ""; alt: string = "atom";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          maxResults: int = 0; startIndex: int = 0; prettyPrint: bool = false): Recallable =
+proc call*(call_578917: Call_AnalyticsManagementAccountsList_578904;
+          key: string = ""; prettyPrint: bool = false; oauthToken: string = "";
+          alt: string = "atom"; userIp: string = ""; quotaUser: string = "";
+          startIndex: int = 0; maxResults: int = 0; fields: string = ""): Recallable =
   ## analyticsManagementAccountsList
   ## Lists all accounts to which the user has access.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   maxResults: int
-  ##             : The maximum number of accounts to include in this response.
-  ##   startIndex: int
-  ##             : An index of the first account to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589018 = newJObject()
-  add(query_589018, "fields", newJString(fields))
-  add(query_589018, "quotaUser", newJString(quotaUser))
-  add(query_589018, "alt", newJString(alt))
-  add(query_589018, "oauth_token", newJString(oauthToken))
-  add(query_589018, "userIp", newJString(userIp))
-  add(query_589018, "key", newJString(key))
-  add(query_589018, "max-results", newJInt(maxResults))
-  add(query_589018, "start-index", newJInt(startIndex))
-  add(query_589018, "prettyPrint", newJBool(prettyPrint))
-  result = call_589017.call(nil, query_589018, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   startIndex: int
+  ##             : An index of the first account to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
+  ##   maxResults: int
+  ##             : The maximum number of accounts to include in this response.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_578918 = newJObject()
+  add(query_578918, "key", newJString(key))
+  add(query_578918, "prettyPrint", newJBool(prettyPrint))
+  add(query_578918, "oauth_token", newJString(oauthToken))
+  add(query_578918, "alt", newJString(alt))
+  add(query_578918, "userIp", newJString(userIp))
+  add(query_578918, "quotaUser", newJString(quotaUser))
+  add(query_578918, "start-index", newJInt(startIndex))
+  add(query_578918, "max-results", newJInt(maxResults))
+  add(query_578918, "fields", newJString(fields))
+  result = call_578917.call(nil, query_578918, nil, nil, nil)
 
-var analyticsManagementAccountsList* = Call_AnalyticsManagementAccountsList_589004(
+var analyticsManagementAccountsList* = Call_AnalyticsManagementAccountsList_578904(
     name: "analyticsManagementAccountsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/management/accounts",
-    validator: validate_AnalyticsManagementAccountsList_589005,
-    base: "/analytics/v2.4", url: url_AnalyticsManagementAccountsList_589006,
+    validator: validate_AnalyticsManagementAccountsList_578905,
+    base: "/analytics/v2.4", url: url_AnalyticsManagementAccountsList_578906,
     schemes: {Scheme.Https})
 type
-  Call_AnalyticsManagementWebpropertiesList_589019 = ref object of OpenApiRestCall_588457
-proc url_AnalyticsManagementWebpropertiesList_589021(protocol: Scheme;
+  Call_AnalyticsManagementWebpropertiesList_578919 = ref object of OpenApiRestCall_578355
+proc url_AnalyticsManagementWebpropertiesList_578921(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -494,7 +498,7 @@ proc url_AnalyticsManagementWebpropertiesList_589021(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AnalyticsManagementWebpropertiesList_589020(path: JsonNode;
+proc validate_AnalyticsManagementWebpropertiesList_578920(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists web properties to which the user has access.
   ## 
@@ -505,75 +509,75 @@ proc validate_AnalyticsManagementWebpropertiesList_589020(path: JsonNode;
   ##            : Account ID to retrieve web properties for. Can either be a specific account ID or '~all', which refers to all the accounts that user has access to.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_589036 = path.getOrDefault("accountId")
-  valid_589036 = validateParameter(valid_589036, JString, required = true,
+  var valid_578936 = path.getOrDefault("accountId")
+  valid_578936 = validateParameter(valid_578936, JString, required = true,
                                  default = nil)
-  if valid_589036 != nil:
-    section.add "accountId", valid_589036
+  if valid_578936 != nil:
+    section.add "accountId", valid_578936
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   max-results: JInt
-  ##              : The maximum number of web properties to include in this response.
-  ##   start-index: JInt
-  ##              : An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   start-index: JInt
+  ##              : An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
+  ##   max-results: JInt
+  ##              : The maximum number of web properties to include in this response.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589037 = query.getOrDefault("fields")
-  valid_589037 = validateParameter(valid_589037, JString, required = false,
+  var valid_578937 = query.getOrDefault("key")
+  valid_578937 = validateParameter(valid_578937, JString, required = false,
                                  default = nil)
-  if valid_589037 != nil:
-    section.add "fields", valid_589037
-  var valid_589038 = query.getOrDefault("quotaUser")
-  valid_589038 = validateParameter(valid_589038, JString, required = false,
-                                 default = nil)
-  if valid_589038 != nil:
-    section.add "quotaUser", valid_589038
-  var valid_589039 = query.getOrDefault("alt")
-  valid_589039 = validateParameter(valid_589039, JString, required = false,
-                                 default = newJString("atom"))
-  if valid_589039 != nil:
-    section.add "alt", valid_589039
-  var valid_589040 = query.getOrDefault("oauth_token")
-  valid_589040 = validateParameter(valid_589040, JString, required = false,
-                                 default = nil)
-  if valid_589040 != nil:
-    section.add "oauth_token", valid_589040
-  var valid_589041 = query.getOrDefault("userIp")
-  valid_589041 = validateParameter(valid_589041, JString, required = false,
-                                 default = nil)
-  if valid_589041 != nil:
-    section.add "userIp", valid_589041
-  var valid_589042 = query.getOrDefault("key")
-  valid_589042 = validateParameter(valid_589042, JString, required = false,
-                                 default = nil)
-  if valid_589042 != nil:
-    section.add "key", valid_589042
-  var valid_589043 = query.getOrDefault("max-results")
-  valid_589043 = validateParameter(valid_589043, JInt, required = false, default = nil)
-  if valid_589043 != nil:
-    section.add "max-results", valid_589043
-  var valid_589044 = query.getOrDefault("start-index")
-  valid_589044 = validateParameter(valid_589044, JInt, required = false, default = nil)
-  if valid_589044 != nil:
-    section.add "start-index", valid_589044
-  var valid_589045 = query.getOrDefault("prettyPrint")
-  valid_589045 = validateParameter(valid_589045, JBool, required = false,
+  if valid_578937 != nil:
+    section.add "key", valid_578937
+  var valid_578938 = query.getOrDefault("prettyPrint")
+  valid_578938 = validateParameter(valid_578938, JBool, required = false,
                                  default = newJBool(false))
-  if valid_589045 != nil:
-    section.add "prettyPrint", valid_589045
+  if valid_578938 != nil:
+    section.add "prettyPrint", valid_578938
+  var valid_578939 = query.getOrDefault("oauth_token")
+  valid_578939 = validateParameter(valid_578939, JString, required = false,
+                                 default = nil)
+  if valid_578939 != nil:
+    section.add "oauth_token", valid_578939
+  var valid_578940 = query.getOrDefault("alt")
+  valid_578940 = validateParameter(valid_578940, JString, required = false,
+                                 default = newJString("atom"))
+  if valid_578940 != nil:
+    section.add "alt", valid_578940
+  var valid_578941 = query.getOrDefault("userIp")
+  valid_578941 = validateParameter(valid_578941, JString, required = false,
+                                 default = nil)
+  if valid_578941 != nil:
+    section.add "userIp", valid_578941
+  var valid_578942 = query.getOrDefault("quotaUser")
+  valid_578942 = validateParameter(valid_578942, JString, required = false,
+                                 default = nil)
+  if valid_578942 != nil:
+    section.add "quotaUser", valid_578942
+  var valid_578943 = query.getOrDefault("start-index")
+  valid_578943 = validateParameter(valid_578943, JInt, required = false, default = nil)
+  if valid_578943 != nil:
+    section.add "start-index", valid_578943
+  var valid_578944 = query.getOrDefault("max-results")
+  valid_578944 = validateParameter(valid_578944, JInt, required = false, default = nil)
+  if valid_578944 != nil:
+    section.add "max-results", valid_578944
+  var valid_578945 = query.getOrDefault("fields")
+  valid_578945 = validateParameter(valid_578945, JString, required = false,
+                                 default = nil)
+  if valid_578945 != nil:
+    section.add "fields", valid_578945
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -582,71 +586,71 @@ proc validate_AnalyticsManagementWebpropertiesList_589020(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589046: Call_AnalyticsManagementWebpropertiesList_589019;
+proc call*(call_578946: Call_AnalyticsManagementWebpropertiesList_578919;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists web properties to which the user has access.
   ## 
-  let valid = call_589046.validator(path, query, header, formData, body)
-  let scheme = call_589046.pickScheme
+  let valid = call_578946.validator(path, query, header, formData, body)
+  let scheme = call_578946.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589046.url(scheme.get, call_589046.host, call_589046.base,
-                         call_589046.route, valid.getOrDefault("path"),
+  let url = call_578946.url(scheme.get, call_578946.host, call_578946.base,
+                         call_578946.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589046, url, valid)
+  result = hook(call_578946, url, valid)
 
-proc call*(call_589047: Call_AnalyticsManagementWebpropertiesList_589019;
-          accountId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "atom"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; maxResults: int = 0; startIndex: int = 0;
-          prettyPrint: bool = false): Recallable =
+proc call*(call_578947: Call_AnalyticsManagementWebpropertiesList_578919;
+          accountId: string; key: string = ""; prettyPrint: bool = false;
+          oauthToken: string = ""; alt: string = "atom"; userIp: string = "";
+          quotaUser: string = ""; startIndex: int = 0; maxResults: int = 0;
+          fields: string = ""): Recallable =
   ## analyticsManagementWebpropertiesList
   ## Lists web properties to which the user has access.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : Account ID to retrieve web properties for. Can either be a specific account ID or '~all', which refers to all the accounts that user has access to.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   maxResults: int
-  ##             : The maximum number of web properties to include in this response.
-  ##   startIndex: int
-  ##             : An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589048 = newJObject()
-  var query_589049 = newJObject()
-  add(query_589049, "fields", newJString(fields))
-  add(query_589049, "quotaUser", newJString(quotaUser))
-  add(query_589049, "alt", newJString(alt))
-  add(query_589049, "oauth_token", newJString(oauthToken))
-  add(path_589048, "accountId", newJString(accountId))
-  add(query_589049, "userIp", newJString(userIp))
-  add(query_589049, "key", newJString(key))
-  add(query_589049, "max-results", newJInt(maxResults))
-  add(query_589049, "start-index", newJInt(startIndex))
-  add(query_589049, "prettyPrint", newJBool(prettyPrint))
-  result = call_589047.call(path_589048, query_589049, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   startIndex: int
+  ##             : An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
+  ##   maxResults: int
+  ##             : The maximum number of web properties to include in this response.
+  ##   accountId: string (required)
+  ##            : Account ID to retrieve web properties for. Can either be a specific account ID or '~all', which refers to all the accounts that user has access to.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578948 = newJObject()
+  var query_578949 = newJObject()
+  add(query_578949, "key", newJString(key))
+  add(query_578949, "prettyPrint", newJBool(prettyPrint))
+  add(query_578949, "oauth_token", newJString(oauthToken))
+  add(query_578949, "alt", newJString(alt))
+  add(query_578949, "userIp", newJString(userIp))
+  add(query_578949, "quotaUser", newJString(quotaUser))
+  add(query_578949, "start-index", newJInt(startIndex))
+  add(query_578949, "max-results", newJInt(maxResults))
+  add(path_578948, "accountId", newJString(accountId))
+  add(query_578949, "fields", newJString(fields))
+  result = call_578947.call(path_578948, query_578949, nil, nil, nil)
 
-var analyticsManagementWebpropertiesList* = Call_AnalyticsManagementWebpropertiesList_589019(
+var analyticsManagementWebpropertiesList* = Call_AnalyticsManagementWebpropertiesList_578919(
     name: "analyticsManagementWebpropertiesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/management/accounts/{accountId}/webproperties",
-    validator: validate_AnalyticsManagementWebpropertiesList_589020,
-    base: "/analytics/v2.4", url: url_AnalyticsManagementWebpropertiesList_589021,
+    validator: validate_AnalyticsManagementWebpropertiesList_578920,
+    base: "/analytics/v2.4", url: url_AnalyticsManagementWebpropertiesList_578921,
     schemes: {Scheme.Https})
 type
-  Call_AnalyticsManagementProfilesList_589050 = ref object of OpenApiRestCall_588457
-proc url_AnalyticsManagementProfilesList_589052(protocol: Scheme; host: string;
+  Call_AnalyticsManagementProfilesList_578950 = ref object of OpenApiRestCall_578355
+proc url_AnalyticsManagementProfilesList_578952(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -665,93 +669,94 @@ proc url_AnalyticsManagementProfilesList_589052(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AnalyticsManagementProfilesList_589051(path: JsonNode;
+proc validate_AnalyticsManagementProfilesList_578951(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists views (profiles) to which the user has access.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   accountId: JString (required)
-  ##            : Account ID for the views (profiles) to retrieve. Can either be a specific account ID or '~all', which refers to all the accounts to which the user has access.
   ##   webPropertyId: JString (required)
   ##                : Web property ID for the views (profiles) to retrieve. Can either be a specific web property ID or '~all', which refers to all the web properties to which the user has access.
+  ##   accountId: JString (required)
+  ##            : Account ID for the views (profiles) to retrieve. Can either be a specific account ID or '~all', which refers to all the accounts to which the user has access.
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_589053 = path.getOrDefault("accountId")
-  valid_589053 = validateParameter(valid_589053, JString, required = true,
+  assert path != nil,
+        "path argument is necessary due to required `webPropertyId` field"
+  var valid_578953 = path.getOrDefault("webPropertyId")
+  valid_578953 = validateParameter(valid_578953, JString, required = true,
                                  default = nil)
-  if valid_589053 != nil:
-    section.add "accountId", valid_589053
-  var valid_589054 = path.getOrDefault("webPropertyId")
-  valid_589054 = validateParameter(valid_589054, JString, required = true,
+  if valid_578953 != nil:
+    section.add "webPropertyId", valid_578953
+  var valid_578954 = path.getOrDefault("accountId")
+  valid_578954 = validateParameter(valid_578954, JString, required = true,
                                  default = nil)
-  if valid_589054 != nil:
-    section.add "webPropertyId", valid_589054
+  if valid_578954 != nil:
+    section.add "accountId", valid_578954
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   max-results: JInt
-  ##              : The maximum number of views (profiles) to include in this response.
-  ##   start-index: JInt
-  ##              : An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   start-index: JInt
+  ##              : An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
+  ##   max-results: JInt
+  ##              : The maximum number of views (profiles) to include in this response.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589055 = query.getOrDefault("fields")
-  valid_589055 = validateParameter(valid_589055, JString, required = false,
+  var valid_578955 = query.getOrDefault("key")
+  valid_578955 = validateParameter(valid_578955, JString, required = false,
                                  default = nil)
-  if valid_589055 != nil:
-    section.add "fields", valid_589055
-  var valid_589056 = query.getOrDefault("quotaUser")
-  valid_589056 = validateParameter(valid_589056, JString, required = false,
-                                 default = nil)
-  if valid_589056 != nil:
-    section.add "quotaUser", valid_589056
-  var valid_589057 = query.getOrDefault("alt")
-  valid_589057 = validateParameter(valid_589057, JString, required = false,
-                                 default = newJString("atom"))
-  if valid_589057 != nil:
-    section.add "alt", valid_589057
-  var valid_589058 = query.getOrDefault("oauth_token")
-  valid_589058 = validateParameter(valid_589058, JString, required = false,
-                                 default = nil)
-  if valid_589058 != nil:
-    section.add "oauth_token", valid_589058
-  var valid_589059 = query.getOrDefault("userIp")
-  valid_589059 = validateParameter(valid_589059, JString, required = false,
-                                 default = nil)
-  if valid_589059 != nil:
-    section.add "userIp", valid_589059
-  var valid_589060 = query.getOrDefault("key")
-  valid_589060 = validateParameter(valid_589060, JString, required = false,
-                                 default = nil)
-  if valid_589060 != nil:
-    section.add "key", valid_589060
-  var valid_589061 = query.getOrDefault("max-results")
-  valid_589061 = validateParameter(valid_589061, JInt, required = false, default = nil)
-  if valid_589061 != nil:
-    section.add "max-results", valid_589061
-  var valid_589062 = query.getOrDefault("start-index")
-  valid_589062 = validateParameter(valid_589062, JInt, required = false, default = nil)
-  if valid_589062 != nil:
-    section.add "start-index", valid_589062
-  var valid_589063 = query.getOrDefault("prettyPrint")
-  valid_589063 = validateParameter(valid_589063, JBool, required = false,
+  if valid_578955 != nil:
+    section.add "key", valid_578955
+  var valid_578956 = query.getOrDefault("prettyPrint")
+  valid_578956 = validateParameter(valid_578956, JBool, required = false,
                                  default = newJBool(false))
-  if valid_589063 != nil:
-    section.add "prettyPrint", valid_589063
+  if valid_578956 != nil:
+    section.add "prettyPrint", valid_578956
+  var valid_578957 = query.getOrDefault("oauth_token")
+  valid_578957 = validateParameter(valid_578957, JString, required = false,
+                                 default = nil)
+  if valid_578957 != nil:
+    section.add "oauth_token", valid_578957
+  var valid_578958 = query.getOrDefault("alt")
+  valid_578958 = validateParameter(valid_578958, JString, required = false,
+                                 default = newJString("atom"))
+  if valid_578958 != nil:
+    section.add "alt", valid_578958
+  var valid_578959 = query.getOrDefault("userIp")
+  valid_578959 = validateParameter(valid_578959, JString, required = false,
+                                 default = nil)
+  if valid_578959 != nil:
+    section.add "userIp", valid_578959
+  var valid_578960 = query.getOrDefault("quotaUser")
+  valid_578960 = validateParameter(valid_578960, JString, required = false,
+                                 default = nil)
+  if valid_578960 != nil:
+    section.add "quotaUser", valid_578960
+  var valid_578961 = query.getOrDefault("start-index")
+  valid_578961 = validateParameter(valid_578961, JInt, required = false, default = nil)
+  if valid_578961 != nil:
+    section.add "start-index", valid_578961
+  var valid_578962 = query.getOrDefault("max-results")
+  valid_578962 = validateParameter(valid_578962, JInt, required = false, default = nil)
+  if valid_578962 != nil:
+    section.add "max-results", valid_578962
+  var valid_578963 = query.getOrDefault("fields")
+  valid_578963 = validateParameter(valid_578963, JString, required = false,
+                                 default = nil)
+  if valid_578963 != nil:
+    section.add "fields", valid_578963
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -760,73 +765,73 @@ proc validate_AnalyticsManagementProfilesList_589051(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589064: Call_AnalyticsManagementProfilesList_589050;
+proc call*(call_578964: Call_AnalyticsManagementProfilesList_578950;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists views (profiles) to which the user has access.
   ## 
-  let valid = call_589064.validator(path, query, header, formData, body)
-  let scheme = call_589064.pickScheme
+  let valid = call_578964.validator(path, query, header, formData, body)
+  let scheme = call_578964.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589064.url(scheme.get, call_589064.host, call_589064.base,
-                         call_589064.route, valid.getOrDefault("path"),
+  let url = call_578964.url(scheme.get, call_578964.host, call_578964.base,
+                         call_578964.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589064, url, valid)
+  result = hook(call_578964, url, valid)
 
-proc call*(call_589065: Call_AnalyticsManagementProfilesList_589050;
-          accountId: string; webPropertyId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "atom"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; maxResults: int = 0; startIndex: int = 0;
-          prettyPrint: bool = false): Recallable =
+proc call*(call_578965: Call_AnalyticsManagementProfilesList_578950;
+          webPropertyId: string; accountId: string; key: string = "";
+          prettyPrint: bool = false; oauthToken: string = ""; alt: string = "atom";
+          userIp: string = ""; quotaUser: string = ""; startIndex: int = 0;
+          maxResults: int = 0; fields: string = ""): Recallable =
   ## analyticsManagementProfilesList
   ## Lists views (profiles) to which the user has access.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : Account ID for the views (profiles) to retrieve. Can either be a specific account ID or '~all', which refers to all the accounts to which the user has access.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   webPropertyId: string (required)
-  ##                : Web property ID for the views (profiles) to retrieve. Can either be a specific web property ID or '~all', which refers to all the web properties to which the user has access.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   maxResults: int
-  ##             : The maximum number of views (profiles) to include in this response.
-  ##   startIndex: int
-  ##             : An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589066 = newJObject()
-  var query_589067 = newJObject()
-  add(query_589067, "fields", newJString(fields))
-  add(query_589067, "quotaUser", newJString(quotaUser))
-  add(query_589067, "alt", newJString(alt))
-  add(query_589067, "oauth_token", newJString(oauthToken))
-  add(path_589066, "accountId", newJString(accountId))
-  add(query_589067, "userIp", newJString(userIp))
-  add(path_589066, "webPropertyId", newJString(webPropertyId))
-  add(query_589067, "key", newJString(key))
-  add(query_589067, "max-results", newJInt(maxResults))
-  add(query_589067, "start-index", newJInt(startIndex))
-  add(query_589067, "prettyPrint", newJBool(prettyPrint))
-  result = call_589065.call(path_589066, query_589067, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   webPropertyId: string (required)
+  ##                : Web property ID for the views (profiles) to retrieve. Can either be a specific web property ID or '~all', which refers to all the web properties to which the user has access.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   startIndex: int
+  ##             : An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
+  ##   maxResults: int
+  ##             : The maximum number of views (profiles) to include in this response.
+  ##   accountId: string (required)
+  ##            : Account ID for the views (profiles) to retrieve. Can either be a specific account ID or '~all', which refers to all the accounts to which the user has access.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578966 = newJObject()
+  var query_578967 = newJObject()
+  add(query_578967, "key", newJString(key))
+  add(query_578967, "prettyPrint", newJBool(prettyPrint))
+  add(query_578967, "oauth_token", newJString(oauthToken))
+  add(path_578966, "webPropertyId", newJString(webPropertyId))
+  add(query_578967, "alt", newJString(alt))
+  add(query_578967, "userIp", newJString(userIp))
+  add(query_578967, "quotaUser", newJString(quotaUser))
+  add(query_578967, "start-index", newJInt(startIndex))
+  add(query_578967, "max-results", newJInt(maxResults))
+  add(path_578966, "accountId", newJString(accountId))
+  add(query_578967, "fields", newJString(fields))
+  result = call_578965.call(path_578966, query_578967, nil, nil, nil)
 
-var analyticsManagementProfilesList* = Call_AnalyticsManagementProfilesList_589050(
+var analyticsManagementProfilesList* = Call_AnalyticsManagementProfilesList_578950(
     name: "analyticsManagementProfilesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/management/accounts/{accountId}/webproperties/{webPropertyId}/profiles",
-    validator: validate_AnalyticsManagementProfilesList_589051,
-    base: "/analytics/v2.4", url: url_AnalyticsManagementProfilesList_589052,
+    validator: validate_AnalyticsManagementProfilesList_578951,
+    base: "/analytics/v2.4", url: url_AnalyticsManagementProfilesList_578952,
     schemes: {Scheme.Https})
 type
-  Call_AnalyticsManagementGoalsList_589068 = ref object of OpenApiRestCall_588457
-proc url_AnalyticsManagementGoalsList_589070(protocol: Scheme; host: string;
+  Call_AnalyticsManagementGoalsList_578968 = ref object of OpenApiRestCall_578355
+proc url_AnalyticsManagementGoalsList_578970(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -848,100 +853,101 @@ proc url_AnalyticsManagementGoalsList_589070(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_AnalyticsManagementGoalsList_589069(path: JsonNode; query: JsonNode;
+proc validate_AnalyticsManagementGoalsList_578969(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists goals to which the user has access.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
+  ##   webPropertyId: JString (required)
+  ##                : Web property ID to retrieve goals for. Can either be a specific web property ID or '~all', which refers to all the web properties that user has access to.
   ##   profileId: JString (required)
   ##            : View (Profile) ID to retrieve goals for. Can either be a specific view (profile) ID or '~all', which refers to all the views (profiles) that user has access to.
   ##   accountId: JString (required)
   ##            : Account ID to retrieve goals for. Can either be a specific account ID or '~all', which refers to all the accounts that user has access to.
-  ##   webPropertyId: JString (required)
-  ##                : Web property ID to retrieve goals for. Can either be a specific web property ID or '~all', which refers to all the web properties that user has access to.
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `profileId` field"
-  var valid_589071 = path.getOrDefault("profileId")
-  valid_589071 = validateParameter(valid_589071, JString, required = true,
+  assert path != nil,
+        "path argument is necessary due to required `webPropertyId` field"
+  var valid_578971 = path.getOrDefault("webPropertyId")
+  valid_578971 = validateParameter(valid_578971, JString, required = true,
                                  default = nil)
-  if valid_589071 != nil:
-    section.add "profileId", valid_589071
-  var valid_589072 = path.getOrDefault("accountId")
-  valid_589072 = validateParameter(valid_589072, JString, required = true,
+  if valid_578971 != nil:
+    section.add "webPropertyId", valid_578971
+  var valid_578972 = path.getOrDefault("profileId")
+  valid_578972 = validateParameter(valid_578972, JString, required = true,
                                  default = nil)
-  if valid_589072 != nil:
-    section.add "accountId", valid_589072
-  var valid_589073 = path.getOrDefault("webPropertyId")
-  valid_589073 = validateParameter(valid_589073, JString, required = true,
+  if valid_578972 != nil:
+    section.add "profileId", valid_578972
+  var valid_578973 = path.getOrDefault("accountId")
+  valid_578973 = validateParameter(valid_578973, JString, required = true,
                                  default = nil)
-  if valid_589073 != nil:
-    section.add "webPropertyId", valid_589073
+  if valid_578973 != nil:
+    section.add "accountId", valid_578973
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   max-results: JInt
-  ##              : The maximum number of goals to include in this response.
-  ##   start-index: JInt
-  ##              : An index of the first goal to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   start-index: JInt
+  ##              : An index of the first goal to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
+  ##   max-results: JInt
+  ##              : The maximum number of goals to include in this response.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589074 = query.getOrDefault("fields")
-  valid_589074 = validateParameter(valid_589074, JString, required = false,
+  var valid_578974 = query.getOrDefault("key")
+  valid_578974 = validateParameter(valid_578974, JString, required = false,
                                  default = nil)
-  if valid_589074 != nil:
-    section.add "fields", valid_589074
-  var valid_589075 = query.getOrDefault("quotaUser")
-  valid_589075 = validateParameter(valid_589075, JString, required = false,
-                                 default = nil)
-  if valid_589075 != nil:
-    section.add "quotaUser", valid_589075
-  var valid_589076 = query.getOrDefault("alt")
-  valid_589076 = validateParameter(valid_589076, JString, required = false,
-                                 default = newJString("atom"))
-  if valid_589076 != nil:
-    section.add "alt", valid_589076
-  var valid_589077 = query.getOrDefault("oauth_token")
-  valid_589077 = validateParameter(valid_589077, JString, required = false,
-                                 default = nil)
-  if valid_589077 != nil:
-    section.add "oauth_token", valid_589077
-  var valid_589078 = query.getOrDefault("userIp")
-  valid_589078 = validateParameter(valid_589078, JString, required = false,
-                                 default = nil)
-  if valid_589078 != nil:
-    section.add "userIp", valid_589078
-  var valid_589079 = query.getOrDefault("key")
-  valid_589079 = validateParameter(valid_589079, JString, required = false,
-                                 default = nil)
-  if valid_589079 != nil:
-    section.add "key", valid_589079
-  var valid_589080 = query.getOrDefault("max-results")
-  valid_589080 = validateParameter(valid_589080, JInt, required = false, default = nil)
-  if valid_589080 != nil:
-    section.add "max-results", valid_589080
-  var valid_589081 = query.getOrDefault("start-index")
-  valid_589081 = validateParameter(valid_589081, JInt, required = false, default = nil)
-  if valid_589081 != nil:
-    section.add "start-index", valid_589081
-  var valid_589082 = query.getOrDefault("prettyPrint")
-  valid_589082 = validateParameter(valid_589082, JBool, required = false,
+  if valid_578974 != nil:
+    section.add "key", valid_578974
+  var valid_578975 = query.getOrDefault("prettyPrint")
+  valid_578975 = validateParameter(valid_578975, JBool, required = false,
                                  default = newJBool(false))
-  if valid_589082 != nil:
-    section.add "prettyPrint", valid_589082
+  if valid_578975 != nil:
+    section.add "prettyPrint", valid_578975
+  var valid_578976 = query.getOrDefault("oauth_token")
+  valid_578976 = validateParameter(valid_578976, JString, required = false,
+                                 default = nil)
+  if valid_578976 != nil:
+    section.add "oauth_token", valid_578976
+  var valid_578977 = query.getOrDefault("alt")
+  valid_578977 = validateParameter(valid_578977, JString, required = false,
+                                 default = newJString("atom"))
+  if valid_578977 != nil:
+    section.add "alt", valid_578977
+  var valid_578978 = query.getOrDefault("userIp")
+  valid_578978 = validateParameter(valid_578978, JString, required = false,
+                                 default = nil)
+  if valid_578978 != nil:
+    section.add "userIp", valid_578978
+  var valid_578979 = query.getOrDefault("quotaUser")
+  valid_578979 = validateParameter(valid_578979, JString, required = false,
+                                 default = nil)
+  if valid_578979 != nil:
+    section.add "quotaUser", valid_578979
+  var valid_578980 = query.getOrDefault("start-index")
+  valid_578980 = validateParameter(valid_578980, JInt, required = false, default = nil)
+  if valid_578980 != nil:
+    section.add "start-index", valid_578980
+  var valid_578981 = query.getOrDefault("max-results")
+  valid_578981 = validateParameter(valid_578981, JInt, required = false, default = nil)
+  if valid_578981 != nil:
+    section.add "max-results", valid_578981
+  var valid_578982 = query.getOrDefault("fields")
+  valid_578982 = validateParameter(valid_578982, JString, required = false,
+                                 default = nil)
+  if valid_578982 != nil:
+    section.add "fields", valid_578982
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -950,82 +956,82 @@ proc validate_AnalyticsManagementGoalsList_589069(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_589083: Call_AnalyticsManagementGoalsList_589068; path: JsonNode;
+proc call*(call_578983: Call_AnalyticsManagementGoalsList_578968; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists goals to which the user has access.
   ## 
-  let valid = call_589083.validator(path, query, header, formData, body)
-  let scheme = call_589083.pickScheme
+  let valid = call_578983.validator(path, query, header, formData, body)
+  let scheme = call_578983.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589083.url(scheme.get, call_589083.host, call_589083.base,
-                         call_589083.route, valid.getOrDefault("path"),
+  let url = call_578983.url(scheme.get, call_578983.host, call_578983.base,
+                         call_578983.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589083, url, valid)
+  result = hook(call_578983, url, valid)
 
-proc call*(call_589084: Call_AnalyticsManagementGoalsList_589068;
-          profileId: string; accountId: string; webPropertyId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "atom";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          maxResults: int = 0; startIndex: int = 0; prettyPrint: bool = false): Recallable =
+proc call*(call_578984: Call_AnalyticsManagementGoalsList_578968;
+          webPropertyId: string; profileId: string; accountId: string;
+          key: string = ""; prettyPrint: bool = false; oauthToken: string = "";
+          alt: string = "atom"; userIp: string = ""; quotaUser: string = "";
+          startIndex: int = 0; maxResults: int = 0; fields: string = ""): Recallable =
   ## analyticsManagementGoalsList
   ## Lists goals to which the user has access.
-  ##   profileId: string (required)
-  ##            : View (Profile) ID to retrieve goals for. Can either be a specific view (profile) ID or '~all', which refers to all the views (profiles) that user has access to.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : Account ID to retrieve goals for. Can either be a specific account ID or '~all', which refers to all the accounts that user has access to.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   webPropertyId: string (required)
-  ##                : Web property ID to retrieve goals for. Can either be a specific web property ID or '~all', which refers to all the web properties that user has access to.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   maxResults: int
-  ##             : The maximum number of goals to include in this response.
-  ##   startIndex: int
-  ##             : An index of the first goal to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589085 = newJObject()
-  var query_589086 = newJObject()
-  add(path_589085, "profileId", newJString(profileId))
-  add(query_589086, "fields", newJString(fields))
-  add(query_589086, "quotaUser", newJString(quotaUser))
-  add(query_589086, "alt", newJString(alt))
-  add(query_589086, "oauth_token", newJString(oauthToken))
-  add(path_589085, "accountId", newJString(accountId))
-  add(query_589086, "userIp", newJString(userIp))
-  add(path_589085, "webPropertyId", newJString(webPropertyId))
-  add(query_589086, "key", newJString(key))
-  add(query_589086, "max-results", newJInt(maxResults))
-  add(query_589086, "start-index", newJInt(startIndex))
-  add(query_589086, "prettyPrint", newJBool(prettyPrint))
-  result = call_589084.call(path_589085, query_589086, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   webPropertyId: string (required)
+  ##                : Web property ID to retrieve goals for. Can either be a specific web property ID or '~all', which refers to all the web properties that user has access to.
+  ##   profileId: string (required)
+  ##            : View (Profile) ID to retrieve goals for. Can either be a specific view (profile) ID or '~all', which refers to all the views (profiles) that user has access to.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   startIndex: int
+  ##             : An index of the first goal to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
+  ##   maxResults: int
+  ##             : The maximum number of goals to include in this response.
+  ##   accountId: string (required)
+  ##            : Account ID to retrieve goals for. Can either be a specific account ID or '~all', which refers to all the accounts that user has access to.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578985 = newJObject()
+  var query_578986 = newJObject()
+  add(query_578986, "key", newJString(key))
+  add(query_578986, "prettyPrint", newJBool(prettyPrint))
+  add(query_578986, "oauth_token", newJString(oauthToken))
+  add(path_578985, "webPropertyId", newJString(webPropertyId))
+  add(path_578985, "profileId", newJString(profileId))
+  add(query_578986, "alt", newJString(alt))
+  add(query_578986, "userIp", newJString(userIp))
+  add(query_578986, "quotaUser", newJString(quotaUser))
+  add(query_578986, "start-index", newJInt(startIndex))
+  add(query_578986, "max-results", newJInt(maxResults))
+  add(path_578985, "accountId", newJString(accountId))
+  add(query_578986, "fields", newJString(fields))
+  result = call_578984.call(path_578985, query_578986, nil, nil, nil)
 
-var analyticsManagementGoalsList* = Call_AnalyticsManagementGoalsList_589068(
+var analyticsManagementGoalsList* = Call_AnalyticsManagementGoalsList_578968(
     name: "analyticsManagementGoalsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/management/accounts/{accountId}/webproperties/{webPropertyId}/profiles/{profileId}/goals",
-    validator: validate_AnalyticsManagementGoalsList_589069,
-    base: "/analytics/v2.4", url: url_AnalyticsManagementGoalsList_589070,
+    validator: validate_AnalyticsManagementGoalsList_578969,
+    base: "/analytics/v2.4", url: url_AnalyticsManagementGoalsList_578970,
     schemes: {Scheme.Https})
 type
-  Call_AnalyticsManagementSegmentsList_589087 = ref object of OpenApiRestCall_588457
-proc url_AnalyticsManagementSegmentsList_589089(protocol: Scheme; host: string;
+  Call_AnalyticsManagementSegmentsList_578987 = ref object of OpenApiRestCall_578355
+proc url_AnalyticsManagementSegmentsList_578989(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_AnalyticsManagementSegmentsList_589088(path: JsonNode;
+proc validate_AnalyticsManagementSegmentsList_578988(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists advanced segments to which the user has access.
   ## 
@@ -1034,68 +1040,68 @@ proc validate_AnalyticsManagementSegmentsList_589088(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   max-results: JInt
-  ##              : The maximum number of advanced segments to include in this response.
-  ##   start-index: JInt
-  ##              : An index of the first advanced segment to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   start-index: JInt
+  ##              : An index of the first advanced segment to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
+  ##   max-results: JInt
+  ##              : The maximum number of advanced segments to include in this response.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589090 = query.getOrDefault("fields")
-  valid_589090 = validateParameter(valid_589090, JString, required = false,
+  var valid_578990 = query.getOrDefault("key")
+  valid_578990 = validateParameter(valid_578990, JString, required = false,
                                  default = nil)
-  if valid_589090 != nil:
-    section.add "fields", valid_589090
-  var valid_589091 = query.getOrDefault("quotaUser")
-  valid_589091 = validateParameter(valid_589091, JString, required = false,
-                                 default = nil)
-  if valid_589091 != nil:
-    section.add "quotaUser", valid_589091
-  var valid_589092 = query.getOrDefault("alt")
-  valid_589092 = validateParameter(valid_589092, JString, required = false,
-                                 default = newJString("atom"))
-  if valid_589092 != nil:
-    section.add "alt", valid_589092
-  var valid_589093 = query.getOrDefault("oauth_token")
-  valid_589093 = validateParameter(valid_589093, JString, required = false,
-                                 default = nil)
-  if valid_589093 != nil:
-    section.add "oauth_token", valid_589093
-  var valid_589094 = query.getOrDefault("userIp")
-  valid_589094 = validateParameter(valid_589094, JString, required = false,
-                                 default = nil)
-  if valid_589094 != nil:
-    section.add "userIp", valid_589094
-  var valid_589095 = query.getOrDefault("key")
-  valid_589095 = validateParameter(valid_589095, JString, required = false,
-                                 default = nil)
-  if valid_589095 != nil:
-    section.add "key", valid_589095
-  var valid_589096 = query.getOrDefault("max-results")
-  valid_589096 = validateParameter(valid_589096, JInt, required = false, default = nil)
-  if valid_589096 != nil:
-    section.add "max-results", valid_589096
-  var valid_589097 = query.getOrDefault("start-index")
-  valid_589097 = validateParameter(valid_589097, JInt, required = false, default = nil)
-  if valid_589097 != nil:
-    section.add "start-index", valid_589097
-  var valid_589098 = query.getOrDefault("prettyPrint")
-  valid_589098 = validateParameter(valid_589098, JBool, required = false,
+  if valid_578990 != nil:
+    section.add "key", valid_578990
+  var valid_578991 = query.getOrDefault("prettyPrint")
+  valid_578991 = validateParameter(valid_578991, JBool, required = false,
                                  default = newJBool(false))
-  if valid_589098 != nil:
-    section.add "prettyPrint", valid_589098
+  if valid_578991 != nil:
+    section.add "prettyPrint", valid_578991
+  var valid_578992 = query.getOrDefault("oauth_token")
+  valid_578992 = validateParameter(valid_578992, JString, required = false,
+                                 default = nil)
+  if valid_578992 != nil:
+    section.add "oauth_token", valid_578992
+  var valid_578993 = query.getOrDefault("alt")
+  valid_578993 = validateParameter(valid_578993, JString, required = false,
+                                 default = newJString("atom"))
+  if valid_578993 != nil:
+    section.add "alt", valid_578993
+  var valid_578994 = query.getOrDefault("userIp")
+  valid_578994 = validateParameter(valid_578994, JString, required = false,
+                                 default = nil)
+  if valid_578994 != nil:
+    section.add "userIp", valid_578994
+  var valid_578995 = query.getOrDefault("quotaUser")
+  valid_578995 = validateParameter(valid_578995, JString, required = false,
+                                 default = nil)
+  if valid_578995 != nil:
+    section.add "quotaUser", valid_578995
+  var valid_578996 = query.getOrDefault("start-index")
+  valid_578996 = validateParameter(valid_578996, JInt, required = false, default = nil)
+  if valid_578996 != nil:
+    section.add "start-index", valid_578996
+  var valid_578997 = query.getOrDefault("max-results")
+  valid_578997 = validateParameter(valid_578997, JInt, required = false, default = nil)
+  if valid_578997 != nil:
+    section.add "max-results", valid_578997
+  var valid_578998 = query.getOrDefault("fields")
+  valid_578998 = validateParameter(valid_578998, JString, required = false,
+                                 default = nil)
+  if valid_578998 != nil:
+    section.add "fields", valid_578998
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1104,61 +1110,61 @@ proc validate_AnalyticsManagementSegmentsList_589088(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589099: Call_AnalyticsManagementSegmentsList_589087;
+proc call*(call_578999: Call_AnalyticsManagementSegmentsList_578987;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists advanced segments to which the user has access.
   ## 
-  let valid = call_589099.validator(path, query, header, formData, body)
-  let scheme = call_589099.pickScheme
+  let valid = call_578999.validator(path, query, header, formData, body)
+  let scheme = call_578999.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589099.url(scheme.get, call_589099.host, call_589099.base,
-                         call_589099.route, valid.getOrDefault("path"),
+  let url = call_578999.url(scheme.get, call_578999.host, call_578999.base,
+                         call_578999.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589099, url, valid)
+  result = hook(call_578999, url, valid)
 
-proc call*(call_589100: Call_AnalyticsManagementSegmentsList_589087;
-          fields: string = ""; quotaUser: string = ""; alt: string = "atom";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          maxResults: int = 0; startIndex: int = 0; prettyPrint: bool = false): Recallable =
+proc call*(call_579000: Call_AnalyticsManagementSegmentsList_578987;
+          key: string = ""; prettyPrint: bool = false; oauthToken: string = "";
+          alt: string = "atom"; userIp: string = ""; quotaUser: string = "";
+          startIndex: int = 0; maxResults: int = 0; fields: string = ""): Recallable =
   ## analyticsManagementSegmentsList
   ## Lists advanced segments to which the user has access.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   maxResults: int
-  ##             : The maximum number of advanced segments to include in this response.
-  ##   startIndex: int
-  ##             : An index of the first advanced segment to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589101 = newJObject()
-  add(query_589101, "fields", newJString(fields))
-  add(query_589101, "quotaUser", newJString(quotaUser))
-  add(query_589101, "alt", newJString(alt))
-  add(query_589101, "oauth_token", newJString(oauthToken))
-  add(query_589101, "userIp", newJString(userIp))
-  add(query_589101, "key", newJString(key))
-  add(query_589101, "max-results", newJInt(maxResults))
-  add(query_589101, "start-index", newJInt(startIndex))
-  add(query_589101, "prettyPrint", newJBool(prettyPrint))
-  result = call_589100.call(nil, query_589101, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   startIndex: int
+  ##             : An index of the first advanced segment to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
+  ##   maxResults: int
+  ##             : The maximum number of advanced segments to include in this response.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_579001 = newJObject()
+  add(query_579001, "key", newJString(key))
+  add(query_579001, "prettyPrint", newJBool(prettyPrint))
+  add(query_579001, "oauth_token", newJString(oauthToken))
+  add(query_579001, "alt", newJString(alt))
+  add(query_579001, "userIp", newJString(userIp))
+  add(query_579001, "quotaUser", newJString(quotaUser))
+  add(query_579001, "start-index", newJInt(startIndex))
+  add(query_579001, "max-results", newJInt(maxResults))
+  add(query_579001, "fields", newJString(fields))
+  result = call_579000.call(nil, query_579001, nil, nil, nil)
 
-var analyticsManagementSegmentsList* = Call_AnalyticsManagementSegmentsList_589087(
+var analyticsManagementSegmentsList* = Call_AnalyticsManagementSegmentsList_578987(
     name: "analyticsManagementSegmentsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/management/segments",
-    validator: validate_AnalyticsManagementSegmentsList_589088,
-    base: "/analytics/v2.4", url: url_AnalyticsManagementSegmentsList_589089,
+    validator: validate_AnalyticsManagementSegmentsList_578988,
+    base: "/analytics/v2.4", url: url_AnalyticsManagementSegmentsList_578989,
     schemes: {Scheme.Https})
 export
   rest

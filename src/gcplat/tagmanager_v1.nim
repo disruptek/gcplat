@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588441 = ref object of OpenApiRestCall
+  OpenApiRestCall_578339 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,15 +112,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_TagmanagerAccountsList_588709 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsList_588711(protocol: Scheme; host: string; base: string;
+  Call_TagmanagerAccountsList_578609 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsList_578611(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_TagmanagerAccountsList_588710(path: JsonNode; query: JsonNode;
+proc validate_TagmanagerAccountsList_578610(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all GTM Accounts that a user has access to.
   ## 
@@ -125,56 +129,56 @@ proc validate_TagmanagerAccountsList_588710(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588823 = query.getOrDefault("fields")
-  valid_588823 = validateParameter(valid_588823, JString, required = false,
+  var valid_578723 = query.getOrDefault("key")
+  valid_578723 = validateParameter(valid_578723, JString, required = false,
                                  default = nil)
-  if valid_588823 != nil:
-    section.add "fields", valid_588823
-  var valid_588824 = query.getOrDefault("quotaUser")
-  valid_588824 = validateParameter(valid_588824, JString, required = false,
-                                 default = nil)
-  if valid_588824 != nil:
-    section.add "quotaUser", valid_588824
-  var valid_588838 = query.getOrDefault("alt")
-  valid_588838 = validateParameter(valid_588838, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588838 != nil:
-    section.add "alt", valid_588838
-  var valid_588839 = query.getOrDefault("oauth_token")
-  valid_588839 = validateParameter(valid_588839, JString, required = false,
-                                 default = nil)
-  if valid_588839 != nil:
-    section.add "oauth_token", valid_588839
-  var valid_588840 = query.getOrDefault("userIp")
-  valid_588840 = validateParameter(valid_588840, JString, required = false,
-                                 default = nil)
-  if valid_588840 != nil:
-    section.add "userIp", valid_588840
-  var valid_588841 = query.getOrDefault("key")
-  valid_588841 = validateParameter(valid_588841, JString, required = false,
-                                 default = nil)
-  if valid_588841 != nil:
-    section.add "key", valid_588841
-  var valid_588842 = query.getOrDefault("prettyPrint")
-  valid_588842 = validateParameter(valid_588842, JBool, required = false,
+  if valid_578723 != nil:
+    section.add "key", valid_578723
+  var valid_578737 = query.getOrDefault("prettyPrint")
+  valid_578737 = validateParameter(valid_578737, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588842 != nil:
-    section.add "prettyPrint", valid_588842
+  if valid_578737 != nil:
+    section.add "prettyPrint", valid_578737
+  var valid_578738 = query.getOrDefault("oauth_token")
+  valid_578738 = validateParameter(valid_578738, JString, required = false,
+                                 default = nil)
+  if valid_578738 != nil:
+    section.add "oauth_token", valid_578738
+  var valid_578739 = query.getOrDefault("alt")
+  valid_578739 = validateParameter(valid_578739, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578739 != nil:
+    section.add "alt", valid_578739
+  var valid_578740 = query.getOrDefault("userIp")
+  valid_578740 = validateParameter(valid_578740, JString, required = false,
+                                 default = nil)
+  if valid_578740 != nil:
+    section.add "userIp", valid_578740
+  var valid_578741 = query.getOrDefault("quotaUser")
+  valid_578741 = validateParameter(valid_578741, JString, required = false,
+                                 default = nil)
+  if valid_578741 != nil:
+    section.add "quotaUser", valid_578741
+  var valid_578742 = query.getOrDefault("fields")
+  valid_578742 = validateParameter(valid_578742, JString, required = false,
+                                 default = nil)
+  if valid_578742 != nil:
+    section.add "fields", valid_578742
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -183,56 +187,56 @@ proc validate_TagmanagerAccountsList_588710(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588865: Call_TagmanagerAccountsList_588709; path: JsonNode;
+proc call*(call_578765: Call_TagmanagerAccountsList_578609; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all GTM Accounts that a user has access to.
   ## 
-  let valid = call_588865.validator(path, query, header, formData, body)
-  let scheme = call_588865.pickScheme
+  let valid = call_578765.validator(path, query, header, formData, body)
+  let scheme = call_578765.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588865.url(scheme.get, call_588865.host, call_588865.base,
-                         call_588865.route, valid.getOrDefault("path"),
+  let url = call_578765.url(scheme.get, call_578765.host, call_578765.base,
+                         call_578765.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588865, url, valid)
+  result = hook(call_578765, url, valid)
 
-proc call*(call_588936: Call_TagmanagerAccountsList_588709; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_578836: Call_TagmanagerAccountsList_578609; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsList
   ## Lists all GTM Accounts that a user has access to.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_588937 = newJObject()
-  add(query_588937, "fields", newJString(fields))
-  add(query_588937, "quotaUser", newJString(quotaUser))
-  add(query_588937, "alt", newJString(alt))
-  add(query_588937, "oauth_token", newJString(oauthToken))
-  add(query_588937, "userIp", newJString(userIp))
-  add(query_588937, "key", newJString(key))
-  add(query_588937, "prettyPrint", newJBool(prettyPrint))
-  result = call_588936.call(nil, query_588937, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_578837 = newJObject()
+  add(query_578837, "key", newJString(key))
+  add(query_578837, "prettyPrint", newJBool(prettyPrint))
+  add(query_578837, "oauth_token", newJString(oauthToken))
+  add(query_578837, "alt", newJString(alt))
+  add(query_578837, "userIp", newJString(userIp))
+  add(query_578837, "quotaUser", newJString(quotaUser))
+  add(query_578837, "fields", newJString(fields))
+  result = call_578836.call(nil, query_578837, nil, nil, nil)
 
-var tagmanagerAccountsList* = Call_TagmanagerAccountsList_588709(
+var tagmanagerAccountsList* = Call_TagmanagerAccountsList_578609(
     name: "tagmanagerAccountsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts",
-    validator: validate_TagmanagerAccountsList_588710, base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsList_588711, schemes: {Scheme.Https})
+    validator: validate_TagmanagerAccountsList_578610, base: "/tagmanager/v1",
+    url: url_TagmanagerAccountsList_578611, schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsUpdate_589006 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsUpdate_589008(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsUpdate_578906 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsUpdate_578908(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -248,7 +252,7 @@ proc url_TagmanagerAccountsUpdate_589008(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsUpdate_589007(path: JsonNode; query: JsonNode;
+proc validate_TagmanagerAccountsUpdate_578907(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a GTM Account.
   ## 
@@ -259,70 +263,70 @@ proc validate_TagmanagerAccountsUpdate_589007(path: JsonNode; query: JsonNode;
   ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_589009 = path.getOrDefault("accountId")
-  valid_589009 = validateParameter(valid_589009, JString, required = true,
+  var valid_578909 = path.getOrDefault("accountId")
+  valid_578909 = validateParameter(valid_578909, JString, required = true,
                                  default = nil)
-  if valid_589009 != nil:
-    section.add "accountId", valid_589009
+  if valid_578909 != nil:
+    section.add "accountId", valid_578909
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: JString
-  ##              : When provided, this fingerprint must match the fingerprint of the account in storage.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   fingerprint: JString
+  ##              : When provided, this fingerprint must match the fingerprint of the account in storage.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589010 = query.getOrDefault("fields")
-  valid_589010 = validateParameter(valid_589010, JString, required = false,
+  var valid_578910 = query.getOrDefault("key")
+  valid_578910 = validateParameter(valid_578910, JString, required = false,
                                  default = nil)
-  if valid_589010 != nil:
-    section.add "fields", valid_589010
-  var valid_589011 = query.getOrDefault("fingerprint")
-  valid_589011 = validateParameter(valid_589011, JString, required = false,
-                                 default = nil)
-  if valid_589011 != nil:
-    section.add "fingerprint", valid_589011
-  var valid_589012 = query.getOrDefault("quotaUser")
-  valid_589012 = validateParameter(valid_589012, JString, required = false,
-                                 default = nil)
-  if valid_589012 != nil:
-    section.add "quotaUser", valid_589012
-  var valid_589013 = query.getOrDefault("alt")
-  valid_589013 = validateParameter(valid_589013, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589013 != nil:
-    section.add "alt", valid_589013
-  var valid_589014 = query.getOrDefault("oauth_token")
-  valid_589014 = validateParameter(valid_589014, JString, required = false,
-                                 default = nil)
-  if valid_589014 != nil:
-    section.add "oauth_token", valid_589014
-  var valid_589015 = query.getOrDefault("userIp")
-  valid_589015 = validateParameter(valid_589015, JString, required = false,
-                                 default = nil)
-  if valid_589015 != nil:
-    section.add "userIp", valid_589015
-  var valid_589016 = query.getOrDefault("key")
-  valid_589016 = validateParameter(valid_589016, JString, required = false,
-                                 default = nil)
-  if valid_589016 != nil:
-    section.add "key", valid_589016
-  var valid_589017 = query.getOrDefault("prettyPrint")
-  valid_589017 = validateParameter(valid_589017, JBool, required = false,
+  if valid_578910 != nil:
+    section.add "key", valid_578910
+  var valid_578911 = query.getOrDefault("prettyPrint")
+  valid_578911 = validateParameter(valid_578911, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589017 != nil:
-    section.add "prettyPrint", valid_589017
+  if valid_578911 != nil:
+    section.add "prettyPrint", valid_578911
+  var valid_578912 = query.getOrDefault("oauth_token")
+  valid_578912 = validateParameter(valid_578912, JString, required = false,
+                                 default = nil)
+  if valid_578912 != nil:
+    section.add "oauth_token", valid_578912
+  var valid_578913 = query.getOrDefault("fingerprint")
+  valid_578913 = validateParameter(valid_578913, JString, required = false,
+                                 default = nil)
+  if valid_578913 != nil:
+    section.add "fingerprint", valid_578913
+  var valid_578914 = query.getOrDefault("alt")
+  valid_578914 = validateParameter(valid_578914, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578914 != nil:
+    section.add "alt", valid_578914
+  var valid_578915 = query.getOrDefault("userIp")
+  valid_578915 = validateParameter(valid_578915, JString, required = false,
+                                 default = nil)
+  if valid_578915 != nil:
+    section.add "userIp", valid_578915
+  var valid_578916 = query.getOrDefault("quotaUser")
+  valid_578916 = validateParameter(valid_578916, JString, required = false,
+                                 default = nil)
+  if valid_578916 != nil:
+    section.add "quotaUser", valid_578916
+  var valid_578917 = query.getOrDefault("fields")
+  valid_578917 = validateParameter(valid_578917, JString, required = false,
+                                 default = nil)
+  if valid_578917 != nil:
+    section.add "fields", valid_578917
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -334,68 +338,68 @@ proc validate_TagmanagerAccountsUpdate_589007(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589019: Call_TagmanagerAccountsUpdate_589006; path: JsonNode;
+proc call*(call_578919: Call_TagmanagerAccountsUpdate_578906; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a GTM Account.
   ## 
-  let valid = call_589019.validator(path, query, header, formData, body)
-  let scheme = call_589019.pickScheme
+  let valid = call_578919.validator(path, query, header, formData, body)
+  let scheme = call_578919.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589019.url(scheme.get, call_589019.host, call_589019.base,
-                         call_589019.route, valid.getOrDefault("path"),
+  let url = call_578919.url(scheme.get, call_578919.host, call_578919.base,
+                         call_578919.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589019, url, valid)
+  result = hook(call_578919, url, valid)
 
-proc call*(call_589020: Call_TagmanagerAccountsUpdate_589006; accountId: string;
-          fields: string = ""; fingerprint: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578920: Call_TagmanagerAccountsUpdate_578906; accountId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          fingerprint: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## tagmanagerAccountsUpdate
   ## Updates a GTM Account.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: string
-  ##              : When provided, this fingerprint must match the fingerprint of the account in storage.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589021 = newJObject()
-  var query_589022 = newJObject()
-  var body_589023 = newJObject()
-  add(query_589022, "fields", newJString(fields))
-  add(query_589022, "fingerprint", newJString(fingerprint))
-  add(query_589022, "quotaUser", newJString(quotaUser))
-  add(query_589022, "alt", newJString(alt))
-  add(query_589022, "oauth_token", newJString(oauthToken))
-  add(path_589021, "accountId", newJString(accountId))
-  add(query_589022, "userIp", newJString(userIp))
-  add(query_589022, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   fingerprint: string
+  ##              : When provided, this fingerprint must match the fingerprint of the account in storage.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578921 = newJObject()
+  var query_578922 = newJObject()
+  var body_578923 = newJObject()
+  add(query_578922, "key", newJString(key))
+  add(query_578922, "prettyPrint", newJBool(prettyPrint))
+  add(query_578922, "oauth_token", newJString(oauthToken))
+  add(query_578922, "fingerprint", newJString(fingerprint))
+  add(query_578922, "alt", newJString(alt))
+  add(query_578922, "userIp", newJString(userIp))
+  add(query_578922, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589023 = body
-  add(query_589022, "prettyPrint", newJBool(prettyPrint))
-  result = call_589020.call(path_589021, query_589022, nil, nil, body_589023)
+    body_578923 = body
+  add(path_578921, "accountId", newJString(accountId))
+  add(query_578922, "fields", newJString(fields))
+  result = call_578920.call(path_578921, query_578922, nil, nil, body_578923)
 
-var tagmanagerAccountsUpdate* = Call_TagmanagerAccountsUpdate_589006(
+var tagmanagerAccountsUpdate* = Call_TagmanagerAccountsUpdate_578906(
     name: "tagmanagerAccountsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/accounts/{accountId}",
-    validator: validate_TagmanagerAccountsUpdate_589007, base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsUpdate_589008, schemes: {Scheme.Https})
+    validator: validate_TagmanagerAccountsUpdate_578907, base: "/tagmanager/v1",
+    url: url_TagmanagerAccountsUpdate_578908, schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsGet_588977 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsGet_588979(protocol: Scheme; host: string; base: string;
+  Call_TagmanagerAccountsGet_578877 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsGet_578879(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -410,7 +414,7 @@ proc url_TagmanagerAccountsGet_588979(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsGet_588978(path: JsonNode; query: JsonNode;
+proc validate_TagmanagerAccountsGet_578878(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a GTM Account.
   ## 
@@ -421,63 +425,63 @@ proc validate_TagmanagerAccountsGet_588978(path: JsonNode; query: JsonNode;
   ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_588994 = path.getOrDefault("accountId")
-  valid_588994 = validateParameter(valid_588994, JString, required = true,
+  var valid_578894 = path.getOrDefault("accountId")
+  valid_578894 = validateParameter(valid_578894, JString, required = true,
                                  default = nil)
-  if valid_588994 != nil:
-    section.add "accountId", valid_588994
+  if valid_578894 != nil:
+    section.add "accountId", valid_578894
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588995 = query.getOrDefault("fields")
-  valid_588995 = validateParameter(valid_588995, JString, required = false,
+  var valid_578895 = query.getOrDefault("key")
+  valid_578895 = validateParameter(valid_578895, JString, required = false,
                                  default = nil)
-  if valid_588995 != nil:
-    section.add "fields", valid_588995
-  var valid_588996 = query.getOrDefault("quotaUser")
-  valid_588996 = validateParameter(valid_588996, JString, required = false,
-                                 default = nil)
-  if valid_588996 != nil:
-    section.add "quotaUser", valid_588996
-  var valid_588997 = query.getOrDefault("alt")
-  valid_588997 = validateParameter(valid_588997, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588997 != nil:
-    section.add "alt", valid_588997
-  var valid_588998 = query.getOrDefault("oauth_token")
-  valid_588998 = validateParameter(valid_588998, JString, required = false,
-                                 default = nil)
-  if valid_588998 != nil:
-    section.add "oauth_token", valid_588998
-  var valid_588999 = query.getOrDefault("userIp")
-  valid_588999 = validateParameter(valid_588999, JString, required = false,
-                                 default = nil)
-  if valid_588999 != nil:
-    section.add "userIp", valid_588999
-  var valid_589000 = query.getOrDefault("key")
-  valid_589000 = validateParameter(valid_589000, JString, required = false,
-                                 default = nil)
-  if valid_589000 != nil:
-    section.add "key", valid_589000
-  var valid_589001 = query.getOrDefault("prettyPrint")
-  valid_589001 = validateParameter(valid_589001, JBool, required = false,
+  if valid_578895 != nil:
+    section.add "key", valid_578895
+  var valid_578896 = query.getOrDefault("prettyPrint")
+  valid_578896 = validateParameter(valid_578896, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589001 != nil:
-    section.add "prettyPrint", valid_589001
+  if valid_578896 != nil:
+    section.add "prettyPrint", valid_578896
+  var valid_578897 = query.getOrDefault("oauth_token")
+  valid_578897 = validateParameter(valid_578897, JString, required = false,
+                                 default = nil)
+  if valid_578897 != nil:
+    section.add "oauth_token", valid_578897
+  var valid_578898 = query.getOrDefault("alt")
+  valid_578898 = validateParameter(valid_578898, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578898 != nil:
+    section.add "alt", valid_578898
+  var valid_578899 = query.getOrDefault("userIp")
+  valid_578899 = validateParameter(valid_578899, JString, required = false,
+                                 default = nil)
+  if valid_578899 != nil:
+    section.add "userIp", valid_578899
+  var valid_578900 = query.getOrDefault("quotaUser")
+  valid_578900 = validateParameter(valid_578900, JString, required = false,
+                                 default = nil)
+  if valid_578900 != nil:
+    section.add "quotaUser", valid_578900
+  var valid_578901 = query.getOrDefault("fields")
+  valid_578901 = validateParameter(valid_578901, JString, required = false,
+                                 default = nil)
+  if valid_578901 != nil:
+    section.add "fields", valid_578901
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -486,61 +490,61 @@ proc validate_TagmanagerAccountsGet_588978(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589002: Call_TagmanagerAccountsGet_588977; path: JsonNode;
+proc call*(call_578902: Call_TagmanagerAccountsGet_578877; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a GTM Account.
   ## 
-  let valid = call_589002.validator(path, query, header, formData, body)
-  let scheme = call_589002.pickScheme
+  let valid = call_578902.validator(path, query, header, formData, body)
+  let scheme = call_578902.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589002.url(scheme.get, call_589002.host, call_589002.base,
-                         call_589002.route, valid.getOrDefault("path"),
+  let url = call_578902.url(scheme.get, call_578902.host, call_578902.base,
+                         call_578902.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589002, url, valid)
+  result = hook(call_578902, url, valid)
 
-proc call*(call_589003: Call_TagmanagerAccountsGet_588977; accountId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578903: Call_TagmanagerAccountsGet_578877; accountId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsGet
   ## Gets a GTM Account.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589004 = newJObject()
-  var query_589005 = newJObject()
-  add(query_589005, "fields", newJString(fields))
-  add(query_589005, "quotaUser", newJString(quotaUser))
-  add(query_589005, "alt", newJString(alt))
-  add(query_589005, "oauth_token", newJString(oauthToken))
-  add(path_589004, "accountId", newJString(accountId))
-  add(query_589005, "userIp", newJString(userIp))
-  add(query_589005, "key", newJString(key))
-  add(query_589005, "prettyPrint", newJBool(prettyPrint))
-  result = call_589003.call(path_589004, query_589005, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578904 = newJObject()
+  var query_578905 = newJObject()
+  add(query_578905, "key", newJString(key))
+  add(query_578905, "prettyPrint", newJBool(prettyPrint))
+  add(query_578905, "oauth_token", newJString(oauthToken))
+  add(query_578905, "alt", newJString(alt))
+  add(query_578905, "userIp", newJString(userIp))
+  add(query_578905, "quotaUser", newJString(quotaUser))
+  add(path_578904, "accountId", newJString(accountId))
+  add(query_578905, "fields", newJString(fields))
+  result = call_578903.call(path_578904, query_578905, nil, nil, nil)
 
-var tagmanagerAccountsGet* = Call_TagmanagerAccountsGet_588977(
+var tagmanagerAccountsGet* = Call_TagmanagerAccountsGet_578877(
     name: "tagmanagerAccountsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{accountId}",
-    validator: validate_TagmanagerAccountsGet_588978, base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsGet_588979, schemes: {Scheme.Https})
+    validator: validate_TagmanagerAccountsGet_578878, base: "/tagmanager/v1",
+    url: url_TagmanagerAccountsGet_578879, schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersCreate_589039 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersCreate_589041(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsContainersCreate_578939 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersCreate_578941(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -556,7 +560,7 @@ proc url_TagmanagerAccountsContainersCreate_589041(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersCreate_589040(path: JsonNode;
+proc validate_TagmanagerAccountsContainersCreate_578940(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a Container.
   ## 
@@ -567,63 +571,63 @@ proc validate_TagmanagerAccountsContainersCreate_589040(path: JsonNode;
   ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_589042 = path.getOrDefault("accountId")
-  valid_589042 = validateParameter(valid_589042, JString, required = true,
+  var valid_578942 = path.getOrDefault("accountId")
+  valid_578942 = validateParameter(valid_578942, JString, required = true,
                                  default = nil)
-  if valid_589042 != nil:
-    section.add "accountId", valid_589042
+  if valid_578942 != nil:
+    section.add "accountId", valid_578942
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589043 = query.getOrDefault("fields")
-  valid_589043 = validateParameter(valid_589043, JString, required = false,
+  var valid_578943 = query.getOrDefault("key")
+  valid_578943 = validateParameter(valid_578943, JString, required = false,
                                  default = nil)
-  if valid_589043 != nil:
-    section.add "fields", valid_589043
-  var valid_589044 = query.getOrDefault("quotaUser")
-  valid_589044 = validateParameter(valid_589044, JString, required = false,
-                                 default = nil)
-  if valid_589044 != nil:
-    section.add "quotaUser", valid_589044
-  var valid_589045 = query.getOrDefault("alt")
-  valid_589045 = validateParameter(valid_589045, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589045 != nil:
-    section.add "alt", valid_589045
-  var valid_589046 = query.getOrDefault("oauth_token")
-  valid_589046 = validateParameter(valid_589046, JString, required = false,
-                                 default = nil)
-  if valid_589046 != nil:
-    section.add "oauth_token", valid_589046
-  var valid_589047 = query.getOrDefault("userIp")
-  valid_589047 = validateParameter(valid_589047, JString, required = false,
-                                 default = nil)
-  if valid_589047 != nil:
-    section.add "userIp", valid_589047
-  var valid_589048 = query.getOrDefault("key")
-  valid_589048 = validateParameter(valid_589048, JString, required = false,
-                                 default = nil)
-  if valid_589048 != nil:
-    section.add "key", valid_589048
-  var valid_589049 = query.getOrDefault("prettyPrint")
-  valid_589049 = validateParameter(valid_589049, JBool, required = false,
+  if valid_578943 != nil:
+    section.add "key", valid_578943
+  var valid_578944 = query.getOrDefault("prettyPrint")
+  valid_578944 = validateParameter(valid_578944, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589049 != nil:
-    section.add "prettyPrint", valid_589049
+  if valid_578944 != nil:
+    section.add "prettyPrint", valid_578944
+  var valid_578945 = query.getOrDefault("oauth_token")
+  valid_578945 = validateParameter(valid_578945, JString, required = false,
+                                 default = nil)
+  if valid_578945 != nil:
+    section.add "oauth_token", valid_578945
+  var valid_578946 = query.getOrDefault("alt")
+  valid_578946 = validateParameter(valid_578946, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578946 != nil:
+    section.add "alt", valid_578946
+  var valid_578947 = query.getOrDefault("userIp")
+  valid_578947 = validateParameter(valid_578947, JString, required = false,
+                                 default = nil)
+  if valid_578947 != nil:
+    section.add "userIp", valid_578947
+  var valid_578948 = query.getOrDefault("quotaUser")
+  valid_578948 = validateParameter(valid_578948, JString, required = false,
+                                 default = nil)
+  if valid_578948 != nil:
+    section.add "quotaUser", valid_578948
+  var valid_578949 = query.getOrDefault("fields")
+  valid_578949 = validateParameter(valid_578949, JString, required = false,
+                                 default = nil)
+  if valid_578949 != nil:
+    section.add "fields", valid_578949
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -635,67 +639,67 @@ proc validate_TagmanagerAccountsContainersCreate_589040(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589051: Call_TagmanagerAccountsContainersCreate_589039;
+proc call*(call_578951: Call_TagmanagerAccountsContainersCreate_578939;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a Container.
   ## 
-  let valid = call_589051.validator(path, query, header, formData, body)
-  let scheme = call_589051.pickScheme
+  let valid = call_578951.validator(path, query, header, formData, body)
+  let scheme = call_578951.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589051.url(scheme.get, call_589051.host, call_589051.base,
-                         call_589051.route, valid.getOrDefault("path"),
+  let url = call_578951.url(scheme.get, call_578951.host, call_578951.base,
+                         call_578951.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589051, url, valid)
+  result = hook(call_578951, url, valid)
 
-proc call*(call_589052: Call_TagmanagerAccountsContainersCreate_589039;
-          accountId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578952: Call_TagmanagerAccountsContainersCreate_578939;
+          accountId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersCreate
   ## Creates a Container.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589053 = newJObject()
-  var query_589054 = newJObject()
-  var body_589055 = newJObject()
-  add(query_589054, "fields", newJString(fields))
-  add(query_589054, "quotaUser", newJString(quotaUser))
-  add(query_589054, "alt", newJString(alt))
-  add(query_589054, "oauth_token", newJString(oauthToken))
-  add(path_589053, "accountId", newJString(accountId))
-  add(query_589054, "userIp", newJString(userIp))
-  add(query_589054, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578953 = newJObject()
+  var query_578954 = newJObject()
+  var body_578955 = newJObject()
+  add(query_578954, "key", newJString(key))
+  add(query_578954, "prettyPrint", newJBool(prettyPrint))
+  add(query_578954, "oauth_token", newJString(oauthToken))
+  add(query_578954, "alt", newJString(alt))
+  add(query_578954, "userIp", newJString(userIp))
+  add(query_578954, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589055 = body
-  add(query_589054, "prettyPrint", newJBool(prettyPrint))
-  result = call_589052.call(path_589053, query_589054, nil, nil, body_589055)
+    body_578955 = body
+  add(path_578953, "accountId", newJString(accountId))
+  add(query_578954, "fields", newJString(fields))
+  result = call_578952.call(path_578953, query_578954, nil, nil, body_578955)
 
-var tagmanagerAccountsContainersCreate* = Call_TagmanagerAccountsContainersCreate_589039(
+var tagmanagerAccountsContainersCreate* = Call_TagmanagerAccountsContainersCreate_578939(
     name: "tagmanagerAccountsContainersCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers",
-    validator: validate_TagmanagerAccountsContainersCreate_589040,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersCreate_589041,
+    validator: validate_TagmanagerAccountsContainersCreate_578940,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersCreate_578941,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersList_589024 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersList_589026(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsContainersList_578924 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersList_578926(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -711,7 +715,7 @@ proc url_TagmanagerAccountsContainersList_589026(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersList_589025(path: JsonNode;
+proc validate_TagmanagerAccountsContainersList_578925(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all Containers that belongs to a GTM Account.
   ## 
@@ -722,63 +726,63 @@ proc validate_TagmanagerAccountsContainersList_589025(path: JsonNode;
   ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_589027 = path.getOrDefault("accountId")
-  valid_589027 = validateParameter(valid_589027, JString, required = true,
+  var valid_578927 = path.getOrDefault("accountId")
+  valid_578927 = validateParameter(valid_578927, JString, required = true,
                                  default = nil)
-  if valid_589027 != nil:
-    section.add "accountId", valid_589027
+  if valid_578927 != nil:
+    section.add "accountId", valid_578927
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589028 = query.getOrDefault("fields")
-  valid_589028 = validateParameter(valid_589028, JString, required = false,
+  var valid_578928 = query.getOrDefault("key")
+  valid_578928 = validateParameter(valid_578928, JString, required = false,
                                  default = nil)
-  if valid_589028 != nil:
-    section.add "fields", valid_589028
-  var valid_589029 = query.getOrDefault("quotaUser")
-  valid_589029 = validateParameter(valid_589029, JString, required = false,
-                                 default = nil)
-  if valid_589029 != nil:
-    section.add "quotaUser", valid_589029
-  var valid_589030 = query.getOrDefault("alt")
-  valid_589030 = validateParameter(valid_589030, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589030 != nil:
-    section.add "alt", valid_589030
-  var valid_589031 = query.getOrDefault("oauth_token")
-  valid_589031 = validateParameter(valid_589031, JString, required = false,
-                                 default = nil)
-  if valid_589031 != nil:
-    section.add "oauth_token", valid_589031
-  var valid_589032 = query.getOrDefault("userIp")
-  valid_589032 = validateParameter(valid_589032, JString, required = false,
-                                 default = nil)
-  if valid_589032 != nil:
-    section.add "userIp", valid_589032
-  var valid_589033 = query.getOrDefault("key")
-  valid_589033 = validateParameter(valid_589033, JString, required = false,
-                                 default = nil)
-  if valid_589033 != nil:
-    section.add "key", valid_589033
-  var valid_589034 = query.getOrDefault("prettyPrint")
-  valid_589034 = validateParameter(valid_589034, JBool, required = false,
+  if valid_578928 != nil:
+    section.add "key", valid_578928
+  var valid_578929 = query.getOrDefault("prettyPrint")
+  valid_578929 = validateParameter(valid_578929, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589034 != nil:
-    section.add "prettyPrint", valid_589034
+  if valid_578929 != nil:
+    section.add "prettyPrint", valid_578929
+  var valid_578930 = query.getOrDefault("oauth_token")
+  valid_578930 = validateParameter(valid_578930, JString, required = false,
+                                 default = nil)
+  if valid_578930 != nil:
+    section.add "oauth_token", valid_578930
+  var valid_578931 = query.getOrDefault("alt")
+  valid_578931 = validateParameter(valid_578931, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578931 != nil:
+    section.add "alt", valid_578931
+  var valid_578932 = query.getOrDefault("userIp")
+  valid_578932 = validateParameter(valid_578932, JString, required = false,
+                                 default = nil)
+  if valid_578932 != nil:
+    section.add "userIp", valid_578932
+  var valid_578933 = query.getOrDefault("quotaUser")
+  valid_578933 = validateParameter(valid_578933, JString, required = false,
+                                 default = nil)
+  if valid_578933 != nil:
+    section.add "quotaUser", valid_578933
+  var valid_578934 = query.getOrDefault("fields")
+  valid_578934 = validateParameter(valid_578934, JString, required = false,
+                                 default = nil)
+  if valid_578934 != nil:
+    section.add "fields", valid_578934
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -787,63 +791,63 @@ proc validate_TagmanagerAccountsContainersList_589025(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589035: Call_TagmanagerAccountsContainersList_589024;
+proc call*(call_578935: Call_TagmanagerAccountsContainersList_578924;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all Containers that belongs to a GTM Account.
   ## 
-  let valid = call_589035.validator(path, query, header, formData, body)
-  let scheme = call_589035.pickScheme
+  let valid = call_578935.validator(path, query, header, formData, body)
+  let scheme = call_578935.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589035.url(scheme.get, call_589035.host, call_589035.base,
-                         call_589035.route, valid.getOrDefault("path"),
+  let url = call_578935.url(scheme.get, call_578935.host, call_578935.base,
+                         call_578935.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589035, url, valid)
+  result = hook(call_578935, url, valid)
 
-proc call*(call_589036: Call_TagmanagerAccountsContainersList_589024;
-          accountId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_578936: Call_TagmanagerAccountsContainersList_578924;
+          accountId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersList
   ## Lists all Containers that belongs to a GTM Account.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589037 = newJObject()
-  var query_589038 = newJObject()
-  add(query_589038, "fields", newJString(fields))
-  add(query_589038, "quotaUser", newJString(quotaUser))
-  add(query_589038, "alt", newJString(alt))
-  add(query_589038, "oauth_token", newJString(oauthToken))
-  add(path_589037, "accountId", newJString(accountId))
-  add(query_589038, "userIp", newJString(userIp))
-  add(query_589038, "key", newJString(key))
-  add(query_589038, "prettyPrint", newJBool(prettyPrint))
-  result = call_589036.call(path_589037, query_589038, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578937 = newJObject()
+  var query_578938 = newJObject()
+  add(query_578938, "key", newJString(key))
+  add(query_578938, "prettyPrint", newJBool(prettyPrint))
+  add(query_578938, "oauth_token", newJString(oauthToken))
+  add(query_578938, "alt", newJString(alt))
+  add(query_578938, "userIp", newJString(userIp))
+  add(query_578938, "quotaUser", newJString(quotaUser))
+  add(path_578937, "accountId", newJString(accountId))
+  add(query_578938, "fields", newJString(fields))
+  result = call_578936.call(path_578937, query_578938, nil, nil, nil)
 
-var tagmanagerAccountsContainersList* = Call_TagmanagerAccountsContainersList_589024(
+var tagmanagerAccountsContainersList* = Call_TagmanagerAccountsContainersList_578924(
     name: "tagmanagerAccountsContainersList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers",
-    validator: validate_TagmanagerAccountsContainersList_589025,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersList_589026,
+    validator: validate_TagmanagerAccountsContainersList_578925,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersList_578926,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersUpdate_589072 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersUpdate_589074(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsContainersUpdate_578972 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersUpdate_578974(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -861,7 +865,7 @@ proc url_TagmanagerAccountsContainersUpdate_589074(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersUpdate_589073(path: JsonNode;
+proc validate_TagmanagerAccountsContainersUpdate_578973(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a Container.
   ## 
@@ -875,75 +879,75 @@ proc validate_TagmanagerAccountsContainersUpdate_589073(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589075 = path.getOrDefault("containerId")
-  valid_589075 = validateParameter(valid_589075, JString, required = true,
+  var valid_578975 = path.getOrDefault("containerId")
+  valid_578975 = validateParameter(valid_578975, JString, required = true,
                                  default = nil)
-  if valid_589075 != nil:
-    section.add "containerId", valid_589075
-  var valid_589076 = path.getOrDefault("accountId")
-  valid_589076 = validateParameter(valid_589076, JString, required = true,
+  if valid_578975 != nil:
+    section.add "containerId", valid_578975
+  var valid_578976 = path.getOrDefault("accountId")
+  valid_578976 = validateParameter(valid_578976, JString, required = true,
                                  default = nil)
-  if valid_589076 != nil:
-    section.add "accountId", valid_589076
+  if valid_578976 != nil:
+    section.add "accountId", valid_578976
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: JString
-  ##              : When provided, this fingerprint must match the fingerprint of the container in storage.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   fingerprint: JString
+  ##              : When provided, this fingerprint must match the fingerprint of the container in storage.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589077 = query.getOrDefault("fields")
-  valid_589077 = validateParameter(valid_589077, JString, required = false,
+  var valid_578977 = query.getOrDefault("key")
+  valid_578977 = validateParameter(valid_578977, JString, required = false,
                                  default = nil)
-  if valid_589077 != nil:
-    section.add "fields", valid_589077
-  var valid_589078 = query.getOrDefault("fingerprint")
-  valid_589078 = validateParameter(valid_589078, JString, required = false,
-                                 default = nil)
-  if valid_589078 != nil:
-    section.add "fingerprint", valid_589078
-  var valid_589079 = query.getOrDefault("quotaUser")
-  valid_589079 = validateParameter(valid_589079, JString, required = false,
-                                 default = nil)
-  if valid_589079 != nil:
-    section.add "quotaUser", valid_589079
-  var valid_589080 = query.getOrDefault("alt")
-  valid_589080 = validateParameter(valid_589080, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589080 != nil:
-    section.add "alt", valid_589080
-  var valid_589081 = query.getOrDefault("oauth_token")
-  valid_589081 = validateParameter(valid_589081, JString, required = false,
-                                 default = nil)
-  if valid_589081 != nil:
-    section.add "oauth_token", valid_589081
-  var valid_589082 = query.getOrDefault("userIp")
-  valid_589082 = validateParameter(valid_589082, JString, required = false,
-                                 default = nil)
-  if valid_589082 != nil:
-    section.add "userIp", valid_589082
-  var valid_589083 = query.getOrDefault("key")
-  valid_589083 = validateParameter(valid_589083, JString, required = false,
-                                 default = nil)
-  if valid_589083 != nil:
-    section.add "key", valid_589083
-  var valid_589084 = query.getOrDefault("prettyPrint")
-  valid_589084 = validateParameter(valid_589084, JBool, required = false,
+  if valid_578977 != nil:
+    section.add "key", valid_578977
+  var valid_578978 = query.getOrDefault("prettyPrint")
+  valid_578978 = validateParameter(valid_578978, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589084 != nil:
-    section.add "prettyPrint", valid_589084
+  if valid_578978 != nil:
+    section.add "prettyPrint", valid_578978
+  var valid_578979 = query.getOrDefault("oauth_token")
+  valid_578979 = validateParameter(valid_578979, JString, required = false,
+                                 default = nil)
+  if valid_578979 != nil:
+    section.add "oauth_token", valid_578979
+  var valid_578980 = query.getOrDefault("fingerprint")
+  valid_578980 = validateParameter(valid_578980, JString, required = false,
+                                 default = nil)
+  if valid_578980 != nil:
+    section.add "fingerprint", valid_578980
+  var valid_578981 = query.getOrDefault("alt")
+  valid_578981 = validateParameter(valid_578981, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578981 != nil:
+    section.add "alt", valid_578981
+  var valid_578982 = query.getOrDefault("userIp")
+  valid_578982 = validateParameter(valid_578982, JString, required = false,
+                                 default = nil)
+  if valid_578982 != nil:
+    section.add "userIp", valid_578982
+  var valid_578983 = query.getOrDefault("quotaUser")
+  valid_578983 = validateParameter(valid_578983, JString, required = false,
+                                 default = nil)
+  if valid_578983 != nil:
+    section.add "quotaUser", valid_578983
+  var valid_578984 = query.getOrDefault("fields")
+  valid_578984 = validateParameter(valid_578984, JString, required = false,
+                                 default = nil)
+  if valid_578984 != nil:
+    section.add "fields", valid_578984
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -955,75 +959,75 @@ proc validate_TagmanagerAccountsContainersUpdate_589073(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589086: Call_TagmanagerAccountsContainersUpdate_589072;
+proc call*(call_578986: Call_TagmanagerAccountsContainersUpdate_578972;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a Container.
   ## 
-  let valid = call_589086.validator(path, query, header, formData, body)
-  let scheme = call_589086.pickScheme
+  let valid = call_578986.validator(path, query, header, formData, body)
+  let scheme = call_578986.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589086.url(scheme.get, call_589086.host, call_589086.base,
-                         call_589086.route, valid.getOrDefault("path"),
+  let url = call_578986.url(scheme.get, call_578986.host, call_578986.base,
+                         call_578986.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589086, url, valid)
+  result = hook(call_578986, url, valid)
 
-proc call*(call_589087: Call_TagmanagerAccountsContainersUpdate_589072;
-          containerId: string; accountId: string; fields: string = "";
-          fingerprint: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578987: Call_TagmanagerAccountsContainersUpdate_578972;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; fingerprint: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersUpdate
   ## Updates a Container.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: string
-  ##              : When provided, this fingerprint must match the fingerprint of the container in storage.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589088 = newJObject()
-  var query_589089 = newJObject()
-  var body_589090 = newJObject()
-  add(path_589088, "containerId", newJString(containerId))
-  add(query_589089, "fields", newJString(fields))
-  add(query_589089, "fingerprint", newJString(fingerprint))
-  add(query_589089, "quotaUser", newJString(quotaUser))
-  add(query_589089, "alt", newJString(alt))
-  add(query_589089, "oauth_token", newJString(oauthToken))
-  add(path_589088, "accountId", newJString(accountId))
-  add(query_589089, "userIp", newJString(userIp))
-  add(query_589089, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   fingerprint: string
+  ##              : When provided, this fingerprint must match the fingerprint of the container in storage.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578988 = newJObject()
+  var query_578989 = newJObject()
+  var body_578990 = newJObject()
+  add(query_578989, "key", newJString(key))
+  add(query_578989, "prettyPrint", newJBool(prettyPrint))
+  add(query_578989, "oauth_token", newJString(oauthToken))
+  add(path_578988, "containerId", newJString(containerId))
+  add(query_578989, "fingerprint", newJString(fingerprint))
+  add(query_578989, "alt", newJString(alt))
+  add(query_578989, "userIp", newJString(userIp))
+  add(query_578989, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589090 = body
-  add(query_589089, "prettyPrint", newJBool(prettyPrint))
-  result = call_589087.call(path_589088, query_589089, nil, nil, body_589090)
+    body_578990 = body
+  add(path_578988, "accountId", newJString(accountId))
+  add(query_578989, "fields", newJString(fields))
+  result = call_578987.call(path_578988, query_578989, nil, nil, body_578990)
 
-var tagmanagerAccountsContainersUpdate* = Call_TagmanagerAccountsContainersUpdate_589072(
+var tagmanagerAccountsContainersUpdate* = Call_TagmanagerAccountsContainersUpdate_578972(
     name: "tagmanagerAccountsContainersUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}",
-    validator: validate_TagmanagerAccountsContainersUpdate_589073,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersUpdate_589074,
+    validator: validate_TagmanagerAccountsContainersUpdate_578973,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersUpdate_578974,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersGet_589056 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersGet_589058(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsContainersGet_578956 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersGet_578958(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1041,7 +1045,7 @@ proc url_TagmanagerAccountsContainersGet_589058(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersGet_589057(path: JsonNode;
+proc validate_TagmanagerAccountsContainersGet_578957(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a Container.
   ## 
@@ -1055,68 +1059,68 @@ proc validate_TagmanagerAccountsContainersGet_589057(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589059 = path.getOrDefault("containerId")
-  valid_589059 = validateParameter(valid_589059, JString, required = true,
+  var valid_578959 = path.getOrDefault("containerId")
+  valid_578959 = validateParameter(valid_578959, JString, required = true,
                                  default = nil)
-  if valid_589059 != nil:
-    section.add "containerId", valid_589059
-  var valid_589060 = path.getOrDefault("accountId")
-  valid_589060 = validateParameter(valid_589060, JString, required = true,
+  if valid_578959 != nil:
+    section.add "containerId", valid_578959
+  var valid_578960 = path.getOrDefault("accountId")
+  valid_578960 = validateParameter(valid_578960, JString, required = true,
                                  default = nil)
-  if valid_589060 != nil:
-    section.add "accountId", valid_589060
+  if valid_578960 != nil:
+    section.add "accountId", valid_578960
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589061 = query.getOrDefault("fields")
-  valid_589061 = validateParameter(valid_589061, JString, required = false,
+  var valid_578961 = query.getOrDefault("key")
+  valid_578961 = validateParameter(valid_578961, JString, required = false,
                                  default = nil)
-  if valid_589061 != nil:
-    section.add "fields", valid_589061
-  var valid_589062 = query.getOrDefault("quotaUser")
-  valid_589062 = validateParameter(valid_589062, JString, required = false,
-                                 default = nil)
-  if valid_589062 != nil:
-    section.add "quotaUser", valid_589062
-  var valid_589063 = query.getOrDefault("alt")
-  valid_589063 = validateParameter(valid_589063, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589063 != nil:
-    section.add "alt", valid_589063
-  var valid_589064 = query.getOrDefault("oauth_token")
-  valid_589064 = validateParameter(valid_589064, JString, required = false,
-                                 default = nil)
-  if valid_589064 != nil:
-    section.add "oauth_token", valid_589064
-  var valid_589065 = query.getOrDefault("userIp")
-  valid_589065 = validateParameter(valid_589065, JString, required = false,
-                                 default = nil)
-  if valid_589065 != nil:
-    section.add "userIp", valid_589065
-  var valid_589066 = query.getOrDefault("key")
-  valid_589066 = validateParameter(valid_589066, JString, required = false,
-                                 default = nil)
-  if valid_589066 != nil:
-    section.add "key", valid_589066
-  var valid_589067 = query.getOrDefault("prettyPrint")
-  valid_589067 = validateParameter(valid_589067, JBool, required = false,
+  if valid_578961 != nil:
+    section.add "key", valid_578961
+  var valid_578962 = query.getOrDefault("prettyPrint")
+  valid_578962 = validateParameter(valid_578962, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589067 != nil:
-    section.add "prettyPrint", valid_589067
+  if valid_578962 != nil:
+    section.add "prettyPrint", valid_578962
+  var valid_578963 = query.getOrDefault("oauth_token")
+  valid_578963 = validateParameter(valid_578963, JString, required = false,
+                                 default = nil)
+  if valid_578963 != nil:
+    section.add "oauth_token", valid_578963
+  var valid_578964 = query.getOrDefault("alt")
+  valid_578964 = validateParameter(valid_578964, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578964 != nil:
+    section.add "alt", valid_578964
+  var valid_578965 = query.getOrDefault("userIp")
+  valid_578965 = validateParameter(valid_578965, JString, required = false,
+                                 default = nil)
+  if valid_578965 != nil:
+    section.add "userIp", valid_578965
+  var valid_578966 = query.getOrDefault("quotaUser")
+  valid_578966 = validateParameter(valid_578966, JString, required = false,
+                                 default = nil)
+  if valid_578966 != nil:
+    section.add "quotaUser", valid_578966
+  var valid_578967 = query.getOrDefault("fields")
+  valid_578967 = validateParameter(valid_578967, JString, required = false,
+                                 default = nil)
+  if valid_578967 != nil:
+    section.add "fields", valid_578967
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1125,67 +1129,67 @@ proc validate_TagmanagerAccountsContainersGet_589057(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589068: Call_TagmanagerAccountsContainersGet_589056;
+proc call*(call_578968: Call_TagmanagerAccountsContainersGet_578956;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a Container.
   ## 
-  let valid = call_589068.validator(path, query, header, formData, body)
-  let scheme = call_589068.pickScheme
+  let valid = call_578968.validator(path, query, header, formData, body)
+  let scheme = call_578968.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589068.url(scheme.get, call_589068.host, call_589068.base,
-                         call_589068.route, valid.getOrDefault("path"),
+  let url = call_578968.url(scheme.get, call_578968.host, call_578968.base,
+                         call_578968.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589068, url, valid)
+  result = hook(call_578968, url, valid)
 
-proc call*(call_589069: Call_TagmanagerAccountsContainersGet_589056;
-          containerId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_578969: Call_TagmanagerAccountsContainersGet_578956;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersGet
   ## Gets a Container.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589070 = newJObject()
-  var query_589071 = newJObject()
-  add(path_589070, "containerId", newJString(containerId))
-  add(query_589071, "fields", newJString(fields))
-  add(query_589071, "quotaUser", newJString(quotaUser))
-  add(query_589071, "alt", newJString(alt))
-  add(query_589071, "oauth_token", newJString(oauthToken))
-  add(path_589070, "accountId", newJString(accountId))
-  add(query_589071, "userIp", newJString(userIp))
-  add(query_589071, "key", newJString(key))
-  add(query_589071, "prettyPrint", newJBool(prettyPrint))
-  result = call_589069.call(path_589070, query_589071, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578970 = newJObject()
+  var query_578971 = newJObject()
+  add(query_578971, "key", newJString(key))
+  add(query_578971, "prettyPrint", newJBool(prettyPrint))
+  add(query_578971, "oauth_token", newJString(oauthToken))
+  add(path_578970, "containerId", newJString(containerId))
+  add(query_578971, "alt", newJString(alt))
+  add(query_578971, "userIp", newJString(userIp))
+  add(query_578971, "quotaUser", newJString(quotaUser))
+  add(path_578970, "accountId", newJString(accountId))
+  add(query_578971, "fields", newJString(fields))
+  result = call_578969.call(path_578970, query_578971, nil, nil, nil)
 
-var tagmanagerAccountsContainersGet* = Call_TagmanagerAccountsContainersGet_589056(
+var tagmanagerAccountsContainersGet* = Call_TagmanagerAccountsContainersGet_578956(
     name: "tagmanagerAccountsContainersGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}",
-    validator: validate_TagmanagerAccountsContainersGet_589057,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersGet_589058,
+    validator: validate_TagmanagerAccountsContainersGet_578957,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersGet_578958,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersDelete_589091 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersDelete_589093(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsContainersDelete_578991 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersDelete_578993(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1203,7 +1207,7 @@ proc url_TagmanagerAccountsContainersDelete_589093(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersDelete_589092(path: JsonNode;
+proc validate_TagmanagerAccountsContainersDelete_578992(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a Container.
   ## 
@@ -1217,68 +1221,68 @@ proc validate_TagmanagerAccountsContainersDelete_589092(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589094 = path.getOrDefault("containerId")
-  valid_589094 = validateParameter(valid_589094, JString, required = true,
+  var valid_578994 = path.getOrDefault("containerId")
+  valid_578994 = validateParameter(valid_578994, JString, required = true,
                                  default = nil)
-  if valid_589094 != nil:
-    section.add "containerId", valid_589094
-  var valid_589095 = path.getOrDefault("accountId")
-  valid_589095 = validateParameter(valid_589095, JString, required = true,
+  if valid_578994 != nil:
+    section.add "containerId", valid_578994
+  var valid_578995 = path.getOrDefault("accountId")
+  valid_578995 = validateParameter(valid_578995, JString, required = true,
                                  default = nil)
-  if valid_589095 != nil:
-    section.add "accountId", valid_589095
+  if valid_578995 != nil:
+    section.add "accountId", valid_578995
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589096 = query.getOrDefault("fields")
-  valid_589096 = validateParameter(valid_589096, JString, required = false,
+  var valid_578996 = query.getOrDefault("key")
+  valid_578996 = validateParameter(valid_578996, JString, required = false,
                                  default = nil)
-  if valid_589096 != nil:
-    section.add "fields", valid_589096
-  var valid_589097 = query.getOrDefault("quotaUser")
-  valid_589097 = validateParameter(valid_589097, JString, required = false,
-                                 default = nil)
-  if valid_589097 != nil:
-    section.add "quotaUser", valid_589097
-  var valid_589098 = query.getOrDefault("alt")
-  valid_589098 = validateParameter(valid_589098, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589098 != nil:
-    section.add "alt", valid_589098
-  var valid_589099 = query.getOrDefault("oauth_token")
-  valid_589099 = validateParameter(valid_589099, JString, required = false,
-                                 default = nil)
-  if valid_589099 != nil:
-    section.add "oauth_token", valid_589099
-  var valid_589100 = query.getOrDefault("userIp")
-  valid_589100 = validateParameter(valid_589100, JString, required = false,
-                                 default = nil)
-  if valid_589100 != nil:
-    section.add "userIp", valid_589100
-  var valid_589101 = query.getOrDefault("key")
-  valid_589101 = validateParameter(valid_589101, JString, required = false,
-                                 default = nil)
-  if valid_589101 != nil:
-    section.add "key", valid_589101
-  var valid_589102 = query.getOrDefault("prettyPrint")
-  valid_589102 = validateParameter(valid_589102, JBool, required = false,
+  if valid_578996 != nil:
+    section.add "key", valid_578996
+  var valid_578997 = query.getOrDefault("prettyPrint")
+  valid_578997 = validateParameter(valid_578997, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589102 != nil:
-    section.add "prettyPrint", valid_589102
+  if valid_578997 != nil:
+    section.add "prettyPrint", valid_578997
+  var valid_578998 = query.getOrDefault("oauth_token")
+  valid_578998 = validateParameter(valid_578998, JString, required = false,
+                                 default = nil)
+  if valid_578998 != nil:
+    section.add "oauth_token", valid_578998
+  var valid_578999 = query.getOrDefault("alt")
+  valid_578999 = validateParameter(valid_578999, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578999 != nil:
+    section.add "alt", valid_578999
+  var valid_579000 = query.getOrDefault("userIp")
+  valid_579000 = validateParameter(valid_579000, JString, required = false,
+                                 default = nil)
+  if valid_579000 != nil:
+    section.add "userIp", valid_579000
+  var valid_579001 = query.getOrDefault("quotaUser")
+  valid_579001 = validateParameter(valid_579001, JString, required = false,
+                                 default = nil)
+  if valid_579001 != nil:
+    section.add "quotaUser", valid_579001
+  var valid_579002 = query.getOrDefault("fields")
+  valid_579002 = validateParameter(valid_579002, JString, required = false,
+                                 default = nil)
+  if valid_579002 != nil:
+    section.add "fields", valid_579002
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1287,67 +1291,67 @@ proc validate_TagmanagerAccountsContainersDelete_589092(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589103: Call_TagmanagerAccountsContainersDelete_589091;
+proc call*(call_579003: Call_TagmanagerAccountsContainersDelete_578991;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a Container.
   ## 
-  let valid = call_589103.validator(path, query, header, formData, body)
-  let scheme = call_589103.pickScheme
+  let valid = call_579003.validator(path, query, header, formData, body)
+  let scheme = call_579003.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589103.url(scheme.get, call_589103.host, call_589103.base,
-                         call_589103.route, valid.getOrDefault("path"),
+  let url = call_579003.url(scheme.get, call_579003.host, call_579003.base,
+                         call_579003.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589103, url, valid)
+  result = hook(call_579003, url, valid)
 
-proc call*(call_589104: Call_TagmanagerAccountsContainersDelete_589091;
-          containerId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579004: Call_TagmanagerAccountsContainersDelete_578991;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersDelete
   ## Deletes a Container.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589105 = newJObject()
-  var query_589106 = newJObject()
-  add(path_589105, "containerId", newJString(containerId))
-  add(query_589106, "fields", newJString(fields))
-  add(query_589106, "quotaUser", newJString(quotaUser))
-  add(query_589106, "alt", newJString(alt))
-  add(query_589106, "oauth_token", newJString(oauthToken))
-  add(path_589105, "accountId", newJString(accountId))
-  add(query_589106, "userIp", newJString(userIp))
-  add(query_589106, "key", newJString(key))
-  add(query_589106, "prettyPrint", newJBool(prettyPrint))
-  result = call_589104.call(path_589105, query_589106, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579005 = newJObject()
+  var query_579006 = newJObject()
+  add(query_579006, "key", newJString(key))
+  add(query_579006, "prettyPrint", newJBool(prettyPrint))
+  add(query_579006, "oauth_token", newJString(oauthToken))
+  add(path_579005, "containerId", newJString(containerId))
+  add(query_579006, "alt", newJString(alt))
+  add(query_579006, "userIp", newJString(userIp))
+  add(query_579006, "quotaUser", newJString(quotaUser))
+  add(path_579005, "accountId", newJString(accountId))
+  add(query_579006, "fields", newJString(fields))
+  result = call_579004.call(path_579005, query_579006, nil, nil, nil)
 
-var tagmanagerAccountsContainersDelete* = Call_TagmanagerAccountsContainersDelete_589091(
+var tagmanagerAccountsContainersDelete* = Call_TagmanagerAccountsContainersDelete_578991(
     name: "tagmanagerAccountsContainersDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}",
-    validator: validate_TagmanagerAccountsContainersDelete_589092,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersDelete_589093,
+    validator: validate_TagmanagerAccountsContainersDelete_578992,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersDelete_578993,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersEnvironmentsCreate_589123 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersEnvironmentsCreate_589125(protocol: Scheme;
+  Call_TagmanagerAccountsContainersEnvironmentsCreate_579023 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersEnvironmentsCreate_579025(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1366,7 +1370,7 @@ proc url_TagmanagerAccountsContainersEnvironmentsCreate_589125(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersEnvironmentsCreate_589124(
+proc validate_TagmanagerAccountsContainersEnvironmentsCreate_579024(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Creates a GTM Environment.
@@ -1381,68 +1385,68 @@ proc validate_TagmanagerAccountsContainersEnvironmentsCreate_589124(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589126 = path.getOrDefault("containerId")
-  valid_589126 = validateParameter(valid_589126, JString, required = true,
+  var valid_579026 = path.getOrDefault("containerId")
+  valid_579026 = validateParameter(valid_579026, JString, required = true,
                                  default = nil)
-  if valid_589126 != nil:
-    section.add "containerId", valid_589126
-  var valid_589127 = path.getOrDefault("accountId")
-  valid_589127 = validateParameter(valid_589127, JString, required = true,
+  if valid_579026 != nil:
+    section.add "containerId", valid_579026
+  var valid_579027 = path.getOrDefault("accountId")
+  valid_579027 = validateParameter(valid_579027, JString, required = true,
                                  default = nil)
-  if valid_589127 != nil:
-    section.add "accountId", valid_589127
+  if valid_579027 != nil:
+    section.add "accountId", valid_579027
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589128 = query.getOrDefault("fields")
-  valid_589128 = validateParameter(valid_589128, JString, required = false,
+  var valid_579028 = query.getOrDefault("key")
+  valid_579028 = validateParameter(valid_579028, JString, required = false,
                                  default = nil)
-  if valid_589128 != nil:
-    section.add "fields", valid_589128
-  var valid_589129 = query.getOrDefault("quotaUser")
-  valid_589129 = validateParameter(valid_589129, JString, required = false,
-                                 default = nil)
-  if valid_589129 != nil:
-    section.add "quotaUser", valid_589129
-  var valid_589130 = query.getOrDefault("alt")
-  valid_589130 = validateParameter(valid_589130, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589130 != nil:
-    section.add "alt", valid_589130
-  var valid_589131 = query.getOrDefault("oauth_token")
-  valid_589131 = validateParameter(valid_589131, JString, required = false,
-                                 default = nil)
-  if valid_589131 != nil:
-    section.add "oauth_token", valid_589131
-  var valid_589132 = query.getOrDefault("userIp")
-  valid_589132 = validateParameter(valid_589132, JString, required = false,
-                                 default = nil)
-  if valid_589132 != nil:
-    section.add "userIp", valid_589132
-  var valid_589133 = query.getOrDefault("key")
-  valid_589133 = validateParameter(valid_589133, JString, required = false,
-                                 default = nil)
-  if valid_589133 != nil:
-    section.add "key", valid_589133
-  var valid_589134 = query.getOrDefault("prettyPrint")
-  valid_589134 = validateParameter(valid_589134, JBool, required = false,
+  if valid_579028 != nil:
+    section.add "key", valid_579028
+  var valid_579029 = query.getOrDefault("prettyPrint")
+  valid_579029 = validateParameter(valid_579029, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589134 != nil:
-    section.add "prettyPrint", valid_589134
+  if valid_579029 != nil:
+    section.add "prettyPrint", valid_579029
+  var valid_579030 = query.getOrDefault("oauth_token")
+  valid_579030 = validateParameter(valid_579030, JString, required = false,
+                                 default = nil)
+  if valid_579030 != nil:
+    section.add "oauth_token", valid_579030
+  var valid_579031 = query.getOrDefault("alt")
+  valid_579031 = validateParameter(valid_579031, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579031 != nil:
+    section.add "alt", valid_579031
+  var valid_579032 = query.getOrDefault("userIp")
+  valid_579032 = validateParameter(valid_579032, JString, required = false,
+                                 default = nil)
+  if valid_579032 != nil:
+    section.add "userIp", valid_579032
+  var valid_579033 = query.getOrDefault("quotaUser")
+  valid_579033 = validateParameter(valid_579033, JString, required = false,
+                                 default = nil)
+  if valid_579033 != nil:
+    section.add "quotaUser", valid_579033
+  var valid_579034 = query.getOrDefault("fields")
+  valid_579034 = validateParameter(valid_579034, JString, required = false,
+                                 default = nil)
+  if valid_579034 != nil:
+    section.add "fields", valid_579034
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1454,73 +1458,73 @@ proc validate_TagmanagerAccountsContainersEnvironmentsCreate_589124(
   if body != nil:
     result.add "body", body
 
-proc call*(call_589136: Call_TagmanagerAccountsContainersEnvironmentsCreate_589123;
+proc call*(call_579036: Call_TagmanagerAccountsContainersEnvironmentsCreate_579023;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a GTM Environment.
   ## 
-  let valid = call_589136.validator(path, query, header, formData, body)
-  let scheme = call_589136.pickScheme
+  let valid = call_579036.validator(path, query, header, formData, body)
+  let scheme = call_579036.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589136.url(scheme.get, call_589136.host, call_589136.base,
-                         call_589136.route, valid.getOrDefault("path"),
+  let url = call_579036.url(scheme.get, call_579036.host, call_579036.base,
+                         call_579036.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589136, url, valid)
+  result = hook(call_579036, url, valid)
 
-proc call*(call_589137: Call_TagmanagerAccountsContainersEnvironmentsCreate_589123;
-          containerId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579037: Call_TagmanagerAccountsContainersEnvironmentsCreate_579023;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersEnvironmentsCreate
   ## Creates a GTM Environment.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589138 = newJObject()
-  var query_589139 = newJObject()
-  var body_589140 = newJObject()
-  add(path_589138, "containerId", newJString(containerId))
-  add(query_589139, "fields", newJString(fields))
-  add(query_589139, "quotaUser", newJString(quotaUser))
-  add(query_589139, "alt", newJString(alt))
-  add(query_589139, "oauth_token", newJString(oauthToken))
-  add(path_589138, "accountId", newJString(accountId))
-  add(query_589139, "userIp", newJString(userIp))
-  add(query_589139, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579038 = newJObject()
+  var query_579039 = newJObject()
+  var body_579040 = newJObject()
+  add(query_579039, "key", newJString(key))
+  add(query_579039, "prettyPrint", newJBool(prettyPrint))
+  add(query_579039, "oauth_token", newJString(oauthToken))
+  add(path_579038, "containerId", newJString(containerId))
+  add(query_579039, "alt", newJString(alt))
+  add(query_579039, "userIp", newJString(userIp))
+  add(query_579039, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589140 = body
-  add(query_589139, "prettyPrint", newJBool(prettyPrint))
-  result = call_589137.call(path_589138, query_589139, nil, nil, body_589140)
+    body_579040 = body
+  add(path_579038, "accountId", newJString(accountId))
+  add(query_579039, "fields", newJString(fields))
+  result = call_579037.call(path_579038, query_579039, nil, nil, body_579040)
 
-var tagmanagerAccountsContainersEnvironmentsCreate* = Call_TagmanagerAccountsContainersEnvironmentsCreate_589123(
+var tagmanagerAccountsContainersEnvironmentsCreate* = Call_TagmanagerAccountsContainersEnvironmentsCreate_579023(
     name: "tagmanagerAccountsContainersEnvironmentsCreate",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/environments",
-    validator: validate_TagmanagerAccountsContainersEnvironmentsCreate_589124,
+    validator: validate_TagmanagerAccountsContainersEnvironmentsCreate_579024,
     base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsContainersEnvironmentsCreate_589125,
+    url: url_TagmanagerAccountsContainersEnvironmentsCreate_579025,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersEnvironmentsList_589107 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersEnvironmentsList_589109(protocol: Scheme;
+  Call_TagmanagerAccountsContainersEnvironmentsList_579007 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersEnvironmentsList_579009(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1539,7 +1543,7 @@ proc url_TagmanagerAccountsContainersEnvironmentsList_589109(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersEnvironmentsList_589108(path: JsonNode;
+proc validate_TagmanagerAccountsContainersEnvironmentsList_579008(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all GTM Environments of a GTM Container.
   ## 
@@ -1553,68 +1557,68 @@ proc validate_TagmanagerAccountsContainersEnvironmentsList_589108(path: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589110 = path.getOrDefault("containerId")
-  valid_589110 = validateParameter(valid_589110, JString, required = true,
+  var valid_579010 = path.getOrDefault("containerId")
+  valid_579010 = validateParameter(valid_579010, JString, required = true,
                                  default = nil)
-  if valid_589110 != nil:
-    section.add "containerId", valid_589110
-  var valid_589111 = path.getOrDefault("accountId")
-  valid_589111 = validateParameter(valid_589111, JString, required = true,
+  if valid_579010 != nil:
+    section.add "containerId", valid_579010
+  var valid_579011 = path.getOrDefault("accountId")
+  valid_579011 = validateParameter(valid_579011, JString, required = true,
                                  default = nil)
-  if valid_589111 != nil:
-    section.add "accountId", valid_589111
+  if valid_579011 != nil:
+    section.add "accountId", valid_579011
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589112 = query.getOrDefault("fields")
-  valid_589112 = validateParameter(valid_589112, JString, required = false,
+  var valid_579012 = query.getOrDefault("key")
+  valid_579012 = validateParameter(valid_579012, JString, required = false,
                                  default = nil)
-  if valid_589112 != nil:
-    section.add "fields", valid_589112
-  var valid_589113 = query.getOrDefault("quotaUser")
-  valid_589113 = validateParameter(valid_589113, JString, required = false,
-                                 default = nil)
-  if valid_589113 != nil:
-    section.add "quotaUser", valid_589113
-  var valid_589114 = query.getOrDefault("alt")
-  valid_589114 = validateParameter(valid_589114, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589114 != nil:
-    section.add "alt", valid_589114
-  var valid_589115 = query.getOrDefault("oauth_token")
-  valid_589115 = validateParameter(valid_589115, JString, required = false,
-                                 default = nil)
-  if valid_589115 != nil:
-    section.add "oauth_token", valid_589115
-  var valid_589116 = query.getOrDefault("userIp")
-  valid_589116 = validateParameter(valid_589116, JString, required = false,
-                                 default = nil)
-  if valid_589116 != nil:
-    section.add "userIp", valid_589116
-  var valid_589117 = query.getOrDefault("key")
-  valid_589117 = validateParameter(valid_589117, JString, required = false,
-                                 default = nil)
-  if valid_589117 != nil:
-    section.add "key", valid_589117
-  var valid_589118 = query.getOrDefault("prettyPrint")
-  valid_589118 = validateParameter(valid_589118, JBool, required = false,
+  if valid_579012 != nil:
+    section.add "key", valid_579012
+  var valid_579013 = query.getOrDefault("prettyPrint")
+  valid_579013 = validateParameter(valid_579013, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589118 != nil:
-    section.add "prettyPrint", valid_589118
+  if valid_579013 != nil:
+    section.add "prettyPrint", valid_579013
+  var valid_579014 = query.getOrDefault("oauth_token")
+  valid_579014 = validateParameter(valid_579014, JString, required = false,
+                                 default = nil)
+  if valid_579014 != nil:
+    section.add "oauth_token", valid_579014
+  var valid_579015 = query.getOrDefault("alt")
+  valid_579015 = validateParameter(valid_579015, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579015 != nil:
+    section.add "alt", valid_579015
+  var valid_579016 = query.getOrDefault("userIp")
+  valid_579016 = validateParameter(valid_579016, JString, required = false,
+                                 default = nil)
+  if valid_579016 != nil:
+    section.add "userIp", valid_579016
+  var valid_579017 = query.getOrDefault("quotaUser")
+  valid_579017 = validateParameter(valid_579017, JString, required = false,
+                                 default = nil)
+  if valid_579017 != nil:
+    section.add "quotaUser", valid_579017
+  var valid_579018 = query.getOrDefault("fields")
+  valid_579018 = validateParameter(valid_579018, JString, required = false,
+                                 default = nil)
+  if valid_579018 != nil:
+    section.add "fields", valid_579018
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1623,67 +1627,67 @@ proc validate_TagmanagerAccountsContainersEnvironmentsList_589108(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_589119: Call_TagmanagerAccountsContainersEnvironmentsList_589107;
+proc call*(call_579019: Call_TagmanagerAccountsContainersEnvironmentsList_579007;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all GTM Environments of a GTM Container.
   ## 
-  let valid = call_589119.validator(path, query, header, formData, body)
-  let scheme = call_589119.pickScheme
+  let valid = call_579019.validator(path, query, header, formData, body)
+  let scheme = call_579019.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589119.url(scheme.get, call_589119.host, call_589119.base,
-                         call_589119.route, valid.getOrDefault("path"),
+  let url = call_579019.url(scheme.get, call_579019.host, call_579019.base,
+                         call_579019.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589119, url, valid)
+  result = hook(call_579019, url, valid)
 
-proc call*(call_589120: Call_TagmanagerAccountsContainersEnvironmentsList_589107;
-          containerId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579020: Call_TagmanagerAccountsContainersEnvironmentsList_579007;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersEnvironmentsList
   ## Lists all GTM Environments of a GTM Container.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589121 = newJObject()
-  var query_589122 = newJObject()
-  add(path_589121, "containerId", newJString(containerId))
-  add(query_589122, "fields", newJString(fields))
-  add(query_589122, "quotaUser", newJString(quotaUser))
-  add(query_589122, "alt", newJString(alt))
-  add(query_589122, "oauth_token", newJString(oauthToken))
-  add(path_589121, "accountId", newJString(accountId))
-  add(query_589122, "userIp", newJString(userIp))
-  add(query_589122, "key", newJString(key))
-  add(query_589122, "prettyPrint", newJBool(prettyPrint))
-  result = call_589120.call(path_589121, query_589122, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579021 = newJObject()
+  var query_579022 = newJObject()
+  add(query_579022, "key", newJString(key))
+  add(query_579022, "prettyPrint", newJBool(prettyPrint))
+  add(query_579022, "oauth_token", newJString(oauthToken))
+  add(path_579021, "containerId", newJString(containerId))
+  add(query_579022, "alt", newJString(alt))
+  add(query_579022, "userIp", newJString(userIp))
+  add(query_579022, "quotaUser", newJString(quotaUser))
+  add(path_579021, "accountId", newJString(accountId))
+  add(query_579022, "fields", newJString(fields))
+  result = call_579020.call(path_579021, query_579022, nil, nil, nil)
 
-var tagmanagerAccountsContainersEnvironmentsList* = Call_TagmanagerAccountsContainersEnvironmentsList_589107(
+var tagmanagerAccountsContainersEnvironmentsList* = Call_TagmanagerAccountsContainersEnvironmentsList_579007(
     name: "tagmanagerAccountsContainersEnvironmentsList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/environments",
-    validator: validate_TagmanagerAccountsContainersEnvironmentsList_589108,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersEnvironmentsList_589109,
+    validator: validate_TagmanagerAccountsContainersEnvironmentsList_579008,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersEnvironmentsList_579009,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersEnvironmentsUpdate_589158 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersEnvironmentsUpdate_589160(protocol: Scheme;
+  Call_TagmanagerAccountsContainersEnvironmentsUpdate_579058 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersEnvironmentsUpdate_579060(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1704,7 +1708,7 @@ proc url_TagmanagerAccountsContainersEnvironmentsUpdate_589160(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersEnvironmentsUpdate_589159(
+proc validate_TagmanagerAccountsContainersEnvironmentsUpdate_579059(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Updates a GTM Environment.
@@ -1714,87 +1718,87 @@ proc validate_TagmanagerAccountsContainersEnvironmentsUpdate_589159(
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   environmentId: JString (required)
   ##                : The GTM Environment ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589161 = path.getOrDefault("containerId")
-  valid_589161 = validateParameter(valid_589161, JString, required = true,
+  var valid_579061 = path.getOrDefault("containerId")
+  valid_579061 = validateParameter(valid_579061, JString, required = true,
                                  default = nil)
-  if valid_589161 != nil:
-    section.add "containerId", valid_589161
-  var valid_589162 = path.getOrDefault("accountId")
-  valid_589162 = validateParameter(valid_589162, JString, required = true,
+  if valid_579061 != nil:
+    section.add "containerId", valid_579061
+  var valid_579062 = path.getOrDefault("environmentId")
+  valid_579062 = validateParameter(valid_579062, JString, required = true,
                                  default = nil)
-  if valid_589162 != nil:
-    section.add "accountId", valid_589162
-  var valid_589163 = path.getOrDefault("environmentId")
-  valid_589163 = validateParameter(valid_589163, JString, required = true,
+  if valid_579062 != nil:
+    section.add "environmentId", valid_579062
+  var valid_579063 = path.getOrDefault("accountId")
+  valid_579063 = validateParameter(valid_579063, JString, required = true,
                                  default = nil)
-  if valid_589163 != nil:
-    section.add "environmentId", valid_589163
+  if valid_579063 != nil:
+    section.add "accountId", valid_579063
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: JString
-  ##              : When provided, this fingerprint must match the fingerprint of the environment in storage.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   fingerprint: JString
+  ##              : When provided, this fingerprint must match the fingerprint of the environment in storage.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589164 = query.getOrDefault("fields")
-  valid_589164 = validateParameter(valid_589164, JString, required = false,
+  var valid_579064 = query.getOrDefault("key")
+  valid_579064 = validateParameter(valid_579064, JString, required = false,
                                  default = nil)
-  if valid_589164 != nil:
-    section.add "fields", valid_589164
-  var valid_589165 = query.getOrDefault("fingerprint")
-  valid_589165 = validateParameter(valid_589165, JString, required = false,
-                                 default = nil)
-  if valid_589165 != nil:
-    section.add "fingerprint", valid_589165
-  var valid_589166 = query.getOrDefault("quotaUser")
-  valid_589166 = validateParameter(valid_589166, JString, required = false,
-                                 default = nil)
-  if valid_589166 != nil:
-    section.add "quotaUser", valid_589166
-  var valid_589167 = query.getOrDefault("alt")
-  valid_589167 = validateParameter(valid_589167, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589167 != nil:
-    section.add "alt", valid_589167
-  var valid_589168 = query.getOrDefault("oauth_token")
-  valid_589168 = validateParameter(valid_589168, JString, required = false,
-                                 default = nil)
-  if valid_589168 != nil:
-    section.add "oauth_token", valid_589168
-  var valid_589169 = query.getOrDefault("userIp")
-  valid_589169 = validateParameter(valid_589169, JString, required = false,
-                                 default = nil)
-  if valid_589169 != nil:
-    section.add "userIp", valid_589169
-  var valid_589170 = query.getOrDefault("key")
-  valid_589170 = validateParameter(valid_589170, JString, required = false,
-                                 default = nil)
-  if valid_589170 != nil:
-    section.add "key", valid_589170
-  var valid_589171 = query.getOrDefault("prettyPrint")
-  valid_589171 = validateParameter(valid_589171, JBool, required = false,
+  if valid_579064 != nil:
+    section.add "key", valid_579064
+  var valid_579065 = query.getOrDefault("prettyPrint")
+  valid_579065 = validateParameter(valid_579065, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589171 != nil:
-    section.add "prettyPrint", valid_589171
+  if valid_579065 != nil:
+    section.add "prettyPrint", valid_579065
+  var valid_579066 = query.getOrDefault("oauth_token")
+  valid_579066 = validateParameter(valid_579066, JString, required = false,
+                                 default = nil)
+  if valid_579066 != nil:
+    section.add "oauth_token", valid_579066
+  var valid_579067 = query.getOrDefault("fingerprint")
+  valid_579067 = validateParameter(valid_579067, JString, required = false,
+                                 default = nil)
+  if valid_579067 != nil:
+    section.add "fingerprint", valid_579067
+  var valid_579068 = query.getOrDefault("alt")
+  valid_579068 = validateParameter(valid_579068, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579068 != nil:
+    section.add "alt", valid_579068
+  var valid_579069 = query.getOrDefault("userIp")
+  valid_579069 = validateParameter(valid_579069, JString, required = false,
+                                 default = nil)
+  if valid_579069 != nil:
+    section.add "userIp", valid_579069
+  var valid_579070 = query.getOrDefault("quotaUser")
+  valid_579070 = validateParameter(valid_579070, JString, required = false,
+                                 default = nil)
+  if valid_579070 != nil:
+    section.add "quotaUser", valid_579070
+  var valid_579071 = query.getOrDefault("fields")
+  valid_579071 = validateParameter(valid_579071, JString, required = false,
+                                 default = nil)
+  if valid_579071 != nil:
+    section.add "fields", valid_579071
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1806,78 +1810,78 @@ proc validate_TagmanagerAccountsContainersEnvironmentsUpdate_589159(
   if body != nil:
     result.add "body", body
 
-proc call*(call_589173: Call_TagmanagerAccountsContainersEnvironmentsUpdate_589158;
+proc call*(call_579073: Call_TagmanagerAccountsContainersEnvironmentsUpdate_579058;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a GTM Environment.
   ## 
-  let valid = call_589173.validator(path, query, header, formData, body)
-  let scheme = call_589173.pickScheme
+  let valid = call_579073.validator(path, query, header, formData, body)
+  let scheme = call_579073.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589173.url(scheme.get, call_589173.host, call_589173.base,
-                         call_589173.route, valid.getOrDefault("path"),
+  let url = call_579073.url(scheme.get, call_579073.host, call_579073.base,
+                         call_579073.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589173, url, valid)
+  result = hook(call_579073, url, valid)
 
-proc call*(call_589174: Call_TagmanagerAccountsContainersEnvironmentsUpdate_589158;
-          containerId: string; accountId: string; environmentId: string;
-          fields: string = ""; fingerprint: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579074: Call_TagmanagerAccountsContainersEnvironmentsUpdate_579058;
+          containerId: string; environmentId: string; accountId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          fingerprint: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersEnvironmentsUpdate
   ## Updates a GTM Environment.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: string
-  ##              : When provided, this fingerprint must match the fingerprint of the environment in storage.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   fingerprint: string
+  ##              : When provided, this fingerprint must match the fingerprint of the environment in storage.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   environmentId: string (required)
   ##                : The GTM Environment ID.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589175 = newJObject()
-  var query_589176 = newJObject()
-  var body_589177 = newJObject()
-  add(path_589175, "containerId", newJString(containerId))
-  add(query_589176, "fields", newJString(fields))
-  add(query_589176, "fingerprint", newJString(fingerprint))
-  add(query_589176, "quotaUser", newJString(quotaUser))
-  add(query_589176, "alt", newJString(alt))
-  add(query_589176, "oauth_token", newJString(oauthToken))
-  add(path_589175, "accountId", newJString(accountId))
-  add(query_589176, "userIp", newJString(userIp))
-  add(query_589176, "key", newJString(key))
-  add(path_589175, "environmentId", newJString(environmentId))
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579075 = newJObject()
+  var query_579076 = newJObject()
+  var body_579077 = newJObject()
+  add(query_579076, "key", newJString(key))
+  add(query_579076, "prettyPrint", newJBool(prettyPrint))
+  add(query_579076, "oauth_token", newJString(oauthToken))
+  add(path_579075, "containerId", newJString(containerId))
+  add(query_579076, "fingerprint", newJString(fingerprint))
+  add(query_579076, "alt", newJString(alt))
+  add(query_579076, "userIp", newJString(userIp))
+  add(query_579076, "quotaUser", newJString(quotaUser))
+  add(path_579075, "environmentId", newJString(environmentId))
   if body != nil:
-    body_589177 = body
-  add(query_589176, "prettyPrint", newJBool(prettyPrint))
-  result = call_589174.call(path_589175, query_589176, nil, nil, body_589177)
+    body_579077 = body
+  add(path_579075, "accountId", newJString(accountId))
+  add(query_579076, "fields", newJString(fields))
+  result = call_579074.call(path_579075, query_579076, nil, nil, body_579077)
 
-var tagmanagerAccountsContainersEnvironmentsUpdate* = Call_TagmanagerAccountsContainersEnvironmentsUpdate_589158(
+var tagmanagerAccountsContainersEnvironmentsUpdate* = Call_TagmanagerAccountsContainersEnvironmentsUpdate_579058(
     name: "tagmanagerAccountsContainersEnvironmentsUpdate",
     meth: HttpMethod.HttpPut, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/environments/{environmentId}",
-    validator: validate_TagmanagerAccountsContainersEnvironmentsUpdate_589159,
+    validator: validate_TagmanagerAccountsContainersEnvironmentsUpdate_579059,
     base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsContainersEnvironmentsUpdate_589160,
+    url: url_TagmanagerAccountsContainersEnvironmentsUpdate_579060,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersEnvironmentsGet_589141 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersEnvironmentsGet_589143(protocol: Scheme;
+  Call_TagmanagerAccountsContainersEnvironmentsGet_579041 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersEnvironmentsGet_579043(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1898,7 +1902,7 @@ proc url_TagmanagerAccountsContainersEnvironmentsGet_589143(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersEnvironmentsGet_589142(path: JsonNode;
+proc validate_TagmanagerAccountsContainersEnvironmentsGet_579042(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a GTM Environment.
   ## 
@@ -1907,80 +1911,80 @@ proc validate_TagmanagerAccountsContainersEnvironmentsGet_589142(path: JsonNode;
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   environmentId: JString (required)
   ##                : The GTM Environment ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589144 = path.getOrDefault("containerId")
-  valid_589144 = validateParameter(valid_589144, JString, required = true,
+  var valid_579044 = path.getOrDefault("containerId")
+  valid_579044 = validateParameter(valid_579044, JString, required = true,
                                  default = nil)
-  if valid_589144 != nil:
-    section.add "containerId", valid_589144
-  var valid_589145 = path.getOrDefault("accountId")
-  valid_589145 = validateParameter(valid_589145, JString, required = true,
+  if valid_579044 != nil:
+    section.add "containerId", valid_579044
+  var valid_579045 = path.getOrDefault("environmentId")
+  valid_579045 = validateParameter(valid_579045, JString, required = true,
                                  default = nil)
-  if valid_589145 != nil:
-    section.add "accountId", valid_589145
-  var valid_589146 = path.getOrDefault("environmentId")
-  valid_589146 = validateParameter(valid_589146, JString, required = true,
+  if valid_579045 != nil:
+    section.add "environmentId", valid_579045
+  var valid_579046 = path.getOrDefault("accountId")
+  valid_579046 = validateParameter(valid_579046, JString, required = true,
                                  default = nil)
-  if valid_589146 != nil:
-    section.add "environmentId", valid_589146
+  if valid_579046 != nil:
+    section.add "accountId", valid_579046
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589147 = query.getOrDefault("fields")
-  valid_589147 = validateParameter(valid_589147, JString, required = false,
+  var valid_579047 = query.getOrDefault("key")
+  valid_579047 = validateParameter(valid_579047, JString, required = false,
                                  default = nil)
-  if valid_589147 != nil:
-    section.add "fields", valid_589147
-  var valid_589148 = query.getOrDefault("quotaUser")
-  valid_589148 = validateParameter(valid_589148, JString, required = false,
-                                 default = nil)
-  if valid_589148 != nil:
-    section.add "quotaUser", valid_589148
-  var valid_589149 = query.getOrDefault("alt")
-  valid_589149 = validateParameter(valid_589149, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589149 != nil:
-    section.add "alt", valid_589149
-  var valid_589150 = query.getOrDefault("oauth_token")
-  valid_589150 = validateParameter(valid_589150, JString, required = false,
-                                 default = nil)
-  if valid_589150 != nil:
-    section.add "oauth_token", valid_589150
-  var valid_589151 = query.getOrDefault("userIp")
-  valid_589151 = validateParameter(valid_589151, JString, required = false,
-                                 default = nil)
-  if valid_589151 != nil:
-    section.add "userIp", valid_589151
-  var valid_589152 = query.getOrDefault("key")
-  valid_589152 = validateParameter(valid_589152, JString, required = false,
-                                 default = nil)
-  if valid_589152 != nil:
-    section.add "key", valid_589152
-  var valid_589153 = query.getOrDefault("prettyPrint")
-  valid_589153 = validateParameter(valid_589153, JBool, required = false,
+  if valid_579047 != nil:
+    section.add "key", valid_579047
+  var valid_579048 = query.getOrDefault("prettyPrint")
+  valid_579048 = validateParameter(valid_579048, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589153 != nil:
-    section.add "prettyPrint", valid_589153
+  if valid_579048 != nil:
+    section.add "prettyPrint", valid_579048
+  var valid_579049 = query.getOrDefault("oauth_token")
+  valid_579049 = validateParameter(valid_579049, JString, required = false,
+                                 default = nil)
+  if valid_579049 != nil:
+    section.add "oauth_token", valid_579049
+  var valid_579050 = query.getOrDefault("alt")
+  valid_579050 = validateParameter(valid_579050, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579050 != nil:
+    section.add "alt", valid_579050
+  var valid_579051 = query.getOrDefault("userIp")
+  valid_579051 = validateParameter(valid_579051, JString, required = false,
+                                 default = nil)
+  if valid_579051 != nil:
+    section.add "userIp", valid_579051
+  var valid_579052 = query.getOrDefault("quotaUser")
+  valid_579052 = validateParameter(valid_579052, JString, required = false,
+                                 default = nil)
+  if valid_579052 != nil:
+    section.add "quotaUser", valid_579052
+  var valid_579053 = query.getOrDefault("fields")
+  valid_579053 = validateParameter(valid_579053, JString, required = false,
+                                 default = nil)
+  if valid_579053 != nil:
+    section.add "fields", valid_579053
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1989,70 +1993,70 @@ proc validate_TagmanagerAccountsContainersEnvironmentsGet_589142(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589154: Call_TagmanagerAccountsContainersEnvironmentsGet_589141;
+proc call*(call_579054: Call_TagmanagerAccountsContainersEnvironmentsGet_579041;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a GTM Environment.
   ## 
-  let valid = call_589154.validator(path, query, header, formData, body)
-  let scheme = call_589154.pickScheme
+  let valid = call_579054.validator(path, query, header, formData, body)
+  let scheme = call_579054.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589154.url(scheme.get, call_589154.host, call_589154.base,
-                         call_589154.route, valid.getOrDefault("path"),
+  let url = call_579054.url(scheme.get, call_579054.host, call_579054.base,
+                         call_579054.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589154, url, valid)
+  result = hook(call_579054, url, valid)
 
-proc call*(call_589155: Call_TagmanagerAccountsContainersEnvironmentsGet_589141;
-          containerId: string; accountId: string; environmentId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579055: Call_TagmanagerAccountsContainersEnvironmentsGet_579041;
+          containerId: string; environmentId: string; accountId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersEnvironmentsGet
   ## Gets a GTM Environment.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   environmentId: string (required)
-  ##                : The GTM Environment ID.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589156 = newJObject()
-  var query_589157 = newJObject()
-  add(path_589156, "containerId", newJString(containerId))
-  add(query_589157, "fields", newJString(fields))
-  add(query_589157, "quotaUser", newJString(quotaUser))
-  add(query_589157, "alt", newJString(alt))
-  add(query_589157, "oauth_token", newJString(oauthToken))
-  add(path_589156, "accountId", newJString(accountId))
-  add(query_589157, "userIp", newJString(userIp))
-  add(query_589157, "key", newJString(key))
-  add(path_589156, "environmentId", newJString(environmentId))
-  add(query_589157, "prettyPrint", newJBool(prettyPrint))
-  result = call_589155.call(path_589156, query_589157, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   environmentId: string (required)
+  ##                : The GTM Environment ID.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579056 = newJObject()
+  var query_579057 = newJObject()
+  add(query_579057, "key", newJString(key))
+  add(query_579057, "prettyPrint", newJBool(prettyPrint))
+  add(query_579057, "oauth_token", newJString(oauthToken))
+  add(path_579056, "containerId", newJString(containerId))
+  add(query_579057, "alt", newJString(alt))
+  add(query_579057, "userIp", newJString(userIp))
+  add(query_579057, "quotaUser", newJString(quotaUser))
+  add(path_579056, "environmentId", newJString(environmentId))
+  add(path_579056, "accountId", newJString(accountId))
+  add(query_579057, "fields", newJString(fields))
+  result = call_579055.call(path_579056, query_579057, nil, nil, nil)
 
-var tagmanagerAccountsContainersEnvironmentsGet* = Call_TagmanagerAccountsContainersEnvironmentsGet_589141(
+var tagmanagerAccountsContainersEnvironmentsGet* = Call_TagmanagerAccountsContainersEnvironmentsGet_579041(
     name: "tagmanagerAccountsContainersEnvironmentsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/environments/{environmentId}",
-    validator: validate_TagmanagerAccountsContainersEnvironmentsGet_589142,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersEnvironmentsGet_589143,
+    validator: validate_TagmanagerAccountsContainersEnvironmentsGet_579042,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersEnvironmentsGet_579043,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersEnvironmentsDelete_589178 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersEnvironmentsDelete_589180(protocol: Scheme;
+  Call_TagmanagerAccountsContainersEnvironmentsDelete_579078 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersEnvironmentsDelete_579080(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2073,7 +2077,7 @@ proc url_TagmanagerAccountsContainersEnvironmentsDelete_589180(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersEnvironmentsDelete_589179(
+proc validate_TagmanagerAccountsContainersEnvironmentsDelete_579079(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Deletes a GTM Environment.
@@ -2083,80 +2087,80 @@ proc validate_TagmanagerAccountsContainersEnvironmentsDelete_589179(
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   environmentId: JString (required)
   ##                : The GTM Environment ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589181 = path.getOrDefault("containerId")
-  valid_589181 = validateParameter(valid_589181, JString, required = true,
+  var valid_579081 = path.getOrDefault("containerId")
+  valid_579081 = validateParameter(valid_579081, JString, required = true,
                                  default = nil)
-  if valid_589181 != nil:
-    section.add "containerId", valid_589181
-  var valid_589182 = path.getOrDefault("accountId")
-  valid_589182 = validateParameter(valid_589182, JString, required = true,
+  if valid_579081 != nil:
+    section.add "containerId", valid_579081
+  var valid_579082 = path.getOrDefault("environmentId")
+  valid_579082 = validateParameter(valid_579082, JString, required = true,
                                  default = nil)
-  if valid_589182 != nil:
-    section.add "accountId", valid_589182
-  var valid_589183 = path.getOrDefault("environmentId")
-  valid_589183 = validateParameter(valid_589183, JString, required = true,
+  if valid_579082 != nil:
+    section.add "environmentId", valid_579082
+  var valid_579083 = path.getOrDefault("accountId")
+  valid_579083 = validateParameter(valid_579083, JString, required = true,
                                  default = nil)
-  if valid_589183 != nil:
-    section.add "environmentId", valid_589183
+  if valid_579083 != nil:
+    section.add "accountId", valid_579083
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589184 = query.getOrDefault("fields")
-  valid_589184 = validateParameter(valid_589184, JString, required = false,
+  var valid_579084 = query.getOrDefault("key")
+  valid_579084 = validateParameter(valid_579084, JString, required = false,
                                  default = nil)
-  if valid_589184 != nil:
-    section.add "fields", valid_589184
-  var valid_589185 = query.getOrDefault("quotaUser")
-  valid_589185 = validateParameter(valid_589185, JString, required = false,
-                                 default = nil)
-  if valid_589185 != nil:
-    section.add "quotaUser", valid_589185
-  var valid_589186 = query.getOrDefault("alt")
-  valid_589186 = validateParameter(valid_589186, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589186 != nil:
-    section.add "alt", valid_589186
-  var valid_589187 = query.getOrDefault("oauth_token")
-  valid_589187 = validateParameter(valid_589187, JString, required = false,
-                                 default = nil)
-  if valid_589187 != nil:
-    section.add "oauth_token", valid_589187
-  var valid_589188 = query.getOrDefault("userIp")
-  valid_589188 = validateParameter(valid_589188, JString, required = false,
-                                 default = nil)
-  if valid_589188 != nil:
-    section.add "userIp", valid_589188
-  var valid_589189 = query.getOrDefault("key")
-  valid_589189 = validateParameter(valid_589189, JString, required = false,
-                                 default = nil)
-  if valid_589189 != nil:
-    section.add "key", valid_589189
-  var valid_589190 = query.getOrDefault("prettyPrint")
-  valid_589190 = validateParameter(valid_589190, JBool, required = false,
+  if valid_579084 != nil:
+    section.add "key", valid_579084
+  var valid_579085 = query.getOrDefault("prettyPrint")
+  valid_579085 = validateParameter(valid_579085, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589190 != nil:
-    section.add "prettyPrint", valid_589190
+  if valid_579085 != nil:
+    section.add "prettyPrint", valid_579085
+  var valid_579086 = query.getOrDefault("oauth_token")
+  valid_579086 = validateParameter(valid_579086, JString, required = false,
+                                 default = nil)
+  if valid_579086 != nil:
+    section.add "oauth_token", valid_579086
+  var valid_579087 = query.getOrDefault("alt")
+  valid_579087 = validateParameter(valid_579087, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579087 != nil:
+    section.add "alt", valid_579087
+  var valid_579088 = query.getOrDefault("userIp")
+  valid_579088 = validateParameter(valid_579088, JString, required = false,
+                                 default = nil)
+  if valid_579088 != nil:
+    section.add "userIp", valid_579088
+  var valid_579089 = query.getOrDefault("quotaUser")
+  valid_579089 = validateParameter(valid_579089, JString, required = false,
+                                 default = nil)
+  if valid_579089 != nil:
+    section.add "quotaUser", valid_579089
+  var valid_579090 = query.getOrDefault("fields")
+  valid_579090 = validateParameter(valid_579090, JString, required = false,
+                                 default = nil)
+  if valid_579090 != nil:
+    section.add "fields", valid_579090
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2165,71 +2169,71 @@ proc validate_TagmanagerAccountsContainersEnvironmentsDelete_589179(
   if body != nil:
     result.add "body", body
 
-proc call*(call_589191: Call_TagmanagerAccountsContainersEnvironmentsDelete_589178;
+proc call*(call_579091: Call_TagmanagerAccountsContainersEnvironmentsDelete_579078;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a GTM Environment.
   ## 
-  let valid = call_589191.validator(path, query, header, formData, body)
-  let scheme = call_589191.pickScheme
+  let valid = call_579091.validator(path, query, header, formData, body)
+  let scheme = call_579091.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589191.url(scheme.get, call_589191.host, call_589191.base,
-                         call_589191.route, valid.getOrDefault("path"),
+  let url = call_579091.url(scheme.get, call_579091.host, call_579091.base,
+                         call_579091.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589191, url, valid)
+  result = hook(call_579091, url, valid)
 
-proc call*(call_589192: Call_TagmanagerAccountsContainersEnvironmentsDelete_589178;
-          containerId: string; accountId: string; environmentId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579092: Call_TagmanagerAccountsContainersEnvironmentsDelete_579078;
+          containerId: string; environmentId: string; accountId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersEnvironmentsDelete
   ## Deletes a GTM Environment.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   environmentId: string (required)
-  ##                : The GTM Environment ID.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589193 = newJObject()
-  var query_589194 = newJObject()
-  add(path_589193, "containerId", newJString(containerId))
-  add(query_589194, "fields", newJString(fields))
-  add(query_589194, "quotaUser", newJString(quotaUser))
-  add(query_589194, "alt", newJString(alt))
-  add(query_589194, "oauth_token", newJString(oauthToken))
-  add(path_589193, "accountId", newJString(accountId))
-  add(query_589194, "userIp", newJString(userIp))
-  add(query_589194, "key", newJString(key))
-  add(path_589193, "environmentId", newJString(environmentId))
-  add(query_589194, "prettyPrint", newJBool(prettyPrint))
-  result = call_589192.call(path_589193, query_589194, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   environmentId: string (required)
+  ##                : The GTM Environment ID.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579093 = newJObject()
+  var query_579094 = newJObject()
+  add(query_579094, "key", newJString(key))
+  add(query_579094, "prettyPrint", newJBool(prettyPrint))
+  add(query_579094, "oauth_token", newJString(oauthToken))
+  add(path_579093, "containerId", newJString(containerId))
+  add(query_579094, "alt", newJString(alt))
+  add(query_579094, "userIp", newJString(userIp))
+  add(query_579094, "quotaUser", newJString(quotaUser))
+  add(path_579093, "environmentId", newJString(environmentId))
+  add(path_579093, "accountId", newJString(accountId))
+  add(query_579094, "fields", newJString(fields))
+  result = call_579092.call(path_579093, query_579094, nil, nil, nil)
 
-var tagmanagerAccountsContainersEnvironmentsDelete* = Call_TagmanagerAccountsContainersEnvironmentsDelete_589178(
+var tagmanagerAccountsContainersEnvironmentsDelete* = Call_TagmanagerAccountsContainersEnvironmentsDelete_579078(
     name: "tagmanagerAccountsContainersEnvironmentsDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/environments/{environmentId}",
-    validator: validate_TagmanagerAccountsContainersEnvironmentsDelete_589179,
+    validator: validate_TagmanagerAccountsContainersEnvironmentsDelete_579079,
     base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsContainersEnvironmentsDelete_589180,
+    url: url_TagmanagerAccountsContainersEnvironmentsDelete_579080,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersFoldersCreate_589211 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersFoldersCreate_589213(protocol: Scheme;
+  Call_TagmanagerAccountsContainersFoldersCreate_579111 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersFoldersCreate_579113(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2248,7 +2252,7 @@ proc url_TagmanagerAccountsContainersFoldersCreate_589213(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersFoldersCreate_589212(path: JsonNode;
+proc validate_TagmanagerAccountsContainersFoldersCreate_579112(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a GTM Folder.
   ## 
@@ -2262,68 +2266,68 @@ proc validate_TagmanagerAccountsContainersFoldersCreate_589212(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589214 = path.getOrDefault("containerId")
-  valid_589214 = validateParameter(valid_589214, JString, required = true,
+  var valid_579114 = path.getOrDefault("containerId")
+  valid_579114 = validateParameter(valid_579114, JString, required = true,
                                  default = nil)
-  if valid_589214 != nil:
-    section.add "containerId", valid_589214
-  var valid_589215 = path.getOrDefault("accountId")
-  valid_589215 = validateParameter(valid_589215, JString, required = true,
+  if valid_579114 != nil:
+    section.add "containerId", valid_579114
+  var valid_579115 = path.getOrDefault("accountId")
+  valid_579115 = validateParameter(valid_579115, JString, required = true,
                                  default = nil)
-  if valid_589215 != nil:
-    section.add "accountId", valid_589215
+  if valid_579115 != nil:
+    section.add "accountId", valid_579115
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589216 = query.getOrDefault("fields")
-  valid_589216 = validateParameter(valid_589216, JString, required = false,
+  var valid_579116 = query.getOrDefault("key")
+  valid_579116 = validateParameter(valid_579116, JString, required = false,
                                  default = nil)
-  if valid_589216 != nil:
-    section.add "fields", valid_589216
-  var valid_589217 = query.getOrDefault("quotaUser")
-  valid_589217 = validateParameter(valid_589217, JString, required = false,
-                                 default = nil)
-  if valid_589217 != nil:
-    section.add "quotaUser", valid_589217
-  var valid_589218 = query.getOrDefault("alt")
-  valid_589218 = validateParameter(valid_589218, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589218 != nil:
-    section.add "alt", valid_589218
-  var valid_589219 = query.getOrDefault("oauth_token")
-  valid_589219 = validateParameter(valid_589219, JString, required = false,
-                                 default = nil)
-  if valid_589219 != nil:
-    section.add "oauth_token", valid_589219
-  var valid_589220 = query.getOrDefault("userIp")
-  valid_589220 = validateParameter(valid_589220, JString, required = false,
-                                 default = nil)
-  if valid_589220 != nil:
-    section.add "userIp", valid_589220
-  var valid_589221 = query.getOrDefault("key")
-  valid_589221 = validateParameter(valid_589221, JString, required = false,
-                                 default = nil)
-  if valid_589221 != nil:
-    section.add "key", valid_589221
-  var valid_589222 = query.getOrDefault("prettyPrint")
-  valid_589222 = validateParameter(valid_589222, JBool, required = false,
+  if valid_579116 != nil:
+    section.add "key", valid_579116
+  var valid_579117 = query.getOrDefault("prettyPrint")
+  valid_579117 = validateParameter(valid_579117, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589222 != nil:
-    section.add "prettyPrint", valid_589222
+  if valid_579117 != nil:
+    section.add "prettyPrint", valid_579117
+  var valid_579118 = query.getOrDefault("oauth_token")
+  valid_579118 = validateParameter(valid_579118, JString, required = false,
+                                 default = nil)
+  if valid_579118 != nil:
+    section.add "oauth_token", valid_579118
+  var valid_579119 = query.getOrDefault("alt")
+  valid_579119 = validateParameter(valid_579119, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579119 != nil:
+    section.add "alt", valid_579119
+  var valid_579120 = query.getOrDefault("userIp")
+  valid_579120 = validateParameter(valid_579120, JString, required = false,
+                                 default = nil)
+  if valid_579120 != nil:
+    section.add "userIp", valid_579120
+  var valid_579121 = query.getOrDefault("quotaUser")
+  valid_579121 = validateParameter(valid_579121, JString, required = false,
+                                 default = nil)
+  if valid_579121 != nil:
+    section.add "quotaUser", valid_579121
+  var valid_579122 = query.getOrDefault("fields")
+  valid_579122 = validateParameter(valid_579122, JString, required = false,
+                                 default = nil)
+  if valid_579122 != nil:
+    section.add "fields", valid_579122
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2335,72 +2339,72 @@ proc validate_TagmanagerAccountsContainersFoldersCreate_589212(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589224: Call_TagmanagerAccountsContainersFoldersCreate_589211;
+proc call*(call_579124: Call_TagmanagerAccountsContainersFoldersCreate_579111;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a GTM Folder.
   ## 
-  let valid = call_589224.validator(path, query, header, formData, body)
-  let scheme = call_589224.pickScheme
+  let valid = call_579124.validator(path, query, header, formData, body)
+  let scheme = call_579124.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589224.url(scheme.get, call_589224.host, call_589224.base,
-                         call_589224.route, valid.getOrDefault("path"),
+  let url = call_579124.url(scheme.get, call_579124.host, call_579124.base,
+                         call_579124.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589224, url, valid)
+  result = hook(call_579124, url, valid)
 
-proc call*(call_589225: Call_TagmanagerAccountsContainersFoldersCreate_589211;
-          containerId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579125: Call_TagmanagerAccountsContainersFoldersCreate_579111;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersFoldersCreate
   ## Creates a GTM Folder.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589226 = newJObject()
-  var query_589227 = newJObject()
-  var body_589228 = newJObject()
-  add(path_589226, "containerId", newJString(containerId))
-  add(query_589227, "fields", newJString(fields))
-  add(query_589227, "quotaUser", newJString(quotaUser))
-  add(query_589227, "alt", newJString(alt))
-  add(query_589227, "oauth_token", newJString(oauthToken))
-  add(path_589226, "accountId", newJString(accountId))
-  add(query_589227, "userIp", newJString(userIp))
-  add(query_589227, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579126 = newJObject()
+  var query_579127 = newJObject()
+  var body_579128 = newJObject()
+  add(query_579127, "key", newJString(key))
+  add(query_579127, "prettyPrint", newJBool(prettyPrint))
+  add(query_579127, "oauth_token", newJString(oauthToken))
+  add(path_579126, "containerId", newJString(containerId))
+  add(query_579127, "alt", newJString(alt))
+  add(query_579127, "userIp", newJString(userIp))
+  add(query_579127, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589228 = body
-  add(query_589227, "prettyPrint", newJBool(prettyPrint))
-  result = call_589225.call(path_589226, query_589227, nil, nil, body_589228)
+    body_579128 = body
+  add(path_579126, "accountId", newJString(accountId))
+  add(query_579127, "fields", newJString(fields))
+  result = call_579125.call(path_579126, query_579127, nil, nil, body_579128)
 
-var tagmanagerAccountsContainersFoldersCreate* = Call_TagmanagerAccountsContainersFoldersCreate_589211(
+var tagmanagerAccountsContainersFoldersCreate* = Call_TagmanagerAccountsContainersFoldersCreate_579111(
     name: "tagmanagerAccountsContainersFoldersCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/folders",
-    validator: validate_TagmanagerAccountsContainersFoldersCreate_589212,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersCreate_589213,
+    validator: validate_TagmanagerAccountsContainersFoldersCreate_579112,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersCreate_579113,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersFoldersList_589195 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersFoldersList_589197(protocol: Scheme;
+  Call_TagmanagerAccountsContainersFoldersList_579095 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersFoldersList_579097(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2419,7 +2423,7 @@ proc url_TagmanagerAccountsContainersFoldersList_589197(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersFoldersList_589196(path: JsonNode;
+proc validate_TagmanagerAccountsContainersFoldersList_579096(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all GTM Folders of a Container.
   ## 
@@ -2433,68 +2437,68 @@ proc validate_TagmanagerAccountsContainersFoldersList_589196(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589198 = path.getOrDefault("containerId")
-  valid_589198 = validateParameter(valid_589198, JString, required = true,
+  var valid_579098 = path.getOrDefault("containerId")
+  valid_579098 = validateParameter(valid_579098, JString, required = true,
                                  default = nil)
-  if valid_589198 != nil:
-    section.add "containerId", valid_589198
-  var valid_589199 = path.getOrDefault("accountId")
-  valid_589199 = validateParameter(valid_589199, JString, required = true,
+  if valid_579098 != nil:
+    section.add "containerId", valid_579098
+  var valid_579099 = path.getOrDefault("accountId")
+  valid_579099 = validateParameter(valid_579099, JString, required = true,
                                  default = nil)
-  if valid_589199 != nil:
-    section.add "accountId", valid_589199
+  if valid_579099 != nil:
+    section.add "accountId", valid_579099
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589200 = query.getOrDefault("fields")
-  valid_589200 = validateParameter(valid_589200, JString, required = false,
+  var valid_579100 = query.getOrDefault("key")
+  valid_579100 = validateParameter(valid_579100, JString, required = false,
                                  default = nil)
-  if valid_589200 != nil:
-    section.add "fields", valid_589200
-  var valid_589201 = query.getOrDefault("quotaUser")
-  valid_589201 = validateParameter(valid_589201, JString, required = false,
-                                 default = nil)
-  if valid_589201 != nil:
-    section.add "quotaUser", valid_589201
-  var valid_589202 = query.getOrDefault("alt")
-  valid_589202 = validateParameter(valid_589202, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589202 != nil:
-    section.add "alt", valid_589202
-  var valid_589203 = query.getOrDefault("oauth_token")
-  valid_589203 = validateParameter(valid_589203, JString, required = false,
-                                 default = nil)
-  if valid_589203 != nil:
-    section.add "oauth_token", valid_589203
-  var valid_589204 = query.getOrDefault("userIp")
-  valid_589204 = validateParameter(valid_589204, JString, required = false,
-                                 default = nil)
-  if valid_589204 != nil:
-    section.add "userIp", valid_589204
-  var valid_589205 = query.getOrDefault("key")
-  valid_589205 = validateParameter(valid_589205, JString, required = false,
-                                 default = nil)
-  if valid_589205 != nil:
-    section.add "key", valid_589205
-  var valid_589206 = query.getOrDefault("prettyPrint")
-  valid_589206 = validateParameter(valid_589206, JBool, required = false,
+  if valid_579100 != nil:
+    section.add "key", valid_579100
+  var valid_579101 = query.getOrDefault("prettyPrint")
+  valid_579101 = validateParameter(valid_579101, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589206 != nil:
-    section.add "prettyPrint", valid_589206
+  if valid_579101 != nil:
+    section.add "prettyPrint", valid_579101
+  var valid_579102 = query.getOrDefault("oauth_token")
+  valid_579102 = validateParameter(valid_579102, JString, required = false,
+                                 default = nil)
+  if valid_579102 != nil:
+    section.add "oauth_token", valid_579102
+  var valid_579103 = query.getOrDefault("alt")
+  valid_579103 = validateParameter(valid_579103, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579103 != nil:
+    section.add "alt", valid_579103
+  var valid_579104 = query.getOrDefault("userIp")
+  valid_579104 = validateParameter(valid_579104, JString, required = false,
+                                 default = nil)
+  if valid_579104 != nil:
+    section.add "userIp", valid_579104
+  var valid_579105 = query.getOrDefault("quotaUser")
+  valid_579105 = validateParameter(valid_579105, JString, required = false,
+                                 default = nil)
+  if valid_579105 != nil:
+    section.add "quotaUser", valid_579105
+  var valid_579106 = query.getOrDefault("fields")
+  valid_579106 = validateParameter(valid_579106, JString, required = false,
+                                 default = nil)
+  if valid_579106 != nil:
+    section.add "fields", valid_579106
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2503,67 +2507,67 @@ proc validate_TagmanagerAccountsContainersFoldersList_589196(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589207: Call_TagmanagerAccountsContainersFoldersList_589195;
+proc call*(call_579107: Call_TagmanagerAccountsContainersFoldersList_579095;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all GTM Folders of a Container.
   ## 
-  let valid = call_589207.validator(path, query, header, formData, body)
-  let scheme = call_589207.pickScheme
+  let valid = call_579107.validator(path, query, header, formData, body)
+  let scheme = call_579107.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589207.url(scheme.get, call_589207.host, call_589207.base,
-                         call_589207.route, valid.getOrDefault("path"),
+  let url = call_579107.url(scheme.get, call_579107.host, call_579107.base,
+                         call_579107.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589207, url, valid)
+  result = hook(call_579107, url, valid)
 
-proc call*(call_589208: Call_TagmanagerAccountsContainersFoldersList_589195;
-          containerId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579108: Call_TagmanagerAccountsContainersFoldersList_579095;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersFoldersList
   ## Lists all GTM Folders of a Container.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589209 = newJObject()
-  var query_589210 = newJObject()
-  add(path_589209, "containerId", newJString(containerId))
-  add(query_589210, "fields", newJString(fields))
-  add(query_589210, "quotaUser", newJString(quotaUser))
-  add(query_589210, "alt", newJString(alt))
-  add(query_589210, "oauth_token", newJString(oauthToken))
-  add(path_589209, "accountId", newJString(accountId))
-  add(query_589210, "userIp", newJString(userIp))
-  add(query_589210, "key", newJString(key))
-  add(query_589210, "prettyPrint", newJBool(prettyPrint))
-  result = call_589208.call(path_589209, query_589210, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579109 = newJObject()
+  var query_579110 = newJObject()
+  add(query_579110, "key", newJString(key))
+  add(query_579110, "prettyPrint", newJBool(prettyPrint))
+  add(query_579110, "oauth_token", newJString(oauthToken))
+  add(path_579109, "containerId", newJString(containerId))
+  add(query_579110, "alt", newJString(alt))
+  add(query_579110, "userIp", newJString(userIp))
+  add(query_579110, "quotaUser", newJString(quotaUser))
+  add(path_579109, "accountId", newJString(accountId))
+  add(query_579110, "fields", newJString(fields))
+  result = call_579108.call(path_579109, query_579110, nil, nil, nil)
 
-var tagmanagerAccountsContainersFoldersList* = Call_TagmanagerAccountsContainersFoldersList_589195(
+var tagmanagerAccountsContainersFoldersList* = Call_TagmanagerAccountsContainersFoldersList_579095(
     name: "tagmanagerAccountsContainersFoldersList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/folders",
-    validator: validate_TagmanagerAccountsContainersFoldersList_589196,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersList_589197,
+    validator: validate_TagmanagerAccountsContainersFoldersList_579096,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersList_579097,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersFoldersUpdate_589246 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersFoldersUpdate_589248(protocol: Scheme;
+  Call_TagmanagerAccountsContainersFoldersUpdate_579146 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersFoldersUpdate_579148(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2584,7 +2588,7 @@ proc url_TagmanagerAccountsContainersFoldersUpdate_589248(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersFoldersUpdate_589247(path: JsonNode;
+proc validate_TagmanagerAccountsContainersFoldersUpdate_579147(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a GTM Folder.
   ## 
@@ -2593,87 +2597,87 @@ proc validate_TagmanagerAccountsContainersFoldersUpdate_589247(path: JsonNode;
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   folderId: JString (required)
   ##           : The GTM Folder ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589249 = path.getOrDefault("containerId")
-  valid_589249 = validateParameter(valid_589249, JString, required = true,
+  var valid_579149 = path.getOrDefault("containerId")
+  valid_579149 = validateParameter(valid_579149, JString, required = true,
                                  default = nil)
-  if valid_589249 != nil:
-    section.add "containerId", valid_589249
-  var valid_589250 = path.getOrDefault("accountId")
-  valid_589250 = validateParameter(valid_589250, JString, required = true,
+  if valid_579149 != nil:
+    section.add "containerId", valid_579149
+  var valid_579150 = path.getOrDefault("folderId")
+  valid_579150 = validateParameter(valid_579150, JString, required = true,
                                  default = nil)
-  if valid_589250 != nil:
-    section.add "accountId", valid_589250
-  var valid_589251 = path.getOrDefault("folderId")
-  valid_589251 = validateParameter(valid_589251, JString, required = true,
+  if valid_579150 != nil:
+    section.add "folderId", valid_579150
+  var valid_579151 = path.getOrDefault("accountId")
+  valid_579151 = validateParameter(valid_579151, JString, required = true,
                                  default = nil)
-  if valid_589251 != nil:
-    section.add "folderId", valid_589251
+  if valid_579151 != nil:
+    section.add "accountId", valid_579151
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: JString
-  ##              : When provided, this fingerprint must match the fingerprint of the folder in storage.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   fingerprint: JString
+  ##              : When provided, this fingerprint must match the fingerprint of the folder in storage.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589252 = query.getOrDefault("fields")
-  valid_589252 = validateParameter(valid_589252, JString, required = false,
+  var valid_579152 = query.getOrDefault("key")
+  valid_579152 = validateParameter(valid_579152, JString, required = false,
                                  default = nil)
-  if valid_589252 != nil:
-    section.add "fields", valid_589252
-  var valid_589253 = query.getOrDefault("fingerprint")
-  valid_589253 = validateParameter(valid_589253, JString, required = false,
-                                 default = nil)
-  if valid_589253 != nil:
-    section.add "fingerprint", valid_589253
-  var valid_589254 = query.getOrDefault("quotaUser")
-  valid_589254 = validateParameter(valid_589254, JString, required = false,
-                                 default = nil)
-  if valid_589254 != nil:
-    section.add "quotaUser", valid_589254
-  var valid_589255 = query.getOrDefault("alt")
-  valid_589255 = validateParameter(valid_589255, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589255 != nil:
-    section.add "alt", valid_589255
-  var valid_589256 = query.getOrDefault("oauth_token")
-  valid_589256 = validateParameter(valid_589256, JString, required = false,
-                                 default = nil)
-  if valid_589256 != nil:
-    section.add "oauth_token", valid_589256
-  var valid_589257 = query.getOrDefault("userIp")
-  valid_589257 = validateParameter(valid_589257, JString, required = false,
-                                 default = nil)
-  if valid_589257 != nil:
-    section.add "userIp", valid_589257
-  var valid_589258 = query.getOrDefault("key")
-  valid_589258 = validateParameter(valid_589258, JString, required = false,
-                                 default = nil)
-  if valid_589258 != nil:
-    section.add "key", valid_589258
-  var valid_589259 = query.getOrDefault("prettyPrint")
-  valid_589259 = validateParameter(valid_589259, JBool, required = false,
+  if valid_579152 != nil:
+    section.add "key", valid_579152
+  var valid_579153 = query.getOrDefault("prettyPrint")
+  valid_579153 = validateParameter(valid_579153, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589259 != nil:
-    section.add "prettyPrint", valid_589259
+  if valid_579153 != nil:
+    section.add "prettyPrint", valid_579153
+  var valid_579154 = query.getOrDefault("oauth_token")
+  valid_579154 = validateParameter(valid_579154, JString, required = false,
+                                 default = nil)
+  if valid_579154 != nil:
+    section.add "oauth_token", valid_579154
+  var valid_579155 = query.getOrDefault("fingerprint")
+  valid_579155 = validateParameter(valid_579155, JString, required = false,
+                                 default = nil)
+  if valid_579155 != nil:
+    section.add "fingerprint", valid_579155
+  var valid_579156 = query.getOrDefault("alt")
+  valid_579156 = validateParameter(valid_579156, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579156 != nil:
+    section.add "alt", valid_579156
+  var valid_579157 = query.getOrDefault("userIp")
+  valid_579157 = validateParameter(valid_579157, JString, required = false,
+                                 default = nil)
+  if valid_579157 != nil:
+    section.add "userIp", valid_579157
+  var valid_579158 = query.getOrDefault("quotaUser")
+  valid_579158 = validateParameter(valid_579158, JString, required = false,
+                                 default = nil)
+  if valid_579158 != nil:
+    section.add "quotaUser", valid_579158
+  var valid_579159 = query.getOrDefault("fields")
+  valid_579159 = validateParameter(valid_579159, JString, required = false,
+                                 default = nil)
+  if valid_579159 != nil:
+    section.add "fields", valid_579159
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2685,78 +2689,78 @@ proc validate_TagmanagerAccountsContainersFoldersUpdate_589247(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589261: Call_TagmanagerAccountsContainersFoldersUpdate_589246;
+proc call*(call_579161: Call_TagmanagerAccountsContainersFoldersUpdate_579146;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a GTM Folder.
   ## 
-  let valid = call_589261.validator(path, query, header, formData, body)
-  let scheme = call_589261.pickScheme
+  let valid = call_579161.validator(path, query, header, formData, body)
+  let scheme = call_579161.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589261.url(scheme.get, call_589261.host, call_589261.base,
-                         call_589261.route, valid.getOrDefault("path"),
+  let url = call_579161.url(scheme.get, call_579161.host, call_579161.base,
+                         call_579161.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589261, url, valid)
+  result = hook(call_579161, url, valid)
 
-proc call*(call_589262: Call_TagmanagerAccountsContainersFoldersUpdate_589246;
-          containerId: string; accountId: string; folderId: string;
-          fields: string = ""; fingerprint: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579162: Call_TagmanagerAccountsContainersFoldersUpdate_579146;
+          containerId: string; folderId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; fingerprint: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersFoldersUpdate
   ## Updates a GTM Folder.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: string
-  ##              : When provided, this fingerprint must match the fingerprint of the folder in storage.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   folderId: string (required)
-  ##           : The GTM Folder ID.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589263 = newJObject()
-  var query_589264 = newJObject()
-  var body_589265 = newJObject()
-  add(path_589263, "containerId", newJString(containerId))
-  add(query_589264, "fields", newJString(fields))
-  add(query_589264, "fingerprint", newJString(fingerprint))
-  add(query_589264, "quotaUser", newJString(quotaUser))
-  add(query_589264, "alt", newJString(alt))
-  add(query_589264, "oauth_token", newJString(oauthToken))
-  add(path_589263, "accountId", newJString(accountId))
-  add(query_589264, "userIp", newJString(userIp))
-  add(path_589263, "folderId", newJString(folderId))
-  add(query_589264, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   fingerprint: string
+  ##              : When provided, this fingerprint must match the fingerprint of the folder in storage.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   folderId: string (required)
+  ##           : The GTM Folder ID.
+  ##   body: JObject
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579163 = newJObject()
+  var query_579164 = newJObject()
+  var body_579165 = newJObject()
+  add(query_579164, "key", newJString(key))
+  add(query_579164, "prettyPrint", newJBool(prettyPrint))
+  add(query_579164, "oauth_token", newJString(oauthToken))
+  add(path_579163, "containerId", newJString(containerId))
+  add(query_579164, "fingerprint", newJString(fingerprint))
+  add(query_579164, "alt", newJString(alt))
+  add(query_579164, "userIp", newJString(userIp))
+  add(query_579164, "quotaUser", newJString(quotaUser))
+  add(path_579163, "folderId", newJString(folderId))
   if body != nil:
-    body_589265 = body
-  add(query_589264, "prettyPrint", newJBool(prettyPrint))
-  result = call_589262.call(path_589263, query_589264, nil, nil, body_589265)
+    body_579165 = body
+  add(path_579163, "accountId", newJString(accountId))
+  add(query_579164, "fields", newJString(fields))
+  result = call_579162.call(path_579163, query_579164, nil, nil, body_579165)
 
-var tagmanagerAccountsContainersFoldersUpdate* = Call_TagmanagerAccountsContainersFoldersUpdate_589246(
+var tagmanagerAccountsContainersFoldersUpdate* = Call_TagmanagerAccountsContainersFoldersUpdate_579146(
     name: "tagmanagerAccountsContainersFoldersUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/folders/{folderId}",
-    validator: validate_TagmanagerAccountsContainersFoldersUpdate_589247,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersUpdate_589248,
+    validator: validate_TagmanagerAccountsContainersFoldersUpdate_579147,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersUpdate_579148,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersFoldersGet_589229 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersFoldersGet_589231(protocol: Scheme;
+  Call_TagmanagerAccountsContainersFoldersGet_579129 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersFoldersGet_579131(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2777,7 +2781,7 @@ proc url_TagmanagerAccountsContainersFoldersGet_589231(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersFoldersGet_589230(path: JsonNode;
+proc validate_TagmanagerAccountsContainersFoldersGet_579130(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a GTM Folder.
   ## 
@@ -2786,80 +2790,80 @@ proc validate_TagmanagerAccountsContainersFoldersGet_589230(path: JsonNode;
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   folderId: JString (required)
   ##           : The GTM Folder ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589232 = path.getOrDefault("containerId")
-  valid_589232 = validateParameter(valid_589232, JString, required = true,
+  var valid_579132 = path.getOrDefault("containerId")
+  valid_579132 = validateParameter(valid_579132, JString, required = true,
                                  default = nil)
-  if valid_589232 != nil:
-    section.add "containerId", valid_589232
-  var valid_589233 = path.getOrDefault("accountId")
-  valid_589233 = validateParameter(valid_589233, JString, required = true,
+  if valid_579132 != nil:
+    section.add "containerId", valid_579132
+  var valid_579133 = path.getOrDefault("folderId")
+  valid_579133 = validateParameter(valid_579133, JString, required = true,
                                  default = nil)
-  if valid_589233 != nil:
-    section.add "accountId", valid_589233
-  var valid_589234 = path.getOrDefault("folderId")
-  valid_589234 = validateParameter(valid_589234, JString, required = true,
+  if valid_579133 != nil:
+    section.add "folderId", valid_579133
+  var valid_579134 = path.getOrDefault("accountId")
+  valid_579134 = validateParameter(valid_579134, JString, required = true,
                                  default = nil)
-  if valid_589234 != nil:
-    section.add "folderId", valid_589234
+  if valid_579134 != nil:
+    section.add "accountId", valid_579134
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589235 = query.getOrDefault("fields")
-  valid_589235 = validateParameter(valid_589235, JString, required = false,
+  var valid_579135 = query.getOrDefault("key")
+  valid_579135 = validateParameter(valid_579135, JString, required = false,
                                  default = nil)
-  if valid_589235 != nil:
-    section.add "fields", valid_589235
-  var valid_589236 = query.getOrDefault("quotaUser")
-  valid_589236 = validateParameter(valid_589236, JString, required = false,
-                                 default = nil)
-  if valid_589236 != nil:
-    section.add "quotaUser", valid_589236
-  var valid_589237 = query.getOrDefault("alt")
-  valid_589237 = validateParameter(valid_589237, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589237 != nil:
-    section.add "alt", valid_589237
-  var valid_589238 = query.getOrDefault("oauth_token")
-  valid_589238 = validateParameter(valid_589238, JString, required = false,
-                                 default = nil)
-  if valid_589238 != nil:
-    section.add "oauth_token", valid_589238
-  var valid_589239 = query.getOrDefault("userIp")
-  valid_589239 = validateParameter(valid_589239, JString, required = false,
-                                 default = nil)
-  if valid_589239 != nil:
-    section.add "userIp", valid_589239
-  var valid_589240 = query.getOrDefault("key")
-  valid_589240 = validateParameter(valid_589240, JString, required = false,
-                                 default = nil)
-  if valid_589240 != nil:
-    section.add "key", valid_589240
-  var valid_589241 = query.getOrDefault("prettyPrint")
-  valid_589241 = validateParameter(valid_589241, JBool, required = false,
+  if valid_579135 != nil:
+    section.add "key", valid_579135
+  var valid_579136 = query.getOrDefault("prettyPrint")
+  valid_579136 = validateParameter(valid_579136, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589241 != nil:
-    section.add "prettyPrint", valid_589241
+  if valid_579136 != nil:
+    section.add "prettyPrint", valid_579136
+  var valid_579137 = query.getOrDefault("oauth_token")
+  valid_579137 = validateParameter(valid_579137, JString, required = false,
+                                 default = nil)
+  if valid_579137 != nil:
+    section.add "oauth_token", valid_579137
+  var valid_579138 = query.getOrDefault("alt")
+  valid_579138 = validateParameter(valid_579138, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579138 != nil:
+    section.add "alt", valid_579138
+  var valid_579139 = query.getOrDefault("userIp")
+  valid_579139 = validateParameter(valid_579139, JString, required = false,
+                                 default = nil)
+  if valid_579139 != nil:
+    section.add "userIp", valid_579139
+  var valid_579140 = query.getOrDefault("quotaUser")
+  valid_579140 = validateParameter(valid_579140, JString, required = false,
+                                 default = nil)
+  if valid_579140 != nil:
+    section.add "quotaUser", valid_579140
+  var valid_579141 = query.getOrDefault("fields")
+  valid_579141 = validateParameter(valid_579141, JString, required = false,
+                                 default = nil)
+  if valid_579141 != nil:
+    section.add "fields", valid_579141
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2868,71 +2872,70 @@ proc validate_TagmanagerAccountsContainersFoldersGet_589230(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589242: Call_TagmanagerAccountsContainersFoldersGet_589229;
+proc call*(call_579142: Call_TagmanagerAccountsContainersFoldersGet_579129;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a GTM Folder.
   ## 
-  let valid = call_589242.validator(path, query, header, formData, body)
-  let scheme = call_589242.pickScheme
+  let valid = call_579142.validator(path, query, header, formData, body)
+  let scheme = call_579142.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589242.url(scheme.get, call_589242.host, call_589242.base,
-                         call_589242.route, valid.getOrDefault("path"),
+  let url = call_579142.url(scheme.get, call_579142.host, call_579142.base,
+                         call_579142.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589242, url, valid)
+  result = hook(call_579142, url, valid)
 
-proc call*(call_589243: Call_TagmanagerAccountsContainersFoldersGet_589229;
-          containerId: string; accountId: string; folderId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579143: Call_TagmanagerAccountsContainersFoldersGet_579129;
+          containerId: string; folderId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersFoldersGet
   ## Gets a GTM Folder.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   folderId: string (required)
-  ##           : The GTM Folder ID.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589244 = newJObject()
-  var query_589245 = newJObject()
-  add(path_589244, "containerId", newJString(containerId))
-  add(query_589245, "fields", newJString(fields))
-  add(query_589245, "quotaUser", newJString(quotaUser))
-  add(query_589245, "alt", newJString(alt))
-  add(query_589245, "oauth_token", newJString(oauthToken))
-  add(path_589244, "accountId", newJString(accountId))
-  add(query_589245, "userIp", newJString(userIp))
-  add(path_589244, "folderId", newJString(folderId))
-  add(query_589245, "key", newJString(key))
-  add(query_589245, "prettyPrint", newJBool(prettyPrint))
-  result = call_589243.call(path_589244, query_589245, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   folderId: string (required)
+  ##           : The GTM Folder ID.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579144 = newJObject()
+  var query_579145 = newJObject()
+  add(query_579145, "key", newJString(key))
+  add(query_579145, "prettyPrint", newJBool(prettyPrint))
+  add(query_579145, "oauth_token", newJString(oauthToken))
+  add(path_579144, "containerId", newJString(containerId))
+  add(query_579145, "alt", newJString(alt))
+  add(query_579145, "userIp", newJString(userIp))
+  add(query_579145, "quotaUser", newJString(quotaUser))
+  add(path_579144, "folderId", newJString(folderId))
+  add(path_579144, "accountId", newJString(accountId))
+  add(query_579145, "fields", newJString(fields))
+  result = call_579143.call(path_579144, query_579145, nil, nil, nil)
 
-var tagmanagerAccountsContainersFoldersGet* = Call_TagmanagerAccountsContainersFoldersGet_589229(
+var tagmanagerAccountsContainersFoldersGet* = Call_TagmanagerAccountsContainersFoldersGet_579129(
     name: "tagmanagerAccountsContainersFoldersGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/folders/{folderId}",
-    validator: validate_TagmanagerAccountsContainersFoldersGet_589230,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersGet_589231,
+    validator: validate_TagmanagerAccountsContainersFoldersGet_579130,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersGet_579131,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersFoldersDelete_589266 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersFoldersDelete_589268(protocol: Scheme;
+  Call_TagmanagerAccountsContainersFoldersDelete_579166 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersFoldersDelete_579168(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2953,7 +2956,7 @@ proc url_TagmanagerAccountsContainersFoldersDelete_589268(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersFoldersDelete_589267(path: JsonNode;
+proc validate_TagmanagerAccountsContainersFoldersDelete_579167(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a GTM Folder.
   ## 
@@ -2962,80 +2965,80 @@ proc validate_TagmanagerAccountsContainersFoldersDelete_589267(path: JsonNode;
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   folderId: JString (required)
   ##           : The GTM Folder ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589269 = path.getOrDefault("containerId")
-  valid_589269 = validateParameter(valid_589269, JString, required = true,
+  var valid_579169 = path.getOrDefault("containerId")
+  valid_579169 = validateParameter(valid_579169, JString, required = true,
                                  default = nil)
-  if valid_589269 != nil:
-    section.add "containerId", valid_589269
-  var valid_589270 = path.getOrDefault("accountId")
-  valid_589270 = validateParameter(valid_589270, JString, required = true,
+  if valid_579169 != nil:
+    section.add "containerId", valid_579169
+  var valid_579170 = path.getOrDefault("folderId")
+  valid_579170 = validateParameter(valid_579170, JString, required = true,
                                  default = nil)
-  if valid_589270 != nil:
-    section.add "accountId", valid_589270
-  var valid_589271 = path.getOrDefault("folderId")
-  valid_589271 = validateParameter(valid_589271, JString, required = true,
+  if valid_579170 != nil:
+    section.add "folderId", valid_579170
+  var valid_579171 = path.getOrDefault("accountId")
+  valid_579171 = validateParameter(valid_579171, JString, required = true,
                                  default = nil)
-  if valid_589271 != nil:
-    section.add "folderId", valid_589271
+  if valid_579171 != nil:
+    section.add "accountId", valid_579171
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589272 = query.getOrDefault("fields")
-  valid_589272 = validateParameter(valid_589272, JString, required = false,
+  var valid_579172 = query.getOrDefault("key")
+  valid_579172 = validateParameter(valid_579172, JString, required = false,
                                  default = nil)
-  if valid_589272 != nil:
-    section.add "fields", valid_589272
-  var valid_589273 = query.getOrDefault("quotaUser")
-  valid_589273 = validateParameter(valid_589273, JString, required = false,
-                                 default = nil)
-  if valid_589273 != nil:
-    section.add "quotaUser", valid_589273
-  var valid_589274 = query.getOrDefault("alt")
-  valid_589274 = validateParameter(valid_589274, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589274 != nil:
-    section.add "alt", valid_589274
-  var valid_589275 = query.getOrDefault("oauth_token")
-  valid_589275 = validateParameter(valid_589275, JString, required = false,
-                                 default = nil)
-  if valid_589275 != nil:
-    section.add "oauth_token", valid_589275
-  var valid_589276 = query.getOrDefault("userIp")
-  valid_589276 = validateParameter(valid_589276, JString, required = false,
-                                 default = nil)
-  if valid_589276 != nil:
-    section.add "userIp", valid_589276
-  var valid_589277 = query.getOrDefault("key")
-  valid_589277 = validateParameter(valid_589277, JString, required = false,
-                                 default = nil)
-  if valid_589277 != nil:
-    section.add "key", valid_589277
-  var valid_589278 = query.getOrDefault("prettyPrint")
-  valid_589278 = validateParameter(valid_589278, JBool, required = false,
+  if valid_579172 != nil:
+    section.add "key", valid_579172
+  var valid_579173 = query.getOrDefault("prettyPrint")
+  valid_579173 = validateParameter(valid_579173, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589278 != nil:
-    section.add "prettyPrint", valid_589278
+  if valid_579173 != nil:
+    section.add "prettyPrint", valid_579173
+  var valid_579174 = query.getOrDefault("oauth_token")
+  valid_579174 = validateParameter(valid_579174, JString, required = false,
+                                 default = nil)
+  if valid_579174 != nil:
+    section.add "oauth_token", valid_579174
+  var valid_579175 = query.getOrDefault("alt")
+  valid_579175 = validateParameter(valid_579175, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579175 != nil:
+    section.add "alt", valid_579175
+  var valid_579176 = query.getOrDefault("userIp")
+  valid_579176 = validateParameter(valid_579176, JString, required = false,
+                                 default = nil)
+  if valid_579176 != nil:
+    section.add "userIp", valid_579176
+  var valid_579177 = query.getOrDefault("quotaUser")
+  valid_579177 = validateParameter(valid_579177, JString, required = false,
+                                 default = nil)
+  if valid_579177 != nil:
+    section.add "quotaUser", valid_579177
+  var valid_579178 = query.getOrDefault("fields")
+  valid_579178 = validateParameter(valid_579178, JString, required = false,
+                                 default = nil)
+  if valid_579178 != nil:
+    section.add "fields", valid_579178
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3044,71 +3047,70 @@ proc validate_TagmanagerAccountsContainersFoldersDelete_589267(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589279: Call_TagmanagerAccountsContainersFoldersDelete_589266;
+proc call*(call_579179: Call_TagmanagerAccountsContainersFoldersDelete_579166;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a GTM Folder.
   ## 
-  let valid = call_589279.validator(path, query, header, formData, body)
-  let scheme = call_589279.pickScheme
+  let valid = call_579179.validator(path, query, header, formData, body)
+  let scheme = call_579179.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589279.url(scheme.get, call_589279.host, call_589279.base,
-                         call_589279.route, valid.getOrDefault("path"),
+  let url = call_579179.url(scheme.get, call_579179.host, call_579179.base,
+                         call_579179.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589279, url, valid)
+  result = hook(call_579179, url, valid)
 
-proc call*(call_589280: Call_TagmanagerAccountsContainersFoldersDelete_589266;
-          containerId: string; accountId: string; folderId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579180: Call_TagmanagerAccountsContainersFoldersDelete_579166;
+          containerId: string; folderId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersFoldersDelete
   ## Deletes a GTM Folder.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   folderId: string (required)
-  ##           : The GTM Folder ID.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589281 = newJObject()
-  var query_589282 = newJObject()
-  add(path_589281, "containerId", newJString(containerId))
-  add(query_589282, "fields", newJString(fields))
-  add(query_589282, "quotaUser", newJString(quotaUser))
-  add(query_589282, "alt", newJString(alt))
-  add(query_589282, "oauth_token", newJString(oauthToken))
-  add(path_589281, "accountId", newJString(accountId))
-  add(query_589282, "userIp", newJString(userIp))
-  add(path_589281, "folderId", newJString(folderId))
-  add(query_589282, "key", newJString(key))
-  add(query_589282, "prettyPrint", newJBool(prettyPrint))
-  result = call_589280.call(path_589281, query_589282, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   folderId: string (required)
+  ##           : The GTM Folder ID.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579181 = newJObject()
+  var query_579182 = newJObject()
+  add(query_579182, "key", newJString(key))
+  add(query_579182, "prettyPrint", newJBool(prettyPrint))
+  add(query_579182, "oauth_token", newJString(oauthToken))
+  add(path_579181, "containerId", newJString(containerId))
+  add(query_579182, "alt", newJString(alt))
+  add(query_579182, "userIp", newJString(userIp))
+  add(query_579182, "quotaUser", newJString(quotaUser))
+  add(path_579181, "folderId", newJString(folderId))
+  add(path_579181, "accountId", newJString(accountId))
+  add(query_579182, "fields", newJString(fields))
+  result = call_579180.call(path_579181, query_579182, nil, nil, nil)
 
-var tagmanagerAccountsContainersFoldersDelete* = Call_TagmanagerAccountsContainersFoldersDelete_589266(
+var tagmanagerAccountsContainersFoldersDelete* = Call_TagmanagerAccountsContainersFoldersDelete_579166(
     name: "tagmanagerAccountsContainersFoldersDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/folders/{folderId}",
-    validator: validate_TagmanagerAccountsContainersFoldersDelete_589267,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersDelete_589268,
+    validator: validate_TagmanagerAccountsContainersFoldersDelete_579167,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersFoldersDelete_579168,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersFoldersEntitiesList_589283 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersFoldersEntitiesList_589285(protocol: Scheme;
+  Call_TagmanagerAccountsContainersFoldersEntitiesList_579183 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersFoldersEntitiesList_579185(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3130,7 +3132,7 @@ proc url_TagmanagerAccountsContainersFoldersEntitiesList_589285(protocol: Scheme
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersFoldersEntitiesList_589284(
+proc validate_TagmanagerAccountsContainersFoldersEntitiesList_579184(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## List all entities in a GTM Folder.
@@ -3140,80 +3142,80 @@ proc validate_TagmanagerAccountsContainersFoldersEntitiesList_589284(
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   folderId: JString (required)
   ##           : The GTM Folder ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589286 = path.getOrDefault("containerId")
-  valid_589286 = validateParameter(valid_589286, JString, required = true,
+  var valid_579186 = path.getOrDefault("containerId")
+  valid_579186 = validateParameter(valid_579186, JString, required = true,
                                  default = nil)
-  if valid_589286 != nil:
-    section.add "containerId", valid_589286
-  var valid_589287 = path.getOrDefault("accountId")
-  valid_589287 = validateParameter(valid_589287, JString, required = true,
+  if valid_579186 != nil:
+    section.add "containerId", valid_579186
+  var valid_579187 = path.getOrDefault("folderId")
+  valid_579187 = validateParameter(valid_579187, JString, required = true,
                                  default = nil)
-  if valid_589287 != nil:
-    section.add "accountId", valid_589287
-  var valid_589288 = path.getOrDefault("folderId")
-  valid_589288 = validateParameter(valid_589288, JString, required = true,
+  if valid_579187 != nil:
+    section.add "folderId", valid_579187
+  var valid_579188 = path.getOrDefault("accountId")
+  valid_579188 = validateParameter(valid_579188, JString, required = true,
                                  default = nil)
-  if valid_589288 != nil:
-    section.add "folderId", valid_589288
+  if valid_579188 != nil:
+    section.add "accountId", valid_579188
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589289 = query.getOrDefault("fields")
-  valid_589289 = validateParameter(valid_589289, JString, required = false,
+  var valid_579189 = query.getOrDefault("key")
+  valid_579189 = validateParameter(valid_579189, JString, required = false,
                                  default = nil)
-  if valid_589289 != nil:
-    section.add "fields", valid_589289
-  var valid_589290 = query.getOrDefault("quotaUser")
-  valid_589290 = validateParameter(valid_589290, JString, required = false,
-                                 default = nil)
-  if valid_589290 != nil:
-    section.add "quotaUser", valid_589290
-  var valid_589291 = query.getOrDefault("alt")
-  valid_589291 = validateParameter(valid_589291, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589291 != nil:
-    section.add "alt", valid_589291
-  var valid_589292 = query.getOrDefault("oauth_token")
-  valid_589292 = validateParameter(valid_589292, JString, required = false,
-                                 default = nil)
-  if valid_589292 != nil:
-    section.add "oauth_token", valid_589292
-  var valid_589293 = query.getOrDefault("userIp")
-  valid_589293 = validateParameter(valid_589293, JString, required = false,
-                                 default = nil)
-  if valid_589293 != nil:
-    section.add "userIp", valid_589293
-  var valid_589294 = query.getOrDefault("key")
-  valid_589294 = validateParameter(valid_589294, JString, required = false,
-                                 default = nil)
-  if valid_589294 != nil:
-    section.add "key", valid_589294
-  var valid_589295 = query.getOrDefault("prettyPrint")
-  valid_589295 = validateParameter(valid_589295, JBool, required = false,
+  if valid_579189 != nil:
+    section.add "key", valid_579189
+  var valid_579190 = query.getOrDefault("prettyPrint")
+  valid_579190 = validateParameter(valid_579190, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589295 != nil:
-    section.add "prettyPrint", valid_589295
+  if valid_579190 != nil:
+    section.add "prettyPrint", valid_579190
+  var valid_579191 = query.getOrDefault("oauth_token")
+  valid_579191 = validateParameter(valid_579191, JString, required = false,
+                                 default = nil)
+  if valid_579191 != nil:
+    section.add "oauth_token", valid_579191
+  var valid_579192 = query.getOrDefault("alt")
+  valid_579192 = validateParameter(valid_579192, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579192 != nil:
+    section.add "alt", valid_579192
+  var valid_579193 = query.getOrDefault("userIp")
+  valid_579193 = validateParameter(valid_579193, JString, required = false,
+                                 default = nil)
+  if valid_579193 != nil:
+    section.add "userIp", valid_579193
+  var valid_579194 = query.getOrDefault("quotaUser")
+  valid_579194 = validateParameter(valid_579194, JString, required = false,
+                                 default = nil)
+  if valid_579194 != nil:
+    section.add "quotaUser", valid_579194
+  var valid_579195 = query.getOrDefault("fields")
+  valid_579195 = validateParameter(valid_579195, JString, required = false,
+                                 default = nil)
+  if valid_579195 != nil:
+    section.add "fields", valid_579195
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3222,71 +3224,70 @@ proc validate_TagmanagerAccountsContainersFoldersEntitiesList_589284(
   if body != nil:
     result.add "body", body
 
-proc call*(call_589296: Call_TagmanagerAccountsContainersFoldersEntitiesList_589283;
+proc call*(call_579196: Call_TagmanagerAccountsContainersFoldersEntitiesList_579183;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List all entities in a GTM Folder.
   ## 
-  let valid = call_589296.validator(path, query, header, formData, body)
-  let scheme = call_589296.pickScheme
+  let valid = call_579196.validator(path, query, header, formData, body)
+  let scheme = call_579196.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589296.url(scheme.get, call_589296.host, call_589296.base,
-                         call_589296.route, valid.getOrDefault("path"),
+  let url = call_579196.url(scheme.get, call_579196.host, call_579196.base,
+                         call_579196.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589296, url, valid)
+  result = hook(call_579196, url, valid)
 
-proc call*(call_589297: Call_TagmanagerAccountsContainersFoldersEntitiesList_589283;
-          containerId: string; accountId: string; folderId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579197: Call_TagmanagerAccountsContainersFoldersEntitiesList_579183;
+          containerId: string; folderId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersFoldersEntitiesList
   ## List all entities in a GTM Folder.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   folderId: string (required)
-  ##           : The GTM Folder ID.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589298 = newJObject()
-  var query_589299 = newJObject()
-  add(path_589298, "containerId", newJString(containerId))
-  add(query_589299, "fields", newJString(fields))
-  add(query_589299, "quotaUser", newJString(quotaUser))
-  add(query_589299, "alt", newJString(alt))
-  add(query_589299, "oauth_token", newJString(oauthToken))
-  add(path_589298, "accountId", newJString(accountId))
-  add(query_589299, "userIp", newJString(userIp))
-  add(path_589298, "folderId", newJString(folderId))
-  add(query_589299, "key", newJString(key))
-  add(query_589299, "prettyPrint", newJBool(prettyPrint))
-  result = call_589297.call(path_589298, query_589299, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   folderId: string (required)
+  ##           : The GTM Folder ID.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579198 = newJObject()
+  var query_579199 = newJObject()
+  add(query_579199, "key", newJString(key))
+  add(query_579199, "prettyPrint", newJBool(prettyPrint))
+  add(query_579199, "oauth_token", newJString(oauthToken))
+  add(path_579198, "containerId", newJString(containerId))
+  add(query_579199, "alt", newJString(alt))
+  add(query_579199, "userIp", newJString(userIp))
+  add(query_579199, "quotaUser", newJString(quotaUser))
+  add(path_579198, "folderId", newJString(folderId))
+  add(path_579198, "accountId", newJString(accountId))
+  add(query_579199, "fields", newJString(fields))
+  result = call_579197.call(path_579198, query_579199, nil, nil, nil)
 
-var tagmanagerAccountsContainersFoldersEntitiesList* = Call_TagmanagerAccountsContainersFoldersEntitiesList_589283(
+var tagmanagerAccountsContainersFoldersEntitiesList* = Call_TagmanagerAccountsContainersFoldersEntitiesList_579183(
     name: "tagmanagerAccountsContainersFoldersEntitiesList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/folders/{folderId}/entities",
-    validator: validate_TagmanagerAccountsContainersFoldersEntitiesList_589284,
+    validator: validate_TagmanagerAccountsContainersFoldersEntitiesList_579184,
     base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsContainersFoldersEntitiesList_589285,
+    url: url_TagmanagerAccountsContainersFoldersEntitiesList_579185,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersMoveFoldersUpdate_589300 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersMoveFoldersUpdate_589302(protocol: Scheme;
+  Call_TagmanagerAccountsContainersMoveFoldersUpdate_579200 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersMoveFoldersUpdate_579202(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3307,7 +3308,7 @@ proc url_TagmanagerAccountsContainersMoveFoldersUpdate_589302(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersMoveFoldersUpdate_589301(
+proc validate_TagmanagerAccountsContainersMoveFoldersUpdate_579201(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Moves entities to a GTM Folder.
@@ -3317,101 +3318,101 @@ proc validate_TagmanagerAccountsContainersMoveFoldersUpdate_589301(
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   folderId: JString (required)
   ##           : The GTM Folder ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589303 = path.getOrDefault("containerId")
-  valid_589303 = validateParameter(valid_589303, JString, required = true,
+  var valid_579203 = path.getOrDefault("containerId")
+  valid_579203 = validateParameter(valid_579203, JString, required = true,
                                  default = nil)
-  if valid_589303 != nil:
-    section.add "containerId", valid_589303
-  var valid_589304 = path.getOrDefault("accountId")
-  valid_589304 = validateParameter(valid_589304, JString, required = true,
+  if valid_579203 != nil:
+    section.add "containerId", valid_579203
+  var valid_579204 = path.getOrDefault("folderId")
+  valid_579204 = validateParameter(valid_579204, JString, required = true,
                                  default = nil)
-  if valid_589304 != nil:
-    section.add "accountId", valid_589304
-  var valid_589305 = path.getOrDefault("folderId")
-  valid_589305 = validateParameter(valid_589305, JString, required = true,
+  if valid_579204 != nil:
+    section.add "folderId", valid_579204
+  var valid_579205 = path.getOrDefault("accountId")
+  valid_579205 = validateParameter(valid_579205, JString, required = true,
                                  default = nil)
-  if valid_589305 != nil:
-    section.add "folderId", valid_589305
+  if valid_579205 != nil:
+    section.add "accountId", valid_579205
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   triggerId: JArray
-  ##            : The triggers to be moved to the folder.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
-  ##   tagId: JArray
-  ##        : The tags to be moved to the folder.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   triggerId: JArray
+  ##            : The triggers to be moved to the folder.
   ##   variableId: JArray
   ##             : The variables to be moved to the folder.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   tagId: JArray
+  ##        : The tags to be moved to the folder.
   section = newJObject()
-  var valid_589306 = query.getOrDefault("fields")
-  valid_589306 = validateParameter(valid_589306, JString, required = false,
+  var valid_579206 = query.getOrDefault("key")
+  valid_579206 = validateParameter(valid_579206, JString, required = false,
                                  default = nil)
-  if valid_589306 != nil:
-    section.add "fields", valid_589306
-  var valid_589307 = query.getOrDefault("quotaUser")
-  valid_589307 = validateParameter(valid_589307, JString, required = false,
-                                 default = nil)
-  if valid_589307 != nil:
-    section.add "quotaUser", valid_589307
-  var valid_589308 = query.getOrDefault("alt")
-  valid_589308 = validateParameter(valid_589308, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589308 != nil:
-    section.add "alt", valid_589308
-  var valid_589309 = query.getOrDefault("oauth_token")
-  valid_589309 = validateParameter(valid_589309, JString, required = false,
-                                 default = nil)
-  if valid_589309 != nil:
-    section.add "oauth_token", valid_589309
-  var valid_589310 = query.getOrDefault("userIp")
-  valid_589310 = validateParameter(valid_589310, JString, required = false,
-                                 default = nil)
-  if valid_589310 != nil:
-    section.add "userIp", valid_589310
-  var valid_589311 = query.getOrDefault("key")
-  valid_589311 = validateParameter(valid_589311, JString, required = false,
-                                 default = nil)
-  if valid_589311 != nil:
-    section.add "key", valid_589311
-  var valid_589312 = query.getOrDefault("triggerId")
-  valid_589312 = validateParameter(valid_589312, JArray, required = false,
-                                 default = nil)
-  if valid_589312 != nil:
-    section.add "triggerId", valid_589312
-  var valid_589313 = query.getOrDefault("prettyPrint")
-  valid_589313 = validateParameter(valid_589313, JBool, required = false,
+  if valid_579206 != nil:
+    section.add "key", valid_579206
+  var valid_579207 = query.getOrDefault("prettyPrint")
+  valid_579207 = validateParameter(valid_579207, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589313 != nil:
-    section.add "prettyPrint", valid_589313
-  var valid_589314 = query.getOrDefault("tagId")
-  valid_589314 = validateParameter(valid_589314, JArray, required = false,
+  if valid_579207 != nil:
+    section.add "prettyPrint", valid_579207
+  var valid_579208 = query.getOrDefault("oauth_token")
+  valid_579208 = validateParameter(valid_579208, JString, required = false,
                                  default = nil)
-  if valid_589314 != nil:
-    section.add "tagId", valid_589314
-  var valid_589315 = query.getOrDefault("variableId")
-  valid_589315 = validateParameter(valid_589315, JArray, required = false,
+  if valid_579208 != nil:
+    section.add "oauth_token", valid_579208
+  var valid_579209 = query.getOrDefault("alt")
+  valid_579209 = validateParameter(valid_579209, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579209 != nil:
+    section.add "alt", valid_579209
+  var valid_579210 = query.getOrDefault("userIp")
+  valid_579210 = validateParameter(valid_579210, JString, required = false,
                                  default = nil)
-  if valid_589315 != nil:
-    section.add "variableId", valid_589315
+  if valid_579210 != nil:
+    section.add "userIp", valid_579210
+  var valid_579211 = query.getOrDefault("quotaUser")
+  valid_579211 = validateParameter(valid_579211, JString, required = false,
+                                 default = nil)
+  if valid_579211 != nil:
+    section.add "quotaUser", valid_579211
+  var valid_579212 = query.getOrDefault("triggerId")
+  valid_579212 = validateParameter(valid_579212, JArray, required = false,
+                                 default = nil)
+  if valid_579212 != nil:
+    section.add "triggerId", valid_579212
+  var valid_579213 = query.getOrDefault("variableId")
+  valid_579213 = validateParameter(valid_579213, JArray, required = false,
+                                 default = nil)
+  if valid_579213 != nil:
+    section.add "variableId", valid_579213
+  var valid_579214 = query.getOrDefault("fields")
+  valid_579214 = validateParameter(valid_579214, JString, required = false,
+                                 default = nil)
+  if valid_579214 != nil:
+    section.add "fields", valid_579214
+  var valid_579215 = query.getOrDefault("tagId")
+  valid_579215 = validateParameter(valid_579215, JArray, required = false,
+                                 default = nil)
+  if valid_579215 != nil:
+    section.add "tagId", valid_579215
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3423,88 +3424,88 @@ proc validate_TagmanagerAccountsContainersMoveFoldersUpdate_589301(
   if body != nil:
     result.add "body", body
 
-proc call*(call_589317: Call_TagmanagerAccountsContainersMoveFoldersUpdate_589300;
+proc call*(call_579217: Call_TagmanagerAccountsContainersMoveFoldersUpdate_579200;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Moves entities to a GTM Folder.
   ## 
-  let valid = call_589317.validator(path, query, header, formData, body)
-  let scheme = call_589317.pickScheme
+  let valid = call_579217.validator(path, query, header, formData, body)
+  let scheme = call_579217.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589317.url(scheme.get, call_589317.host, call_589317.base,
-                         call_589317.route, valid.getOrDefault("path"),
+  let url = call_579217.url(scheme.get, call_579217.host, call_579217.base,
+                         call_579217.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589317, url, valid)
+  result = hook(call_579217, url, valid)
 
-proc call*(call_589318: Call_TagmanagerAccountsContainersMoveFoldersUpdate_589300;
-          containerId: string; accountId: string; folderId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          triggerId: JsonNode = nil; body: JsonNode = nil; prettyPrint: bool = true;
-          tagId: JsonNode = nil; variableId: JsonNode = nil): Recallable =
+proc call*(call_579218: Call_TagmanagerAccountsContainersMoveFoldersUpdate_579200;
+          containerId: string; folderId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; triggerId: JsonNode = nil;
+          body: JsonNode = nil; variableId: JsonNode = nil; fields: string = "";
+          tagId: JsonNode = nil): Recallable =
   ## tagmanagerAccountsContainersMoveFoldersUpdate
   ## Moves entities to a GTM Folder.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   folderId: string (required)
-  ##           : The GTM Folder ID.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   triggerId: JArray
-  ##            : The triggers to be moved to the folder.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  ##   tagId: JArray
-  ##        : The tags to be moved to the folder.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   triggerId: JArray
+  ##            : The triggers to be moved to the folder.
+  ##   folderId: string (required)
+  ##           : The GTM Folder ID.
+  ##   body: JObject
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
   ##   variableId: JArray
   ##             : The variables to be moved to the folder.
-  var path_589319 = newJObject()
-  var query_589320 = newJObject()
-  var body_589321 = newJObject()
-  add(path_589319, "containerId", newJString(containerId))
-  add(query_589320, "fields", newJString(fields))
-  add(query_589320, "quotaUser", newJString(quotaUser))
-  add(query_589320, "alt", newJString(alt))
-  add(query_589320, "oauth_token", newJString(oauthToken))
-  add(path_589319, "accountId", newJString(accountId))
-  add(query_589320, "userIp", newJString(userIp))
-  add(path_589319, "folderId", newJString(folderId))
-  add(query_589320, "key", newJString(key))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   tagId: JArray
+  ##        : The tags to be moved to the folder.
+  var path_579219 = newJObject()
+  var query_579220 = newJObject()
+  var body_579221 = newJObject()
+  add(query_579220, "key", newJString(key))
+  add(query_579220, "prettyPrint", newJBool(prettyPrint))
+  add(query_579220, "oauth_token", newJString(oauthToken))
+  add(path_579219, "containerId", newJString(containerId))
+  add(query_579220, "alt", newJString(alt))
+  add(query_579220, "userIp", newJString(userIp))
+  add(query_579220, "quotaUser", newJString(quotaUser))
   if triggerId != nil:
-    query_589320.add "triggerId", triggerId
+    query_579220.add "triggerId", triggerId
+  add(path_579219, "folderId", newJString(folderId))
   if body != nil:
-    body_589321 = body
-  add(query_589320, "prettyPrint", newJBool(prettyPrint))
-  if tagId != nil:
-    query_589320.add "tagId", tagId
+    body_579221 = body
+  add(path_579219, "accountId", newJString(accountId))
   if variableId != nil:
-    query_589320.add "variableId", variableId
-  result = call_589318.call(path_589319, query_589320, nil, nil, body_589321)
+    query_579220.add "variableId", variableId
+  add(query_579220, "fields", newJString(fields))
+  if tagId != nil:
+    query_579220.add "tagId", tagId
+  result = call_579218.call(path_579219, query_579220, nil, nil, body_579221)
 
-var tagmanagerAccountsContainersMoveFoldersUpdate* = Call_TagmanagerAccountsContainersMoveFoldersUpdate_589300(
+var tagmanagerAccountsContainersMoveFoldersUpdate* = Call_TagmanagerAccountsContainersMoveFoldersUpdate_579200(
     name: "tagmanagerAccountsContainersMoveFoldersUpdate",
     meth: HttpMethod.HttpPut, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/move_folders/{folderId}",
-    validator: validate_TagmanagerAccountsContainersMoveFoldersUpdate_589301,
+    validator: validate_TagmanagerAccountsContainersMoveFoldersUpdate_579201,
     base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsContainersMoveFoldersUpdate_589302,
+    url: url_TagmanagerAccountsContainersMoveFoldersUpdate_579202,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_589322 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_589324(
+  Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_579222 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_579224(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -3526,7 +3527,7 @@ proc url_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_589324(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_589323(
+proc validate_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_579223(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Re-generates the authorization code for a GTM Environment.
@@ -3536,80 +3537,80 @@ proc validate_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_589323(
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   environmentId: JString (required)
   ##                : The GTM Environment ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589325 = path.getOrDefault("containerId")
-  valid_589325 = validateParameter(valid_589325, JString, required = true,
+  var valid_579225 = path.getOrDefault("containerId")
+  valid_579225 = validateParameter(valid_579225, JString, required = true,
                                  default = nil)
-  if valid_589325 != nil:
-    section.add "containerId", valid_589325
-  var valid_589326 = path.getOrDefault("accountId")
-  valid_589326 = validateParameter(valid_589326, JString, required = true,
+  if valid_579225 != nil:
+    section.add "containerId", valid_579225
+  var valid_579226 = path.getOrDefault("environmentId")
+  valid_579226 = validateParameter(valid_579226, JString, required = true,
                                  default = nil)
-  if valid_589326 != nil:
-    section.add "accountId", valid_589326
-  var valid_589327 = path.getOrDefault("environmentId")
-  valid_589327 = validateParameter(valid_589327, JString, required = true,
+  if valid_579226 != nil:
+    section.add "environmentId", valid_579226
+  var valid_579227 = path.getOrDefault("accountId")
+  valid_579227 = validateParameter(valid_579227, JString, required = true,
                                  default = nil)
-  if valid_589327 != nil:
-    section.add "environmentId", valid_589327
+  if valid_579227 != nil:
+    section.add "accountId", valid_579227
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589328 = query.getOrDefault("fields")
-  valid_589328 = validateParameter(valid_589328, JString, required = false,
+  var valid_579228 = query.getOrDefault("key")
+  valid_579228 = validateParameter(valid_579228, JString, required = false,
                                  default = nil)
-  if valid_589328 != nil:
-    section.add "fields", valid_589328
-  var valid_589329 = query.getOrDefault("quotaUser")
-  valid_589329 = validateParameter(valid_589329, JString, required = false,
-                                 default = nil)
-  if valid_589329 != nil:
-    section.add "quotaUser", valid_589329
-  var valid_589330 = query.getOrDefault("alt")
-  valid_589330 = validateParameter(valid_589330, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589330 != nil:
-    section.add "alt", valid_589330
-  var valid_589331 = query.getOrDefault("oauth_token")
-  valid_589331 = validateParameter(valid_589331, JString, required = false,
-                                 default = nil)
-  if valid_589331 != nil:
-    section.add "oauth_token", valid_589331
-  var valid_589332 = query.getOrDefault("userIp")
-  valid_589332 = validateParameter(valid_589332, JString, required = false,
-                                 default = nil)
-  if valid_589332 != nil:
-    section.add "userIp", valid_589332
-  var valid_589333 = query.getOrDefault("key")
-  valid_589333 = validateParameter(valid_589333, JString, required = false,
-                                 default = nil)
-  if valid_589333 != nil:
-    section.add "key", valid_589333
-  var valid_589334 = query.getOrDefault("prettyPrint")
-  valid_589334 = validateParameter(valid_589334, JBool, required = false,
+  if valid_579228 != nil:
+    section.add "key", valid_579228
+  var valid_579229 = query.getOrDefault("prettyPrint")
+  valid_579229 = validateParameter(valid_579229, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589334 != nil:
-    section.add "prettyPrint", valid_589334
+  if valid_579229 != nil:
+    section.add "prettyPrint", valid_579229
+  var valid_579230 = query.getOrDefault("oauth_token")
+  valid_579230 = validateParameter(valid_579230, JString, required = false,
+                                 default = nil)
+  if valid_579230 != nil:
+    section.add "oauth_token", valid_579230
+  var valid_579231 = query.getOrDefault("alt")
+  valid_579231 = validateParameter(valid_579231, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579231 != nil:
+    section.add "alt", valid_579231
+  var valid_579232 = query.getOrDefault("userIp")
+  valid_579232 = validateParameter(valid_579232, JString, required = false,
+                                 default = nil)
+  if valid_579232 != nil:
+    section.add "userIp", valid_579232
+  var valid_579233 = query.getOrDefault("quotaUser")
+  valid_579233 = validateParameter(valid_579233, JString, required = false,
+                                 default = nil)
+  if valid_579233 != nil:
+    section.add "quotaUser", valid_579233
+  var valid_579234 = query.getOrDefault("fields")
+  valid_579234 = validateParameter(valid_579234, JString, required = false,
+                                 default = nil)
+  if valid_579234 != nil:
+    section.add "fields", valid_579234
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3621,74 +3622,74 @@ proc validate_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_589323(
   if body != nil:
     result.add "body", body
 
-proc call*(call_589336: Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_589322;
+proc call*(call_579236: Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_579222;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Re-generates the authorization code for a GTM Environment.
   ## 
-  let valid = call_589336.validator(path, query, header, formData, body)
-  let scheme = call_589336.pickScheme
+  let valid = call_579236.validator(path, query, header, formData, body)
+  let scheme = call_579236.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589336.url(scheme.get, call_589336.host, call_589336.base,
-                         call_589336.route, valid.getOrDefault("path"),
+  let url = call_579236.url(scheme.get, call_579236.host, call_579236.base,
+                         call_579236.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589336, url, valid)
+  result = hook(call_579236, url, valid)
 
-proc call*(call_589337: Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_589322;
-          containerId: string; accountId: string; environmentId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579237: Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_579222;
+          containerId: string; environmentId: string; accountId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersReauthorizeEnvironmentsUpdate
   ## Re-generates the authorization code for a GTM Environment.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   environmentId: string (required)
   ##                : The GTM Environment ID.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589338 = newJObject()
-  var query_589339 = newJObject()
-  var body_589340 = newJObject()
-  add(path_589338, "containerId", newJString(containerId))
-  add(query_589339, "fields", newJString(fields))
-  add(query_589339, "quotaUser", newJString(quotaUser))
-  add(query_589339, "alt", newJString(alt))
-  add(query_589339, "oauth_token", newJString(oauthToken))
-  add(path_589338, "accountId", newJString(accountId))
-  add(query_589339, "userIp", newJString(userIp))
-  add(query_589339, "key", newJString(key))
-  add(path_589338, "environmentId", newJString(environmentId))
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579238 = newJObject()
+  var query_579239 = newJObject()
+  var body_579240 = newJObject()
+  add(query_579239, "key", newJString(key))
+  add(query_579239, "prettyPrint", newJBool(prettyPrint))
+  add(query_579239, "oauth_token", newJString(oauthToken))
+  add(path_579238, "containerId", newJString(containerId))
+  add(query_579239, "alt", newJString(alt))
+  add(query_579239, "userIp", newJString(userIp))
+  add(query_579239, "quotaUser", newJString(quotaUser))
+  add(path_579238, "environmentId", newJString(environmentId))
   if body != nil:
-    body_589340 = body
-  add(query_589339, "prettyPrint", newJBool(prettyPrint))
-  result = call_589337.call(path_589338, query_589339, nil, nil, body_589340)
+    body_579240 = body
+  add(path_579238, "accountId", newJString(accountId))
+  add(query_579239, "fields", newJString(fields))
+  result = call_579237.call(path_579238, query_579239, nil, nil, body_579240)
 
-var tagmanagerAccountsContainersReauthorizeEnvironmentsUpdate* = Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_589322(
+var tagmanagerAccountsContainersReauthorizeEnvironmentsUpdate* = Call_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_579222(
     name: "tagmanagerAccountsContainersReauthorizeEnvironmentsUpdate",
-    meth: HttpMethod.HttpPut, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/reauthorize_environments/{environmentId}", validator: validate_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_589323,
+    meth: HttpMethod.HttpPut, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/reauthorize_environments/{environmentId}", validator: validate_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_579223,
     base: "/tagmanager/v1",
-    url: url_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_589324,
+    url: url_TagmanagerAccountsContainersReauthorizeEnvironmentsUpdate_579224,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTagsCreate_589357 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersTagsCreate_589359(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTagsCreate_579257 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersTagsCreate_579259(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3707,7 +3708,7 @@ proc url_TagmanagerAccountsContainersTagsCreate_589359(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTagsCreate_589358(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTagsCreate_579258(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a GTM Tag.
   ## 
@@ -3721,68 +3722,68 @@ proc validate_TagmanagerAccountsContainersTagsCreate_589358(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589360 = path.getOrDefault("containerId")
-  valid_589360 = validateParameter(valid_589360, JString, required = true,
+  var valid_579260 = path.getOrDefault("containerId")
+  valid_579260 = validateParameter(valid_579260, JString, required = true,
                                  default = nil)
-  if valid_589360 != nil:
-    section.add "containerId", valid_589360
-  var valid_589361 = path.getOrDefault("accountId")
-  valid_589361 = validateParameter(valid_589361, JString, required = true,
+  if valid_579260 != nil:
+    section.add "containerId", valid_579260
+  var valid_579261 = path.getOrDefault("accountId")
+  valid_579261 = validateParameter(valid_579261, JString, required = true,
                                  default = nil)
-  if valid_589361 != nil:
-    section.add "accountId", valid_589361
+  if valid_579261 != nil:
+    section.add "accountId", valid_579261
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589362 = query.getOrDefault("fields")
-  valid_589362 = validateParameter(valid_589362, JString, required = false,
+  var valid_579262 = query.getOrDefault("key")
+  valid_579262 = validateParameter(valid_579262, JString, required = false,
                                  default = nil)
-  if valid_589362 != nil:
-    section.add "fields", valid_589362
-  var valid_589363 = query.getOrDefault("quotaUser")
-  valid_589363 = validateParameter(valid_589363, JString, required = false,
-                                 default = nil)
-  if valid_589363 != nil:
-    section.add "quotaUser", valid_589363
-  var valid_589364 = query.getOrDefault("alt")
-  valid_589364 = validateParameter(valid_589364, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589364 != nil:
-    section.add "alt", valid_589364
-  var valid_589365 = query.getOrDefault("oauth_token")
-  valid_589365 = validateParameter(valid_589365, JString, required = false,
-                                 default = nil)
-  if valid_589365 != nil:
-    section.add "oauth_token", valid_589365
-  var valid_589366 = query.getOrDefault("userIp")
-  valid_589366 = validateParameter(valid_589366, JString, required = false,
-                                 default = nil)
-  if valid_589366 != nil:
-    section.add "userIp", valid_589366
-  var valid_589367 = query.getOrDefault("key")
-  valid_589367 = validateParameter(valid_589367, JString, required = false,
-                                 default = nil)
-  if valid_589367 != nil:
-    section.add "key", valid_589367
-  var valid_589368 = query.getOrDefault("prettyPrint")
-  valid_589368 = validateParameter(valid_589368, JBool, required = false,
+  if valid_579262 != nil:
+    section.add "key", valid_579262
+  var valid_579263 = query.getOrDefault("prettyPrint")
+  valid_579263 = validateParameter(valid_579263, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589368 != nil:
-    section.add "prettyPrint", valid_589368
+  if valid_579263 != nil:
+    section.add "prettyPrint", valid_579263
+  var valid_579264 = query.getOrDefault("oauth_token")
+  valid_579264 = validateParameter(valid_579264, JString, required = false,
+                                 default = nil)
+  if valid_579264 != nil:
+    section.add "oauth_token", valid_579264
+  var valid_579265 = query.getOrDefault("alt")
+  valid_579265 = validateParameter(valid_579265, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579265 != nil:
+    section.add "alt", valid_579265
+  var valid_579266 = query.getOrDefault("userIp")
+  valid_579266 = validateParameter(valid_579266, JString, required = false,
+                                 default = nil)
+  if valid_579266 != nil:
+    section.add "userIp", valid_579266
+  var valid_579267 = query.getOrDefault("quotaUser")
+  valid_579267 = validateParameter(valid_579267, JString, required = false,
+                                 default = nil)
+  if valid_579267 != nil:
+    section.add "quotaUser", valid_579267
+  var valid_579268 = query.getOrDefault("fields")
+  valid_579268 = validateParameter(valid_579268, JString, required = false,
+                                 default = nil)
+  if valid_579268 != nil:
+    section.add "fields", valid_579268
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3794,72 +3795,72 @@ proc validate_TagmanagerAccountsContainersTagsCreate_589358(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589370: Call_TagmanagerAccountsContainersTagsCreate_589357;
+proc call*(call_579270: Call_TagmanagerAccountsContainersTagsCreate_579257;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a GTM Tag.
   ## 
-  let valid = call_589370.validator(path, query, header, formData, body)
-  let scheme = call_589370.pickScheme
+  let valid = call_579270.validator(path, query, header, formData, body)
+  let scheme = call_579270.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589370.url(scheme.get, call_589370.host, call_589370.base,
-                         call_589370.route, valid.getOrDefault("path"),
+  let url = call_579270.url(scheme.get, call_579270.host, call_579270.base,
+                         call_579270.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589370, url, valid)
+  result = hook(call_579270, url, valid)
 
-proc call*(call_589371: Call_TagmanagerAccountsContainersTagsCreate_589357;
-          containerId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579271: Call_TagmanagerAccountsContainersTagsCreate_579257;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersTagsCreate
   ## Creates a GTM Tag.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589372 = newJObject()
-  var query_589373 = newJObject()
-  var body_589374 = newJObject()
-  add(path_589372, "containerId", newJString(containerId))
-  add(query_589373, "fields", newJString(fields))
-  add(query_589373, "quotaUser", newJString(quotaUser))
-  add(query_589373, "alt", newJString(alt))
-  add(query_589373, "oauth_token", newJString(oauthToken))
-  add(path_589372, "accountId", newJString(accountId))
-  add(query_589373, "userIp", newJString(userIp))
-  add(query_589373, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579272 = newJObject()
+  var query_579273 = newJObject()
+  var body_579274 = newJObject()
+  add(query_579273, "key", newJString(key))
+  add(query_579273, "prettyPrint", newJBool(prettyPrint))
+  add(query_579273, "oauth_token", newJString(oauthToken))
+  add(path_579272, "containerId", newJString(containerId))
+  add(query_579273, "alt", newJString(alt))
+  add(query_579273, "userIp", newJString(userIp))
+  add(query_579273, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589374 = body
-  add(query_589373, "prettyPrint", newJBool(prettyPrint))
-  result = call_589371.call(path_589372, query_589373, nil, nil, body_589374)
+    body_579274 = body
+  add(path_579272, "accountId", newJString(accountId))
+  add(query_579273, "fields", newJString(fields))
+  result = call_579271.call(path_579272, query_579273, nil, nil, body_579274)
 
-var tagmanagerAccountsContainersTagsCreate* = Call_TagmanagerAccountsContainersTagsCreate_589357(
+var tagmanagerAccountsContainersTagsCreate* = Call_TagmanagerAccountsContainersTagsCreate_579257(
     name: "tagmanagerAccountsContainersTagsCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/tags",
-    validator: validate_TagmanagerAccountsContainersTagsCreate_589358,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsCreate_589359,
+    validator: validate_TagmanagerAccountsContainersTagsCreate_579258,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsCreate_579259,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTagsList_589341 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersTagsList_589343(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTagsList_579241 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersTagsList_579243(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3878,7 +3879,7 @@ proc url_TagmanagerAccountsContainersTagsList_589343(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTagsList_589342(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTagsList_579242(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all GTM Tags of a Container.
   ## 
@@ -3892,68 +3893,68 @@ proc validate_TagmanagerAccountsContainersTagsList_589342(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589344 = path.getOrDefault("containerId")
-  valid_589344 = validateParameter(valid_589344, JString, required = true,
+  var valid_579244 = path.getOrDefault("containerId")
+  valid_579244 = validateParameter(valid_579244, JString, required = true,
                                  default = nil)
-  if valid_589344 != nil:
-    section.add "containerId", valid_589344
-  var valid_589345 = path.getOrDefault("accountId")
-  valid_589345 = validateParameter(valid_589345, JString, required = true,
+  if valid_579244 != nil:
+    section.add "containerId", valid_579244
+  var valid_579245 = path.getOrDefault("accountId")
+  valid_579245 = validateParameter(valid_579245, JString, required = true,
                                  default = nil)
-  if valid_589345 != nil:
-    section.add "accountId", valid_589345
+  if valid_579245 != nil:
+    section.add "accountId", valid_579245
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589346 = query.getOrDefault("fields")
-  valid_589346 = validateParameter(valid_589346, JString, required = false,
+  var valid_579246 = query.getOrDefault("key")
+  valid_579246 = validateParameter(valid_579246, JString, required = false,
                                  default = nil)
-  if valid_589346 != nil:
-    section.add "fields", valid_589346
-  var valid_589347 = query.getOrDefault("quotaUser")
-  valid_589347 = validateParameter(valid_589347, JString, required = false,
-                                 default = nil)
-  if valid_589347 != nil:
-    section.add "quotaUser", valid_589347
-  var valid_589348 = query.getOrDefault("alt")
-  valid_589348 = validateParameter(valid_589348, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589348 != nil:
-    section.add "alt", valid_589348
-  var valid_589349 = query.getOrDefault("oauth_token")
-  valid_589349 = validateParameter(valid_589349, JString, required = false,
-                                 default = nil)
-  if valid_589349 != nil:
-    section.add "oauth_token", valid_589349
-  var valid_589350 = query.getOrDefault("userIp")
-  valid_589350 = validateParameter(valid_589350, JString, required = false,
-                                 default = nil)
-  if valid_589350 != nil:
-    section.add "userIp", valid_589350
-  var valid_589351 = query.getOrDefault("key")
-  valid_589351 = validateParameter(valid_589351, JString, required = false,
-                                 default = nil)
-  if valid_589351 != nil:
-    section.add "key", valid_589351
-  var valid_589352 = query.getOrDefault("prettyPrint")
-  valid_589352 = validateParameter(valid_589352, JBool, required = false,
+  if valid_579246 != nil:
+    section.add "key", valid_579246
+  var valid_579247 = query.getOrDefault("prettyPrint")
+  valid_579247 = validateParameter(valid_579247, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589352 != nil:
-    section.add "prettyPrint", valid_589352
+  if valid_579247 != nil:
+    section.add "prettyPrint", valid_579247
+  var valid_579248 = query.getOrDefault("oauth_token")
+  valid_579248 = validateParameter(valid_579248, JString, required = false,
+                                 default = nil)
+  if valid_579248 != nil:
+    section.add "oauth_token", valid_579248
+  var valid_579249 = query.getOrDefault("alt")
+  valid_579249 = validateParameter(valid_579249, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579249 != nil:
+    section.add "alt", valid_579249
+  var valid_579250 = query.getOrDefault("userIp")
+  valid_579250 = validateParameter(valid_579250, JString, required = false,
+                                 default = nil)
+  if valid_579250 != nil:
+    section.add "userIp", valid_579250
+  var valid_579251 = query.getOrDefault("quotaUser")
+  valid_579251 = validateParameter(valid_579251, JString, required = false,
+                                 default = nil)
+  if valid_579251 != nil:
+    section.add "quotaUser", valid_579251
+  var valid_579252 = query.getOrDefault("fields")
+  valid_579252 = validateParameter(valid_579252, JString, required = false,
+                                 default = nil)
+  if valid_579252 != nil:
+    section.add "fields", valid_579252
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3962,67 +3963,67 @@ proc validate_TagmanagerAccountsContainersTagsList_589342(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589353: Call_TagmanagerAccountsContainersTagsList_589341;
+proc call*(call_579253: Call_TagmanagerAccountsContainersTagsList_579241;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all GTM Tags of a Container.
   ## 
-  let valid = call_589353.validator(path, query, header, formData, body)
-  let scheme = call_589353.pickScheme
+  let valid = call_579253.validator(path, query, header, formData, body)
+  let scheme = call_579253.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589353.url(scheme.get, call_589353.host, call_589353.base,
-                         call_589353.route, valid.getOrDefault("path"),
+  let url = call_579253.url(scheme.get, call_579253.host, call_579253.base,
+                         call_579253.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589353, url, valid)
+  result = hook(call_579253, url, valid)
 
-proc call*(call_589354: Call_TagmanagerAccountsContainersTagsList_589341;
-          containerId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579254: Call_TagmanagerAccountsContainersTagsList_579241;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersTagsList
   ## Lists all GTM Tags of a Container.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589355 = newJObject()
-  var query_589356 = newJObject()
-  add(path_589355, "containerId", newJString(containerId))
-  add(query_589356, "fields", newJString(fields))
-  add(query_589356, "quotaUser", newJString(quotaUser))
-  add(query_589356, "alt", newJString(alt))
-  add(query_589356, "oauth_token", newJString(oauthToken))
-  add(path_589355, "accountId", newJString(accountId))
-  add(query_589356, "userIp", newJString(userIp))
-  add(query_589356, "key", newJString(key))
-  add(query_589356, "prettyPrint", newJBool(prettyPrint))
-  result = call_589354.call(path_589355, query_589356, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579255 = newJObject()
+  var query_579256 = newJObject()
+  add(query_579256, "key", newJString(key))
+  add(query_579256, "prettyPrint", newJBool(prettyPrint))
+  add(query_579256, "oauth_token", newJString(oauthToken))
+  add(path_579255, "containerId", newJString(containerId))
+  add(query_579256, "alt", newJString(alt))
+  add(query_579256, "userIp", newJString(userIp))
+  add(query_579256, "quotaUser", newJString(quotaUser))
+  add(path_579255, "accountId", newJString(accountId))
+  add(query_579256, "fields", newJString(fields))
+  result = call_579254.call(path_579255, query_579256, nil, nil, nil)
 
-var tagmanagerAccountsContainersTagsList* = Call_TagmanagerAccountsContainersTagsList_589341(
+var tagmanagerAccountsContainersTagsList* = Call_TagmanagerAccountsContainersTagsList_579241(
     name: "tagmanagerAccountsContainersTagsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/tags",
-    validator: validate_TagmanagerAccountsContainersTagsList_589342,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsList_589343,
+    validator: validate_TagmanagerAccountsContainersTagsList_579242,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsList_579243,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTagsUpdate_589392 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersTagsUpdate_589394(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTagsUpdate_579292 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersTagsUpdate_579294(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4043,7 +4044,7 @@ proc url_TagmanagerAccountsContainersTagsUpdate_589394(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTagsUpdate_589393(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTagsUpdate_579293(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a GTM Tag.
   ## 
@@ -4059,80 +4060,80 @@ proc validate_TagmanagerAccountsContainersTagsUpdate_589393(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589395 = path.getOrDefault("containerId")
-  valid_589395 = validateParameter(valid_589395, JString, required = true,
+  var valid_579295 = path.getOrDefault("containerId")
+  valid_579295 = validateParameter(valid_579295, JString, required = true,
                                  default = nil)
-  if valid_589395 != nil:
-    section.add "containerId", valid_589395
-  var valid_589396 = path.getOrDefault("tagId")
-  valid_589396 = validateParameter(valid_589396, JString, required = true,
+  if valid_579295 != nil:
+    section.add "containerId", valid_579295
+  var valid_579296 = path.getOrDefault("tagId")
+  valid_579296 = validateParameter(valid_579296, JString, required = true,
                                  default = nil)
-  if valid_589396 != nil:
-    section.add "tagId", valid_589396
-  var valid_589397 = path.getOrDefault("accountId")
-  valid_589397 = validateParameter(valid_589397, JString, required = true,
+  if valid_579296 != nil:
+    section.add "tagId", valid_579296
+  var valid_579297 = path.getOrDefault("accountId")
+  valid_579297 = validateParameter(valid_579297, JString, required = true,
                                  default = nil)
-  if valid_589397 != nil:
-    section.add "accountId", valid_589397
+  if valid_579297 != nil:
+    section.add "accountId", valid_579297
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: JString
-  ##              : When provided, this fingerprint must match the fingerprint of the tag in storage.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   fingerprint: JString
+  ##              : When provided, this fingerprint must match the fingerprint of the tag in storage.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589398 = query.getOrDefault("fields")
-  valid_589398 = validateParameter(valid_589398, JString, required = false,
+  var valid_579298 = query.getOrDefault("key")
+  valid_579298 = validateParameter(valid_579298, JString, required = false,
                                  default = nil)
-  if valid_589398 != nil:
-    section.add "fields", valid_589398
-  var valid_589399 = query.getOrDefault("fingerprint")
-  valid_589399 = validateParameter(valid_589399, JString, required = false,
-                                 default = nil)
-  if valid_589399 != nil:
-    section.add "fingerprint", valid_589399
-  var valid_589400 = query.getOrDefault("quotaUser")
-  valid_589400 = validateParameter(valid_589400, JString, required = false,
-                                 default = nil)
-  if valid_589400 != nil:
-    section.add "quotaUser", valid_589400
-  var valid_589401 = query.getOrDefault("alt")
-  valid_589401 = validateParameter(valid_589401, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589401 != nil:
-    section.add "alt", valid_589401
-  var valid_589402 = query.getOrDefault("oauth_token")
-  valid_589402 = validateParameter(valid_589402, JString, required = false,
-                                 default = nil)
-  if valid_589402 != nil:
-    section.add "oauth_token", valid_589402
-  var valid_589403 = query.getOrDefault("userIp")
-  valid_589403 = validateParameter(valid_589403, JString, required = false,
-                                 default = nil)
-  if valid_589403 != nil:
-    section.add "userIp", valid_589403
-  var valid_589404 = query.getOrDefault("key")
-  valid_589404 = validateParameter(valid_589404, JString, required = false,
-                                 default = nil)
-  if valid_589404 != nil:
-    section.add "key", valid_589404
-  var valid_589405 = query.getOrDefault("prettyPrint")
-  valid_589405 = validateParameter(valid_589405, JBool, required = false,
+  if valid_579298 != nil:
+    section.add "key", valid_579298
+  var valid_579299 = query.getOrDefault("prettyPrint")
+  valid_579299 = validateParameter(valid_579299, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589405 != nil:
-    section.add "prettyPrint", valid_589405
+  if valid_579299 != nil:
+    section.add "prettyPrint", valid_579299
+  var valid_579300 = query.getOrDefault("oauth_token")
+  valid_579300 = validateParameter(valid_579300, JString, required = false,
+                                 default = nil)
+  if valid_579300 != nil:
+    section.add "oauth_token", valid_579300
+  var valid_579301 = query.getOrDefault("fingerprint")
+  valid_579301 = validateParameter(valid_579301, JString, required = false,
+                                 default = nil)
+  if valid_579301 != nil:
+    section.add "fingerprint", valid_579301
+  var valid_579302 = query.getOrDefault("alt")
+  valid_579302 = validateParameter(valid_579302, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579302 != nil:
+    section.add "alt", valid_579302
+  var valid_579303 = query.getOrDefault("userIp")
+  valid_579303 = validateParameter(valid_579303, JString, required = false,
+                                 default = nil)
+  if valid_579303 != nil:
+    section.add "userIp", valid_579303
+  var valid_579304 = query.getOrDefault("quotaUser")
+  valid_579304 = validateParameter(valid_579304, JString, required = false,
+                                 default = nil)
+  if valid_579304 != nil:
+    section.add "quotaUser", valid_579304
+  var valid_579305 = query.getOrDefault("fields")
+  valid_579305 = validateParameter(valid_579305, JString, required = false,
+                                 default = nil)
+  if valid_579305 != nil:
+    section.add "fields", valid_579305
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4144,78 +4145,78 @@ proc validate_TagmanagerAccountsContainersTagsUpdate_589393(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589407: Call_TagmanagerAccountsContainersTagsUpdate_589392;
+proc call*(call_579307: Call_TagmanagerAccountsContainersTagsUpdate_579292;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a GTM Tag.
   ## 
-  let valid = call_589407.validator(path, query, header, formData, body)
-  let scheme = call_589407.pickScheme
+  let valid = call_579307.validator(path, query, header, formData, body)
+  let scheme = call_579307.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589407.url(scheme.get, call_589407.host, call_589407.base,
-                         call_589407.route, valid.getOrDefault("path"),
+  let url = call_579307.url(scheme.get, call_579307.host, call_579307.base,
+                         call_579307.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589407, url, valid)
+  result = hook(call_579307, url, valid)
 
-proc call*(call_589408: Call_TagmanagerAccountsContainersTagsUpdate_589392;
-          containerId: string; tagId: string; accountId: string; fields: string = "";
-          fingerprint: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579308: Call_TagmanagerAccountsContainersTagsUpdate_579292;
+          containerId: string; tagId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; fingerprint: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersTagsUpdate
   ## Updates a GTM Tag.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   tagId: string (required)
-  ##        : The GTM Tag ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: string
-  ##              : When provided, this fingerprint must match the fingerprint of the tag in storage.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589409 = newJObject()
-  var query_589410 = newJObject()
-  var body_589411 = newJObject()
-  add(path_589409, "containerId", newJString(containerId))
-  add(path_589409, "tagId", newJString(tagId))
-  add(query_589410, "fields", newJString(fields))
-  add(query_589410, "fingerprint", newJString(fingerprint))
-  add(query_589410, "quotaUser", newJString(quotaUser))
-  add(query_589410, "alt", newJString(alt))
-  add(query_589410, "oauth_token", newJString(oauthToken))
-  add(path_589409, "accountId", newJString(accountId))
-  add(query_589410, "userIp", newJString(userIp))
-  add(query_589410, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   fingerprint: string
+  ##              : When provided, this fingerprint must match the fingerprint of the tag in storage.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   tagId: string (required)
+  ##        : The GTM Tag ID.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579309 = newJObject()
+  var query_579310 = newJObject()
+  var body_579311 = newJObject()
+  add(query_579310, "key", newJString(key))
+  add(query_579310, "prettyPrint", newJBool(prettyPrint))
+  add(query_579310, "oauth_token", newJString(oauthToken))
+  add(path_579309, "containerId", newJString(containerId))
+  add(query_579310, "fingerprint", newJString(fingerprint))
+  add(query_579310, "alt", newJString(alt))
+  add(query_579310, "userIp", newJString(userIp))
+  add(path_579309, "tagId", newJString(tagId))
+  add(query_579310, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589411 = body
-  add(query_589410, "prettyPrint", newJBool(prettyPrint))
-  result = call_589408.call(path_589409, query_589410, nil, nil, body_589411)
+    body_579311 = body
+  add(path_579309, "accountId", newJString(accountId))
+  add(query_579310, "fields", newJString(fields))
+  result = call_579308.call(path_579309, query_579310, nil, nil, body_579311)
 
-var tagmanagerAccountsContainersTagsUpdate* = Call_TagmanagerAccountsContainersTagsUpdate_589392(
+var tagmanagerAccountsContainersTagsUpdate* = Call_TagmanagerAccountsContainersTagsUpdate_579292(
     name: "tagmanagerAccountsContainersTagsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/tags/{tagId}",
-    validator: validate_TagmanagerAccountsContainersTagsUpdate_589393,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsUpdate_589394,
+    validator: validate_TagmanagerAccountsContainersTagsUpdate_579293,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsUpdate_579294,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTagsGet_589375 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersTagsGet_589377(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsContainersTagsGet_579275 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersTagsGet_579277(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4236,7 +4237,7 @@ proc url_TagmanagerAccountsContainersTagsGet_589377(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTagsGet_589376(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTagsGet_579276(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a GTM Tag.
   ## 
@@ -4252,73 +4253,73 @@ proc validate_TagmanagerAccountsContainersTagsGet_589376(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589378 = path.getOrDefault("containerId")
-  valid_589378 = validateParameter(valid_589378, JString, required = true,
+  var valid_579278 = path.getOrDefault("containerId")
+  valid_579278 = validateParameter(valid_579278, JString, required = true,
                                  default = nil)
-  if valid_589378 != nil:
-    section.add "containerId", valid_589378
-  var valid_589379 = path.getOrDefault("tagId")
-  valid_589379 = validateParameter(valid_589379, JString, required = true,
+  if valid_579278 != nil:
+    section.add "containerId", valid_579278
+  var valid_579279 = path.getOrDefault("tagId")
+  valid_579279 = validateParameter(valid_579279, JString, required = true,
                                  default = nil)
-  if valid_589379 != nil:
-    section.add "tagId", valid_589379
-  var valid_589380 = path.getOrDefault("accountId")
-  valid_589380 = validateParameter(valid_589380, JString, required = true,
+  if valid_579279 != nil:
+    section.add "tagId", valid_579279
+  var valid_579280 = path.getOrDefault("accountId")
+  valid_579280 = validateParameter(valid_579280, JString, required = true,
                                  default = nil)
-  if valid_589380 != nil:
-    section.add "accountId", valid_589380
+  if valid_579280 != nil:
+    section.add "accountId", valid_579280
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589381 = query.getOrDefault("fields")
-  valid_589381 = validateParameter(valid_589381, JString, required = false,
+  var valid_579281 = query.getOrDefault("key")
+  valid_579281 = validateParameter(valid_579281, JString, required = false,
                                  default = nil)
-  if valid_589381 != nil:
-    section.add "fields", valid_589381
-  var valid_589382 = query.getOrDefault("quotaUser")
-  valid_589382 = validateParameter(valid_589382, JString, required = false,
-                                 default = nil)
-  if valid_589382 != nil:
-    section.add "quotaUser", valid_589382
-  var valid_589383 = query.getOrDefault("alt")
-  valid_589383 = validateParameter(valid_589383, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589383 != nil:
-    section.add "alt", valid_589383
-  var valid_589384 = query.getOrDefault("oauth_token")
-  valid_589384 = validateParameter(valid_589384, JString, required = false,
-                                 default = nil)
-  if valid_589384 != nil:
-    section.add "oauth_token", valid_589384
-  var valid_589385 = query.getOrDefault("userIp")
-  valid_589385 = validateParameter(valid_589385, JString, required = false,
-                                 default = nil)
-  if valid_589385 != nil:
-    section.add "userIp", valid_589385
-  var valid_589386 = query.getOrDefault("key")
-  valid_589386 = validateParameter(valid_589386, JString, required = false,
-                                 default = nil)
-  if valid_589386 != nil:
-    section.add "key", valid_589386
-  var valid_589387 = query.getOrDefault("prettyPrint")
-  valid_589387 = validateParameter(valid_589387, JBool, required = false,
+  if valid_579281 != nil:
+    section.add "key", valid_579281
+  var valid_579282 = query.getOrDefault("prettyPrint")
+  valid_579282 = validateParameter(valid_579282, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589387 != nil:
-    section.add "prettyPrint", valid_589387
+  if valid_579282 != nil:
+    section.add "prettyPrint", valid_579282
+  var valid_579283 = query.getOrDefault("oauth_token")
+  valid_579283 = validateParameter(valid_579283, JString, required = false,
+                                 default = nil)
+  if valid_579283 != nil:
+    section.add "oauth_token", valid_579283
+  var valid_579284 = query.getOrDefault("alt")
+  valid_579284 = validateParameter(valid_579284, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579284 != nil:
+    section.add "alt", valid_579284
+  var valid_579285 = query.getOrDefault("userIp")
+  valid_579285 = validateParameter(valid_579285, JString, required = false,
+                                 default = nil)
+  if valid_579285 != nil:
+    section.add "userIp", valid_579285
+  var valid_579286 = query.getOrDefault("quotaUser")
+  valid_579286 = validateParameter(valid_579286, JString, required = false,
+                                 default = nil)
+  if valid_579286 != nil:
+    section.add "quotaUser", valid_579286
+  var valid_579287 = query.getOrDefault("fields")
+  valid_579287 = validateParameter(valid_579287, JString, required = false,
+                                 default = nil)
+  if valid_579287 != nil:
+    section.add "fields", valid_579287
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4327,70 +4328,70 @@ proc validate_TagmanagerAccountsContainersTagsGet_589376(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589388: Call_TagmanagerAccountsContainersTagsGet_589375;
+proc call*(call_579288: Call_TagmanagerAccountsContainersTagsGet_579275;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a GTM Tag.
   ## 
-  let valid = call_589388.validator(path, query, header, formData, body)
-  let scheme = call_589388.pickScheme
+  let valid = call_579288.validator(path, query, header, formData, body)
+  let scheme = call_579288.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589388.url(scheme.get, call_589388.host, call_589388.base,
-                         call_589388.route, valid.getOrDefault("path"),
+  let url = call_579288.url(scheme.get, call_579288.host, call_579288.base,
+                         call_579288.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589388, url, valid)
+  result = hook(call_579288, url, valid)
 
-proc call*(call_589389: Call_TagmanagerAccountsContainersTagsGet_589375;
-          containerId: string; tagId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579289: Call_TagmanagerAccountsContainersTagsGet_579275;
+          containerId: string; tagId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersTagsGet
   ## Gets a GTM Tag.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   tagId: string (required)
-  ##        : The GTM Tag ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589390 = newJObject()
-  var query_589391 = newJObject()
-  add(path_589390, "containerId", newJString(containerId))
-  add(path_589390, "tagId", newJString(tagId))
-  add(query_589391, "fields", newJString(fields))
-  add(query_589391, "quotaUser", newJString(quotaUser))
-  add(query_589391, "alt", newJString(alt))
-  add(query_589391, "oauth_token", newJString(oauthToken))
-  add(path_589390, "accountId", newJString(accountId))
-  add(query_589391, "userIp", newJString(userIp))
-  add(query_589391, "key", newJString(key))
-  add(query_589391, "prettyPrint", newJBool(prettyPrint))
-  result = call_589389.call(path_589390, query_589391, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   tagId: string (required)
+  ##        : The GTM Tag ID.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579290 = newJObject()
+  var query_579291 = newJObject()
+  add(query_579291, "key", newJString(key))
+  add(query_579291, "prettyPrint", newJBool(prettyPrint))
+  add(query_579291, "oauth_token", newJString(oauthToken))
+  add(path_579290, "containerId", newJString(containerId))
+  add(query_579291, "alt", newJString(alt))
+  add(query_579291, "userIp", newJString(userIp))
+  add(path_579290, "tagId", newJString(tagId))
+  add(query_579291, "quotaUser", newJString(quotaUser))
+  add(path_579290, "accountId", newJString(accountId))
+  add(query_579291, "fields", newJString(fields))
+  result = call_579289.call(path_579290, query_579291, nil, nil, nil)
 
-var tagmanagerAccountsContainersTagsGet* = Call_TagmanagerAccountsContainersTagsGet_589375(
+var tagmanagerAccountsContainersTagsGet* = Call_TagmanagerAccountsContainersTagsGet_579275(
     name: "tagmanagerAccountsContainersTagsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/tags/{tagId}",
-    validator: validate_TagmanagerAccountsContainersTagsGet_589376,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsGet_589377,
+    validator: validate_TagmanagerAccountsContainersTagsGet_579276,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsGet_579277,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTagsDelete_589412 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersTagsDelete_589414(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTagsDelete_579312 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersTagsDelete_579314(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4411,7 +4412,7 @@ proc url_TagmanagerAccountsContainersTagsDelete_589414(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTagsDelete_589413(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTagsDelete_579313(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a GTM Tag.
   ## 
@@ -4427,73 +4428,73 @@ proc validate_TagmanagerAccountsContainersTagsDelete_589413(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589415 = path.getOrDefault("containerId")
-  valid_589415 = validateParameter(valid_589415, JString, required = true,
+  var valid_579315 = path.getOrDefault("containerId")
+  valid_579315 = validateParameter(valid_579315, JString, required = true,
                                  default = nil)
-  if valid_589415 != nil:
-    section.add "containerId", valid_589415
-  var valid_589416 = path.getOrDefault("tagId")
-  valid_589416 = validateParameter(valid_589416, JString, required = true,
+  if valid_579315 != nil:
+    section.add "containerId", valid_579315
+  var valid_579316 = path.getOrDefault("tagId")
+  valid_579316 = validateParameter(valid_579316, JString, required = true,
                                  default = nil)
-  if valid_589416 != nil:
-    section.add "tagId", valid_589416
-  var valid_589417 = path.getOrDefault("accountId")
-  valid_589417 = validateParameter(valid_589417, JString, required = true,
+  if valid_579316 != nil:
+    section.add "tagId", valid_579316
+  var valid_579317 = path.getOrDefault("accountId")
+  valid_579317 = validateParameter(valid_579317, JString, required = true,
                                  default = nil)
-  if valid_589417 != nil:
-    section.add "accountId", valid_589417
+  if valid_579317 != nil:
+    section.add "accountId", valid_579317
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589418 = query.getOrDefault("fields")
-  valid_589418 = validateParameter(valid_589418, JString, required = false,
+  var valid_579318 = query.getOrDefault("key")
+  valid_579318 = validateParameter(valid_579318, JString, required = false,
                                  default = nil)
-  if valid_589418 != nil:
-    section.add "fields", valid_589418
-  var valid_589419 = query.getOrDefault("quotaUser")
-  valid_589419 = validateParameter(valid_589419, JString, required = false,
-                                 default = nil)
-  if valid_589419 != nil:
-    section.add "quotaUser", valid_589419
-  var valid_589420 = query.getOrDefault("alt")
-  valid_589420 = validateParameter(valid_589420, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589420 != nil:
-    section.add "alt", valid_589420
-  var valid_589421 = query.getOrDefault("oauth_token")
-  valid_589421 = validateParameter(valid_589421, JString, required = false,
-                                 default = nil)
-  if valid_589421 != nil:
-    section.add "oauth_token", valid_589421
-  var valid_589422 = query.getOrDefault("userIp")
-  valid_589422 = validateParameter(valid_589422, JString, required = false,
-                                 default = nil)
-  if valid_589422 != nil:
-    section.add "userIp", valid_589422
-  var valid_589423 = query.getOrDefault("key")
-  valid_589423 = validateParameter(valid_589423, JString, required = false,
-                                 default = nil)
-  if valid_589423 != nil:
-    section.add "key", valid_589423
-  var valid_589424 = query.getOrDefault("prettyPrint")
-  valid_589424 = validateParameter(valid_589424, JBool, required = false,
+  if valid_579318 != nil:
+    section.add "key", valid_579318
+  var valid_579319 = query.getOrDefault("prettyPrint")
+  valid_579319 = validateParameter(valid_579319, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589424 != nil:
-    section.add "prettyPrint", valid_589424
+  if valid_579319 != nil:
+    section.add "prettyPrint", valid_579319
+  var valid_579320 = query.getOrDefault("oauth_token")
+  valid_579320 = validateParameter(valid_579320, JString, required = false,
+                                 default = nil)
+  if valid_579320 != nil:
+    section.add "oauth_token", valid_579320
+  var valid_579321 = query.getOrDefault("alt")
+  valid_579321 = validateParameter(valid_579321, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579321 != nil:
+    section.add "alt", valid_579321
+  var valid_579322 = query.getOrDefault("userIp")
+  valid_579322 = validateParameter(valid_579322, JString, required = false,
+                                 default = nil)
+  if valid_579322 != nil:
+    section.add "userIp", valid_579322
+  var valid_579323 = query.getOrDefault("quotaUser")
+  valid_579323 = validateParameter(valid_579323, JString, required = false,
+                                 default = nil)
+  if valid_579323 != nil:
+    section.add "quotaUser", valid_579323
+  var valid_579324 = query.getOrDefault("fields")
+  valid_579324 = validateParameter(valid_579324, JString, required = false,
+                                 default = nil)
+  if valid_579324 != nil:
+    section.add "fields", valid_579324
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4502,70 +4503,70 @@ proc validate_TagmanagerAccountsContainersTagsDelete_589413(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589425: Call_TagmanagerAccountsContainersTagsDelete_589412;
+proc call*(call_579325: Call_TagmanagerAccountsContainersTagsDelete_579312;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a GTM Tag.
   ## 
-  let valid = call_589425.validator(path, query, header, formData, body)
-  let scheme = call_589425.pickScheme
+  let valid = call_579325.validator(path, query, header, formData, body)
+  let scheme = call_579325.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589425.url(scheme.get, call_589425.host, call_589425.base,
-                         call_589425.route, valid.getOrDefault("path"),
+  let url = call_579325.url(scheme.get, call_579325.host, call_579325.base,
+                         call_579325.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589425, url, valid)
+  result = hook(call_579325, url, valid)
 
-proc call*(call_589426: Call_TagmanagerAccountsContainersTagsDelete_589412;
-          containerId: string; tagId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579326: Call_TagmanagerAccountsContainersTagsDelete_579312;
+          containerId: string; tagId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersTagsDelete
   ## Deletes a GTM Tag.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   tagId: string (required)
-  ##        : The GTM Tag ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589427 = newJObject()
-  var query_589428 = newJObject()
-  add(path_589427, "containerId", newJString(containerId))
-  add(path_589427, "tagId", newJString(tagId))
-  add(query_589428, "fields", newJString(fields))
-  add(query_589428, "quotaUser", newJString(quotaUser))
-  add(query_589428, "alt", newJString(alt))
-  add(query_589428, "oauth_token", newJString(oauthToken))
-  add(path_589427, "accountId", newJString(accountId))
-  add(query_589428, "userIp", newJString(userIp))
-  add(query_589428, "key", newJString(key))
-  add(query_589428, "prettyPrint", newJBool(prettyPrint))
-  result = call_589426.call(path_589427, query_589428, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   tagId: string (required)
+  ##        : The GTM Tag ID.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579327 = newJObject()
+  var query_579328 = newJObject()
+  add(query_579328, "key", newJString(key))
+  add(query_579328, "prettyPrint", newJBool(prettyPrint))
+  add(query_579328, "oauth_token", newJString(oauthToken))
+  add(path_579327, "containerId", newJString(containerId))
+  add(query_579328, "alt", newJString(alt))
+  add(query_579328, "userIp", newJString(userIp))
+  add(path_579327, "tagId", newJString(tagId))
+  add(query_579328, "quotaUser", newJString(quotaUser))
+  add(path_579327, "accountId", newJString(accountId))
+  add(query_579328, "fields", newJString(fields))
+  result = call_579326.call(path_579327, query_579328, nil, nil, nil)
 
-var tagmanagerAccountsContainersTagsDelete* = Call_TagmanagerAccountsContainersTagsDelete_589412(
+var tagmanagerAccountsContainersTagsDelete* = Call_TagmanagerAccountsContainersTagsDelete_579312(
     name: "tagmanagerAccountsContainersTagsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/tags/{tagId}",
-    validator: validate_TagmanagerAccountsContainersTagsDelete_589413,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsDelete_589414,
+    validator: validate_TagmanagerAccountsContainersTagsDelete_579313,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTagsDelete_579314,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTriggersCreate_589445 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersTriggersCreate_589447(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTriggersCreate_579345 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersTriggersCreate_579347(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4584,7 +4585,7 @@ proc url_TagmanagerAccountsContainersTriggersCreate_589447(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTriggersCreate_589446(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTriggersCreate_579346(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a GTM Trigger.
   ## 
@@ -4598,68 +4599,68 @@ proc validate_TagmanagerAccountsContainersTriggersCreate_589446(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589448 = path.getOrDefault("containerId")
-  valid_589448 = validateParameter(valid_589448, JString, required = true,
+  var valid_579348 = path.getOrDefault("containerId")
+  valid_579348 = validateParameter(valid_579348, JString, required = true,
                                  default = nil)
-  if valid_589448 != nil:
-    section.add "containerId", valid_589448
-  var valid_589449 = path.getOrDefault("accountId")
-  valid_589449 = validateParameter(valid_589449, JString, required = true,
+  if valid_579348 != nil:
+    section.add "containerId", valid_579348
+  var valid_579349 = path.getOrDefault("accountId")
+  valid_579349 = validateParameter(valid_579349, JString, required = true,
                                  default = nil)
-  if valid_589449 != nil:
-    section.add "accountId", valid_589449
+  if valid_579349 != nil:
+    section.add "accountId", valid_579349
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589450 = query.getOrDefault("fields")
-  valid_589450 = validateParameter(valid_589450, JString, required = false,
+  var valid_579350 = query.getOrDefault("key")
+  valid_579350 = validateParameter(valid_579350, JString, required = false,
                                  default = nil)
-  if valid_589450 != nil:
-    section.add "fields", valid_589450
-  var valid_589451 = query.getOrDefault("quotaUser")
-  valid_589451 = validateParameter(valid_589451, JString, required = false,
-                                 default = nil)
-  if valid_589451 != nil:
-    section.add "quotaUser", valid_589451
-  var valid_589452 = query.getOrDefault("alt")
-  valid_589452 = validateParameter(valid_589452, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589452 != nil:
-    section.add "alt", valid_589452
-  var valid_589453 = query.getOrDefault("oauth_token")
-  valid_589453 = validateParameter(valid_589453, JString, required = false,
-                                 default = nil)
-  if valid_589453 != nil:
-    section.add "oauth_token", valid_589453
-  var valid_589454 = query.getOrDefault("userIp")
-  valid_589454 = validateParameter(valid_589454, JString, required = false,
-                                 default = nil)
-  if valid_589454 != nil:
-    section.add "userIp", valid_589454
-  var valid_589455 = query.getOrDefault("key")
-  valid_589455 = validateParameter(valid_589455, JString, required = false,
-                                 default = nil)
-  if valid_589455 != nil:
-    section.add "key", valid_589455
-  var valid_589456 = query.getOrDefault("prettyPrint")
-  valid_589456 = validateParameter(valid_589456, JBool, required = false,
+  if valid_579350 != nil:
+    section.add "key", valid_579350
+  var valid_579351 = query.getOrDefault("prettyPrint")
+  valid_579351 = validateParameter(valid_579351, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589456 != nil:
-    section.add "prettyPrint", valid_589456
+  if valid_579351 != nil:
+    section.add "prettyPrint", valid_579351
+  var valid_579352 = query.getOrDefault("oauth_token")
+  valid_579352 = validateParameter(valid_579352, JString, required = false,
+                                 default = nil)
+  if valid_579352 != nil:
+    section.add "oauth_token", valid_579352
+  var valid_579353 = query.getOrDefault("alt")
+  valid_579353 = validateParameter(valid_579353, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579353 != nil:
+    section.add "alt", valid_579353
+  var valid_579354 = query.getOrDefault("userIp")
+  valid_579354 = validateParameter(valid_579354, JString, required = false,
+                                 default = nil)
+  if valid_579354 != nil:
+    section.add "userIp", valid_579354
+  var valid_579355 = query.getOrDefault("quotaUser")
+  valid_579355 = validateParameter(valid_579355, JString, required = false,
+                                 default = nil)
+  if valid_579355 != nil:
+    section.add "quotaUser", valid_579355
+  var valid_579356 = query.getOrDefault("fields")
+  valid_579356 = validateParameter(valid_579356, JString, required = false,
+                                 default = nil)
+  if valid_579356 != nil:
+    section.add "fields", valid_579356
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4671,72 +4672,72 @@ proc validate_TagmanagerAccountsContainersTriggersCreate_589446(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589458: Call_TagmanagerAccountsContainersTriggersCreate_589445;
+proc call*(call_579358: Call_TagmanagerAccountsContainersTriggersCreate_579345;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a GTM Trigger.
   ## 
-  let valid = call_589458.validator(path, query, header, formData, body)
-  let scheme = call_589458.pickScheme
+  let valid = call_579358.validator(path, query, header, formData, body)
+  let scheme = call_579358.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589458.url(scheme.get, call_589458.host, call_589458.base,
-                         call_589458.route, valid.getOrDefault("path"),
+  let url = call_579358.url(scheme.get, call_579358.host, call_579358.base,
+                         call_579358.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589458, url, valid)
+  result = hook(call_579358, url, valid)
 
-proc call*(call_589459: Call_TagmanagerAccountsContainersTriggersCreate_589445;
-          containerId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579359: Call_TagmanagerAccountsContainersTriggersCreate_579345;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersTriggersCreate
   ## Creates a GTM Trigger.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589460 = newJObject()
-  var query_589461 = newJObject()
-  var body_589462 = newJObject()
-  add(path_589460, "containerId", newJString(containerId))
-  add(query_589461, "fields", newJString(fields))
-  add(query_589461, "quotaUser", newJString(quotaUser))
-  add(query_589461, "alt", newJString(alt))
-  add(query_589461, "oauth_token", newJString(oauthToken))
-  add(path_589460, "accountId", newJString(accountId))
-  add(query_589461, "userIp", newJString(userIp))
-  add(query_589461, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579360 = newJObject()
+  var query_579361 = newJObject()
+  var body_579362 = newJObject()
+  add(query_579361, "key", newJString(key))
+  add(query_579361, "prettyPrint", newJBool(prettyPrint))
+  add(query_579361, "oauth_token", newJString(oauthToken))
+  add(path_579360, "containerId", newJString(containerId))
+  add(query_579361, "alt", newJString(alt))
+  add(query_579361, "userIp", newJString(userIp))
+  add(query_579361, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589462 = body
-  add(query_589461, "prettyPrint", newJBool(prettyPrint))
-  result = call_589459.call(path_589460, query_589461, nil, nil, body_589462)
+    body_579362 = body
+  add(path_579360, "accountId", newJString(accountId))
+  add(query_579361, "fields", newJString(fields))
+  result = call_579359.call(path_579360, query_579361, nil, nil, body_579362)
 
-var tagmanagerAccountsContainersTriggersCreate* = Call_TagmanagerAccountsContainersTriggersCreate_589445(
+var tagmanagerAccountsContainersTriggersCreate* = Call_TagmanagerAccountsContainersTriggersCreate_579345(
     name: "tagmanagerAccountsContainersTriggersCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/triggers",
-    validator: validate_TagmanagerAccountsContainersTriggersCreate_589446,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersCreate_589447,
+    validator: validate_TagmanagerAccountsContainersTriggersCreate_579346,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersCreate_579347,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTriggersList_589429 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersTriggersList_589431(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTriggersList_579329 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersTriggersList_579331(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4755,7 +4756,7 @@ proc url_TagmanagerAccountsContainersTriggersList_589431(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTriggersList_589430(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTriggersList_579330(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all GTM Triggers of a Container.
   ## 
@@ -4769,68 +4770,68 @@ proc validate_TagmanagerAccountsContainersTriggersList_589430(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589432 = path.getOrDefault("containerId")
-  valid_589432 = validateParameter(valid_589432, JString, required = true,
+  var valid_579332 = path.getOrDefault("containerId")
+  valid_579332 = validateParameter(valid_579332, JString, required = true,
                                  default = nil)
-  if valid_589432 != nil:
-    section.add "containerId", valid_589432
-  var valid_589433 = path.getOrDefault("accountId")
-  valid_589433 = validateParameter(valid_589433, JString, required = true,
+  if valid_579332 != nil:
+    section.add "containerId", valid_579332
+  var valid_579333 = path.getOrDefault("accountId")
+  valid_579333 = validateParameter(valid_579333, JString, required = true,
                                  default = nil)
-  if valid_589433 != nil:
-    section.add "accountId", valid_589433
+  if valid_579333 != nil:
+    section.add "accountId", valid_579333
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589434 = query.getOrDefault("fields")
-  valid_589434 = validateParameter(valid_589434, JString, required = false,
+  var valid_579334 = query.getOrDefault("key")
+  valid_579334 = validateParameter(valid_579334, JString, required = false,
                                  default = nil)
-  if valid_589434 != nil:
-    section.add "fields", valid_589434
-  var valid_589435 = query.getOrDefault("quotaUser")
-  valid_589435 = validateParameter(valid_589435, JString, required = false,
-                                 default = nil)
-  if valid_589435 != nil:
-    section.add "quotaUser", valid_589435
-  var valid_589436 = query.getOrDefault("alt")
-  valid_589436 = validateParameter(valid_589436, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589436 != nil:
-    section.add "alt", valid_589436
-  var valid_589437 = query.getOrDefault("oauth_token")
-  valid_589437 = validateParameter(valid_589437, JString, required = false,
-                                 default = nil)
-  if valid_589437 != nil:
-    section.add "oauth_token", valid_589437
-  var valid_589438 = query.getOrDefault("userIp")
-  valid_589438 = validateParameter(valid_589438, JString, required = false,
-                                 default = nil)
-  if valid_589438 != nil:
-    section.add "userIp", valid_589438
-  var valid_589439 = query.getOrDefault("key")
-  valid_589439 = validateParameter(valid_589439, JString, required = false,
-                                 default = nil)
-  if valid_589439 != nil:
-    section.add "key", valid_589439
-  var valid_589440 = query.getOrDefault("prettyPrint")
-  valid_589440 = validateParameter(valid_589440, JBool, required = false,
+  if valid_579334 != nil:
+    section.add "key", valid_579334
+  var valid_579335 = query.getOrDefault("prettyPrint")
+  valid_579335 = validateParameter(valid_579335, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589440 != nil:
-    section.add "prettyPrint", valid_589440
+  if valid_579335 != nil:
+    section.add "prettyPrint", valid_579335
+  var valid_579336 = query.getOrDefault("oauth_token")
+  valid_579336 = validateParameter(valid_579336, JString, required = false,
+                                 default = nil)
+  if valid_579336 != nil:
+    section.add "oauth_token", valid_579336
+  var valid_579337 = query.getOrDefault("alt")
+  valid_579337 = validateParameter(valid_579337, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579337 != nil:
+    section.add "alt", valid_579337
+  var valid_579338 = query.getOrDefault("userIp")
+  valid_579338 = validateParameter(valid_579338, JString, required = false,
+                                 default = nil)
+  if valid_579338 != nil:
+    section.add "userIp", valid_579338
+  var valid_579339 = query.getOrDefault("quotaUser")
+  valid_579339 = validateParameter(valid_579339, JString, required = false,
+                                 default = nil)
+  if valid_579339 != nil:
+    section.add "quotaUser", valid_579339
+  var valid_579340 = query.getOrDefault("fields")
+  valid_579340 = validateParameter(valid_579340, JString, required = false,
+                                 default = nil)
+  if valid_579340 != nil:
+    section.add "fields", valid_579340
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4839,67 +4840,67 @@ proc validate_TagmanagerAccountsContainersTriggersList_589430(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589441: Call_TagmanagerAccountsContainersTriggersList_589429;
+proc call*(call_579341: Call_TagmanagerAccountsContainersTriggersList_579329;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all GTM Triggers of a Container.
   ## 
-  let valid = call_589441.validator(path, query, header, formData, body)
-  let scheme = call_589441.pickScheme
+  let valid = call_579341.validator(path, query, header, formData, body)
+  let scheme = call_579341.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589441.url(scheme.get, call_589441.host, call_589441.base,
-                         call_589441.route, valid.getOrDefault("path"),
+  let url = call_579341.url(scheme.get, call_579341.host, call_579341.base,
+                         call_579341.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589441, url, valid)
+  result = hook(call_579341, url, valid)
 
-proc call*(call_589442: Call_TagmanagerAccountsContainersTriggersList_589429;
-          containerId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579342: Call_TagmanagerAccountsContainersTriggersList_579329;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersTriggersList
   ## Lists all GTM Triggers of a Container.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589443 = newJObject()
-  var query_589444 = newJObject()
-  add(path_589443, "containerId", newJString(containerId))
-  add(query_589444, "fields", newJString(fields))
-  add(query_589444, "quotaUser", newJString(quotaUser))
-  add(query_589444, "alt", newJString(alt))
-  add(query_589444, "oauth_token", newJString(oauthToken))
-  add(path_589443, "accountId", newJString(accountId))
-  add(query_589444, "userIp", newJString(userIp))
-  add(query_589444, "key", newJString(key))
-  add(query_589444, "prettyPrint", newJBool(prettyPrint))
-  result = call_589442.call(path_589443, query_589444, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579343 = newJObject()
+  var query_579344 = newJObject()
+  add(query_579344, "key", newJString(key))
+  add(query_579344, "prettyPrint", newJBool(prettyPrint))
+  add(query_579344, "oauth_token", newJString(oauthToken))
+  add(path_579343, "containerId", newJString(containerId))
+  add(query_579344, "alt", newJString(alt))
+  add(query_579344, "userIp", newJString(userIp))
+  add(query_579344, "quotaUser", newJString(quotaUser))
+  add(path_579343, "accountId", newJString(accountId))
+  add(query_579344, "fields", newJString(fields))
+  result = call_579342.call(path_579343, query_579344, nil, nil, nil)
 
-var tagmanagerAccountsContainersTriggersList* = Call_TagmanagerAccountsContainersTriggersList_589429(
+var tagmanagerAccountsContainersTriggersList* = Call_TagmanagerAccountsContainersTriggersList_579329(
     name: "tagmanagerAccountsContainersTriggersList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/triggers",
-    validator: validate_TagmanagerAccountsContainersTriggersList_589430,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersList_589431,
+    validator: validate_TagmanagerAccountsContainersTriggersList_579330,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersList_579331,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTriggersUpdate_589480 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersTriggersUpdate_589482(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTriggersUpdate_579380 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersTriggersUpdate_579382(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4920,7 +4921,7 @@ proc url_TagmanagerAccountsContainersTriggersUpdate_589482(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTriggersUpdate_589481(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTriggersUpdate_579381(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a GTM Trigger.
   ## 
@@ -4929,87 +4930,87 @@ proc validate_TagmanagerAccountsContainersTriggersUpdate_589481(path: JsonNode;
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   triggerId: JString (required)
   ##            : The GTM Trigger ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589483 = path.getOrDefault("containerId")
-  valid_589483 = validateParameter(valid_589483, JString, required = true,
+  var valid_579383 = path.getOrDefault("containerId")
+  valid_579383 = validateParameter(valid_579383, JString, required = true,
                                  default = nil)
-  if valid_589483 != nil:
-    section.add "containerId", valid_589483
-  var valid_589484 = path.getOrDefault("accountId")
-  valid_589484 = validateParameter(valid_589484, JString, required = true,
+  if valid_579383 != nil:
+    section.add "containerId", valid_579383
+  var valid_579384 = path.getOrDefault("triggerId")
+  valid_579384 = validateParameter(valid_579384, JString, required = true,
                                  default = nil)
-  if valid_589484 != nil:
-    section.add "accountId", valid_589484
-  var valid_589485 = path.getOrDefault("triggerId")
-  valid_589485 = validateParameter(valid_589485, JString, required = true,
+  if valid_579384 != nil:
+    section.add "triggerId", valid_579384
+  var valid_579385 = path.getOrDefault("accountId")
+  valid_579385 = validateParameter(valid_579385, JString, required = true,
                                  default = nil)
-  if valid_589485 != nil:
-    section.add "triggerId", valid_589485
+  if valid_579385 != nil:
+    section.add "accountId", valid_579385
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: JString
-  ##              : When provided, this fingerprint must match the fingerprint of the trigger in storage.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   fingerprint: JString
+  ##              : When provided, this fingerprint must match the fingerprint of the trigger in storage.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589486 = query.getOrDefault("fields")
-  valid_589486 = validateParameter(valid_589486, JString, required = false,
+  var valid_579386 = query.getOrDefault("key")
+  valid_579386 = validateParameter(valid_579386, JString, required = false,
                                  default = nil)
-  if valid_589486 != nil:
-    section.add "fields", valid_589486
-  var valid_589487 = query.getOrDefault("fingerprint")
-  valid_589487 = validateParameter(valid_589487, JString, required = false,
-                                 default = nil)
-  if valid_589487 != nil:
-    section.add "fingerprint", valid_589487
-  var valid_589488 = query.getOrDefault("quotaUser")
-  valid_589488 = validateParameter(valid_589488, JString, required = false,
-                                 default = nil)
-  if valid_589488 != nil:
-    section.add "quotaUser", valid_589488
-  var valid_589489 = query.getOrDefault("alt")
-  valid_589489 = validateParameter(valid_589489, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589489 != nil:
-    section.add "alt", valid_589489
-  var valid_589490 = query.getOrDefault("oauth_token")
-  valid_589490 = validateParameter(valid_589490, JString, required = false,
-                                 default = nil)
-  if valid_589490 != nil:
-    section.add "oauth_token", valid_589490
-  var valid_589491 = query.getOrDefault("userIp")
-  valid_589491 = validateParameter(valid_589491, JString, required = false,
-                                 default = nil)
-  if valid_589491 != nil:
-    section.add "userIp", valid_589491
-  var valid_589492 = query.getOrDefault("key")
-  valid_589492 = validateParameter(valid_589492, JString, required = false,
-                                 default = nil)
-  if valid_589492 != nil:
-    section.add "key", valid_589492
-  var valid_589493 = query.getOrDefault("prettyPrint")
-  valid_589493 = validateParameter(valid_589493, JBool, required = false,
+  if valid_579386 != nil:
+    section.add "key", valid_579386
+  var valid_579387 = query.getOrDefault("prettyPrint")
+  valid_579387 = validateParameter(valid_579387, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589493 != nil:
-    section.add "prettyPrint", valid_589493
+  if valid_579387 != nil:
+    section.add "prettyPrint", valid_579387
+  var valid_579388 = query.getOrDefault("oauth_token")
+  valid_579388 = validateParameter(valid_579388, JString, required = false,
+                                 default = nil)
+  if valid_579388 != nil:
+    section.add "oauth_token", valid_579388
+  var valid_579389 = query.getOrDefault("fingerprint")
+  valid_579389 = validateParameter(valid_579389, JString, required = false,
+                                 default = nil)
+  if valid_579389 != nil:
+    section.add "fingerprint", valid_579389
+  var valid_579390 = query.getOrDefault("alt")
+  valid_579390 = validateParameter(valid_579390, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579390 != nil:
+    section.add "alt", valid_579390
+  var valid_579391 = query.getOrDefault("userIp")
+  valid_579391 = validateParameter(valid_579391, JString, required = false,
+                                 default = nil)
+  if valid_579391 != nil:
+    section.add "userIp", valid_579391
+  var valid_579392 = query.getOrDefault("quotaUser")
+  valid_579392 = validateParameter(valid_579392, JString, required = false,
+                                 default = nil)
+  if valid_579392 != nil:
+    section.add "quotaUser", valid_579392
+  var valid_579393 = query.getOrDefault("fields")
+  valid_579393 = validateParameter(valid_579393, JString, required = false,
+                                 default = nil)
+  if valid_579393 != nil:
+    section.add "fields", valid_579393
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5021,77 +5022,77 @@ proc validate_TagmanagerAccountsContainersTriggersUpdate_589481(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589495: Call_TagmanagerAccountsContainersTriggersUpdate_589480;
+proc call*(call_579395: Call_TagmanagerAccountsContainersTriggersUpdate_579380;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a GTM Trigger.
   ## 
-  let valid = call_589495.validator(path, query, header, formData, body)
-  let scheme = call_589495.pickScheme
+  let valid = call_579395.validator(path, query, header, formData, body)
+  let scheme = call_579395.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589495.url(scheme.get, call_589495.host, call_589495.base,
-                         call_589495.route, valid.getOrDefault("path"),
+  let url = call_579395.url(scheme.get, call_579395.host, call_579395.base,
+                         call_579395.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589495, url, valid)
+  result = hook(call_579395, url, valid)
 
-proc call*(call_589496: Call_TagmanagerAccountsContainersTriggersUpdate_589480;
-          containerId: string; accountId: string; triggerId: string;
-          fields: string = ""; fingerprint: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579396: Call_TagmanagerAccountsContainersTriggersUpdate_579380;
+          containerId: string; triggerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; fingerprint: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersTriggersUpdate
   ## Updates a GTM Trigger.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   containerId: string (required)
   ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
   ##   fingerprint: string
   ##              : When provided, this fingerprint must match the fingerprint of the trigger in storage.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   alt: string
   ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
   ##   userIp: string
   ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   triggerId: string (required)
   ##            : The GTM Trigger ID.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589497 = newJObject()
-  var query_589498 = newJObject()
-  var body_589499 = newJObject()
-  add(path_589497, "containerId", newJString(containerId))
-  add(query_589498, "fields", newJString(fields))
-  add(query_589498, "fingerprint", newJString(fingerprint))
-  add(query_589498, "quotaUser", newJString(quotaUser))
-  add(query_589498, "alt", newJString(alt))
-  add(query_589498, "oauth_token", newJString(oauthToken))
-  add(path_589497, "accountId", newJString(accountId))
-  add(query_589498, "userIp", newJString(userIp))
-  add(path_589497, "triggerId", newJString(triggerId))
-  add(query_589498, "key", newJString(key))
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579397 = newJObject()
+  var query_579398 = newJObject()
+  var body_579399 = newJObject()
+  add(query_579398, "key", newJString(key))
+  add(query_579398, "prettyPrint", newJBool(prettyPrint))
+  add(query_579398, "oauth_token", newJString(oauthToken))
+  add(path_579397, "containerId", newJString(containerId))
+  add(query_579398, "fingerprint", newJString(fingerprint))
+  add(query_579398, "alt", newJString(alt))
+  add(query_579398, "userIp", newJString(userIp))
+  add(query_579398, "quotaUser", newJString(quotaUser))
+  add(path_579397, "triggerId", newJString(triggerId))
   if body != nil:
-    body_589499 = body
-  add(query_589498, "prettyPrint", newJBool(prettyPrint))
-  result = call_589496.call(path_589497, query_589498, nil, nil, body_589499)
+    body_579399 = body
+  add(path_579397, "accountId", newJString(accountId))
+  add(query_579398, "fields", newJString(fields))
+  result = call_579396.call(path_579397, query_579398, nil, nil, body_579399)
 
-var tagmanagerAccountsContainersTriggersUpdate* = Call_TagmanagerAccountsContainersTriggersUpdate_589480(
+var tagmanagerAccountsContainersTriggersUpdate* = Call_TagmanagerAccountsContainersTriggersUpdate_579380(
     name: "tagmanagerAccountsContainersTriggersUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/triggers/{triggerId}",
-    validator: validate_TagmanagerAccountsContainersTriggersUpdate_589481,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersUpdate_589482,
+    validator: validate_TagmanagerAccountsContainersTriggersUpdate_579381,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersUpdate_579382,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTriggersGet_589463 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersTriggersGet_589465(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTriggersGet_579363 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersTriggersGet_579365(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5112,7 +5113,7 @@ proc url_TagmanagerAccountsContainersTriggersGet_589465(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTriggersGet_589464(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTriggersGet_579364(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a GTM Trigger.
   ## 
@@ -5121,80 +5122,80 @@ proc validate_TagmanagerAccountsContainersTriggersGet_589464(path: JsonNode;
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   triggerId: JString (required)
   ##            : The GTM Trigger ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589466 = path.getOrDefault("containerId")
-  valid_589466 = validateParameter(valid_589466, JString, required = true,
+  var valid_579366 = path.getOrDefault("containerId")
+  valid_579366 = validateParameter(valid_579366, JString, required = true,
                                  default = nil)
-  if valid_589466 != nil:
-    section.add "containerId", valid_589466
-  var valid_589467 = path.getOrDefault("accountId")
-  valid_589467 = validateParameter(valid_589467, JString, required = true,
+  if valid_579366 != nil:
+    section.add "containerId", valid_579366
+  var valid_579367 = path.getOrDefault("triggerId")
+  valid_579367 = validateParameter(valid_579367, JString, required = true,
                                  default = nil)
-  if valid_589467 != nil:
-    section.add "accountId", valid_589467
-  var valid_589468 = path.getOrDefault("triggerId")
-  valid_589468 = validateParameter(valid_589468, JString, required = true,
+  if valid_579367 != nil:
+    section.add "triggerId", valid_579367
+  var valid_579368 = path.getOrDefault("accountId")
+  valid_579368 = validateParameter(valid_579368, JString, required = true,
                                  default = nil)
-  if valid_589468 != nil:
-    section.add "triggerId", valid_589468
+  if valid_579368 != nil:
+    section.add "accountId", valid_579368
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589469 = query.getOrDefault("fields")
-  valid_589469 = validateParameter(valid_589469, JString, required = false,
+  var valid_579369 = query.getOrDefault("key")
+  valid_579369 = validateParameter(valid_579369, JString, required = false,
                                  default = nil)
-  if valid_589469 != nil:
-    section.add "fields", valid_589469
-  var valid_589470 = query.getOrDefault("quotaUser")
-  valid_589470 = validateParameter(valid_589470, JString, required = false,
-                                 default = nil)
-  if valid_589470 != nil:
-    section.add "quotaUser", valid_589470
-  var valid_589471 = query.getOrDefault("alt")
-  valid_589471 = validateParameter(valid_589471, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589471 != nil:
-    section.add "alt", valid_589471
-  var valid_589472 = query.getOrDefault("oauth_token")
-  valid_589472 = validateParameter(valid_589472, JString, required = false,
-                                 default = nil)
-  if valid_589472 != nil:
-    section.add "oauth_token", valid_589472
-  var valid_589473 = query.getOrDefault("userIp")
-  valid_589473 = validateParameter(valid_589473, JString, required = false,
-                                 default = nil)
-  if valid_589473 != nil:
-    section.add "userIp", valid_589473
-  var valid_589474 = query.getOrDefault("key")
-  valid_589474 = validateParameter(valid_589474, JString, required = false,
-                                 default = nil)
-  if valid_589474 != nil:
-    section.add "key", valid_589474
-  var valid_589475 = query.getOrDefault("prettyPrint")
-  valid_589475 = validateParameter(valid_589475, JBool, required = false,
+  if valid_579369 != nil:
+    section.add "key", valid_579369
+  var valid_579370 = query.getOrDefault("prettyPrint")
+  valid_579370 = validateParameter(valid_579370, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589475 != nil:
-    section.add "prettyPrint", valid_589475
+  if valid_579370 != nil:
+    section.add "prettyPrint", valid_579370
+  var valid_579371 = query.getOrDefault("oauth_token")
+  valid_579371 = validateParameter(valid_579371, JString, required = false,
+                                 default = nil)
+  if valid_579371 != nil:
+    section.add "oauth_token", valid_579371
+  var valid_579372 = query.getOrDefault("alt")
+  valid_579372 = validateParameter(valid_579372, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579372 != nil:
+    section.add "alt", valid_579372
+  var valid_579373 = query.getOrDefault("userIp")
+  valid_579373 = validateParameter(valid_579373, JString, required = false,
+                                 default = nil)
+  if valid_579373 != nil:
+    section.add "userIp", valid_579373
+  var valid_579374 = query.getOrDefault("quotaUser")
+  valid_579374 = validateParameter(valid_579374, JString, required = false,
+                                 default = nil)
+  if valid_579374 != nil:
+    section.add "quotaUser", valid_579374
+  var valid_579375 = query.getOrDefault("fields")
+  valid_579375 = validateParameter(valid_579375, JString, required = false,
+                                 default = nil)
+  if valid_579375 != nil:
+    section.add "fields", valid_579375
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5203,70 +5204,69 @@ proc validate_TagmanagerAccountsContainersTriggersGet_589464(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589476: Call_TagmanagerAccountsContainersTriggersGet_589463;
+proc call*(call_579376: Call_TagmanagerAccountsContainersTriggersGet_579363;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a GTM Trigger.
   ## 
-  let valid = call_589476.validator(path, query, header, formData, body)
-  let scheme = call_589476.pickScheme
+  let valid = call_579376.validator(path, query, header, formData, body)
+  let scheme = call_579376.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589476.url(scheme.get, call_589476.host, call_589476.base,
-                         call_589476.route, valid.getOrDefault("path"),
+  let url = call_579376.url(scheme.get, call_579376.host, call_579376.base,
+                         call_579376.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589476, url, valid)
+  result = hook(call_579376, url, valid)
 
-proc call*(call_589477: Call_TagmanagerAccountsContainersTriggersGet_589463;
-          containerId: string; accountId: string; triggerId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579377: Call_TagmanagerAccountsContainersTriggersGet_579363;
+          containerId: string; triggerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersTriggersGet
   ## Gets a GTM Trigger.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   triggerId: string (required)
-  ##            : The GTM Trigger ID.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589478 = newJObject()
-  var query_589479 = newJObject()
-  add(path_589478, "containerId", newJString(containerId))
-  add(query_589479, "fields", newJString(fields))
-  add(query_589479, "quotaUser", newJString(quotaUser))
-  add(query_589479, "alt", newJString(alt))
-  add(query_589479, "oauth_token", newJString(oauthToken))
-  add(path_589478, "accountId", newJString(accountId))
-  add(query_589479, "userIp", newJString(userIp))
-  add(path_589478, "triggerId", newJString(triggerId))
-  add(query_589479, "key", newJString(key))
-  add(query_589479, "prettyPrint", newJBool(prettyPrint))
-  result = call_589477.call(path_589478, query_589479, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   triggerId: string (required)
+  ##            : The GTM Trigger ID.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579378 = newJObject()
+  var query_579379 = newJObject()
+  add(query_579379, "key", newJString(key))
+  add(query_579379, "prettyPrint", newJBool(prettyPrint))
+  add(query_579379, "oauth_token", newJString(oauthToken))
+  add(path_579378, "containerId", newJString(containerId))
+  add(query_579379, "alt", newJString(alt))
+  add(query_579379, "userIp", newJString(userIp))
+  add(query_579379, "quotaUser", newJString(quotaUser))
+  add(path_579378, "triggerId", newJString(triggerId))
+  add(path_579378, "accountId", newJString(accountId))
+  add(query_579379, "fields", newJString(fields))
+  result = call_579377.call(path_579378, query_579379, nil, nil, nil)
 
-var tagmanagerAccountsContainersTriggersGet* = Call_TagmanagerAccountsContainersTriggersGet_589463(
+var tagmanagerAccountsContainersTriggersGet* = Call_TagmanagerAccountsContainersTriggersGet_579363(
     name: "tagmanagerAccountsContainersTriggersGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/triggers/{triggerId}",
-    validator: validate_TagmanagerAccountsContainersTriggersGet_589464,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersGet_589465,
+    validator: validate_TagmanagerAccountsContainersTriggersGet_579364,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersGet_579365,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersTriggersDelete_589500 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersTriggersDelete_589502(protocol: Scheme;
+  Call_TagmanagerAccountsContainersTriggersDelete_579400 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersTriggersDelete_579402(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5287,7 +5287,7 @@ proc url_TagmanagerAccountsContainersTriggersDelete_589502(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersTriggersDelete_589501(path: JsonNode;
+proc validate_TagmanagerAccountsContainersTriggersDelete_579401(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a GTM Trigger.
   ## 
@@ -5296,80 +5296,80 @@ proc validate_TagmanagerAccountsContainersTriggersDelete_589501(path: JsonNode;
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   triggerId: JString (required)
   ##            : The GTM Trigger ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589503 = path.getOrDefault("containerId")
-  valid_589503 = validateParameter(valid_589503, JString, required = true,
+  var valid_579403 = path.getOrDefault("containerId")
+  valid_579403 = validateParameter(valid_579403, JString, required = true,
                                  default = nil)
-  if valid_589503 != nil:
-    section.add "containerId", valid_589503
-  var valid_589504 = path.getOrDefault("accountId")
-  valid_589504 = validateParameter(valid_589504, JString, required = true,
+  if valid_579403 != nil:
+    section.add "containerId", valid_579403
+  var valid_579404 = path.getOrDefault("triggerId")
+  valid_579404 = validateParameter(valid_579404, JString, required = true,
                                  default = nil)
-  if valid_589504 != nil:
-    section.add "accountId", valid_589504
-  var valid_589505 = path.getOrDefault("triggerId")
-  valid_589505 = validateParameter(valid_589505, JString, required = true,
+  if valid_579404 != nil:
+    section.add "triggerId", valid_579404
+  var valid_579405 = path.getOrDefault("accountId")
+  valid_579405 = validateParameter(valid_579405, JString, required = true,
                                  default = nil)
-  if valid_589505 != nil:
-    section.add "triggerId", valid_589505
+  if valid_579405 != nil:
+    section.add "accountId", valid_579405
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589506 = query.getOrDefault("fields")
-  valid_589506 = validateParameter(valid_589506, JString, required = false,
+  var valid_579406 = query.getOrDefault("key")
+  valid_579406 = validateParameter(valid_579406, JString, required = false,
                                  default = nil)
-  if valid_589506 != nil:
-    section.add "fields", valid_589506
-  var valid_589507 = query.getOrDefault("quotaUser")
-  valid_589507 = validateParameter(valid_589507, JString, required = false,
-                                 default = nil)
-  if valid_589507 != nil:
-    section.add "quotaUser", valid_589507
-  var valid_589508 = query.getOrDefault("alt")
-  valid_589508 = validateParameter(valid_589508, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589508 != nil:
-    section.add "alt", valid_589508
-  var valid_589509 = query.getOrDefault("oauth_token")
-  valid_589509 = validateParameter(valid_589509, JString, required = false,
-                                 default = nil)
-  if valid_589509 != nil:
-    section.add "oauth_token", valid_589509
-  var valid_589510 = query.getOrDefault("userIp")
-  valid_589510 = validateParameter(valid_589510, JString, required = false,
-                                 default = nil)
-  if valid_589510 != nil:
-    section.add "userIp", valid_589510
-  var valid_589511 = query.getOrDefault("key")
-  valid_589511 = validateParameter(valid_589511, JString, required = false,
-                                 default = nil)
-  if valid_589511 != nil:
-    section.add "key", valid_589511
-  var valid_589512 = query.getOrDefault("prettyPrint")
-  valid_589512 = validateParameter(valid_589512, JBool, required = false,
+  if valid_579406 != nil:
+    section.add "key", valid_579406
+  var valid_579407 = query.getOrDefault("prettyPrint")
+  valid_579407 = validateParameter(valid_579407, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589512 != nil:
-    section.add "prettyPrint", valid_589512
+  if valid_579407 != nil:
+    section.add "prettyPrint", valid_579407
+  var valid_579408 = query.getOrDefault("oauth_token")
+  valid_579408 = validateParameter(valid_579408, JString, required = false,
+                                 default = nil)
+  if valid_579408 != nil:
+    section.add "oauth_token", valid_579408
+  var valid_579409 = query.getOrDefault("alt")
+  valid_579409 = validateParameter(valid_579409, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579409 != nil:
+    section.add "alt", valid_579409
+  var valid_579410 = query.getOrDefault("userIp")
+  valid_579410 = validateParameter(valid_579410, JString, required = false,
+                                 default = nil)
+  if valid_579410 != nil:
+    section.add "userIp", valid_579410
+  var valid_579411 = query.getOrDefault("quotaUser")
+  valid_579411 = validateParameter(valid_579411, JString, required = false,
+                                 default = nil)
+  if valid_579411 != nil:
+    section.add "quotaUser", valid_579411
+  var valid_579412 = query.getOrDefault("fields")
+  valid_579412 = validateParameter(valid_579412, JString, required = false,
+                                 default = nil)
+  if valid_579412 != nil:
+    section.add "fields", valid_579412
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5378,70 +5378,69 @@ proc validate_TagmanagerAccountsContainersTriggersDelete_589501(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589513: Call_TagmanagerAccountsContainersTriggersDelete_589500;
+proc call*(call_579413: Call_TagmanagerAccountsContainersTriggersDelete_579400;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a GTM Trigger.
   ## 
-  let valid = call_589513.validator(path, query, header, formData, body)
-  let scheme = call_589513.pickScheme
+  let valid = call_579413.validator(path, query, header, formData, body)
+  let scheme = call_579413.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589513.url(scheme.get, call_589513.host, call_589513.base,
-                         call_589513.route, valid.getOrDefault("path"),
+  let url = call_579413.url(scheme.get, call_579413.host, call_579413.base,
+                         call_579413.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589513, url, valid)
+  result = hook(call_579413, url, valid)
 
-proc call*(call_589514: Call_TagmanagerAccountsContainersTriggersDelete_589500;
-          containerId: string; accountId: string; triggerId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579414: Call_TagmanagerAccountsContainersTriggersDelete_579400;
+          containerId: string; triggerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersTriggersDelete
   ## Deletes a GTM Trigger.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   triggerId: string (required)
-  ##            : The GTM Trigger ID.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589515 = newJObject()
-  var query_589516 = newJObject()
-  add(path_589515, "containerId", newJString(containerId))
-  add(query_589516, "fields", newJString(fields))
-  add(query_589516, "quotaUser", newJString(quotaUser))
-  add(query_589516, "alt", newJString(alt))
-  add(query_589516, "oauth_token", newJString(oauthToken))
-  add(path_589515, "accountId", newJString(accountId))
-  add(query_589516, "userIp", newJString(userIp))
-  add(path_589515, "triggerId", newJString(triggerId))
-  add(query_589516, "key", newJString(key))
-  add(query_589516, "prettyPrint", newJBool(prettyPrint))
-  result = call_589514.call(path_589515, query_589516, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   triggerId: string (required)
+  ##            : The GTM Trigger ID.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579415 = newJObject()
+  var query_579416 = newJObject()
+  add(query_579416, "key", newJString(key))
+  add(query_579416, "prettyPrint", newJBool(prettyPrint))
+  add(query_579416, "oauth_token", newJString(oauthToken))
+  add(path_579415, "containerId", newJString(containerId))
+  add(query_579416, "alt", newJString(alt))
+  add(query_579416, "userIp", newJString(userIp))
+  add(query_579416, "quotaUser", newJString(quotaUser))
+  add(path_579415, "triggerId", newJString(triggerId))
+  add(path_579415, "accountId", newJString(accountId))
+  add(query_579416, "fields", newJString(fields))
+  result = call_579414.call(path_579415, query_579416, nil, nil, nil)
 
-var tagmanagerAccountsContainersTriggersDelete* = Call_TagmanagerAccountsContainersTriggersDelete_589500(
+var tagmanagerAccountsContainersTriggersDelete* = Call_TagmanagerAccountsContainersTriggersDelete_579400(
     name: "tagmanagerAccountsContainersTriggersDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/triggers/{triggerId}",
-    validator: validate_TagmanagerAccountsContainersTriggersDelete_589501,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersDelete_589502,
+    validator: validate_TagmanagerAccountsContainersTriggersDelete_579401,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersTriggersDelete_579402,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVariablesCreate_589533 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersVariablesCreate_589535(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVariablesCreate_579433 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersVariablesCreate_579435(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5460,7 +5459,7 @@ proc url_TagmanagerAccountsContainersVariablesCreate_589535(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVariablesCreate_589534(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVariablesCreate_579434(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a GTM Variable.
   ## 
@@ -5474,68 +5473,68 @@ proc validate_TagmanagerAccountsContainersVariablesCreate_589534(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589536 = path.getOrDefault("containerId")
-  valid_589536 = validateParameter(valid_589536, JString, required = true,
+  var valid_579436 = path.getOrDefault("containerId")
+  valid_579436 = validateParameter(valid_579436, JString, required = true,
                                  default = nil)
-  if valid_589536 != nil:
-    section.add "containerId", valid_589536
-  var valid_589537 = path.getOrDefault("accountId")
-  valid_589537 = validateParameter(valid_589537, JString, required = true,
+  if valid_579436 != nil:
+    section.add "containerId", valid_579436
+  var valid_579437 = path.getOrDefault("accountId")
+  valid_579437 = validateParameter(valid_579437, JString, required = true,
                                  default = nil)
-  if valid_589537 != nil:
-    section.add "accountId", valid_589537
+  if valid_579437 != nil:
+    section.add "accountId", valid_579437
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589538 = query.getOrDefault("fields")
-  valid_589538 = validateParameter(valid_589538, JString, required = false,
+  var valid_579438 = query.getOrDefault("key")
+  valid_579438 = validateParameter(valid_579438, JString, required = false,
                                  default = nil)
-  if valid_589538 != nil:
-    section.add "fields", valid_589538
-  var valid_589539 = query.getOrDefault("quotaUser")
-  valid_589539 = validateParameter(valid_589539, JString, required = false,
-                                 default = nil)
-  if valid_589539 != nil:
-    section.add "quotaUser", valid_589539
-  var valid_589540 = query.getOrDefault("alt")
-  valid_589540 = validateParameter(valid_589540, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589540 != nil:
-    section.add "alt", valid_589540
-  var valid_589541 = query.getOrDefault("oauth_token")
-  valid_589541 = validateParameter(valid_589541, JString, required = false,
-                                 default = nil)
-  if valid_589541 != nil:
-    section.add "oauth_token", valid_589541
-  var valid_589542 = query.getOrDefault("userIp")
-  valid_589542 = validateParameter(valid_589542, JString, required = false,
-                                 default = nil)
-  if valid_589542 != nil:
-    section.add "userIp", valid_589542
-  var valid_589543 = query.getOrDefault("key")
-  valid_589543 = validateParameter(valid_589543, JString, required = false,
-                                 default = nil)
-  if valid_589543 != nil:
-    section.add "key", valid_589543
-  var valid_589544 = query.getOrDefault("prettyPrint")
-  valid_589544 = validateParameter(valid_589544, JBool, required = false,
+  if valid_579438 != nil:
+    section.add "key", valid_579438
+  var valid_579439 = query.getOrDefault("prettyPrint")
+  valid_579439 = validateParameter(valid_579439, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589544 != nil:
-    section.add "prettyPrint", valid_589544
+  if valid_579439 != nil:
+    section.add "prettyPrint", valid_579439
+  var valid_579440 = query.getOrDefault("oauth_token")
+  valid_579440 = validateParameter(valid_579440, JString, required = false,
+                                 default = nil)
+  if valid_579440 != nil:
+    section.add "oauth_token", valid_579440
+  var valid_579441 = query.getOrDefault("alt")
+  valid_579441 = validateParameter(valid_579441, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579441 != nil:
+    section.add "alt", valid_579441
+  var valid_579442 = query.getOrDefault("userIp")
+  valid_579442 = validateParameter(valid_579442, JString, required = false,
+                                 default = nil)
+  if valid_579442 != nil:
+    section.add "userIp", valid_579442
+  var valid_579443 = query.getOrDefault("quotaUser")
+  valid_579443 = validateParameter(valid_579443, JString, required = false,
+                                 default = nil)
+  if valid_579443 != nil:
+    section.add "quotaUser", valid_579443
+  var valid_579444 = query.getOrDefault("fields")
+  valid_579444 = validateParameter(valid_579444, JString, required = false,
+                                 default = nil)
+  if valid_579444 != nil:
+    section.add "fields", valid_579444
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5547,72 +5546,72 @@ proc validate_TagmanagerAccountsContainersVariablesCreate_589534(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589546: Call_TagmanagerAccountsContainersVariablesCreate_589533;
+proc call*(call_579446: Call_TagmanagerAccountsContainersVariablesCreate_579433;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a GTM Variable.
   ## 
-  let valid = call_589546.validator(path, query, header, formData, body)
-  let scheme = call_589546.pickScheme
+  let valid = call_579446.validator(path, query, header, formData, body)
+  let scheme = call_579446.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589546.url(scheme.get, call_589546.host, call_589546.base,
-                         call_589546.route, valid.getOrDefault("path"),
+  let url = call_579446.url(scheme.get, call_579446.host, call_579446.base,
+                         call_579446.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589546, url, valid)
+  result = hook(call_579446, url, valid)
 
-proc call*(call_589547: Call_TagmanagerAccountsContainersVariablesCreate_589533;
-          containerId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579447: Call_TagmanagerAccountsContainersVariablesCreate_579433;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersVariablesCreate
   ## Creates a GTM Variable.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589548 = newJObject()
-  var query_589549 = newJObject()
-  var body_589550 = newJObject()
-  add(path_589548, "containerId", newJString(containerId))
-  add(query_589549, "fields", newJString(fields))
-  add(query_589549, "quotaUser", newJString(quotaUser))
-  add(query_589549, "alt", newJString(alt))
-  add(query_589549, "oauth_token", newJString(oauthToken))
-  add(path_589548, "accountId", newJString(accountId))
-  add(query_589549, "userIp", newJString(userIp))
-  add(query_589549, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579448 = newJObject()
+  var query_579449 = newJObject()
+  var body_579450 = newJObject()
+  add(query_579449, "key", newJString(key))
+  add(query_579449, "prettyPrint", newJBool(prettyPrint))
+  add(query_579449, "oauth_token", newJString(oauthToken))
+  add(path_579448, "containerId", newJString(containerId))
+  add(query_579449, "alt", newJString(alt))
+  add(query_579449, "userIp", newJString(userIp))
+  add(query_579449, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589550 = body
-  add(query_589549, "prettyPrint", newJBool(prettyPrint))
-  result = call_589547.call(path_589548, query_589549, nil, nil, body_589550)
+    body_579450 = body
+  add(path_579448, "accountId", newJString(accountId))
+  add(query_579449, "fields", newJString(fields))
+  result = call_579447.call(path_579448, query_579449, nil, nil, body_579450)
 
-var tagmanagerAccountsContainersVariablesCreate* = Call_TagmanagerAccountsContainersVariablesCreate_589533(
+var tagmanagerAccountsContainersVariablesCreate* = Call_TagmanagerAccountsContainersVariablesCreate_579433(
     name: "tagmanagerAccountsContainersVariablesCreate",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/variables",
-    validator: validate_TagmanagerAccountsContainersVariablesCreate_589534,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesCreate_589535,
+    validator: validate_TagmanagerAccountsContainersVariablesCreate_579434,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesCreate_579435,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVariablesList_589517 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersVariablesList_589519(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVariablesList_579417 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersVariablesList_579419(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5631,7 +5630,7 @@ proc url_TagmanagerAccountsContainersVariablesList_589519(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVariablesList_589518(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVariablesList_579418(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all GTM Variables of a Container.
   ## 
@@ -5645,68 +5644,68 @@ proc validate_TagmanagerAccountsContainersVariablesList_589518(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589520 = path.getOrDefault("containerId")
-  valid_589520 = validateParameter(valid_589520, JString, required = true,
+  var valid_579420 = path.getOrDefault("containerId")
+  valid_579420 = validateParameter(valid_579420, JString, required = true,
                                  default = nil)
-  if valid_589520 != nil:
-    section.add "containerId", valid_589520
-  var valid_589521 = path.getOrDefault("accountId")
-  valid_589521 = validateParameter(valid_589521, JString, required = true,
+  if valid_579420 != nil:
+    section.add "containerId", valid_579420
+  var valid_579421 = path.getOrDefault("accountId")
+  valid_579421 = validateParameter(valid_579421, JString, required = true,
                                  default = nil)
-  if valid_589521 != nil:
-    section.add "accountId", valid_589521
+  if valid_579421 != nil:
+    section.add "accountId", valid_579421
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589522 = query.getOrDefault("fields")
-  valid_589522 = validateParameter(valid_589522, JString, required = false,
+  var valid_579422 = query.getOrDefault("key")
+  valid_579422 = validateParameter(valid_579422, JString, required = false,
                                  default = nil)
-  if valid_589522 != nil:
-    section.add "fields", valid_589522
-  var valid_589523 = query.getOrDefault("quotaUser")
-  valid_589523 = validateParameter(valid_589523, JString, required = false,
-                                 default = nil)
-  if valid_589523 != nil:
-    section.add "quotaUser", valid_589523
-  var valid_589524 = query.getOrDefault("alt")
-  valid_589524 = validateParameter(valid_589524, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589524 != nil:
-    section.add "alt", valid_589524
-  var valid_589525 = query.getOrDefault("oauth_token")
-  valid_589525 = validateParameter(valid_589525, JString, required = false,
-                                 default = nil)
-  if valid_589525 != nil:
-    section.add "oauth_token", valid_589525
-  var valid_589526 = query.getOrDefault("userIp")
-  valid_589526 = validateParameter(valid_589526, JString, required = false,
-                                 default = nil)
-  if valid_589526 != nil:
-    section.add "userIp", valid_589526
-  var valid_589527 = query.getOrDefault("key")
-  valid_589527 = validateParameter(valid_589527, JString, required = false,
-                                 default = nil)
-  if valid_589527 != nil:
-    section.add "key", valid_589527
-  var valid_589528 = query.getOrDefault("prettyPrint")
-  valid_589528 = validateParameter(valid_589528, JBool, required = false,
+  if valid_579422 != nil:
+    section.add "key", valid_579422
+  var valid_579423 = query.getOrDefault("prettyPrint")
+  valid_579423 = validateParameter(valid_579423, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589528 != nil:
-    section.add "prettyPrint", valid_589528
+  if valid_579423 != nil:
+    section.add "prettyPrint", valid_579423
+  var valid_579424 = query.getOrDefault("oauth_token")
+  valid_579424 = validateParameter(valid_579424, JString, required = false,
+                                 default = nil)
+  if valid_579424 != nil:
+    section.add "oauth_token", valid_579424
+  var valid_579425 = query.getOrDefault("alt")
+  valid_579425 = validateParameter(valid_579425, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579425 != nil:
+    section.add "alt", valid_579425
+  var valid_579426 = query.getOrDefault("userIp")
+  valid_579426 = validateParameter(valid_579426, JString, required = false,
+                                 default = nil)
+  if valid_579426 != nil:
+    section.add "userIp", valid_579426
+  var valid_579427 = query.getOrDefault("quotaUser")
+  valid_579427 = validateParameter(valid_579427, JString, required = false,
+                                 default = nil)
+  if valid_579427 != nil:
+    section.add "quotaUser", valid_579427
+  var valid_579428 = query.getOrDefault("fields")
+  valid_579428 = validateParameter(valid_579428, JString, required = false,
+                                 default = nil)
+  if valid_579428 != nil:
+    section.add "fields", valid_579428
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5715,67 +5714,67 @@ proc validate_TagmanagerAccountsContainersVariablesList_589518(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589529: Call_TagmanagerAccountsContainersVariablesList_589517;
+proc call*(call_579429: Call_TagmanagerAccountsContainersVariablesList_579417;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all GTM Variables of a Container.
   ## 
-  let valid = call_589529.validator(path, query, header, formData, body)
-  let scheme = call_589529.pickScheme
+  let valid = call_579429.validator(path, query, header, formData, body)
+  let scheme = call_579429.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589529.url(scheme.get, call_589529.host, call_589529.base,
-                         call_589529.route, valid.getOrDefault("path"),
+  let url = call_579429.url(scheme.get, call_579429.host, call_579429.base,
+                         call_579429.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589529, url, valid)
+  result = hook(call_579429, url, valid)
 
-proc call*(call_589530: Call_TagmanagerAccountsContainersVariablesList_589517;
-          containerId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579430: Call_TagmanagerAccountsContainersVariablesList_579417;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersVariablesList
   ## Lists all GTM Variables of a Container.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589531 = newJObject()
-  var query_589532 = newJObject()
-  add(path_589531, "containerId", newJString(containerId))
-  add(query_589532, "fields", newJString(fields))
-  add(query_589532, "quotaUser", newJString(quotaUser))
-  add(query_589532, "alt", newJString(alt))
-  add(query_589532, "oauth_token", newJString(oauthToken))
-  add(path_589531, "accountId", newJString(accountId))
-  add(query_589532, "userIp", newJString(userIp))
-  add(query_589532, "key", newJString(key))
-  add(query_589532, "prettyPrint", newJBool(prettyPrint))
-  result = call_589530.call(path_589531, query_589532, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579431 = newJObject()
+  var query_579432 = newJObject()
+  add(query_579432, "key", newJString(key))
+  add(query_579432, "prettyPrint", newJBool(prettyPrint))
+  add(query_579432, "oauth_token", newJString(oauthToken))
+  add(path_579431, "containerId", newJString(containerId))
+  add(query_579432, "alt", newJString(alt))
+  add(query_579432, "userIp", newJString(userIp))
+  add(query_579432, "quotaUser", newJString(quotaUser))
+  add(path_579431, "accountId", newJString(accountId))
+  add(query_579432, "fields", newJString(fields))
+  result = call_579430.call(path_579431, query_579432, nil, nil, nil)
 
-var tagmanagerAccountsContainersVariablesList* = Call_TagmanagerAccountsContainersVariablesList_589517(
+var tagmanagerAccountsContainersVariablesList* = Call_TagmanagerAccountsContainersVariablesList_579417(
     name: "tagmanagerAccountsContainersVariablesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/variables",
-    validator: validate_TagmanagerAccountsContainersVariablesList_589518,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesList_589519,
+    validator: validate_TagmanagerAccountsContainersVariablesList_579418,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesList_579419,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVariablesUpdate_589568 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersVariablesUpdate_589570(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVariablesUpdate_579468 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersVariablesUpdate_579470(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5796,7 +5795,7 @@ proc url_TagmanagerAccountsContainersVariablesUpdate_589570(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVariablesUpdate_589569(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVariablesUpdate_579469(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a GTM Variable.
   ## 
@@ -5812,80 +5811,80 @@ proc validate_TagmanagerAccountsContainersVariablesUpdate_589569(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589571 = path.getOrDefault("containerId")
-  valid_589571 = validateParameter(valid_589571, JString, required = true,
+  var valid_579471 = path.getOrDefault("containerId")
+  valid_579471 = validateParameter(valid_579471, JString, required = true,
                                  default = nil)
-  if valid_589571 != nil:
-    section.add "containerId", valid_589571
-  var valid_589572 = path.getOrDefault("variableId")
-  valid_589572 = validateParameter(valid_589572, JString, required = true,
+  if valid_579471 != nil:
+    section.add "containerId", valid_579471
+  var valid_579472 = path.getOrDefault("variableId")
+  valid_579472 = validateParameter(valid_579472, JString, required = true,
                                  default = nil)
-  if valid_589572 != nil:
-    section.add "variableId", valid_589572
-  var valid_589573 = path.getOrDefault("accountId")
-  valid_589573 = validateParameter(valid_589573, JString, required = true,
+  if valid_579472 != nil:
+    section.add "variableId", valid_579472
+  var valid_579473 = path.getOrDefault("accountId")
+  valid_579473 = validateParameter(valid_579473, JString, required = true,
                                  default = nil)
-  if valid_589573 != nil:
-    section.add "accountId", valid_589573
+  if valid_579473 != nil:
+    section.add "accountId", valid_579473
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: JString
-  ##              : When provided, this fingerprint must match the fingerprint of the variable in storage.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   fingerprint: JString
+  ##              : When provided, this fingerprint must match the fingerprint of the variable in storage.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589574 = query.getOrDefault("fields")
-  valid_589574 = validateParameter(valid_589574, JString, required = false,
+  var valid_579474 = query.getOrDefault("key")
+  valid_579474 = validateParameter(valid_579474, JString, required = false,
                                  default = nil)
-  if valid_589574 != nil:
-    section.add "fields", valid_589574
-  var valid_589575 = query.getOrDefault("fingerprint")
-  valid_589575 = validateParameter(valid_589575, JString, required = false,
-                                 default = nil)
-  if valid_589575 != nil:
-    section.add "fingerprint", valid_589575
-  var valid_589576 = query.getOrDefault("quotaUser")
-  valid_589576 = validateParameter(valid_589576, JString, required = false,
-                                 default = nil)
-  if valid_589576 != nil:
-    section.add "quotaUser", valid_589576
-  var valid_589577 = query.getOrDefault("alt")
-  valid_589577 = validateParameter(valid_589577, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589577 != nil:
-    section.add "alt", valid_589577
-  var valid_589578 = query.getOrDefault("oauth_token")
-  valid_589578 = validateParameter(valid_589578, JString, required = false,
-                                 default = nil)
-  if valid_589578 != nil:
-    section.add "oauth_token", valid_589578
-  var valid_589579 = query.getOrDefault("userIp")
-  valid_589579 = validateParameter(valid_589579, JString, required = false,
-                                 default = nil)
-  if valid_589579 != nil:
-    section.add "userIp", valid_589579
-  var valid_589580 = query.getOrDefault("key")
-  valid_589580 = validateParameter(valid_589580, JString, required = false,
-                                 default = nil)
-  if valid_589580 != nil:
-    section.add "key", valid_589580
-  var valid_589581 = query.getOrDefault("prettyPrint")
-  valid_589581 = validateParameter(valid_589581, JBool, required = false,
+  if valid_579474 != nil:
+    section.add "key", valid_579474
+  var valid_579475 = query.getOrDefault("prettyPrint")
+  valid_579475 = validateParameter(valid_579475, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589581 != nil:
-    section.add "prettyPrint", valid_589581
+  if valid_579475 != nil:
+    section.add "prettyPrint", valid_579475
+  var valid_579476 = query.getOrDefault("oauth_token")
+  valid_579476 = validateParameter(valid_579476, JString, required = false,
+                                 default = nil)
+  if valid_579476 != nil:
+    section.add "oauth_token", valid_579476
+  var valid_579477 = query.getOrDefault("fingerprint")
+  valid_579477 = validateParameter(valid_579477, JString, required = false,
+                                 default = nil)
+  if valid_579477 != nil:
+    section.add "fingerprint", valid_579477
+  var valid_579478 = query.getOrDefault("alt")
+  valid_579478 = validateParameter(valid_579478, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579478 != nil:
+    section.add "alt", valid_579478
+  var valid_579479 = query.getOrDefault("userIp")
+  valid_579479 = validateParameter(valid_579479, JString, required = false,
+                                 default = nil)
+  if valid_579479 != nil:
+    section.add "userIp", valid_579479
+  var valid_579480 = query.getOrDefault("quotaUser")
+  valid_579480 = validateParameter(valid_579480, JString, required = false,
+                                 default = nil)
+  if valid_579480 != nil:
+    section.add "quotaUser", valid_579480
+  var valid_579481 = query.getOrDefault("fields")
+  valid_579481 = validateParameter(valid_579481, JString, required = false,
+                                 default = nil)
+  if valid_579481 != nil:
+    section.add "fields", valid_579481
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5897,77 +5896,77 @@ proc validate_TagmanagerAccountsContainersVariablesUpdate_589569(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589583: Call_TagmanagerAccountsContainersVariablesUpdate_589568;
+proc call*(call_579483: Call_TagmanagerAccountsContainersVariablesUpdate_579468;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a GTM Variable.
   ## 
-  let valid = call_589583.validator(path, query, header, formData, body)
-  let scheme = call_589583.pickScheme
+  let valid = call_579483.validator(path, query, header, formData, body)
+  let scheme = call_579483.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589583.url(scheme.get, call_589583.host, call_589583.base,
-                         call_589583.route, valid.getOrDefault("path"),
+  let url = call_579483.url(scheme.get, call_579483.host, call_579483.base,
+                         call_579483.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589583, url, valid)
+  result = hook(call_579483, url, valid)
 
-proc call*(call_589584: Call_TagmanagerAccountsContainersVariablesUpdate_589568;
+proc call*(call_579484: Call_TagmanagerAccountsContainersVariablesUpdate_579468;
           containerId: string; variableId: string; accountId: string;
-          fields: string = ""; fingerprint: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          fingerprint: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersVariablesUpdate
   ## Updates a GTM Variable.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   containerId: string (required)
   ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   variableId: string (required)
+  ##             : The GTM Variable ID.
   ##   fingerprint: string
   ##              : When provided, this fingerprint must match the fingerprint of the variable in storage.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   alt: string
   ##      : Data format for the response.
-  ##   variableId: string (required)
-  ##             : The GTM Variable ID.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
   ##   userIp: string
   ##         : Deprecated. Please use quotaUser instead.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589585 = newJObject()
-  var query_589586 = newJObject()
-  var body_589587 = newJObject()
-  add(path_589585, "containerId", newJString(containerId))
-  add(query_589586, "fields", newJString(fields))
-  add(query_589586, "fingerprint", newJString(fingerprint))
-  add(query_589586, "quotaUser", newJString(quotaUser))
-  add(query_589586, "alt", newJString(alt))
-  add(path_589585, "variableId", newJString(variableId))
-  add(query_589586, "oauth_token", newJString(oauthToken))
-  add(path_589585, "accountId", newJString(accountId))
-  add(query_589586, "userIp", newJString(userIp))
-  add(query_589586, "key", newJString(key))
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579485 = newJObject()
+  var query_579486 = newJObject()
+  var body_579487 = newJObject()
+  add(query_579486, "key", newJString(key))
+  add(query_579486, "prettyPrint", newJBool(prettyPrint))
+  add(query_579486, "oauth_token", newJString(oauthToken))
+  add(path_579485, "containerId", newJString(containerId))
+  add(path_579485, "variableId", newJString(variableId))
+  add(query_579486, "fingerprint", newJString(fingerprint))
+  add(query_579486, "alt", newJString(alt))
+  add(query_579486, "userIp", newJString(userIp))
+  add(query_579486, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589587 = body
-  add(query_589586, "prettyPrint", newJBool(prettyPrint))
-  result = call_589584.call(path_589585, query_589586, nil, nil, body_589587)
+    body_579487 = body
+  add(path_579485, "accountId", newJString(accountId))
+  add(query_579486, "fields", newJString(fields))
+  result = call_579484.call(path_579485, query_579486, nil, nil, body_579487)
 
-var tagmanagerAccountsContainersVariablesUpdate* = Call_TagmanagerAccountsContainersVariablesUpdate_589568(
+var tagmanagerAccountsContainersVariablesUpdate* = Call_TagmanagerAccountsContainersVariablesUpdate_579468(
     name: "tagmanagerAccountsContainersVariablesUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/variables/{variableId}",
-    validator: validate_TagmanagerAccountsContainersVariablesUpdate_589569,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesUpdate_589570,
+    validator: validate_TagmanagerAccountsContainersVariablesUpdate_579469,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesUpdate_579470,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVariablesGet_589551 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersVariablesGet_589553(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVariablesGet_579451 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersVariablesGet_579453(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5988,7 +5987,7 @@ proc url_TagmanagerAccountsContainersVariablesGet_589553(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVariablesGet_589552(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVariablesGet_579452(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a GTM Variable.
   ## 
@@ -6004,73 +6003,73 @@ proc validate_TagmanagerAccountsContainersVariablesGet_589552(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589554 = path.getOrDefault("containerId")
-  valid_589554 = validateParameter(valid_589554, JString, required = true,
+  var valid_579454 = path.getOrDefault("containerId")
+  valid_579454 = validateParameter(valid_579454, JString, required = true,
                                  default = nil)
-  if valid_589554 != nil:
-    section.add "containerId", valid_589554
-  var valid_589555 = path.getOrDefault("variableId")
-  valid_589555 = validateParameter(valid_589555, JString, required = true,
+  if valid_579454 != nil:
+    section.add "containerId", valid_579454
+  var valid_579455 = path.getOrDefault("variableId")
+  valid_579455 = validateParameter(valid_579455, JString, required = true,
                                  default = nil)
-  if valid_589555 != nil:
-    section.add "variableId", valid_589555
-  var valid_589556 = path.getOrDefault("accountId")
-  valid_589556 = validateParameter(valid_589556, JString, required = true,
+  if valid_579455 != nil:
+    section.add "variableId", valid_579455
+  var valid_579456 = path.getOrDefault("accountId")
+  valid_579456 = validateParameter(valid_579456, JString, required = true,
                                  default = nil)
-  if valid_589556 != nil:
-    section.add "accountId", valid_589556
+  if valid_579456 != nil:
+    section.add "accountId", valid_579456
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589557 = query.getOrDefault("fields")
-  valid_589557 = validateParameter(valid_589557, JString, required = false,
+  var valid_579457 = query.getOrDefault("key")
+  valid_579457 = validateParameter(valid_579457, JString, required = false,
                                  default = nil)
-  if valid_589557 != nil:
-    section.add "fields", valid_589557
-  var valid_589558 = query.getOrDefault("quotaUser")
-  valid_589558 = validateParameter(valid_589558, JString, required = false,
-                                 default = nil)
-  if valid_589558 != nil:
-    section.add "quotaUser", valid_589558
-  var valid_589559 = query.getOrDefault("alt")
-  valid_589559 = validateParameter(valid_589559, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589559 != nil:
-    section.add "alt", valid_589559
-  var valid_589560 = query.getOrDefault("oauth_token")
-  valid_589560 = validateParameter(valid_589560, JString, required = false,
-                                 default = nil)
-  if valid_589560 != nil:
-    section.add "oauth_token", valid_589560
-  var valid_589561 = query.getOrDefault("userIp")
-  valid_589561 = validateParameter(valid_589561, JString, required = false,
-                                 default = nil)
-  if valid_589561 != nil:
-    section.add "userIp", valid_589561
-  var valid_589562 = query.getOrDefault("key")
-  valid_589562 = validateParameter(valid_589562, JString, required = false,
-                                 default = nil)
-  if valid_589562 != nil:
-    section.add "key", valid_589562
-  var valid_589563 = query.getOrDefault("prettyPrint")
-  valid_589563 = validateParameter(valid_589563, JBool, required = false,
+  if valid_579457 != nil:
+    section.add "key", valid_579457
+  var valid_579458 = query.getOrDefault("prettyPrint")
+  valid_579458 = validateParameter(valid_579458, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589563 != nil:
-    section.add "prettyPrint", valid_589563
+  if valid_579458 != nil:
+    section.add "prettyPrint", valid_579458
+  var valid_579459 = query.getOrDefault("oauth_token")
+  valid_579459 = validateParameter(valid_579459, JString, required = false,
+                                 default = nil)
+  if valid_579459 != nil:
+    section.add "oauth_token", valid_579459
+  var valid_579460 = query.getOrDefault("alt")
+  valid_579460 = validateParameter(valid_579460, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579460 != nil:
+    section.add "alt", valid_579460
+  var valid_579461 = query.getOrDefault("userIp")
+  valid_579461 = validateParameter(valid_579461, JString, required = false,
+                                 default = nil)
+  if valid_579461 != nil:
+    section.add "userIp", valid_579461
+  var valid_579462 = query.getOrDefault("quotaUser")
+  valid_579462 = validateParameter(valid_579462, JString, required = false,
+                                 default = nil)
+  if valid_579462 != nil:
+    section.add "quotaUser", valid_579462
+  var valid_579463 = query.getOrDefault("fields")
+  valid_579463 = validateParameter(valid_579463, JString, required = false,
+                                 default = nil)
+  if valid_579463 != nil:
+    section.add "fields", valid_579463
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6079,70 +6078,70 @@ proc validate_TagmanagerAccountsContainersVariablesGet_589552(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589564: Call_TagmanagerAccountsContainersVariablesGet_589551;
+proc call*(call_579464: Call_TagmanagerAccountsContainersVariablesGet_579451;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a GTM Variable.
   ## 
-  let valid = call_589564.validator(path, query, header, formData, body)
-  let scheme = call_589564.pickScheme
+  let valid = call_579464.validator(path, query, header, formData, body)
+  let scheme = call_579464.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589564.url(scheme.get, call_589564.host, call_589564.base,
-                         call_589564.route, valid.getOrDefault("path"),
+  let url = call_579464.url(scheme.get, call_579464.host, call_579464.base,
+                         call_579464.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589564, url, valid)
+  result = hook(call_579464, url, valid)
 
-proc call*(call_589565: Call_TagmanagerAccountsContainersVariablesGet_589551;
+proc call*(call_579465: Call_TagmanagerAccountsContainersVariablesGet_579451;
           containerId: string; variableId: string; accountId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersVariablesGet
   ## Gets a GTM Variable.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   variableId: string (required)
-  ##             : The GTM Variable ID.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589566 = newJObject()
-  var query_589567 = newJObject()
-  add(path_589566, "containerId", newJString(containerId))
-  add(query_589567, "fields", newJString(fields))
-  add(query_589567, "quotaUser", newJString(quotaUser))
-  add(query_589567, "alt", newJString(alt))
-  add(path_589566, "variableId", newJString(variableId))
-  add(query_589567, "oauth_token", newJString(oauthToken))
-  add(path_589566, "accountId", newJString(accountId))
-  add(query_589567, "userIp", newJString(userIp))
-  add(query_589567, "key", newJString(key))
-  add(query_589567, "prettyPrint", newJBool(prettyPrint))
-  result = call_589565.call(path_589566, query_589567, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   variableId: string (required)
+  ##             : The GTM Variable ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579466 = newJObject()
+  var query_579467 = newJObject()
+  add(query_579467, "key", newJString(key))
+  add(query_579467, "prettyPrint", newJBool(prettyPrint))
+  add(query_579467, "oauth_token", newJString(oauthToken))
+  add(path_579466, "containerId", newJString(containerId))
+  add(path_579466, "variableId", newJString(variableId))
+  add(query_579467, "alt", newJString(alt))
+  add(query_579467, "userIp", newJString(userIp))
+  add(query_579467, "quotaUser", newJString(quotaUser))
+  add(path_579466, "accountId", newJString(accountId))
+  add(query_579467, "fields", newJString(fields))
+  result = call_579465.call(path_579466, query_579467, nil, nil, nil)
 
-var tagmanagerAccountsContainersVariablesGet* = Call_TagmanagerAccountsContainersVariablesGet_589551(
+var tagmanagerAccountsContainersVariablesGet* = Call_TagmanagerAccountsContainersVariablesGet_579451(
     name: "tagmanagerAccountsContainersVariablesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/variables/{variableId}",
-    validator: validate_TagmanagerAccountsContainersVariablesGet_589552,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesGet_589553,
+    validator: validate_TagmanagerAccountsContainersVariablesGet_579452,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesGet_579453,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVariablesDelete_589588 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersVariablesDelete_589590(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVariablesDelete_579488 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersVariablesDelete_579490(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6163,7 +6162,7 @@ proc url_TagmanagerAccountsContainersVariablesDelete_589590(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVariablesDelete_589589(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVariablesDelete_579489(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a GTM Variable.
   ## 
@@ -6179,73 +6178,73 @@ proc validate_TagmanagerAccountsContainersVariablesDelete_589589(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589591 = path.getOrDefault("containerId")
-  valid_589591 = validateParameter(valid_589591, JString, required = true,
+  var valid_579491 = path.getOrDefault("containerId")
+  valid_579491 = validateParameter(valid_579491, JString, required = true,
                                  default = nil)
-  if valid_589591 != nil:
-    section.add "containerId", valid_589591
-  var valid_589592 = path.getOrDefault("variableId")
-  valid_589592 = validateParameter(valid_589592, JString, required = true,
+  if valid_579491 != nil:
+    section.add "containerId", valid_579491
+  var valid_579492 = path.getOrDefault("variableId")
+  valid_579492 = validateParameter(valid_579492, JString, required = true,
                                  default = nil)
-  if valid_589592 != nil:
-    section.add "variableId", valid_589592
-  var valid_589593 = path.getOrDefault("accountId")
-  valid_589593 = validateParameter(valid_589593, JString, required = true,
+  if valid_579492 != nil:
+    section.add "variableId", valid_579492
+  var valid_579493 = path.getOrDefault("accountId")
+  valid_579493 = validateParameter(valid_579493, JString, required = true,
                                  default = nil)
-  if valid_589593 != nil:
-    section.add "accountId", valid_589593
+  if valid_579493 != nil:
+    section.add "accountId", valid_579493
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589594 = query.getOrDefault("fields")
-  valid_589594 = validateParameter(valid_589594, JString, required = false,
+  var valid_579494 = query.getOrDefault("key")
+  valid_579494 = validateParameter(valid_579494, JString, required = false,
                                  default = nil)
-  if valid_589594 != nil:
-    section.add "fields", valid_589594
-  var valid_589595 = query.getOrDefault("quotaUser")
-  valid_589595 = validateParameter(valid_589595, JString, required = false,
-                                 default = nil)
-  if valid_589595 != nil:
-    section.add "quotaUser", valid_589595
-  var valid_589596 = query.getOrDefault("alt")
-  valid_589596 = validateParameter(valid_589596, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589596 != nil:
-    section.add "alt", valid_589596
-  var valid_589597 = query.getOrDefault("oauth_token")
-  valid_589597 = validateParameter(valid_589597, JString, required = false,
-                                 default = nil)
-  if valid_589597 != nil:
-    section.add "oauth_token", valid_589597
-  var valid_589598 = query.getOrDefault("userIp")
-  valid_589598 = validateParameter(valid_589598, JString, required = false,
-                                 default = nil)
-  if valid_589598 != nil:
-    section.add "userIp", valid_589598
-  var valid_589599 = query.getOrDefault("key")
-  valid_589599 = validateParameter(valid_589599, JString, required = false,
-                                 default = nil)
-  if valid_589599 != nil:
-    section.add "key", valid_589599
-  var valid_589600 = query.getOrDefault("prettyPrint")
-  valid_589600 = validateParameter(valid_589600, JBool, required = false,
+  if valid_579494 != nil:
+    section.add "key", valid_579494
+  var valid_579495 = query.getOrDefault("prettyPrint")
+  valid_579495 = validateParameter(valid_579495, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589600 != nil:
-    section.add "prettyPrint", valid_589600
+  if valid_579495 != nil:
+    section.add "prettyPrint", valid_579495
+  var valid_579496 = query.getOrDefault("oauth_token")
+  valid_579496 = validateParameter(valid_579496, JString, required = false,
+                                 default = nil)
+  if valid_579496 != nil:
+    section.add "oauth_token", valid_579496
+  var valid_579497 = query.getOrDefault("alt")
+  valid_579497 = validateParameter(valid_579497, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579497 != nil:
+    section.add "alt", valid_579497
+  var valid_579498 = query.getOrDefault("userIp")
+  valid_579498 = validateParameter(valid_579498, JString, required = false,
+                                 default = nil)
+  if valid_579498 != nil:
+    section.add "userIp", valid_579498
+  var valid_579499 = query.getOrDefault("quotaUser")
+  valid_579499 = validateParameter(valid_579499, JString, required = false,
+                                 default = nil)
+  if valid_579499 != nil:
+    section.add "quotaUser", valid_579499
+  var valid_579500 = query.getOrDefault("fields")
+  valid_579500 = validateParameter(valid_579500, JString, required = false,
+                                 default = nil)
+  if valid_579500 != nil:
+    section.add "fields", valid_579500
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6254,70 +6253,70 @@ proc validate_TagmanagerAccountsContainersVariablesDelete_589589(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589601: Call_TagmanagerAccountsContainersVariablesDelete_589588;
+proc call*(call_579501: Call_TagmanagerAccountsContainersVariablesDelete_579488;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a GTM Variable.
   ## 
-  let valid = call_589601.validator(path, query, header, formData, body)
-  let scheme = call_589601.pickScheme
+  let valid = call_579501.validator(path, query, header, formData, body)
+  let scheme = call_579501.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589601.url(scheme.get, call_589601.host, call_589601.base,
-                         call_589601.route, valid.getOrDefault("path"),
+  let url = call_579501.url(scheme.get, call_579501.host, call_579501.base,
+                         call_579501.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589601, url, valid)
+  result = hook(call_579501, url, valid)
 
-proc call*(call_589602: Call_TagmanagerAccountsContainersVariablesDelete_589588;
+proc call*(call_579502: Call_TagmanagerAccountsContainersVariablesDelete_579488;
           containerId: string; variableId: string; accountId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersVariablesDelete
   ## Deletes a GTM Variable.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   variableId: string (required)
-  ##             : The GTM Variable ID.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589603 = newJObject()
-  var query_589604 = newJObject()
-  add(path_589603, "containerId", newJString(containerId))
-  add(query_589604, "fields", newJString(fields))
-  add(query_589604, "quotaUser", newJString(quotaUser))
-  add(query_589604, "alt", newJString(alt))
-  add(path_589603, "variableId", newJString(variableId))
-  add(query_589604, "oauth_token", newJString(oauthToken))
-  add(path_589603, "accountId", newJString(accountId))
-  add(query_589604, "userIp", newJString(userIp))
-  add(query_589604, "key", newJString(key))
-  add(query_589604, "prettyPrint", newJBool(prettyPrint))
-  result = call_589602.call(path_589603, query_589604, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   variableId: string (required)
+  ##             : The GTM Variable ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579503 = newJObject()
+  var query_579504 = newJObject()
+  add(query_579504, "key", newJString(key))
+  add(query_579504, "prettyPrint", newJBool(prettyPrint))
+  add(query_579504, "oauth_token", newJString(oauthToken))
+  add(path_579503, "containerId", newJString(containerId))
+  add(path_579503, "variableId", newJString(variableId))
+  add(query_579504, "alt", newJString(alt))
+  add(query_579504, "userIp", newJString(userIp))
+  add(query_579504, "quotaUser", newJString(quotaUser))
+  add(path_579503, "accountId", newJString(accountId))
+  add(query_579504, "fields", newJString(fields))
+  result = call_579502.call(path_579503, query_579504, nil, nil, nil)
 
-var tagmanagerAccountsContainersVariablesDelete* = Call_TagmanagerAccountsContainersVariablesDelete_589588(
+var tagmanagerAccountsContainersVariablesDelete* = Call_TagmanagerAccountsContainersVariablesDelete_579488(
     name: "tagmanagerAccountsContainersVariablesDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/variables/{variableId}",
-    validator: validate_TagmanagerAccountsContainersVariablesDelete_589589,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesDelete_589590,
+    validator: validate_TagmanagerAccountsContainersVariablesDelete_579489,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVariablesDelete_579490,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsCreate_589623 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersVersionsCreate_589625(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsCreate_579523 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersVersionsCreate_579525(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6336,7 +6335,7 @@ proc url_TagmanagerAccountsContainersVersionsCreate_589625(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsCreate_589624(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsCreate_579524(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a Container Version.
   ## 
@@ -6350,68 +6349,68 @@ proc validate_TagmanagerAccountsContainersVersionsCreate_589624(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589626 = path.getOrDefault("containerId")
-  valid_589626 = validateParameter(valid_589626, JString, required = true,
+  var valid_579526 = path.getOrDefault("containerId")
+  valid_579526 = validateParameter(valid_579526, JString, required = true,
                                  default = nil)
-  if valid_589626 != nil:
-    section.add "containerId", valid_589626
-  var valid_589627 = path.getOrDefault("accountId")
-  valid_589627 = validateParameter(valid_589627, JString, required = true,
+  if valid_579526 != nil:
+    section.add "containerId", valid_579526
+  var valid_579527 = path.getOrDefault("accountId")
+  valid_579527 = validateParameter(valid_579527, JString, required = true,
                                  default = nil)
-  if valid_589627 != nil:
-    section.add "accountId", valid_589627
+  if valid_579527 != nil:
+    section.add "accountId", valid_579527
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589628 = query.getOrDefault("fields")
-  valid_589628 = validateParameter(valid_589628, JString, required = false,
+  var valid_579528 = query.getOrDefault("key")
+  valid_579528 = validateParameter(valid_579528, JString, required = false,
                                  default = nil)
-  if valid_589628 != nil:
-    section.add "fields", valid_589628
-  var valid_589629 = query.getOrDefault("quotaUser")
-  valid_589629 = validateParameter(valid_589629, JString, required = false,
-                                 default = nil)
-  if valid_589629 != nil:
-    section.add "quotaUser", valid_589629
-  var valid_589630 = query.getOrDefault("alt")
-  valid_589630 = validateParameter(valid_589630, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589630 != nil:
-    section.add "alt", valid_589630
-  var valid_589631 = query.getOrDefault("oauth_token")
-  valid_589631 = validateParameter(valid_589631, JString, required = false,
-                                 default = nil)
-  if valid_589631 != nil:
-    section.add "oauth_token", valid_589631
-  var valid_589632 = query.getOrDefault("userIp")
-  valid_589632 = validateParameter(valid_589632, JString, required = false,
-                                 default = nil)
-  if valid_589632 != nil:
-    section.add "userIp", valid_589632
-  var valid_589633 = query.getOrDefault("key")
-  valid_589633 = validateParameter(valid_589633, JString, required = false,
-                                 default = nil)
-  if valid_589633 != nil:
-    section.add "key", valid_589633
-  var valid_589634 = query.getOrDefault("prettyPrint")
-  valid_589634 = validateParameter(valid_589634, JBool, required = false,
+  if valid_579528 != nil:
+    section.add "key", valid_579528
+  var valid_579529 = query.getOrDefault("prettyPrint")
+  valid_579529 = validateParameter(valid_579529, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589634 != nil:
-    section.add "prettyPrint", valid_589634
+  if valid_579529 != nil:
+    section.add "prettyPrint", valid_579529
+  var valid_579530 = query.getOrDefault("oauth_token")
+  valid_579530 = validateParameter(valid_579530, JString, required = false,
+                                 default = nil)
+  if valid_579530 != nil:
+    section.add "oauth_token", valid_579530
+  var valid_579531 = query.getOrDefault("alt")
+  valid_579531 = validateParameter(valid_579531, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579531 != nil:
+    section.add "alt", valid_579531
+  var valid_579532 = query.getOrDefault("userIp")
+  valid_579532 = validateParameter(valid_579532, JString, required = false,
+                                 default = nil)
+  if valid_579532 != nil:
+    section.add "userIp", valid_579532
+  var valid_579533 = query.getOrDefault("quotaUser")
+  valid_579533 = validateParameter(valid_579533, JString, required = false,
+                                 default = nil)
+  if valid_579533 != nil:
+    section.add "quotaUser", valid_579533
+  var valid_579534 = query.getOrDefault("fields")
+  valid_579534 = validateParameter(valid_579534, JString, required = false,
+                                 default = nil)
+  if valid_579534 != nil:
+    section.add "fields", valid_579534
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6423,72 +6422,72 @@ proc validate_TagmanagerAccountsContainersVersionsCreate_589624(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589636: Call_TagmanagerAccountsContainersVersionsCreate_589623;
+proc call*(call_579536: Call_TagmanagerAccountsContainersVersionsCreate_579523;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a Container Version.
   ## 
-  let valid = call_589636.validator(path, query, header, formData, body)
-  let scheme = call_589636.pickScheme
+  let valid = call_579536.validator(path, query, header, formData, body)
+  let scheme = call_579536.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589636.url(scheme.get, call_589636.host, call_589636.base,
-                         call_589636.route, valid.getOrDefault("path"),
+  let url = call_579536.url(scheme.get, call_579536.host, call_579536.base,
+                         call_579536.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589636, url, valid)
+  result = hook(call_579536, url, valid)
 
-proc call*(call_589637: Call_TagmanagerAccountsContainersVersionsCreate_589623;
-          containerId: string; accountId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579537: Call_TagmanagerAccountsContainersVersionsCreate_579523;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersVersionsCreate
   ## Creates a Container Version.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589638 = newJObject()
-  var query_589639 = newJObject()
-  var body_589640 = newJObject()
-  add(path_589638, "containerId", newJString(containerId))
-  add(query_589639, "fields", newJString(fields))
-  add(query_589639, "quotaUser", newJString(quotaUser))
-  add(query_589639, "alt", newJString(alt))
-  add(query_589639, "oauth_token", newJString(oauthToken))
-  add(path_589638, "accountId", newJString(accountId))
-  add(query_589639, "userIp", newJString(userIp))
-  add(query_589639, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579538 = newJObject()
+  var query_579539 = newJObject()
+  var body_579540 = newJObject()
+  add(query_579539, "key", newJString(key))
+  add(query_579539, "prettyPrint", newJBool(prettyPrint))
+  add(query_579539, "oauth_token", newJString(oauthToken))
+  add(path_579538, "containerId", newJString(containerId))
+  add(query_579539, "alt", newJString(alt))
+  add(query_579539, "userIp", newJString(userIp))
+  add(query_579539, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589640 = body
-  add(query_589639, "prettyPrint", newJBool(prettyPrint))
-  result = call_589637.call(path_589638, query_589639, nil, nil, body_589640)
+    body_579540 = body
+  add(path_579538, "accountId", newJString(accountId))
+  add(query_579539, "fields", newJString(fields))
+  result = call_579537.call(path_579538, query_579539, nil, nil, body_579540)
 
-var tagmanagerAccountsContainersVersionsCreate* = Call_TagmanagerAccountsContainersVersionsCreate_589623(
+var tagmanagerAccountsContainersVersionsCreate* = Call_TagmanagerAccountsContainersVersionsCreate_579523(
     name: "tagmanagerAccountsContainersVersionsCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/versions",
-    validator: validate_TagmanagerAccountsContainersVersionsCreate_589624,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsCreate_589625,
+    validator: validate_TagmanagerAccountsContainersVersionsCreate_579524,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsCreate_579525,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsList_589605 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersVersionsList_589607(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsList_579505 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersVersionsList_579507(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6507,7 +6506,7 @@ proc url_TagmanagerAccountsContainersVersionsList_589607(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsList_589606(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsList_579506(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all Container Versions of a GTM Container.
   ## 
@@ -6521,82 +6520,82 @@ proc validate_TagmanagerAccountsContainersVersionsList_589606(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589608 = path.getOrDefault("containerId")
-  valid_589608 = validateParameter(valid_589608, JString, required = true,
+  var valid_579508 = path.getOrDefault("containerId")
+  valid_579508 = validateParameter(valid_579508, JString, required = true,
                                  default = nil)
-  if valid_589608 != nil:
-    section.add "containerId", valid_589608
-  var valid_589609 = path.getOrDefault("accountId")
-  valid_589609 = validateParameter(valid_589609, JString, required = true,
+  if valid_579508 != nil:
+    section.add "containerId", valid_579508
+  var valid_579509 = path.getOrDefault("accountId")
+  valid_579509 = validateParameter(valid_579509, JString, required = true,
                                  default = nil)
-  if valid_589609 != nil:
-    section.add "accountId", valid_589609
+  if valid_579509 != nil:
+    section.add "accountId", valid_579509
   result.add "path", section
   ## parameters in `query` object:
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   includeDeleted: JBool
+  ##                 : Also retrieve deleted (archived) versions when true.
   ##   headers: JBool
   ##          : Retrieve headers only when true.
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   includeDeleted: JBool
-  ##                 : Also retrieve deleted (archived) versions when true.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
   section = newJObject()
-  var valid_589610 = query.getOrDefault("headers")
-  valid_589610 = validateParameter(valid_589610, JBool, required = false,
-                                 default = newJBool(false))
-  if valid_589610 != nil:
-    section.add "headers", valid_589610
-  var valid_589611 = query.getOrDefault("fields")
-  valid_589611 = validateParameter(valid_589611, JString, required = false,
+  var valid_579510 = query.getOrDefault("key")
+  valid_579510 = validateParameter(valid_579510, JString, required = false,
                                  default = nil)
-  if valid_589611 != nil:
-    section.add "fields", valid_589611
-  var valid_589612 = query.getOrDefault("quotaUser")
-  valid_589612 = validateParameter(valid_589612, JString, required = false,
-                                 default = nil)
-  if valid_589612 != nil:
-    section.add "quotaUser", valid_589612
-  var valid_589613 = query.getOrDefault("alt")
-  valid_589613 = validateParameter(valid_589613, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589613 != nil:
-    section.add "alt", valid_589613
-  var valid_589614 = query.getOrDefault("oauth_token")
-  valid_589614 = validateParameter(valid_589614, JString, required = false,
-                                 default = nil)
-  if valid_589614 != nil:
-    section.add "oauth_token", valid_589614
-  var valid_589615 = query.getOrDefault("userIp")
-  valid_589615 = validateParameter(valid_589615, JString, required = false,
-                                 default = nil)
-  if valid_589615 != nil:
-    section.add "userIp", valid_589615
-  var valid_589616 = query.getOrDefault("key")
-  valid_589616 = validateParameter(valid_589616, JString, required = false,
-                                 default = nil)
-  if valid_589616 != nil:
-    section.add "key", valid_589616
-  var valid_589617 = query.getOrDefault("includeDeleted")
-  valid_589617 = validateParameter(valid_589617, JBool, required = false,
-                                 default = newJBool(false))
-  if valid_589617 != nil:
-    section.add "includeDeleted", valid_589617
-  var valid_589618 = query.getOrDefault("prettyPrint")
-  valid_589618 = validateParameter(valid_589618, JBool, required = false,
+  if valid_579510 != nil:
+    section.add "key", valid_579510
+  var valid_579511 = query.getOrDefault("prettyPrint")
+  valid_579511 = validateParameter(valid_579511, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589618 != nil:
-    section.add "prettyPrint", valid_589618
+  if valid_579511 != nil:
+    section.add "prettyPrint", valid_579511
+  var valid_579512 = query.getOrDefault("oauth_token")
+  valid_579512 = validateParameter(valid_579512, JString, required = false,
+                                 default = nil)
+  if valid_579512 != nil:
+    section.add "oauth_token", valid_579512
+  var valid_579513 = query.getOrDefault("alt")
+  valid_579513 = validateParameter(valid_579513, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579513 != nil:
+    section.add "alt", valid_579513
+  var valid_579514 = query.getOrDefault("userIp")
+  valid_579514 = validateParameter(valid_579514, JString, required = false,
+                                 default = nil)
+  if valid_579514 != nil:
+    section.add "userIp", valid_579514
+  var valid_579515 = query.getOrDefault("quotaUser")
+  valid_579515 = validateParameter(valid_579515, JString, required = false,
+                                 default = nil)
+  if valid_579515 != nil:
+    section.add "quotaUser", valid_579515
+  var valid_579516 = query.getOrDefault("includeDeleted")
+  valid_579516 = validateParameter(valid_579516, JBool, required = false,
+                                 default = newJBool(false))
+  if valid_579516 != nil:
+    section.add "includeDeleted", valid_579516
+  var valid_579517 = query.getOrDefault("headers")
+  valid_579517 = validateParameter(valid_579517, JBool, required = false,
+                                 default = newJBool(false))
+  if valid_579517 != nil:
+    section.add "headers", valid_579517
+  var valid_579518 = query.getOrDefault("fields")
+  valid_579518 = validateParameter(valid_579518, JString, required = false,
+                                 default = nil)
+  if valid_579518 != nil:
+    section.add "fields", valid_579518
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6605,74 +6604,74 @@ proc validate_TagmanagerAccountsContainersVersionsList_589606(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589619: Call_TagmanagerAccountsContainersVersionsList_589605;
+proc call*(call_579519: Call_TagmanagerAccountsContainersVersionsList_579505;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all Container Versions of a GTM Container.
   ## 
-  let valid = call_589619.validator(path, query, header, formData, body)
-  let scheme = call_589619.pickScheme
+  let valid = call_579519.validator(path, query, header, formData, body)
+  let scheme = call_579519.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589619.url(scheme.get, call_589619.host, call_589619.base,
-                         call_589619.route, valid.getOrDefault("path"),
+  let url = call_579519.url(scheme.get, call_579519.host, call_579519.base,
+                         call_579519.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589619, url, valid)
+  result = hook(call_579519, url, valid)
 
-proc call*(call_589620: Call_TagmanagerAccountsContainersVersionsList_589605;
-          containerId: string; accountId: string; headers: bool = false;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          includeDeleted: bool = false; prettyPrint: bool = true): Recallable =
+proc call*(call_579520: Call_TagmanagerAccountsContainersVersionsList_579505;
+          containerId: string; accountId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; includeDeleted: bool = false;
+          headers: bool = false; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersVersionsList
   ## Lists all Container Versions of a GTM Container.
-  ##   headers: bool
-  ##          : Retrieve headers only when true.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   includeDeleted: bool
-  ##                 : Also retrieve deleted (archived) versions when true.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589621 = newJObject()
-  var query_589622 = newJObject()
-  add(query_589622, "headers", newJBool(headers))
-  add(path_589621, "containerId", newJString(containerId))
-  add(query_589622, "fields", newJString(fields))
-  add(query_589622, "quotaUser", newJString(quotaUser))
-  add(query_589622, "alt", newJString(alt))
-  add(query_589622, "oauth_token", newJString(oauthToken))
-  add(path_589621, "accountId", newJString(accountId))
-  add(query_589622, "userIp", newJString(userIp))
-  add(query_589622, "key", newJString(key))
-  add(query_589622, "includeDeleted", newJBool(includeDeleted))
-  add(query_589622, "prettyPrint", newJBool(prettyPrint))
-  result = call_589620.call(path_589621, query_589622, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   includeDeleted: bool
+  ##                 : Also retrieve deleted (archived) versions when true.
+  ##   headers: bool
+  ##          : Retrieve headers only when true.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579521 = newJObject()
+  var query_579522 = newJObject()
+  add(query_579522, "key", newJString(key))
+  add(query_579522, "prettyPrint", newJBool(prettyPrint))
+  add(query_579522, "oauth_token", newJString(oauthToken))
+  add(path_579521, "containerId", newJString(containerId))
+  add(query_579522, "alt", newJString(alt))
+  add(query_579522, "userIp", newJString(userIp))
+  add(query_579522, "quotaUser", newJString(quotaUser))
+  add(query_579522, "includeDeleted", newJBool(includeDeleted))
+  add(query_579522, "headers", newJBool(headers))
+  add(path_579521, "accountId", newJString(accountId))
+  add(query_579522, "fields", newJString(fields))
+  result = call_579520.call(path_579521, query_579522, nil, nil, nil)
 
-var tagmanagerAccountsContainersVersionsList* = Call_TagmanagerAccountsContainersVersionsList_589605(
+var tagmanagerAccountsContainersVersionsList* = Call_TagmanagerAccountsContainersVersionsList_579505(
     name: "tagmanagerAccountsContainersVersionsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/containers/{containerId}/versions",
-    validator: validate_TagmanagerAccountsContainersVersionsList_589606,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsList_589607,
+    validator: validate_TagmanagerAccountsContainersVersionsList_579506,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsList_579507,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsUpdate_589658 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersVersionsUpdate_589660(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsUpdate_579558 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersVersionsUpdate_579560(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6694,7 +6693,7 @@ proc url_TagmanagerAccountsContainersVersionsUpdate_589660(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsUpdate_589659(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsUpdate_579559(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a Container Version.
   ## 
@@ -6703,87 +6702,87 @@ proc validate_TagmanagerAccountsContainersVersionsUpdate_589659(path: JsonNode;
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   containerVersionId: JString (required)
   ##                     : The GTM Container Version ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589661 = path.getOrDefault("containerId")
-  valid_589661 = validateParameter(valid_589661, JString, required = true,
+  var valid_579561 = path.getOrDefault("containerId")
+  valid_579561 = validateParameter(valid_579561, JString, required = true,
                                  default = nil)
-  if valid_589661 != nil:
-    section.add "containerId", valid_589661
-  var valid_589662 = path.getOrDefault("accountId")
-  valid_589662 = validateParameter(valid_589662, JString, required = true,
+  if valid_579561 != nil:
+    section.add "containerId", valid_579561
+  var valid_579562 = path.getOrDefault("containerVersionId")
+  valid_579562 = validateParameter(valid_579562, JString, required = true,
                                  default = nil)
-  if valid_589662 != nil:
-    section.add "accountId", valid_589662
-  var valid_589663 = path.getOrDefault("containerVersionId")
-  valid_589663 = validateParameter(valid_589663, JString, required = true,
+  if valid_579562 != nil:
+    section.add "containerVersionId", valid_579562
+  var valid_579563 = path.getOrDefault("accountId")
+  valid_579563 = validateParameter(valid_579563, JString, required = true,
                                  default = nil)
-  if valid_589663 != nil:
-    section.add "containerVersionId", valid_589663
+  if valid_579563 != nil:
+    section.add "accountId", valid_579563
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: JString
-  ##              : When provided, this fingerprint must match the fingerprint of the container version in storage.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   fingerprint: JString
+  ##              : When provided, this fingerprint must match the fingerprint of the container version in storage.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589664 = query.getOrDefault("fields")
-  valid_589664 = validateParameter(valid_589664, JString, required = false,
+  var valid_579564 = query.getOrDefault("key")
+  valid_579564 = validateParameter(valid_579564, JString, required = false,
                                  default = nil)
-  if valid_589664 != nil:
-    section.add "fields", valid_589664
-  var valid_589665 = query.getOrDefault("fingerprint")
-  valid_589665 = validateParameter(valid_589665, JString, required = false,
-                                 default = nil)
-  if valid_589665 != nil:
-    section.add "fingerprint", valid_589665
-  var valid_589666 = query.getOrDefault("quotaUser")
-  valid_589666 = validateParameter(valid_589666, JString, required = false,
-                                 default = nil)
-  if valid_589666 != nil:
-    section.add "quotaUser", valid_589666
-  var valid_589667 = query.getOrDefault("alt")
-  valid_589667 = validateParameter(valid_589667, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589667 != nil:
-    section.add "alt", valid_589667
-  var valid_589668 = query.getOrDefault("oauth_token")
-  valid_589668 = validateParameter(valid_589668, JString, required = false,
-                                 default = nil)
-  if valid_589668 != nil:
-    section.add "oauth_token", valid_589668
-  var valid_589669 = query.getOrDefault("userIp")
-  valid_589669 = validateParameter(valid_589669, JString, required = false,
-                                 default = nil)
-  if valid_589669 != nil:
-    section.add "userIp", valid_589669
-  var valid_589670 = query.getOrDefault("key")
-  valid_589670 = validateParameter(valid_589670, JString, required = false,
-                                 default = nil)
-  if valid_589670 != nil:
-    section.add "key", valid_589670
-  var valid_589671 = query.getOrDefault("prettyPrint")
-  valid_589671 = validateParameter(valid_589671, JBool, required = false,
+  if valid_579564 != nil:
+    section.add "key", valid_579564
+  var valid_579565 = query.getOrDefault("prettyPrint")
+  valid_579565 = validateParameter(valid_579565, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589671 != nil:
-    section.add "prettyPrint", valid_589671
+  if valid_579565 != nil:
+    section.add "prettyPrint", valid_579565
+  var valid_579566 = query.getOrDefault("oauth_token")
+  valid_579566 = validateParameter(valid_579566, JString, required = false,
+                                 default = nil)
+  if valid_579566 != nil:
+    section.add "oauth_token", valid_579566
+  var valid_579567 = query.getOrDefault("fingerprint")
+  valid_579567 = validateParameter(valid_579567, JString, required = false,
+                                 default = nil)
+  if valid_579567 != nil:
+    section.add "fingerprint", valid_579567
+  var valid_579568 = query.getOrDefault("alt")
+  valid_579568 = validateParameter(valid_579568, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579568 != nil:
+    section.add "alt", valid_579568
+  var valid_579569 = query.getOrDefault("userIp")
+  valid_579569 = validateParameter(valid_579569, JString, required = false,
+                                 default = nil)
+  if valid_579569 != nil:
+    section.add "userIp", valid_579569
+  var valid_579570 = query.getOrDefault("quotaUser")
+  valid_579570 = validateParameter(valid_579570, JString, required = false,
+                                 default = nil)
+  if valid_579570 != nil:
+    section.add "quotaUser", valid_579570
+  var valid_579571 = query.getOrDefault("fields")
+  valid_579571 = validateParameter(valid_579571, JString, required = false,
+                                 default = nil)
+  if valid_579571 != nil:
+    section.add "fields", valid_579571
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6795,77 +6794,77 @@ proc validate_TagmanagerAccountsContainersVersionsUpdate_589659(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589673: Call_TagmanagerAccountsContainersVersionsUpdate_589658;
+proc call*(call_579573: Call_TagmanagerAccountsContainersVersionsUpdate_579558;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a Container Version.
   ## 
-  let valid = call_589673.validator(path, query, header, formData, body)
-  let scheme = call_589673.pickScheme
+  let valid = call_579573.validator(path, query, header, formData, body)
+  let scheme = call_579573.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589673.url(scheme.get, call_589673.host, call_589673.base,
-                         call_589673.route, valid.getOrDefault("path"),
+  let url = call_579573.url(scheme.get, call_579573.host, call_579573.base,
+                         call_579573.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589673, url, valid)
+  result = hook(call_579573, url, valid)
 
-proc call*(call_589674: Call_TagmanagerAccountsContainersVersionsUpdate_589658;
-          containerId: string; accountId: string; containerVersionId: string;
-          fields: string = ""; fingerprint: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579574: Call_TagmanagerAccountsContainersVersionsUpdate_579558;
+          containerId: string; containerVersionId: string; accountId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          fingerprint: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersVersionsUpdate
   ## Updates a Container Version.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   containerId: string (required)
   ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
   ##   fingerprint: string
   ##              : When provided, this fingerprint must match the fingerprint of the container version in storage.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   alt: string
   ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
   ##   userIp: string
   ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   containerVersionId: string (required)
   ##                     : The GTM Container Version ID.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589675 = newJObject()
-  var query_589676 = newJObject()
-  var body_589677 = newJObject()
-  add(path_589675, "containerId", newJString(containerId))
-  add(query_589676, "fields", newJString(fields))
-  add(query_589676, "fingerprint", newJString(fingerprint))
-  add(query_589676, "quotaUser", newJString(quotaUser))
-  add(query_589676, "alt", newJString(alt))
-  add(query_589676, "oauth_token", newJString(oauthToken))
-  add(path_589675, "accountId", newJString(accountId))
-  add(query_589676, "userIp", newJString(userIp))
-  add(path_589675, "containerVersionId", newJString(containerVersionId))
-  add(query_589676, "key", newJString(key))
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579575 = newJObject()
+  var query_579576 = newJObject()
+  var body_579577 = newJObject()
+  add(query_579576, "key", newJString(key))
+  add(query_579576, "prettyPrint", newJBool(prettyPrint))
+  add(query_579576, "oauth_token", newJString(oauthToken))
+  add(path_579575, "containerId", newJString(containerId))
+  add(query_579576, "fingerprint", newJString(fingerprint))
+  add(query_579576, "alt", newJString(alt))
+  add(query_579576, "userIp", newJString(userIp))
+  add(query_579576, "quotaUser", newJString(quotaUser))
+  add(path_579575, "containerVersionId", newJString(containerVersionId))
   if body != nil:
-    body_589677 = body
-  add(query_589676, "prettyPrint", newJBool(prettyPrint))
-  result = call_589674.call(path_589675, query_589676, nil, nil, body_589677)
+    body_579577 = body
+  add(path_579575, "accountId", newJString(accountId))
+  add(query_579576, "fields", newJString(fields))
+  result = call_579574.call(path_579575, query_579576, nil, nil, body_579577)
 
-var tagmanagerAccountsContainersVersionsUpdate* = Call_TagmanagerAccountsContainersVersionsUpdate_589658(
+var tagmanagerAccountsContainersVersionsUpdate* = Call_TagmanagerAccountsContainersVersionsUpdate_579558(
     name: "tagmanagerAccountsContainersVersionsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}",
-    validator: validate_TagmanagerAccountsContainersVersionsUpdate_589659,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsUpdate_589660,
+    validator: validate_TagmanagerAccountsContainersVersionsUpdate_579559,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsUpdate_579560,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsGet_589641 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersVersionsGet_589643(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsGet_579541 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersVersionsGet_579543(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6887,7 +6886,7 @@ proc url_TagmanagerAccountsContainersVersionsGet_589643(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsGet_589642(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsGet_579542(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a Container Version.
   ## 
@@ -6896,80 +6895,80 @@ proc validate_TagmanagerAccountsContainersVersionsGet_589642(path: JsonNode;
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   containerVersionId: JString (required)
   ##                     : The GTM Container Version ID. Specify published to retrieve the currently published version.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589644 = path.getOrDefault("containerId")
-  valid_589644 = validateParameter(valid_589644, JString, required = true,
+  var valid_579544 = path.getOrDefault("containerId")
+  valid_579544 = validateParameter(valid_579544, JString, required = true,
                                  default = nil)
-  if valid_589644 != nil:
-    section.add "containerId", valid_589644
-  var valid_589645 = path.getOrDefault("accountId")
-  valid_589645 = validateParameter(valid_589645, JString, required = true,
+  if valid_579544 != nil:
+    section.add "containerId", valid_579544
+  var valid_579545 = path.getOrDefault("containerVersionId")
+  valid_579545 = validateParameter(valid_579545, JString, required = true,
                                  default = nil)
-  if valid_589645 != nil:
-    section.add "accountId", valid_589645
-  var valid_589646 = path.getOrDefault("containerVersionId")
-  valid_589646 = validateParameter(valid_589646, JString, required = true,
+  if valid_579545 != nil:
+    section.add "containerVersionId", valid_579545
+  var valid_579546 = path.getOrDefault("accountId")
+  valid_579546 = validateParameter(valid_579546, JString, required = true,
                                  default = nil)
-  if valid_589646 != nil:
-    section.add "containerVersionId", valid_589646
+  if valid_579546 != nil:
+    section.add "accountId", valid_579546
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589647 = query.getOrDefault("fields")
-  valid_589647 = validateParameter(valid_589647, JString, required = false,
+  var valid_579547 = query.getOrDefault("key")
+  valid_579547 = validateParameter(valid_579547, JString, required = false,
                                  default = nil)
-  if valid_589647 != nil:
-    section.add "fields", valid_589647
-  var valid_589648 = query.getOrDefault("quotaUser")
-  valid_589648 = validateParameter(valid_589648, JString, required = false,
-                                 default = nil)
-  if valid_589648 != nil:
-    section.add "quotaUser", valid_589648
-  var valid_589649 = query.getOrDefault("alt")
-  valid_589649 = validateParameter(valid_589649, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589649 != nil:
-    section.add "alt", valid_589649
-  var valid_589650 = query.getOrDefault("oauth_token")
-  valid_589650 = validateParameter(valid_589650, JString, required = false,
-                                 default = nil)
-  if valid_589650 != nil:
-    section.add "oauth_token", valid_589650
-  var valid_589651 = query.getOrDefault("userIp")
-  valid_589651 = validateParameter(valid_589651, JString, required = false,
-                                 default = nil)
-  if valid_589651 != nil:
-    section.add "userIp", valid_589651
-  var valid_589652 = query.getOrDefault("key")
-  valid_589652 = validateParameter(valid_589652, JString, required = false,
-                                 default = nil)
-  if valid_589652 != nil:
-    section.add "key", valid_589652
-  var valid_589653 = query.getOrDefault("prettyPrint")
-  valid_589653 = validateParameter(valid_589653, JBool, required = false,
+  if valid_579547 != nil:
+    section.add "key", valid_579547
+  var valid_579548 = query.getOrDefault("prettyPrint")
+  valid_579548 = validateParameter(valid_579548, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589653 != nil:
-    section.add "prettyPrint", valid_589653
+  if valid_579548 != nil:
+    section.add "prettyPrint", valid_579548
+  var valid_579549 = query.getOrDefault("oauth_token")
+  valid_579549 = validateParameter(valid_579549, JString, required = false,
+                                 default = nil)
+  if valid_579549 != nil:
+    section.add "oauth_token", valid_579549
+  var valid_579550 = query.getOrDefault("alt")
+  valid_579550 = validateParameter(valid_579550, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579550 != nil:
+    section.add "alt", valid_579550
+  var valid_579551 = query.getOrDefault("userIp")
+  valid_579551 = validateParameter(valid_579551, JString, required = false,
+                                 default = nil)
+  if valid_579551 != nil:
+    section.add "userIp", valid_579551
+  var valid_579552 = query.getOrDefault("quotaUser")
+  valid_579552 = validateParameter(valid_579552, JString, required = false,
+                                 default = nil)
+  if valid_579552 != nil:
+    section.add "quotaUser", valid_579552
+  var valid_579553 = query.getOrDefault("fields")
+  valid_579553 = validateParameter(valid_579553, JString, required = false,
+                                 default = nil)
+  if valid_579553 != nil:
+    section.add "fields", valid_579553
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6978,70 +6977,70 @@ proc validate_TagmanagerAccountsContainersVersionsGet_589642(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589654: Call_TagmanagerAccountsContainersVersionsGet_589641;
+proc call*(call_579554: Call_TagmanagerAccountsContainersVersionsGet_579541;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a Container Version.
   ## 
-  let valid = call_589654.validator(path, query, header, formData, body)
-  let scheme = call_589654.pickScheme
+  let valid = call_579554.validator(path, query, header, formData, body)
+  let scheme = call_579554.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589654.url(scheme.get, call_589654.host, call_589654.base,
-                         call_589654.route, valid.getOrDefault("path"),
+  let url = call_579554.url(scheme.get, call_579554.host, call_579554.base,
+                         call_579554.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589654, url, valid)
+  result = hook(call_579554, url, valid)
 
-proc call*(call_589655: Call_TagmanagerAccountsContainersVersionsGet_589641;
-          containerId: string; accountId: string; containerVersionId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579555: Call_TagmanagerAccountsContainersVersionsGet_579541;
+          containerId: string; containerVersionId: string; accountId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersVersionsGet
   ## Gets a Container Version.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   containerVersionId: string (required)
-  ##                     : The GTM Container Version ID. Specify published to retrieve the currently published version.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589656 = newJObject()
-  var query_589657 = newJObject()
-  add(path_589656, "containerId", newJString(containerId))
-  add(query_589657, "fields", newJString(fields))
-  add(query_589657, "quotaUser", newJString(quotaUser))
-  add(query_589657, "alt", newJString(alt))
-  add(query_589657, "oauth_token", newJString(oauthToken))
-  add(path_589656, "accountId", newJString(accountId))
-  add(query_589657, "userIp", newJString(userIp))
-  add(path_589656, "containerVersionId", newJString(containerVersionId))
-  add(query_589657, "key", newJString(key))
-  add(query_589657, "prettyPrint", newJBool(prettyPrint))
-  result = call_589655.call(path_589656, query_589657, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   containerVersionId: string (required)
+  ##                     : The GTM Container Version ID. Specify published to retrieve the currently published version.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579556 = newJObject()
+  var query_579557 = newJObject()
+  add(query_579557, "key", newJString(key))
+  add(query_579557, "prettyPrint", newJBool(prettyPrint))
+  add(query_579557, "oauth_token", newJString(oauthToken))
+  add(path_579556, "containerId", newJString(containerId))
+  add(query_579557, "alt", newJString(alt))
+  add(query_579557, "userIp", newJString(userIp))
+  add(query_579557, "quotaUser", newJString(quotaUser))
+  add(path_579556, "containerVersionId", newJString(containerVersionId))
+  add(path_579556, "accountId", newJString(accountId))
+  add(query_579557, "fields", newJString(fields))
+  result = call_579555.call(path_579556, query_579557, nil, nil, nil)
 
-var tagmanagerAccountsContainersVersionsGet* = Call_TagmanagerAccountsContainersVersionsGet_589641(
+var tagmanagerAccountsContainersVersionsGet* = Call_TagmanagerAccountsContainersVersionsGet_579541(
     name: "tagmanagerAccountsContainersVersionsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}",
-    validator: validate_TagmanagerAccountsContainersVersionsGet_589642,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsGet_589643,
+    validator: validate_TagmanagerAccountsContainersVersionsGet_579542,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsGet_579543,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsDelete_589678 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersVersionsDelete_589680(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsDelete_579578 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersVersionsDelete_579580(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7063,7 +7062,7 @@ proc url_TagmanagerAccountsContainersVersionsDelete_589680(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsDelete_589679(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsDelete_579579(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a Container Version.
   ## 
@@ -7072,80 +7071,80 @@ proc validate_TagmanagerAccountsContainersVersionsDelete_589679(path: JsonNode;
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   containerVersionId: JString (required)
   ##                     : The GTM Container Version ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589681 = path.getOrDefault("containerId")
-  valid_589681 = validateParameter(valid_589681, JString, required = true,
+  var valid_579581 = path.getOrDefault("containerId")
+  valid_579581 = validateParameter(valid_579581, JString, required = true,
                                  default = nil)
-  if valid_589681 != nil:
-    section.add "containerId", valid_589681
-  var valid_589682 = path.getOrDefault("accountId")
-  valid_589682 = validateParameter(valid_589682, JString, required = true,
+  if valid_579581 != nil:
+    section.add "containerId", valid_579581
+  var valid_579582 = path.getOrDefault("containerVersionId")
+  valid_579582 = validateParameter(valid_579582, JString, required = true,
                                  default = nil)
-  if valid_589682 != nil:
-    section.add "accountId", valid_589682
-  var valid_589683 = path.getOrDefault("containerVersionId")
-  valid_589683 = validateParameter(valid_589683, JString, required = true,
+  if valid_579582 != nil:
+    section.add "containerVersionId", valid_579582
+  var valid_579583 = path.getOrDefault("accountId")
+  valid_579583 = validateParameter(valid_579583, JString, required = true,
                                  default = nil)
-  if valid_589683 != nil:
-    section.add "containerVersionId", valid_589683
+  if valid_579583 != nil:
+    section.add "accountId", valid_579583
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589684 = query.getOrDefault("fields")
-  valid_589684 = validateParameter(valid_589684, JString, required = false,
+  var valid_579584 = query.getOrDefault("key")
+  valid_579584 = validateParameter(valid_579584, JString, required = false,
                                  default = nil)
-  if valid_589684 != nil:
-    section.add "fields", valid_589684
-  var valid_589685 = query.getOrDefault("quotaUser")
-  valid_589685 = validateParameter(valid_589685, JString, required = false,
-                                 default = nil)
-  if valid_589685 != nil:
-    section.add "quotaUser", valid_589685
-  var valid_589686 = query.getOrDefault("alt")
-  valid_589686 = validateParameter(valid_589686, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589686 != nil:
-    section.add "alt", valid_589686
-  var valid_589687 = query.getOrDefault("oauth_token")
-  valid_589687 = validateParameter(valid_589687, JString, required = false,
-                                 default = nil)
-  if valid_589687 != nil:
-    section.add "oauth_token", valid_589687
-  var valid_589688 = query.getOrDefault("userIp")
-  valid_589688 = validateParameter(valid_589688, JString, required = false,
-                                 default = nil)
-  if valid_589688 != nil:
-    section.add "userIp", valid_589688
-  var valid_589689 = query.getOrDefault("key")
-  valid_589689 = validateParameter(valid_589689, JString, required = false,
-                                 default = nil)
-  if valid_589689 != nil:
-    section.add "key", valid_589689
-  var valid_589690 = query.getOrDefault("prettyPrint")
-  valid_589690 = validateParameter(valid_589690, JBool, required = false,
+  if valid_579584 != nil:
+    section.add "key", valid_579584
+  var valid_579585 = query.getOrDefault("prettyPrint")
+  valid_579585 = validateParameter(valid_579585, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589690 != nil:
-    section.add "prettyPrint", valid_589690
+  if valid_579585 != nil:
+    section.add "prettyPrint", valid_579585
+  var valid_579586 = query.getOrDefault("oauth_token")
+  valid_579586 = validateParameter(valid_579586, JString, required = false,
+                                 default = nil)
+  if valid_579586 != nil:
+    section.add "oauth_token", valid_579586
+  var valid_579587 = query.getOrDefault("alt")
+  valid_579587 = validateParameter(valid_579587, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579587 != nil:
+    section.add "alt", valid_579587
+  var valid_579588 = query.getOrDefault("userIp")
+  valid_579588 = validateParameter(valid_579588, JString, required = false,
+                                 default = nil)
+  if valid_579588 != nil:
+    section.add "userIp", valid_579588
+  var valid_579589 = query.getOrDefault("quotaUser")
+  valid_579589 = validateParameter(valid_579589, JString, required = false,
+                                 default = nil)
+  if valid_579589 != nil:
+    section.add "quotaUser", valid_579589
+  var valid_579590 = query.getOrDefault("fields")
+  valid_579590 = validateParameter(valid_579590, JString, required = false,
+                                 default = nil)
+  if valid_579590 != nil:
+    section.add "fields", valid_579590
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7154,70 +7153,70 @@ proc validate_TagmanagerAccountsContainersVersionsDelete_589679(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589691: Call_TagmanagerAccountsContainersVersionsDelete_589678;
+proc call*(call_579591: Call_TagmanagerAccountsContainersVersionsDelete_579578;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a Container Version.
   ## 
-  let valid = call_589691.validator(path, query, header, formData, body)
-  let scheme = call_589691.pickScheme
+  let valid = call_579591.validator(path, query, header, formData, body)
+  let scheme = call_579591.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589691.url(scheme.get, call_589691.host, call_589691.base,
-                         call_589691.route, valid.getOrDefault("path"),
+  let url = call_579591.url(scheme.get, call_579591.host, call_579591.base,
+                         call_579591.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589691, url, valid)
+  result = hook(call_579591, url, valid)
 
-proc call*(call_589692: Call_TagmanagerAccountsContainersVersionsDelete_589678;
-          containerId: string; accountId: string; containerVersionId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579592: Call_TagmanagerAccountsContainersVersionsDelete_579578;
+          containerId: string; containerVersionId: string; accountId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersVersionsDelete
   ## Deletes a Container Version.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   containerVersionId: string (required)
-  ##                     : The GTM Container Version ID.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589693 = newJObject()
-  var query_589694 = newJObject()
-  add(path_589693, "containerId", newJString(containerId))
-  add(query_589694, "fields", newJString(fields))
-  add(query_589694, "quotaUser", newJString(quotaUser))
-  add(query_589694, "alt", newJString(alt))
-  add(query_589694, "oauth_token", newJString(oauthToken))
-  add(path_589693, "accountId", newJString(accountId))
-  add(query_589694, "userIp", newJString(userIp))
-  add(path_589693, "containerVersionId", newJString(containerVersionId))
-  add(query_589694, "key", newJString(key))
-  add(query_589694, "prettyPrint", newJBool(prettyPrint))
-  result = call_589692.call(path_589693, query_589694, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   containerVersionId: string (required)
+  ##                     : The GTM Container Version ID.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579593 = newJObject()
+  var query_579594 = newJObject()
+  add(query_579594, "key", newJString(key))
+  add(query_579594, "prettyPrint", newJBool(prettyPrint))
+  add(query_579594, "oauth_token", newJString(oauthToken))
+  add(path_579593, "containerId", newJString(containerId))
+  add(query_579594, "alt", newJString(alt))
+  add(query_579594, "userIp", newJString(userIp))
+  add(query_579594, "quotaUser", newJString(quotaUser))
+  add(path_579593, "containerVersionId", newJString(containerVersionId))
+  add(path_579593, "accountId", newJString(accountId))
+  add(query_579594, "fields", newJString(fields))
+  result = call_579592.call(path_579593, query_579594, nil, nil, nil)
 
-var tagmanagerAccountsContainersVersionsDelete* = Call_TagmanagerAccountsContainersVersionsDelete_589678(
+var tagmanagerAccountsContainersVersionsDelete* = Call_TagmanagerAccountsContainersVersionsDelete_579578(
     name: "tagmanagerAccountsContainersVersionsDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}",
-    validator: validate_TagmanagerAccountsContainersVersionsDelete_589679,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsDelete_589680,
+    validator: validate_TagmanagerAccountsContainersVersionsDelete_579579,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsDelete_579580,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsPublish_589695 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersVersionsPublish_589697(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsPublish_579595 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersVersionsPublish_579597(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7240,7 +7239,7 @@ proc url_TagmanagerAccountsContainersVersionsPublish_589697(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsPublish_589696(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsPublish_579596(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Publishes a Container Version.
   ## 
@@ -7249,87 +7248,87 @@ proc validate_TagmanagerAccountsContainersVersionsPublish_589696(path: JsonNode;
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   containerVersionId: JString (required)
   ##                     : The GTM Container Version ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589698 = path.getOrDefault("containerId")
-  valid_589698 = validateParameter(valid_589698, JString, required = true,
+  var valid_579598 = path.getOrDefault("containerId")
+  valid_579598 = validateParameter(valid_579598, JString, required = true,
                                  default = nil)
-  if valid_589698 != nil:
-    section.add "containerId", valid_589698
-  var valid_589699 = path.getOrDefault("accountId")
-  valid_589699 = validateParameter(valid_589699, JString, required = true,
+  if valid_579598 != nil:
+    section.add "containerId", valid_579598
+  var valid_579599 = path.getOrDefault("containerVersionId")
+  valid_579599 = validateParameter(valid_579599, JString, required = true,
                                  default = nil)
-  if valid_589699 != nil:
-    section.add "accountId", valid_589699
-  var valid_589700 = path.getOrDefault("containerVersionId")
-  valid_589700 = validateParameter(valid_589700, JString, required = true,
+  if valid_579599 != nil:
+    section.add "containerVersionId", valid_579599
+  var valid_579600 = path.getOrDefault("accountId")
+  valid_579600 = validateParameter(valid_579600, JString, required = true,
                                  default = nil)
-  if valid_589700 != nil:
-    section.add "containerVersionId", valid_589700
+  if valid_579600 != nil:
+    section.add "accountId", valid_579600
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: JString
-  ##              : When provided, this fingerprint must match the fingerprint of the container version in storage.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   fingerprint: JString
+  ##              : When provided, this fingerprint must match the fingerprint of the container version in storage.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589701 = query.getOrDefault("fields")
-  valid_589701 = validateParameter(valid_589701, JString, required = false,
+  var valid_579601 = query.getOrDefault("key")
+  valid_579601 = validateParameter(valid_579601, JString, required = false,
                                  default = nil)
-  if valid_589701 != nil:
-    section.add "fields", valid_589701
-  var valid_589702 = query.getOrDefault("fingerprint")
-  valid_589702 = validateParameter(valid_589702, JString, required = false,
-                                 default = nil)
-  if valid_589702 != nil:
-    section.add "fingerprint", valid_589702
-  var valid_589703 = query.getOrDefault("quotaUser")
-  valid_589703 = validateParameter(valid_589703, JString, required = false,
-                                 default = nil)
-  if valid_589703 != nil:
-    section.add "quotaUser", valid_589703
-  var valid_589704 = query.getOrDefault("alt")
-  valid_589704 = validateParameter(valid_589704, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589704 != nil:
-    section.add "alt", valid_589704
-  var valid_589705 = query.getOrDefault("oauth_token")
-  valid_589705 = validateParameter(valid_589705, JString, required = false,
-                                 default = nil)
-  if valid_589705 != nil:
-    section.add "oauth_token", valid_589705
-  var valid_589706 = query.getOrDefault("userIp")
-  valid_589706 = validateParameter(valid_589706, JString, required = false,
-                                 default = nil)
-  if valid_589706 != nil:
-    section.add "userIp", valid_589706
-  var valid_589707 = query.getOrDefault("key")
-  valid_589707 = validateParameter(valid_589707, JString, required = false,
-                                 default = nil)
-  if valid_589707 != nil:
-    section.add "key", valid_589707
-  var valid_589708 = query.getOrDefault("prettyPrint")
-  valid_589708 = validateParameter(valid_589708, JBool, required = false,
+  if valid_579601 != nil:
+    section.add "key", valid_579601
+  var valid_579602 = query.getOrDefault("prettyPrint")
+  valid_579602 = validateParameter(valid_579602, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589708 != nil:
-    section.add "prettyPrint", valid_589708
+  if valid_579602 != nil:
+    section.add "prettyPrint", valid_579602
+  var valid_579603 = query.getOrDefault("oauth_token")
+  valid_579603 = validateParameter(valid_579603, JString, required = false,
+                                 default = nil)
+  if valid_579603 != nil:
+    section.add "oauth_token", valid_579603
+  var valid_579604 = query.getOrDefault("fingerprint")
+  valid_579604 = validateParameter(valid_579604, JString, required = false,
+                                 default = nil)
+  if valid_579604 != nil:
+    section.add "fingerprint", valid_579604
+  var valid_579605 = query.getOrDefault("alt")
+  valid_579605 = validateParameter(valid_579605, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579605 != nil:
+    section.add "alt", valid_579605
+  var valid_579606 = query.getOrDefault("userIp")
+  valid_579606 = validateParameter(valid_579606, JString, required = false,
+                                 default = nil)
+  if valid_579606 != nil:
+    section.add "userIp", valid_579606
+  var valid_579607 = query.getOrDefault("quotaUser")
+  valid_579607 = validateParameter(valid_579607, JString, required = false,
+                                 default = nil)
+  if valid_579607 != nil:
+    section.add "quotaUser", valid_579607
+  var valid_579608 = query.getOrDefault("fields")
+  valid_579608 = validateParameter(valid_579608, JString, required = false,
+                                 default = nil)
+  if valid_579608 != nil:
+    section.add "fields", valid_579608
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7338,73 +7337,73 @@ proc validate_TagmanagerAccountsContainersVersionsPublish_589696(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589709: Call_TagmanagerAccountsContainersVersionsPublish_589695;
+proc call*(call_579609: Call_TagmanagerAccountsContainersVersionsPublish_579595;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Publishes a Container Version.
   ## 
-  let valid = call_589709.validator(path, query, header, formData, body)
-  let scheme = call_589709.pickScheme
+  let valid = call_579609.validator(path, query, header, formData, body)
+  let scheme = call_579609.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589709.url(scheme.get, call_589709.host, call_589709.base,
-                         call_589709.route, valid.getOrDefault("path"),
+  let url = call_579609.url(scheme.get, call_579609.host, call_579609.base,
+                         call_579609.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589709, url, valid)
+  result = hook(call_579609, url, valid)
 
-proc call*(call_589710: Call_TagmanagerAccountsContainersVersionsPublish_589695;
-          containerId: string; accountId: string; containerVersionId: string;
-          fields: string = ""; fingerprint: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579610: Call_TagmanagerAccountsContainersVersionsPublish_579595;
+          containerId: string; containerVersionId: string; accountId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          fingerprint: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersVersionsPublish
   ## Publishes a Container Version.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   fingerprint: string
-  ##              : When provided, this fingerprint must match the fingerprint of the container version in storage.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   containerVersionId: string (required)
-  ##                     : The GTM Container Version ID.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589711 = newJObject()
-  var query_589712 = newJObject()
-  add(path_589711, "containerId", newJString(containerId))
-  add(query_589712, "fields", newJString(fields))
-  add(query_589712, "fingerprint", newJString(fingerprint))
-  add(query_589712, "quotaUser", newJString(quotaUser))
-  add(query_589712, "alt", newJString(alt))
-  add(query_589712, "oauth_token", newJString(oauthToken))
-  add(path_589711, "accountId", newJString(accountId))
-  add(query_589712, "userIp", newJString(userIp))
-  add(path_589711, "containerVersionId", newJString(containerVersionId))
-  add(query_589712, "key", newJString(key))
-  add(query_589712, "prettyPrint", newJBool(prettyPrint))
-  result = call_589710.call(path_589711, query_589712, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   fingerprint: string
+  ##              : When provided, this fingerprint must match the fingerprint of the container version in storage.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   containerVersionId: string (required)
+  ##                     : The GTM Container Version ID.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579611 = newJObject()
+  var query_579612 = newJObject()
+  add(query_579612, "key", newJString(key))
+  add(query_579612, "prettyPrint", newJBool(prettyPrint))
+  add(query_579612, "oauth_token", newJString(oauthToken))
+  add(path_579611, "containerId", newJString(containerId))
+  add(query_579612, "fingerprint", newJString(fingerprint))
+  add(query_579612, "alt", newJString(alt))
+  add(query_579612, "userIp", newJString(userIp))
+  add(query_579612, "quotaUser", newJString(quotaUser))
+  add(path_579611, "containerVersionId", newJString(containerVersionId))
+  add(path_579611, "accountId", newJString(accountId))
+  add(query_579612, "fields", newJString(fields))
+  result = call_579610.call(path_579611, query_579612, nil, nil, nil)
 
-var tagmanagerAccountsContainersVersionsPublish* = Call_TagmanagerAccountsContainersVersionsPublish_589695(
+var tagmanagerAccountsContainersVersionsPublish* = Call_TagmanagerAccountsContainersVersionsPublish_579595(
     name: "tagmanagerAccountsContainersVersionsPublish",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}/publish",
-    validator: validate_TagmanagerAccountsContainersVersionsPublish_589696,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsPublish_589697,
+    validator: validate_TagmanagerAccountsContainersVersionsPublish_579596,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsPublish_579597,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsRestore_589713 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersVersionsRestore_589715(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsRestore_579613 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersVersionsRestore_579615(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7427,7 +7426,7 @@ proc url_TagmanagerAccountsContainersVersionsRestore_589715(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsRestore_589714(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsRestore_579614(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Restores a Container Version. This will overwrite the container's current configuration (including its variables, triggers and tags). The operation will not have any effect on the version that is being served (i.e. the published version).
   ## 
@@ -7436,80 +7435,80 @@ proc validate_TagmanagerAccountsContainersVersionsRestore_589714(path: JsonNode;
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   containerVersionId: JString (required)
   ##                     : The GTM Container Version ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589716 = path.getOrDefault("containerId")
-  valid_589716 = validateParameter(valid_589716, JString, required = true,
+  var valid_579616 = path.getOrDefault("containerId")
+  valid_579616 = validateParameter(valid_579616, JString, required = true,
                                  default = nil)
-  if valid_589716 != nil:
-    section.add "containerId", valid_589716
-  var valid_589717 = path.getOrDefault("accountId")
-  valid_589717 = validateParameter(valid_589717, JString, required = true,
+  if valid_579616 != nil:
+    section.add "containerId", valid_579616
+  var valid_579617 = path.getOrDefault("containerVersionId")
+  valid_579617 = validateParameter(valid_579617, JString, required = true,
                                  default = nil)
-  if valid_589717 != nil:
-    section.add "accountId", valid_589717
-  var valid_589718 = path.getOrDefault("containerVersionId")
-  valid_589718 = validateParameter(valid_589718, JString, required = true,
+  if valid_579617 != nil:
+    section.add "containerVersionId", valid_579617
+  var valid_579618 = path.getOrDefault("accountId")
+  valid_579618 = validateParameter(valid_579618, JString, required = true,
                                  default = nil)
-  if valid_589718 != nil:
-    section.add "containerVersionId", valid_589718
+  if valid_579618 != nil:
+    section.add "accountId", valid_579618
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589719 = query.getOrDefault("fields")
-  valid_589719 = validateParameter(valid_589719, JString, required = false,
+  var valid_579619 = query.getOrDefault("key")
+  valid_579619 = validateParameter(valid_579619, JString, required = false,
                                  default = nil)
-  if valid_589719 != nil:
-    section.add "fields", valid_589719
-  var valid_589720 = query.getOrDefault("quotaUser")
-  valid_589720 = validateParameter(valid_589720, JString, required = false,
-                                 default = nil)
-  if valid_589720 != nil:
-    section.add "quotaUser", valid_589720
-  var valid_589721 = query.getOrDefault("alt")
-  valid_589721 = validateParameter(valid_589721, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589721 != nil:
-    section.add "alt", valid_589721
-  var valid_589722 = query.getOrDefault("oauth_token")
-  valid_589722 = validateParameter(valid_589722, JString, required = false,
-                                 default = nil)
-  if valid_589722 != nil:
-    section.add "oauth_token", valid_589722
-  var valid_589723 = query.getOrDefault("userIp")
-  valid_589723 = validateParameter(valid_589723, JString, required = false,
-                                 default = nil)
-  if valid_589723 != nil:
-    section.add "userIp", valid_589723
-  var valid_589724 = query.getOrDefault("key")
-  valid_589724 = validateParameter(valid_589724, JString, required = false,
-                                 default = nil)
-  if valid_589724 != nil:
-    section.add "key", valid_589724
-  var valid_589725 = query.getOrDefault("prettyPrint")
-  valid_589725 = validateParameter(valid_589725, JBool, required = false,
+  if valid_579619 != nil:
+    section.add "key", valid_579619
+  var valid_579620 = query.getOrDefault("prettyPrint")
+  valid_579620 = validateParameter(valid_579620, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589725 != nil:
-    section.add "prettyPrint", valid_589725
+  if valid_579620 != nil:
+    section.add "prettyPrint", valid_579620
+  var valid_579621 = query.getOrDefault("oauth_token")
+  valid_579621 = validateParameter(valid_579621, JString, required = false,
+                                 default = nil)
+  if valid_579621 != nil:
+    section.add "oauth_token", valid_579621
+  var valid_579622 = query.getOrDefault("alt")
+  valid_579622 = validateParameter(valid_579622, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579622 != nil:
+    section.add "alt", valid_579622
+  var valid_579623 = query.getOrDefault("userIp")
+  valid_579623 = validateParameter(valid_579623, JString, required = false,
+                                 default = nil)
+  if valid_579623 != nil:
+    section.add "userIp", valid_579623
+  var valid_579624 = query.getOrDefault("quotaUser")
+  valid_579624 = validateParameter(valid_579624, JString, required = false,
+                                 default = nil)
+  if valid_579624 != nil:
+    section.add "quotaUser", valid_579624
+  var valid_579625 = query.getOrDefault("fields")
+  valid_579625 = validateParameter(valid_579625, JString, required = false,
+                                 default = nil)
+  if valid_579625 != nil:
+    section.add "fields", valid_579625
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7518,70 +7517,70 @@ proc validate_TagmanagerAccountsContainersVersionsRestore_589714(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589726: Call_TagmanagerAccountsContainersVersionsRestore_589713;
+proc call*(call_579626: Call_TagmanagerAccountsContainersVersionsRestore_579613;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Restores a Container Version. This will overwrite the container's current configuration (including its variables, triggers and tags). The operation will not have any effect on the version that is being served (i.e. the published version).
   ## 
-  let valid = call_589726.validator(path, query, header, formData, body)
-  let scheme = call_589726.pickScheme
+  let valid = call_579626.validator(path, query, header, formData, body)
+  let scheme = call_579626.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589726.url(scheme.get, call_589726.host, call_589726.base,
-                         call_589726.route, valid.getOrDefault("path"),
+  let url = call_579626.url(scheme.get, call_579626.host, call_579626.base,
+                         call_579626.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589726, url, valid)
+  result = hook(call_579626, url, valid)
 
-proc call*(call_589727: Call_TagmanagerAccountsContainersVersionsRestore_589713;
-          containerId: string; accountId: string; containerVersionId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579627: Call_TagmanagerAccountsContainersVersionsRestore_579613;
+          containerId: string; containerVersionId: string; accountId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersVersionsRestore
   ## Restores a Container Version. This will overwrite the container's current configuration (including its variables, triggers and tags). The operation will not have any effect on the version that is being served (i.e. the published version).
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   containerVersionId: string (required)
-  ##                     : The GTM Container Version ID.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589728 = newJObject()
-  var query_589729 = newJObject()
-  add(path_589728, "containerId", newJString(containerId))
-  add(query_589729, "fields", newJString(fields))
-  add(query_589729, "quotaUser", newJString(quotaUser))
-  add(query_589729, "alt", newJString(alt))
-  add(query_589729, "oauth_token", newJString(oauthToken))
-  add(path_589728, "accountId", newJString(accountId))
-  add(query_589729, "userIp", newJString(userIp))
-  add(path_589728, "containerVersionId", newJString(containerVersionId))
-  add(query_589729, "key", newJString(key))
-  add(query_589729, "prettyPrint", newJBool(prettyPrint))
-  result = call_589727.call(path_589728, query_589729, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   containerVersionId: string (required)
+  ##                     : The GTM Container Version ID.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579628 = newJObject()
+  var query_579629 = newJObject()
+  add(query_579629, "key", newJString(key))
+  add(query_579629, "prettyPrint", newJBool(prettyPrint))
+  add(query_579629, "oauth_token", newJString(oauthToken))
+  add(path_579628, "containerId", newJString(containerId))
+  add(query_579629, "alt", newJString(alt))
+  add(query_579629, "userIp", newJString(userIp))
+  add(query_579629, "quotaUser", newJString(quotaUser))
+  add(path_579628, "containerVersionId", newJString(containerVersionId))
+  add(path_579628, "accountId", newJString(accountId))
+  add(query_579629, "fields", newJString(fields))
+  result = call_579627.call(path_579628, query_579629, nil, nil, nil)
 
-var tagmanagerAccountsContainersVersionsRestore* = Call_TagmanagerAccountsContainersVersionsRestore_589713(
+var tagmanagerAccountsContainersVersionsRestore* = Call_TagmanagerAccountsContainersVersionsRestore_579613(
     name: "tagmanagerAccountsContainersVersionsRestore",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}/restore",
-    validator: validate_TagmanagerAccountsContainersVersionsRestore_589714,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsRestore_589715,
+    validator: validate_TagmanagerAccountsContainersVersionsRestore_579614,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsRestore_579615,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsContainersVersionsUndelete_589730 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsContainersVersionsUndelete_589732(protocol: Scheme;
+  Call_TagmanagerAccountsContainersVersionsUndelete_579630 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsContainersVersionsUndelete_579632(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7604,7 +7603,7 @@ proc url_TagmanagerAccountsContainersVersionsUndelete_589732(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsContainersVersionsUndelete_589731(path: JsonNode;
+proc validate_TagmanagerAccountsContainersVersionsUndelete_579631(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Undeletes a Container Version.
   ## 
@@ -7613,80 +7612,80 @@ proc validate_TagmanagerAccountsContainersVersionsUndelete_589731(path: JsonNode
   ## parameters in `path` object:
   ##   containerId: JString (required)
   ##              : The GTM Container ID.
-  ##   accountId: JString (required)
-  ##            : The GTM Account ID.
   ##   containerVersionId: JString (required)
   ##                     : The GTM Container Version ID.
+  ##   accountId: JString (required)
+  ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `containerId` field"
-  var valid_589733 = path.getOrDefault("containerId")
-  valid_589733 = validateParameter(valid_589733, JString, required = true,
+  var valid_579633 = path.getOrDefault("containerId")
+  valid_579633 = validateParameter(valid_579633, JString, required = true,
                                  default = nil)
-  if valid_589733 != nil:
-    section.add "containerId", valid_589733
-  var valid_589734 = path.getOrDefault("accountId")
-  valid_589734 = validateParameter(valid_589734, JString, required = true,
+  if valid_579633 != nil:
+    section.add "containerId", valid_579633
+  var valid_579634 = path.getOrDefault("containerVersionId")
+  valid_579634 = validateParameter(valid_579634, JString, required = true,
                                  default = nil)
-  if valid_589734 != nil:
-    section.add "accountId", valid_589734
-  var valid_589735 = path.getOrDefault("containerVersionId")
-  valid_589735 = validateParameter(valid_589735, JString, required = true,
+  if valid_579634 != nil:
+    section.add "containerVersionId", valid_579634
+  var valid_579635 = path.getOrDefault("accountId")
+  valid_579635 = validateParameter(valid_579635, JString, required = true,
                                  default = nil)
-  if valid_589735 != nil:
-    section.add "containerVersionId", valid_589735
+  if valid_579635 != nil:
+    section.add "accountId", valid_579635
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589736 = query.getOrDefault("fields")
-  valid_589736 = validateParameter(valid_589736, JString, required = false,
+  var valid_579636 = query.getOrDefault("key")
+  valid_579636 = validateParameter(valid_579636, JString, required = false,
                                  default = nil)
-  if valid_589736 != nil:
-    section.add "fields", valid_589736
-  var valid_589737 = query.getOrDefault("quotaUser")
-  valid_589737 = validateParameter(valid_589737, JString, required = false,
-                                 default = nil)
-  if valid_589737 != nil:
-    section.add "quotaUser", valid_589737
-  var valid_589738 = query.getOrDefault("alt")
-  valid_589738 = validateParameter(valid_589738, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589738 != nil:
-    section.add "alt", valid_589738
-  var valid_589739 = query.getOrDefault("oauth_token")
-  valid_589739 = validateParameter(valid_589739, JString, required = false,
-                                 default = nil)
-  if valid_589739 != nil:
-    section.add "oauth_token", valid_589739
-  var valid_589740 = query.getOrDefault("userIp")
-  valid_589740 = validateParameter(valid_589740, JString, required = false,
-                                 default = nil)
-  if valid_589740 != nil:
-    section.add "userIp", valid_589740
-  var valid_589741 = query.getOrDefault("key")
-  valid_589741 = validateParameter(valid_589741, JString, required = false,
-                                 default = nil)
-  if valid_589741 != nil:
-    section.add "key", valid_589741
-  var valid_589742 = query.getOrDefault("prettyPrint")
-  valid_589742 = validateParameter(valid_589742, JBool, required = false,
+  if valid_579636 != nil:
+    section.add "key", valid_579636
+  var valid_579637 = query.getOrDefault("prettyPrint")
+  valid_579637 = validateParameter(valid_579637, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589742 != nil:
-    section.add "prettyPrint", valid_589742
+  if valid_579637 != nil:
+    section.add "prettyPrint", valid_579637
+  var valid_579638 = query.getOrDefault("oauth_token")
+  valid_579638 = validateParameter(valid_579638, JString, required = false,
+                                 default = nil)
+  if valid_579638 != nil:
+    section.add "oauth_token", valid_579638
+  var valid_579639 = query.getOrDefault("alt")
+  valid_579639 = validateParameter(valid_579639, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579639 != nil:
+    section.add "alt", valid_579639
+  var valid_579640 = query.getOrDefault("userIp")
+  valid_579640 = validateParameter(valid_579640, JString, required = false,
+                                 default = nil)
+  if valid_579640 != nil:
+    section.add "userIp", valid_579640
+  var valid_579641 = query.getOrDefault("quotaUser")
+  valid_579641 = validateParameter(valid_579641, JString, required = false,
+                                 default = nil)
+  if valid_579641 != nil:
+    section.add "quotaUser", valid_579641
+  var valid_579642 = query.getOrDefault("fields")
+  valid_579642 = validateParameter(valid_579642, JString, required = false,
+                                 default = nil)
+  if valid_579642 != nil:
+    section.add "fields", valid_579642
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7695,70 +7694,70 @@ proc validate_TagmanagerAccountsContainersVersionsUndelete_589731(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_589743: Call_TagmanagerAccountsContainersVersionsUndelete_589730;
+proc call*(call_579643: Call_TagmanagerAccountsContainersVersionsUndelete_579630;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Undeletes a Container Version.
   ## 
-  let valid = call_589743.validator(path, query, header, formData, body)
-  let scheme = call_589743.pickScheme
+  let valid = call_579643.validator(path, query, header, formData, body)
+  let scheme = call_579643.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589743.url(scheme.get, call_589743.host, call_589743.base,
-                         call_589743.route, valid.getOrDefault("path"),
+  let url = call_579643.url(scheme.get, call_579643.host, call_579643.base,
+                         call_579643.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589743, url, valid)
+  result = hook(call_579643, url, valid)
 
-proc call*(call_589744: Call_TagmanagerAccountsContainersVersionsUndelete_589730;
-          containerId: string; accountId: string; containerVersionId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579644: Call_TagmanagerAccountsContainersVersionsUndelete_579630;
+          containerId: string; containerVersionId: string; accountId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsContainersVersionsUndelete
   ## Undeletes a Container Version.
-  ##   containerId: string (required)
-  ##              : The GTM Container ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   containerVersionId: string (required)
-  ##                     : The GTM Container Version ID.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589745 = newJObject()
-  var query_589746 = newJObject()
-  add(path_589745, "containerId", newJString(containerId))
-  add(query_589746, "fields", newJString(fields))
-  add(query_589746, "quotaUser", newJString(quotaUser))
-  add(query_589746, "alt", newJString(alt))
-  add(query_589746, "oauth_token", newJString(oauthToken))
-  add(path_589745, "accountId", newJString(accountId))
-  add(query_589746, "userIp", newJString(userIp))
-  add(path_589745, "containerVersionId", newJString(containerVersionId))
-  add(query_589746, "key", newJString(key))
-  add(query_589746, "prettyPrint", newJBool(prettyPrint))
-  result = call_589744.call(path_589745, query_589746, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   containerId: string (required)
+  ##              : The GTM Container ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   containerVersionId: string (required)
+  ##                     : The GTM Container Version ID.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579645 = newJObject()
+  var query_579646 = newJObject()
+  add(query_579646, "key", newJString(key))
+  add(query_579646, "prettyPrint", newJBool(prettyPrint))
+  add(query_579646, "oauth_token", newJString(oauthToken))
+  add(path_579645, "containerId", newJString(containerId))
+  add(query_579646, "alt", newJString(alt))
+  add(query_579646, "userIp", newJString(userIp))
+  add(query_579646, "quotaUser", newJString(quotaUser))
+  add(path_579645, "containerVersionId", newJString(containerVersionId))
+  add(path_579645, "accountId", newJString(accountId))
+  add(query_579646, "fields", newJString(fields))
+  result = call_579644.call(path_579645, query_579646, nil, nil, nil)
 
-var tagmanagerAccountsContainersVersionsUndelete* = Call_TagmanagerAccountsContainersVersionsUndelete_589730(
+var tagmanagerAccountsContainersVersionsUndelete* = Call_TagmanagerAccountsContainersVersionsUndelete_579630(
     name: "tagmanagerAccountsContainersVersionsUndelete",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}/undelete",
-    validator: validate_TagmanagerAccountsContainersVersionsUndelete_589731,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsUndelete_589732,
+    validator: validate_TagmanagerAccountsContainersVersionsUndelete_579631,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsContainersVersionsUndelete_579632,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsPermissionsCreate_589762 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsPermissionsCreate_589764(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsPermissionsCreate_579662 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsPermissionsCreate_579664(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7774,7 +7773,7 @@ proc url_TagmanagerAccountsPermissionsCreate_589764(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsPermissionsCreate_589763(path: JsonNode;
+proc validate_TagmanagerAccountsPermissionsCreate_579663(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a user's Account & Container Permissions.
   ## 
@@ -7785,63 +7784,63 @@ proc validate_TagmanagerAccountsPermissionsCreate_589763(path: JsonNode;
   ##            : The GTM Account ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_589765 = path.getOrDefault("accountId")
-  valid_589765 = validateParameter(valid_589765, JString, required = true,
+  var valid_579665 = path.getOrDefault("accountId")
+  valid_579665 = validateParameter(valid_579665, JString, required = true,
                                  default = nil)
-  if valid_589765 != nil:
-    section.add "accountId", valid_589765
+  if valid_579665 != nil:
+    section.add "accountId", valid_579665
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589766 = query.getOrDefault("fields")
-  valid_589766 = validateParameter(valid_589766, JString, required = false,
+  var valid_579666 = query.getOrDefault("key")
+  valid_579666 = validateParameter(valid_579666, JString, required = false,
                                  default = nil)
-  if valid_589766 != nil:
-    section.add "fields", valid_589766
-  var valid_589767 = query.getOrDefault("quotaUser")
-  valid_589767 = validateParameter(valid_589767, JString, required = false,
-                                 default = nil)
-  if valid_589767 != nil:
-    section.add "quotaUser", valid_589767
-  var valid_589768 = query.getOrDefault("alt")
-  valid_589768 = validateParameter(valid_589768, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589768 != nil:
-    section.add "alt", valid_589768
-  var valid_589769 = query.getOrDefault("oauth_token")
-  valid_589769 = validateParameter(valid_589769, JString, required = false,
-                                 default = nil)
-  if valid_589769 != nil:
-    section.add "oauth_token", valid_589769
-  var valid_589770 = query.getOrDefault("userIp")
-  valid_589770 = validateParameter(valid_589770, JString, required = false,
-                                 default = nil)
-  if valid_589770 != nil:
-    section.add "userIp", valid_589770
-  var valid_589771 = query.getOrDefault("key")
-  valid_589771 = validateParameter(valid_589771, JString, required = false,
-                                 default = nil)
-  if valid_589771 != nil:
-    section.add "key", valid_589771
-  var valid_589772 = query.getOrDefault("prettyPrint")
-  valid_589772 = validateParameter(valid_589772, JBool, required = false,
+  if valid_579666 != nil:
+    section.add "key", valid_579666
+  var valid_579667 = query.getOrDefault("prettyPrint")
+  valid_579667 = validateParameter(valid_579667, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589772 != nil:
-    section.add "prettyPrint", valid_589772
+  if valid_579667 != nil:
+    section.add "prettyPrint", valid_579667
+  var valid_579668 = query.getOrDefault("oauth_token")
+  valid_579668 = validateParameter(valid_579668, JString, required = false,
+                                 default = nil)
+  if valid_579668 != nil:
+    section.add "oauth_token", valid_579668
+  var valid_579669 = query.getOrDefault("alt")
+  valid_579669 = validateParameter(valid_579669, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579669 != nil:
+    section.add "alt", valid_579669
+  var valid_579670 = query.getOrDefault("userIp")
+  valid_579670 = validateParameter(valid_579670, JString, required = false,
+                                 default = nil)
+  if valid_579670 != nil:
+    section.add "userIp", valid_579670
+  var valid_579671 = query.getOrDefault("quotaUser")
+  valid_579671 = validateParameter(valid_579671, JString, required = false,
+                                 default = nil)
+  if valid_579671 != nil:
+    section.add "quotaUser", valid_579671
+  var valid_579672 = query.getOrDefault("fields")
+  valid_579672 = validateParameter(valid_579672, JString, required = false,
+                                 default = nil)
+  if valid_579672 != nil:
+    section.add "fields", valid_579672
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7853,67 +7852,67 @@ proc validate_TagmanagerAccountsPermissionsCreate_589763(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589774: Call_TagmanagerAccountsPermissionsCreate_589762;
+proc call*(call_579674: Call_TagmanagerAccountsPermissionsCreate_579662;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a user's Account & Container Permissions.
   ## 
-  let valid = call_589774.validator(path, query, header, formData, body)
-  let scheme = call_589774.pickScheme
+  let valid = call_579674.validator(path, query, header, formData, body)
+  let scheme = call_579674.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589774.url(scheme.get, call_589774.host, call_589774.base,
-                         call_589774.route, valid.getOrDefault("path"),
+  let url = call_579674.url(scheme.get, call_579674.host, call_579674.base,
+                         call_579674.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589774, url, valid)
+  result = hook(call_579674, url, valid)
 
-proc call*(call_589775: Call_TagmanagerAccountsPermissionsCreate_589762;
-          accountId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579675: Call_TagmanagerAccountsPermissionsCreate_579662;
+          accountId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## tagmanagerAccountsPermissionsCreate
   ## Creates a user's Account & Container Permissions.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589776 = newJObject()
-  var query_589777 = newJObject()
-  var body_589778 = newJObject()
-  add(query_589777, "fields", newJString(fields))
-  add(query_589777, "quotaUser", newJString(quotaUser))
-  add(query_589777, "alt", newJString(alt))
-  add(query_589777, "oauth_token", newJString(oauthToken))
-  add(path_589776, "accountId", newJString(accountId))
-  add(query_589777, "userIp", newJString(userIp))
-  add(query_589777, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579676 = newJObject()
+  var query_579677 = newJObject()
+  var body_579678 = newJObject()
+  add(query_579677, "key", newJString(key))
+  add(query_579677, "prettyPrint", newJBool(prettyPrint))
+  add(query_579677, "oauth_token", newJString(oauthToken))
+  add(query_579677, "alt", newJString(alt))
+  add(query_579677, "userIp", newJString(userIp))
+  add(query_579677, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589778 = body
-  add(query_589777, "prettyPrint", newJBool(prettyPrint))
-  result = call_589775.call(path_589776, query_589777, nil, nil, body_589778)
+    body_579678 = body
+  add(path_579676, "accountId", newJString(accountId))
+  add(query_579677, "fields", newJString(fields))
+  result = call_579675.call(path_579676, query_579677, nil, nil, body_579678)
 
-var tagmanagerAccountsPermissionsCreate* = Call_TagmanagerAccountsPermissionsCreate_589762(
+var tagmanagerAccountsPermissionsCreate* = Call_TagmanagerAccountsPermissionsCreate_579662(
     name: "tagmanagerAccountsPermissionsCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/accounts/{accountId}/permissions",
-    validator: validate_TagmanagerAccountsPermissionsCreate_589763,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsCreate_589764,
+    validator: validate_TagmanagerAccountsPermissionsCreate_579663,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsCreate_579664,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsPermissionsList_589747 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsPermissionsList_589749(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsPermissionsList_579647 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsPermissionsList_579649(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7929,7 +7928,7 @@ proc url_TagmanagerAccountsPermissionsList_589749(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsPermissionsList_589748(path: JsonNode;
+proc validate_TagmanagerAccountsPermissionsList_579648(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List all users that have access to the account along with Account and Container Permissions granted to each of them.
   ## 
@@ -7940,63 +7939,63 @@ proc validate_TagmanagerAccountsPermissionsList_589748(path: JsonNode;
   ##            : The GTM Account ID. @required tagmanager.accounts.permissions.list
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_589750 = path.getOrDefault("accountId")
-  valid_589750 = validateParameter(valid_589750, JString, required = true,
+  var valid_579650 = path.getOrDefault("accountId")
+  valid_579650 = validateParameter(valid_579650, JString, required = true,
                                  default = nil)
-  if valid_589750 != nil:
-    section.add "accountId", valid_589750
+  if valid_579650 != nil:
+    section.add "accountId", valid_579650
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589751 = query.getOrDefault("fields")
-  valid_589751 = validateParameter(valid_589751, JString, required = false,
+  var valid_579651 = query.getOrDefault("key")
+  valid_579651 = validateParameter(valid_579651, JString, required = false,
                                  default = nil)
-  if valid_589751 != nil:
-    section.add "fields", valid_589751
-  var valid_589752 = query.getOrDefault("quotaUser")
-  valid_589752 = validateParameter(valid_589752, JString, required = false,
-                                 default = nil)
-  if valid_589752 != nil:
-    section.add "quotaUser", valid_589752
-  var valid_589753 = query.getOrDefault("alt")
-  valid_589753 = validateParameter(valid_589753, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589753 != nil:
-    section.add "alt", valid_589753
-  var valid_589754 = query.getOrDefault("oauth_token")
-  valid_589754 = validateParameter(valid_589754, JString, required = false,
-                                 default = nil)
-  if valid_589754 != nil:
-    section.add "oauth_token", valid_589754
-  var valid_589755 = query.getOrDefault("userIp")
-  valid_589755 = validateParameter(valid_589755, JString, required = false,
-                                 default = nil)
-  if valid_589755 != nil:
-    section.add "userIp", valid_589755
-  var valid_589756 = query.getOrDefault("key")
-  valid_589756 = validateParameter(valid_589756, JString, required = false,
-                                 default = nil)
-  if valid_589756 != nil:
-    section.add "key", valid_589756
-  var valid_589757 = query.getOrDefault("prettyPrint")
-  valid_589757 = validateParameter(valid_589757, JBool, required = false,
+  if valid_579651 != nil:
+    section.add "key", valid_579651
+  var valid_579652 = query.getOrDefault("prettyPrint")
+  valid_579652 = validateParameter(valid_579652, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589757 != nil:
-    section.add "prettyPrint", valid_589757
+  if valid_579652 != nil:
+    section.add "prettyPrint", valid_579652
+  var valid_579653 = query.getOrDefault("oauth_token")
+  valid_579653 = validateParameter(valid_579653, JString, required = false,
+                                 default = nil)
+  if valid_579653 != nil:
+    section.add "oauth_token", valid_579653
+  var valid_579654 = query.getOrDefault("alt")
+  valid_579654 = validateParameter(valid_579654, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579654 != nil:
+    section.add "alt", valid_579654
+  var valid_579655 = query.getOrDefault("userIp")
+  valid_579655 = validateParameter(valid_579655, JString, required = false,
+                                 default = nil)
+  if valid_579655 != nil:
+    section.add "userIp", valid_579655
+  var valid_579656 = query.getOrDefault("quotaUser")
+  valid_579656 = validateParameter(valid_579656, JString, required = false,
+                                 default = nil)
+  if valid_579656 != nil:
+    section.add "quotaUser", valid_579656
+  var valid_579657 = query.getOrDefault("fields")
+  valid_579657 = validateParameter(valid_579657, JString, required = false,
+                                 default = nil)
+  if valid_579657 != nil:
+    section.add "fields", valid_579657
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8005,63 +8004,63 @@ proc validate_TagmanagerAccountsPermissionsList_589748(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589758: Call_TagmanagerAccountsPermissionsList_589747;
+proc call*(call_579658: Call_TagmanagerAccountsPermissionsList_579647;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List all users that have access to the account along with Account and Container Permissions granted to each of them.
   ## 
-  let valid = call_589758.validator(path, query, header, formData, body)
-  let scheme = call_589758.pickScheme
+  let valid = call_579658.validator(path, query, header, formData, body)
+  let scheme = call_579658.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589758.url(scheme.get, call_589758.host, call_589758.base,
-                         call_589758.route, valid.getOrDefault("path"),
+  let url = call_579658.url(scheme.get, call_579658.host, call_579658.base,
+                         call_579658.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589758, url, valid)
+  result = hook(call_579658, url, valid)
 
-proc call*(call_589759: Call_TagmanagerAccountsPermissionsList_589747;
-          accountId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579659: Call_TagmanagerAccountsPermissionsList_579647;
+          accountId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsPermissionsList
   ## List all users that have access to the account along with Account and Container Permissions granted to each of them.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID. @required tagmanager.accounts.permissions.list
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589760 = newJObject()
-  var query_589761 = newJObject()
-  add(query_589761, "fields", newJString(fields))
-  add(query_589761, "quotaUser", newJString(quotaUser))
-  add(query_589761, "alt", newJString(alt))
-  add(query_589761, "oauth_token", newJString(oauthToken))
-  add(path_589760, "accountId", newJString(accountId))
-  add(query_589761, "userIp", newJString(userIp))
-  add(query_589761, "key", newJString(key))
-  add(query_589761, "prettyPrint", newJBool(prettyPrint))
-  result = call_589759.call(path_589760, query_589761, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID. @required tagmanager.accounts.permissions.list
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579660 = newJObject()
+  var query_579661 = newJObject()
+  add(query_579661, "key", newJString(key))
+  add(query_579661, "prettyPrint", newJBool(prettyPrint))
+  add(query_579661, "oauth_token", newJString(oauthToken))
+  add(query_579661, "alt", newJString(alt))
+  add(query_579661, "userIp", newJString(userIp))
+  add(query_579661, "quotaUser", newJString(quotaUser))
+  add(path_579660, "accountId", newJString(accountId))
+  add(query_579661, "fields", newJString(fields))
+  result = call_579659.call(path_579660, query_579661, nil, nil, nil)
 
-var tagmanagerAccountsPermissionsList* = Call_TagmanagerAccountsPermissionsList_589747(
+var tagmanagerAccountsPermissionsList* = Call_TagmanagerAccountsPermissionsList_579647(
     name: "tagmanagerAccountsPermissionsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/accounts/{accountId}/permissions",
-    validator: validate_TagmanagerAccountsPermissionsList_589748,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsList_589749,
+    validator: validate_TagmanagerAccountsPermissionsList_579648,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsList_579649,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsPermissionsUpdate_589795 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsPermissionsUpdate_589797(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsPermissionsUpdate_579695 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsPermissionsUpdate_579697(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8079,7 +8078,7 @@ proc url_TagmanagerAccountsPermissionsUpdate_589797(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsPermissionsUpdate_589796(path: JsonNode;
+proc validate_TagmanagerAccountsPermissionsUpdate_579696(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a user's Account & Container Permissions.
   ## 
@@ -8092,68 +8091,68 @@ proc validate_TagmanagerAccountsPermissionsUpdate_589796(path: JsonNode;
   ##               : The GTM User ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_589798 = path.getOrDefault("accountId")
-  valid_589798 = validateParameter(valid_589798, JString, required = true,
+  var valid_579698 = path.getOrDefault("accountId")
+  valid_579698 = validateParameter(valid_579698, JString, required = true,
                                  default = nil)
-  if valid_589798 != nil:
-    section.add "accountId", valid_589798
-  var valid_589799 = path.getOrDefault("permissionId")
-  valid_589799 = validateParameter(valid_589799, JString, required = true,
+  if valid_579698 != nil:
+    section.add "accountId", valid_579698
+  var valid_579699 = path.getOrDefault("permissionId")
+  valid_579699 = validateParameter(valid_579699, JString, required = true,
                                  default = nil)
-  if valid_589799 != nil:
-    section.add "permissionId", valid_589799
+  if valid_579699 != nil:
+    section.add "permissionId", valid_579699
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589800 = query.getOrDefault("fields")
-  valid_589800 = validateParameter(valid_589800, JString, required = false,
+  var valid_579700 = query.getOrDefault("key")
+  valid_579700 = validateParameter(valid_579700, JString, required = false,
                                  default = nil)
-  if valid_589800 != nil:
-    section.add "fields", valid_589800
-  var valid_589801 = query.getOrDefault("quotaUser")
-  valid_589801 = validateParameter(valid_589801, JString, required = false,
-                                 default = nil)
-  if valid_589801 != nil:
-    section.add "quotaUser", valid_589801
-  var valid_589802 = query.getOrDefault("alt")
-  valid_589802 = validateParameter(valid_589802, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589802 != nil:
-    section.add "alt", valid_589802
-  var valid_589803 = query.getOrDefault("oauth_token")
-  valid_589803 = validateParameter(valid_589803, JString, required = false,
-                                 default = nil)
-  if valid_589803 != nil:
-    section.add "oauth_token", valid_589803
-  var valid_589804 = query.getOrDefault("userIp")
-  valid_589804 = validateParameter(valid_589804, JString, required = false,
-                                 default = nil)
-  if valid_589804 != nil:
-    section.add "userIp", valid_589804
-  var valid_589805 = query.getOrDefault("key")
-  valid_589805 = validateParameter(valid_589805, JString, required = false,
-                                 default = nil)
-  if valid_589805 != nil:
-    section.add "key", valid_589805
-  var valid_589806 = query.getOrDefault("prettyPrint")
-  valid_589806 = validateParameter(valid_589806, JBool, required = false,
+  if valid_579700 != nil:
+    section.add "key", valid_579700
+  var valid_579701 = query.getOrDefault("prettyPrint")
+  valid_579701 = validateParameter(valid_579701, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589806 != nil:
-    section.add "prettyPrint", valid_589806
+  if valid_579701 != nil:
+    section.add "prettyPrint", valid_579701
+  var valid_579702 = query.getOrDefault("oauth_token")
+  valid_579702 = validateParameter(valid_579702, JString, required = false,
+                                 default = nil)
+  if valid_579702 != nil:
+    section.add "oauth_token", valid_579702
+  var valid_579703 = query.getOrDefault("alt")
+  valid_579703 = validateParameter(valid_579703, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579703 != nil:
+    section.add "alt", valid_579703
+  var valid_579704 = query.getOrDefault("userIp")
+  valid_579704 = validateParameter(valid_579704, JString, required = false,
+                                 default = nil)
+  if valid_579704 != nil:
+    section.add "userIp", valid_579704
+  var valid_579705 = query.getOrDefault("quotaUser")
+  valid_579705 = validateParameter(valid_579705, JString, required = false,
+                                 default = nil)
+  if valid_579705 != nil:
+    section.add "quotaUser", valid_579705
+  var valid_579706 = query.getOrDefault("fields")
+  valid_579706 = validateParameter(valid_579706, JString, required = false,
+                                 default = nil)
+  if valid_579706 != nil:
+    section.add "fields", valid_579706
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8165,72 +8164,72 @@ proc validate_TagmanagerAccountsPermissionsUpdate_589796(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589808: Call_TagmanagerAccountsPermissionsUpdate_589795;
+proc call*(call_579708: Call_TagmanagerAccountsPermissionsUpdate_579695;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a user's Account & Container Permissions.
   ## 
-  let valid = call_589808.validator(path, query, header, formData, body)
-  let scheme = call_589808.pickScheme
+  let valid = call_579708.validator(path, query, header, formData, body)
+  let scheme = call_579708.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589808.url(scheme.get, call_589808.host, call_589808.base,
-                         call_589808.route, valid.getOrDefault("path"),
+  let url = call_579708.url(scheme.get, call_579708.host, call_579708.base,
+                         call_579708.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589808, url, valid)
+  result = hook(call_579708, url, valid)
 
-proc call*(call_589809: Call_TagmanagerAccountsPermissionsUpdate_589795;
-          accountId: string; permissionId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579709: Call_TagmanagerAccountsPermissionsUpdate_579695;
+          accountId: string; permissionId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## tagmanagerAccountsPermissionsUpdate
   ## Updates a user's Account & Container Permissions.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   permissionId: string (required)
-  ##               : The GTM User ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589810 = newJObject()
-  var query_589811 = newJObject()
-  var body_589812 = newJObject()
-  add(query_589811, "fields", newJString(fields))
-  add(query_589811, "quotaUser", newJString(quotaUser))
-  add(query_589811, "alt", newJString(alt))
-  add(query_589811, "oauth_token", newJString(oauthToken))
-  add(path_589810, "accountId", newJString(accountId))
-  add(path_589810, "permissionId", newJString(permissionId))
-  add(query_589811, "userIp", newJString(userIp))
-  add(query_589811, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   permissionId: string (required)
+  ##               : The GTM User ID.
+  var path_579710 = newJObject()
+  var query_579711 = newJObject()
+  var body_579712 = newJObject()
+  add(query_579711, "key", newJString(key))
+  add(query_579711, "prettyPrint", newJBool(prettyPrint))
+  add(query_579711, "oauth_token", newJString(oauthToken))
+  add(query_579711, "alt", newJString(alt))
+  add(query_579711, "userIp", newJString(userIp))
+  add(query_579711, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589812 = body
-  add(query_589811, "prettyPrint", newJBool(prettyPrint))
-  result = call_589809.call(path_589810, query_589811, nil, nil, body_589812)
+    body_579712 = body
+  add(path_579710, "accountId", newJString(accountId))
+  add(query_579711, "fields", newJString(fields))
+  add(path_579710, "permissionId", newJString(permissionId))
+  result = call_579709.call(path_579710, query_579711, nil, nil, body_579712)
 
-var tagmanagerAccountsPermissionsUpdate* = Call_TagmanagerAccountsPermissionsUpdate_589795(
+var tagmanagerAccountsPermissionsUpdate* = Call_TagmanagerAccountsPermissionsUpdate_579695(
     name: "tagmanagerAccountsPermissionsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/permissions/{permissionId}",
-    validator: validate_TagmanagerAccountsPermissionsUpdate_589796,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsUpdate_589797,
+    validator: validate_TagmanagerAccountsPermissionsUpdate_579696,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsUpdate_579697,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsPermissionsGet_589779 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsPermissionsGet_589781(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsPermissionsGet_579679 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsPermissionsGet_579681(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8248,7 +8247,7 @@ proc url_TagmanagerAccountsPermissionsGet_589781(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsPermissionsGet_589780(path: JsonNode;
+proc validate_TagmanagerAccountsPermissionsGet_579680(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a user's Account & Container Permissions.
   ## 
@@ -8261,68 +8260,68 @@ proc validate_TagmanagerAccountsPermissionsGet_589780(path: JsonNode;
   ##               : The GTM User ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_589782 = path.getOrDefault("accountId")
-  valid_589782 = validateParameter(valid_589782, JString, required = true,
+  var valid_579682 = path.getOrDefault("accountId")
+  valid_579682 = validateParameter(valid_579682, JString, required = true,
                                  default = nil)
-  if valid_589782 != nil:
-    section.add "accountId", valid_589782
-  var valid_589783 = path.getOrDefault("permissionId")
-  valid_589783 = validateParameter(valid_589783, JString, required = true,
+  if valid_579682 != nil:
+    section.add "accountId", valid_579682
+  var valid_579683 = path.getOrDefault("permissionId")
+  valid_579683 = validateParameter(valid_579683, JString, required = true,
                                  default = nil)
-  if valid_589783 != nil:
-    section.add "permissionId", valid_589783
+  if valid_579683 != nil:
+    section.add "permissionId", valid_579683
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589784 = query.getOrDefault("fields")
-  valid_589784 = validateParameter(valid_589784, JString, required = false,
+  var valid_579684 = query.getOrDefault("key")
+  valid_579684 = validateParameter(valid_579684, JString, required = false,
                                  default = nil)
-  if valid_589784 != nil:
-    section.add "fields", valid_589784
-  var valid_589785 = query.getOrDefault("quotaUser")
-  valid_589785 = validateParameter(valid_589785, JString, required = false,
-                                 default = nil)
-  if valid_589785 != nil:
-    section.add "quotaUser", valid_589785
-  var valid_589786 = query.getOrDefault("alt")
-  valid_589786 = validateParameter(valid_589786, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589786 != nil:
-    section.add "alt", valid_589786
-  var valid_589787 = query.getOrDefault("oauth_token")
-  valid_589787 = validateParameter(valid_589787, JString, required = false,
-                                 default = nil)
-  if valid_589787 != nil:
-    section.add "oauth_token", valid_589787
-  var valid_589788 = query.getOrDefault("userIp")
-  valid_589788 = validateParameter(valid_589788, JString, required = false,
-                                 default = nil)
-  if valid_589788 != nil:
-    section.add "userIp", valid_589788
-  var valid_589789 = query.getOrDefault("key")
-  valid_589789 = validateParameter(valid_589789, JString, required = false,
-                                 default = nil)
-  if valid_589789 != nil:
-    section.add "key", valid_589789
-  var valid_589790 = query.getOrDefault("prettyPrint")
-  valid_589790 = validateParameter(valid_589790, JBool, required = false,
+  if valid_579684 != nil:
+    section.add "key", valid_579684
+  var valid_579685 = query.getOrDefault("prettyPrint")
+  valid_579685 = validateParameter(valid_579685, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589790 != nil:
-    section.add "prettyPrint", valid_589790
+  if valid_579685 != nil:
+    section.add "prettyPrint", valid_579685
+  var valid_579686 = query.getOrDefault("oauth_token")
+  valid_579686 = validateParameter(valid_579686, JString, required = false,
+                                 default = nil)
+  if valid_579686 != nil:
+    section.add "oauth_token", valid_579686
+  var valid_579687 = query.getOrDefault("alt")
+  valid_579687 = validateParameter(valid_579687, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579687 != nil:
+    section.add "alt", valid_579687
+  var valid_579688 = query.getOrDefault("userIp")
+  valid_579688 = validateParameter(valid_579688, JString, required = false,
+                                 default = nil)
+  if valid_579688 != nil:
+    section.add "userIp", valid_579688
+  var valid_579689 = query.getOrDefault("quotaUser")
+  valid_579689 = validateParameter(valid_579689, JString, required = false,
+                                 default = nil)
+  if valid_579689 != nil:
+    section.add "quotaUser", valid_579689
+  var valid_579690 = query.getOrDefault("fields")
+  valid_579690 = validateParameter(valid_579690, JString, required = false,
+                                 default = nil)
+  if valid_579690 != nil:
+    section.add "fields", valid_579690
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8331,67 +8330,67 @@ proc validate_TagmanagerAccountsPermissionsGet_589780(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589791: Call_TagmanagerAccountsPermissionsGet_589779;
+proc call*(call_579691: Call_TagmanagerAccountsPermissionsGet_579679;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a user's Account & Container Permissions.
   ## 
-  let valid = call_589791.validator(path, query, header, formData, body)
-  let scheme = call_589791.pickScheme
+  let valid = call_579691.validator(path, query, header, formData, body)
+  let scheme = call_579691.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589791.url(scheme.get, call_589791.host, call_589791.base,
-                         call_589791.route, valid.getOrDefault("path"),
+  let url = call_579691.url(scheme.get, call_579691.host, call_579691.base,
+                         call_579691.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589791, url, valid)
+  result = hook(call_579691, url, valid)
 
-proc call*(call_589792: Call_TagmanagerAccountsPermissionsGet_589779;
-          accountId: string; permissionId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579692: Call_TagmanagerAccountsPermissionsGet_579679;
+          accountId: string; permissionId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsPermissionsGet
   ## Gets a user's Account & Container Permissions.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   permissionId: string (required)
-  ##               : The GTM User ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589793 = newJObject()
-  var query_589794 = newJObject()
-  add(query_589794, "fields", newJString(fields))
-  add(query_589794, "quotaUser", newJString(quotaUser))
-  add(query_589794, "alt", newJString(alt))
-  add(query_589794, "oauth_token", newJString(oauthToken))
-  add(path_589793, "accountId", newJString(accountId))
-  add(path_589793, "permissionId", newJString(permissionId))
-  add(query_589794, "userIp", newJString(userIp))
-  add(query_589794, "key", newJString(key))
-  add(query_589794, "prettyPrint", newJBool(prettyPrint))
-  result = call_589792.call(path_589793, query_589794, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   permissionId: string (required)
+  ##               : The GTM User ID.
+  var path_579693 = newJObject()
+  var query_579694 = newJObject()
+  add(query_579694, "key", newJString(key))
+  add(query_579694, "prettyPrint", newJBool(prettyPrint))
+  add(query_579694, "oauth_token", newJString(oauthToken))
+  add(query_579694, "alt", newJString(alt))
+  add(query_579694, "userIp", newJString(userIp))
+  add(query_579694, "quotaUser", newJString(quotaUser))
+  add(path_579693, "accountId", newJString(accountId))
+  add(query_579694, "fields", newJString(fields))
+  add(path_579693, "permissionId", newJString(permissionId))
+  result = call_579692.call(path_579693, query_579694, nil, nil, nil)
 
-var tagmanagerAccountsPermissionsGet* = Call_TagmanagerAccountsPermissionsGet_589779(
+var tagmanagerAccountsPermissionsGet* = Call_TagmanagerAccountsPermissionsGet_579679(
     name: "tagmanagerAccountsPermissionsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/permissions/{permissionId}",
-    validator: validate_TagmanagerAccountsPermissionsGet_589780,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsGet_589781,
+    validator: validate_TagmanagerAccountsPermissionsGet_579680,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsGet_579681,
     schemes: {Scheme.Https})
 type
-  Call_TagmanagerAccountsPermissionsDelete_589813 = ref object of OpenApiRestCall_588441
-proc url_TagmanagerAccountsPermissionsDelete_589815(protocol: Scheme; host: string;
+  Call_TagmanagerAccountsPermissionsDelete_579713 = ref object of OpenApiRestCall_578339
+proc url_TagmanagerAccountsPermissionsDelete_579715(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8409,7 +8408,7 @@ proc url_TagmanagerAccountsPermissionsDelete_589815(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TagmanagerAccountsPermissionsDelete_589814(path: JsonNode;
+proc validate_TagmanagerAccountsPermissionsDelete_579714(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes a user from the account, revoking access to it and all of its containers.
   ## 
@@ -8422,68 +8421,68 @@ proc validate_TagmanagerAccountsPermissionsDelete_589814(path: JsonNode;
   ##               : The GTM User ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `accountId` field"
-  var valid_589816 = path.getOrDefault("accountId")
-  valid_589816 = validateParameter(valid_589816, JString, required = true,
+  var valid_579716 = path.getOrDefault("accountId")
+  valid_579716 = validateParameter(valid_579716, JString, required = true,
                                  default = nil)
-  if valid_589816 != nil:
-    section.add "accountId", valid_589816
-  var valid_589817 = path.getOrDefault("permissionId")
-  valid_589817 = validateParameter(valid_589817, JString, required = true,
+  if valid_579716 != nil:
+    section.add "accountId", valid_579716
+  var valid_579717 = path.getOrDefault("permissionId")
+  valid_579717 = validateParameter(valid_579717, JString, required = true,
                                  default = nil)
-  if valid_589817 != nil:
-    section.add "permissionId", valid_589817
+  if valid_579717 != nil:
+    section.add "permissionId", valid_579717
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589818 = query.getOrDefault("fields")
-  valid_589818 = validateParameter(valid_589818, JString, required = false,
+  var valid_579718 = query.getOrDefault("key")
+  valid_579718 = validateParameter(valid_579718, JString, required = false,
                                  default = nil)
-  if valid_589818 != nil:
-    section.add "fields", valid_589818
-  var valid_589819 = query.getOrDefault("quotaUser")
-  valid_589819 = validateParameter(valid_589819, JString, required = false,
-                                 default = nil)
-  if valid_589819 != nil:
-    section.add "quotaUser", valid_589819
-  var valid_589820 = query.getOrDefault("alt")
-  valid_589820 = validateParameter(valid_589820, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589820 != nil:
-    section.add "alt", valid_589820
-  var valid_589821 = query.getOrDefault("oauth_token")
-  valid_589821 = validateParameter(valid_589821, JString, required = false,
-                                 default = nil)
-  if valid_589821 != nil:
-    section.add "oauth_token", valid_589821
-  var valid_589822 = query.getOrDefault("userIp")
-  valid_589822 = validateParameter(valid_589822, JString, required = false,
-                                 default = nil)
-  if valid_589822 != nil:
-    section.add "userIp", valid_589822
-  var valid_589823 = query.getOrDefault("key")
-  valid_589823 = validateParameter(valid_589823, JString, required = false,
-                                 default = nil)
-  if valid_589823 != nil:
-    section.add "key", valid_589823
-  var valid_589824 = query.getOrDefault("prettyPrint")
-  valid_589824 = validateParameter(valid_589824, JBool, required = false,
+  if valid_579718 != nil:
+    section.add "key", valid_579718
+  var valid_579719 = query.getOrDefault("prettyPrint")
+  valid_579719 = validateParameter(valid_579719, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589824 != nil:
-    section.add "prettyPrint", valid_589824
+  if valid_579719 != nil:
+    section.add "prettyPrint", valid_579719
+  var valid_579720 = query.getOrDefault("oauth_token")
+  valid_579720 = validateParameter(valid_579720, JString, required = false,
+                                 default = nil)
+  if valid_579720 != nil:
+    section.add "oauth_token", valid_579720
+  var valid_579721 = query.getOrDefault("alt")
+  valid_579721 = validateParameter(valid_579721, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579721 != nil:
+    section.add "alt", valid_579721
+  var valid_579722 = query.getOrDefault("userIp")
+  valid_579722 = validateParameter(valid_579722, JString, required = false,
+                                 default = nil)
+  if valid_579722 != nil:
+    section.add "userIp", valid_579722
+  var valid_579723 = query.getOrDefault("quotaUser")
+  valid_579723 = validateParameter(valid_579723, JString, required = false,
+                                 default = nil)
+  if valid_579723 != nil:
+    section.add "quotaUser", valid_579723
+  var valid_579724 = query.getOrDefault("fields")
+  valid_579724 = validateParameter(valid_579724, JString, required = false,
+                                 default = nil)
+  if valid_579724 != nil:
+    section.add "fields", valid_579724
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8492,63 +8491,63 @@ proc validate_TagmanagerAccountsPermissionsDelete_589814(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589825: Call_TagmanagerAccountsPermissionsDelete_589813;
+proc call*(call_579725: Call_TagmanagerAccountsPermissionsDelete_579713;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Removes a user from the account, revoking access to it and all of its containers.
   ## 
-  let valid = call_589825.validator(path, query, header, formData, body)
-  let scheme = call_589825.pickScheme
+  let valid = call_579725.validator(path, query, header, formData, body)
+  let scheme = call_579725.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589825.url(scheme.get, call_589825.host, call_589825.base,
-                         call_589825.route, valid.getOrDefault("path"),
+  let url = call_579725.url(scheme.get, call_579725.host, call_579725.base,
+                         call_579725.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589825, url, valid)
+  result = hook(call_579725, url, valid)
 
-proc call*(call_589826: Call_TagmanagerAccountsPermissionsDelete_589813;
-          accountId: string; permissionId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579726: Call_TagmanagerAccountsPermissionsDelete_579713;
+          accountId: string; permissionId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## tagmanagerAccountsPermissionsDelete
   ## Removes a user from the account, revoking access to it and all of its containers.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   accountId: string (required)
-  ##            : The GTM Account ID.
-  ##   permissionId: string (required)
-  ##               : The GTM User ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589827 = newJObject()
-  var query_589828 = newJObject()
-  add(query_589828, "fields", newJString(fields))
-  add(query_589828, "quotaUser", newJString(quotaUser))
-  add(query_589828, "alt", newJString(alt))
-  add(query_589828, "oauth_token", newJString(oauthToken))
-  add(path_589827, "accountId", newJString(accountId))
-  add(path_589827, "permissionId", newJString(permissionId))
-  add(query_589828, "userIp", newJString(userIp))
-  add(query_589828, "key", newJString(key))
-  add(query_589828, "prettyPrint", newJBool(prettyPrint))
-  result = call_589826.call(path_589827, query_589828, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   accountId: string (required)
+  ##            : The GTM Account ID.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   permissionId: string (required)
+  ##               : The GTM User ID.
+  var path_579727 = newJObject()
+  var query_579728 = newJObject()
+  add(query_579728, "key", newJString(key))
+  add(query_579728, "prettyPrint", newJBool(prettyPrint))
+  add(query_579728, "oauth_token", newJString(oauthToken))
+  add(query_579728, "alt", newJString(alt))
+  add(query_579728, "userIp", newJString(userIp))
+  add(query_579728, "quotaUser", newJString(quotaUser))
+  add(path_579727, "accountId", newJString(accountId))
+  add(query_579728, "fields", newJString(fields))
+  add(path_579727, "permissionId", newJString(permissionId))
+  result = call_579726.call(path_579727, query_579728, nil, nil, nil)
 
-var tagmanagerAccountsPermissionsDelete* = Call_TagmanagerAccountsPermissionsDelete_589813(
+var tagmanagerAccountsPermissionsDelete* = Call_TagmanagerAccountsPermissionsDelete_579713(
     name: "tagmanagerAccountsPermissionsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/accounts/{accountId}/permissions/{permissionId}",
-    validator: validate_TagmanagerAccountsPermissionsDelete_589814,
-    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsDelete_589815,
+    validator: validate_TagmanagerAccountsPermissionsDelete_579714,
+    base: "/tagmanager/v1", url: url_TagmanagerAccountsPermissionsDelete_579715,
     schemes: {Scheme.Https})
 export
   rest

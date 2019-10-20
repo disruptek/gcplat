@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588441 = ref object of OpenApiRestCall
+  OpenApiRestCall_578339 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,8 +112,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_CivicinfoDivisionsSearch_588709 = ref object of OpenApiRestCall_588441
-proc url_CivicinfoDivisionsSearch_588711(protocol: Scheme; host: string;
+  Call_CivicinfoDivisionsSearch_578609 = ref object of OpenApiRestCall_578339
+proc url_CivicinfoDivisionsSearch_578611(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -117,7 +121,7 @@ proc url_CivicinfoDivisionsSearch_588711(protocol: Scheme; host: string;
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CivicinfoDivisionsSearch_588710(path: JsonNode; query: JsonNode;
+proc validate_CivicinfoDivisionsSearch_578610(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Searches for political divisions by their natural name or OCD ID.
   ## 
@@ -126,63 +130,63 @@ proc validate_CivicinfoDivisionsSearch_588710(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   query: JString
-  ##        : The search query. Queries can cover any parts of a OCD ID or a human readable division name. All words given in the query are treated as required patterns. In addition to that, most query operators of the Apache Lucene library are supported. See http://lucene.apache.org/core/2_9_4/queryparsersyntax.html
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   query: JString
+  ##        : The search query. Queries can cover any parts of a OCD ID or a human readable division name. All words given in the query are treated as required patterns. In addition to that, most query operators of the Apache Lucene library are supported. See http://lucene.apache.org/core/2_9_4/queryparsersyntax.html
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588823 = query.getOrDefault("fields")
-  valid_588823 = validateParameter(valid_588823, JString, required = false,
+  var valid_578723 = query.getOrDefault("key")
+  valid_578723 = validateParameter(valid_578723, JString, required = false,
                                  default = nil)
-  if valid_588823 != nil:
-    section.add "fields", valid_588823
-  var valid_588824 = query.getOrDefault("quotaUser")
-  valid_588824 = validateParameter(valid_588824, JString, required = false,
-                                 default = nil)
-  if valid_588824 != nil:
-    section.add "quotaUser", valid_588824
-  var valid_588838 = query.getOrDefault("alt")
-  valid_588838 = validateParameter(valid_588838, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588838 != nil:
-    section.add "alt", valid_588838
-  var valid_588839 = query.getOrDefault("query")
-  valid_588839 = validateParameter(valid_588839, JString, required = false,
-                                 default = nil)
-  if valid_588839 != nil:
-    section.add "query", valid_588839
-  var valid_588840 = query.getOrDefault("oauth_token")
-  valid_588840 = validateParameter(valid_588840, JString, required = false,
-                                 default = nil)
-  if valid_588840 != nil:
-    section.add "oauth_token", valid_588840
-  var valid_588841 = query.getOrDefault("userIp")
-  valid_588841 = validateParameter(valid_588841, JString, required = false,
-                                 default = nil)
-  if valid_588841 != nil:
-    section.add "userIp", valid_588841
-  var valid_588842 = query.getOrDefault("key")
-  valid_588842 = validateParameter(valid_588842, JString, required = false,
-                                 default = nil)
-  if valid_588842 != nil:
-    section.add "key", valid_588842
-  var valid_588843 = query.getOrDefault("prettyPrint")
-  valid_588843 = validateParameter(valid_588843, JBool, required = false,
+  if valid_578723 != nil:
+    section.add "key", valid_578723
+  var valid_578737 = query.getOrDefault("prettyPrint")
+  valid_578737 = validateParameter(valid_578737, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588843 != nil:
-    section.add "prettyPrint", valid_588843
+  if valid_578737 != nil:
+    section.add "prettyPrint", valid_578737
+  var valid_578738 = query.getOrDefault("oauth_token")
+  valid_578738 = validateParameter(valid_578738, JString, required = false,
+                                 default = nil)
+  if valid_578738 != nil:
+    section.add "oauth_token", valid_578738
+  var valid_578739 = query.getOrDefault("alt")
+  valid_578739 = validateParameter(valid_578739, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578739 != nil:
+    section.add "alt", valid_578739
+  var valid_578740 = query.getOrDefault("userIp")
+  valid_578740 = validateParameter(valid_578740, JString, required = false,
+                                 default = nil)
+  if valid_578740 != nil:
+    section.add "userIp", valid_578740
+  var valid_578741 = query.getOrDefault("quotaUser")
+  valid_578741 = validateParameter(valid_578741, JString, required = false,
+                                 default = nil)
+  if valid_578741 != nil:
+    section.add "quotaUser", valid_578741
+  var valid_578742 = query.getOrDefault("query")
+  valid_578742 = validateParameter(valid_578742, JString, required = false,
+                                 default = nil)
+  if valid_578742 != nil:
+    section.add "query", valid_578742
+  var valid_578743 = query.getOrDefault("fields")
+  valid_578743 = validateParameter(valid_578743, JString, required = false,
+                                 default = nil)
+  if valid_578743 != nil:
+    section.add "fields", valid_578743
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -194,71 +198,71 @@ proc validate_CivicinfoDivisionsSearch_588710(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588867: Call_CivicinfoDivisionsSearch_588709; path: JsonNode;
+proc call*(call_578767: Call_CivicinfoDivisionsSearch_578609; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Searches for political divisions by their natural name or OCD ID.
   ## 
-  let valid = call_588867.validator(path, query, header, formData, body)
-  let scheme = call_588867.pickScheme
+  let valid = call_578767.validator(path, query, header, formData, body)
+  let scheme = call_578767.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588867.url(scheme.get, call_588867.host, call_588867.base,
-                         call_588867.route, valid.getOrDefault("path"),
+  let url = call_578767.url(scheme.get, call_578767.host, call_578767.base,
+                         call_578767.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588867, url, valid)
+  result = hook(call_578767, url, valid)
 
-proc call*(call_588938: Call_CivicinfoDivisionsSearch_588709; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; query: string = "";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578838: Call_CivicinfoDivisionsSearch_578609; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          query: string = ""; fields: string = ""): Recallable =
   ## civicinfoDivisionsSearch
   ## Searches for political divisions by their natural name or OCD ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   query: string
-  ##        : The search query. Queries can cover any parts of a OCD ID or a human readable division name. All words given in the query are treated as required patterns. In addition to that, most query operators of the Apache Lucene library are supported. See http://lucene.apache.org/core/2_9_4/queryparsersyntax.html
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_588939 = newJObject()
-  var body_588941 = newJObject()
-  add(query_588939, "fields", newJString(fields))
-  add(query_588939, "quotaUser", newJString(quotaUser))
-  add(query_588939, "alt", newJString(alt))
-  add(query_588939, "query", newJString(query))
-  add(query_588939, "oauth_token", newJString(oauthToken))
-  add(query_588939, "userIp", newJString(userIp))
-  add(query_588939, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   query: string
+  ##        : The search query. Queries can cover any parts of a OCD ID or a human readable division name. All words given in the query are treated as required patterns. In addition to that, most query operators of the Apache Lucene library are supported. See http://lucene.apache.org/core/2_9_4/queryparsersyntax.html
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_578839 = newJObject()
+  var body_578841 = newJObject()
+  add(query_578839, "key", newJString(key))
+  add(query_578839, "prettyPrint", newJBool(prettyPrint))
+  add(query_578839, "oauth_token", newJString(oauthToken))
+  add(query_578839, "alt", newJString(alt))
+  add(query_578839, "userIp", newJString(userIp))
+  add(query_578839, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_588941 = body
-  add(query_588939, "prettyPrint", newJBool(prettyPrint))
-  result = call_588938.call(nil, query_588939, nil, nil, body_588941)
+    body_578841 = body
+  add(query_578839, "query", newJString(query))
+  add(query_578839, "fields", newJString(fields))
+  result = call_578838.call(nil, query_578839, nil, nil, body_578841)
 
-var civicinfoDivisionsSearch* = Call_CivicinfoDivisionsSearch_588709(
+var civicinfoDivisionsSearch* = Call_CivicinfoDivisionsSearch_578609(
     name: "civicinfoDivisionsSearch", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/divisions",
-    validator: validate_CivicinfoDivisionsSearch_588710, base: "/civicinfo/v2",
-    url: url_CivicinfoDivisionsSearch_588711, schemes: {Scheme.Https})
+    validator: validate_CivicinfoDivisionsSearch_578610, base: "/civicinfo/v2",
+    url: url_CivicinfoDivisionsSearch_578611, schemes: {Scheme.Https})
 type
-  Call_CivicinfoElectionsElectionQuery_588980 = ref object of OpenApiRestCall_588441
-proc url_CivicinfoElectionsElectionQuery_588982(protocol: Scheme; host: string;
+  Call_CivicinfoElectionsElectionQuery_578880 = ref object of OpenApiRestCall_578339
+proc url_CivicinfoElectionsElectionQuery_578882(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CivicinfoElectionsElectionQuery_588981(path: JsonNode;
+proc validate_CivicinfoElectionsElectionQuery_578881(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List of available elections to query.
   ## 
@@ -267,56 +271,56 @@ proc validate_CivicinfoElectionsElectionQuery_588981(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588983 = query.getOrDefault("fields")
-  valid_588983 = validateParameter(valid_588983, JString, required = false,
+  var valid_578883 = query.getOrDefault("key")
+  valid_578883 = validateParameter(valid_578883, JString, required = false,
                                  default = nil)
-  if valid_588983 != nil:
-    section.add "fields", valid_588983
-  var valid_588984 = query.getOrDefault("quotaUser")
-  valid_588984 = validateParameter(valid_588984, JString, required = false,
-                                 default = nil)
-  if valid_588984 != nil:
-    section.add "quotaUser", valid_588984
-  var valid_588985 = query.getOrDefault("alt")
-  valid_588985 = validateParameter(valid_588985, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588985 != nil:
-    section.add "alt", valid_588985
-  var valid_588986 = query.getOrDefault("oauth_token")
-  valid_588986 = validateParameter(valid_588986, JString, required = false,
-                                 default = nil)
-  if valid_588986 != nil:
-    section.add "oauth_token", valid_588986
-  var valid_588987 = query.getOrDefault("userIp")
-  valid_588987 = validateParameter(valid_588987, JString, required = false,
-                                 default = nil)
-  if valid_588987 != nil:
-    section.add "userIp", valid_588987
-  var valid_588988 = query.getOrDefault("key")
-  valid_588988 = validateParameter(valid_588988, JString, required = false,
-                                 default = nil)
-  if valid_588988 != nil:
-    section.add "key", valid_588988
-  var valid_588989 = query.getOrDefault("prettyPrint")
-  valid_588989 = validateParameter(valid_588989, JBool, required = false,
+  if valid_578883 != nil:
+    section.add "key", valid_578883
+  var valid_578884 = query.getOrDefault("prettyPrint")
+  valid_578884 = validateParameter(valid_578884, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588989 != nil:
-    section.add "prettyPrint", valid_588989
+  if valid_578884 != nil:
+    section.add "prettyPrint", valid_578884
+  var valid_578885 = query.getOrDefault("oauth_token")
+  valid_578885 = validateParameter(valid_578885, JString, required = false,
+                                 default = nil)
+  if valid_578885 != nil:
+    section.add "oauth_token", valid_578885
+  var valid_578886 = query.getOrDefault("alt")
+  valid_578886 = validateParameter(valid_578886, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578886 != nil:
+    section.add "alt", valid_578886
+  var valid_578887 = query.getOrDefault("userIp")
+  valid_578887 = validateParameter(valid_578887, JString, required = false,
+                                 default = nil)
+  if valid_578887 != nil:
+    section.add "userIp", valid_578887
+  var valid_578888 = query.getOrDefault("quotaUser")
+  valid_578888 = validateParameter(valid_578888, JString, required = false,
+                                 default = nil)
+  if valid_578888 != nil:
+    section.add "quotaUser", valid_578888
+  var valid_578889 = query.getOrDefault("fields")
+  valid_578889 = validateParameter(valid_578889, JString, required = false,
+                                 default = nil)
+  if valid_578889 != nil:
+    section.add "fields", valid_578889
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -328,63 +332,63 @@ proc validate_CivicinfoElectionsElectionQuery_588981(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588991: Call_CivicinfoElectionsElectionQuery_588980;
+proc call*(call_578891: Call_CivicinfoElectionsElectionQuery_578880;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List of available elections to query.
   ## 
-  let valid = call_588991.validator(path, query, header, formData, body)
-  let scheme = call_588991.pickScheme
+  let valid = call_578891.validator(path, query, header, formData, body)
+  let scheme = call_578891.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588991.url(scheme.get, call_588991.host, call_588991.base,
-                         call_588991.route, valid.getOrDefault("path"),
+  let url = call_578891.url(scheme.get, call_578891.host, call_578891.base,
+                         call_578891.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588991, url, valid)
+  result = hook(call_578891, url, valid)
 
-proc call*(call_588992: Call_CivicinfoElectionsElectionQuery_588980;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578892: Call_CivicinfoElectionsElectionQuery_578880;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## civicinfoElectionsElectionQuery
   ## List of available elections to query.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_588993 = newJObject()
-  var body_588994 = newJObject()
-  add(query_588993, "fields", newJString(fields))
-  add(query_588993, "quotaUser", newJString(quotaUser))
-  add(query_588993, "alt", newJString(alt))
-  add(query_588993, "oauth_token", newJString(oauthToken))
-  add(query_588993, "userIp", newJString(userIp))
-  add(query_588993, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_578893 = newJObject()
+  var body_578894 = newJObject()
+  add(query_578893, "key", newJString(key))
+  add(query_578893, "prettyPrint", newJBool(prettyPrint))
+  add(query_578893, "oauth_token", newJString(oauthToken))
+  add(query_578893, "alt", newJString(alt))
+  add(query_578893, "userIp", newJString(userIp))
+  add(query_578893, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_588994 = body
-  add(query_588993, "prettyPrint", newJBool(prettyPrint))
-  result = call_588992.call(nil, query_588993, nil, nil, body_588994)
+    body_578894 = body
+  add(query_578893, "fields", newJString(fields))
+  result = call_578892.call(nil, query_578893, nil, nil, body_578894)
 
-var civicinfoElectionsElectionQuery* = Call_CivicinfoElectionsElectionQuery_588980(
+var civicinfoElectionsElectionQuery* = Call_CivicinfoElectionsElectionQuery_578880(
     name: "civicinfoElectionsElectionQuery", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/elections",
-    validator: validate_CivicinfoElectionsElectionQuery_588981,
-    base: "/civicinfo/v2", url: url_CivicinfoElectionsElectionQuery_588982,
+    validator: validate_CivicinfoElectionsElectionQuery_578881,
+    base: "/civicinfo/v2", url: url_CivicinfoElectionsElectionQuery_578882,
     schemes: {Scheme.Https})
 type
-  Call_CivicinfoRepresentativesRepresentativeInfoByAddress_588995 = ref object of OpenApiRestCall_588441
-proc url_CivicinfoRepresentativesRepresentativeInfoByAddress_588997(
+  Call_CivicinfoRepresentativesRepresentativeInfoByAddress_578895 = ref object of OpenApiRestCall_578339
+proc url_CivicinfoRepresentativesRepresentativeInfoByAddress_578897(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -392,7 +396,7 @@ proc url_CivicinfoRepresentativesRepresentativeInfoByAddress_588997(
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CivicinfoRepresentativesRepresentativeInfoByAddress_588996(
+proc validate_CivicinfoRepresentativesRepresentativeInfoByAddress_578896(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Looks up political geography and representative information for a single address.
@@ -402,84 +406,84 @@ proc validate_CivicinfoRepresentativesRepresentativeInfoByAddress_588996(
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
   ##   roles: JArray
   ##        : A list of office roles to filter by. Only offices fulfilling one of these roles will be returned. Divisions that don't contain a matching office will not be returned.
   ##   alt: JString
   ##      : Data format for the response.
-  ##   includeOffices: JBool
-  ##                 : Whether to return information about offices and officials. If false, only the top-level district information will be returned.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
   ##   userIp: JString
   ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   includeOffices: JBool
+  ##                 : Whether to return information about offices and officials. If false, only the top-level district information will be returned.
   ##   levels: JArray
   ##         : A list of office levels to filter by. Only offices that serve at least one of these levels will be returned. Divisions that don't contain a matching office will not be returned.
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   address: JString
   ##          : The address to look up. May only be specified if the field ocdId is not given in the URL.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588998 = query.getOrDefault("fields")
-  valid_588998 = validateParameter(valid_588998, JString, required = false,
+  var valid_578898 = query.getOrDefault("key")
+  valid_578898 = validateParameter(valid_578898, JString, required = false,
                                  default = nil)
-  if valid_588998 != nil:
-    section.add "fields", valid_588998
-  var valid_588999 = query.getOrDefault("quotaUser")
-  valid_588999 = validateParameter(valid_588999, JString, required = false,
+  if valid_578898 != nil:
+    section.add "key", valid_578898
+  var valid_578899 = query.getOrDefault("prettyPrint")
+  valid_578899 = validateParameter(valid_578899, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_578899 != nil:
+    section.add "prettyPrint", valid_578899
+  var valid_578900 = query.getOrDefault("oauth_token")
+  valid_578900 = validateParameter(valid_578900, JString, required = false,
                                  default = nil)
-  if valid_588999 != nil:
-    section.add "quotaUser", valid_588999
-  var valid_589000 = query.getOrDefault("roles")
-  valid_589000 = validateParameter(valid_589000, JArray, required = false,
+  if valid_578900 != nil:
+    section.add "oauth_token", valid_578900
+  var valid_578901 = query.getOrDefault("roles")
+  valid_578901 = validateParameter(valid_578901, JArray, required = false,
                                  default = nil)
-  if valid_589000 != nil:
-    section.add "roles", valid_589000
-  var valid_589001 = query.getOrDefault("alt")
-  valid_589001 = validateParameter(valid_589001, JString, required = false,
+  if valid_578901 != nil:
+    section.add "roles", valid_578901
+  var valid_578902 = query.getOrDefault("alt")
+  valid_578902 = validateParameter(valid_578902, JString, required = false,
                                  default = newJString("json"))
-  if valid_589001 != nil:
-    section.add "alt", valid_589001
-  var valid_589002 = query.getOrDefault("includeOffices")
-  valid_589002 = validateParameter(valid_589002, JBool, required = false,
+  if valid_578902 != nil:
+    section.add "alt", valid_578902
+  var valid_578903 = query.getOrDefault("userIp")
+  valid_578903 = validateParameter(valid_578903, JString, required = false,
+                                 default = nil)
+  if valid_578903 != nil:
+    section.add "userIp", valid_578903
+  var valid_578904 = query.getOrDefault("quotaUser")
+  valid_578904 = validateParameter(valid_578904, JString, required = false,
+                                 default = nil)
+  if valid_578904 != nil:
+    section.add "quotaUser", valid_578904
+  var valid_578905 = query.getOrDefault("includeOffices")
+  valid_578905 = validateParameter(valid_578905, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589002 != nil:
-    section.add "includeOffices", valid_589002
-  var valid_589003 = query.getOrDefault("oauth_token")
-  valid_589003 = validateParameter(valid_589003, JString, required = false,
+  if valid_578905 != nil:
+    section.add "includeOffices", valid_578905
+  var valid_578906 = query.getOrDefault("levels")
+  valid_578906 = validateParameter(valid_578906, JArray, required = false,
                                  default = nil)
-  if valid_589003 != nil:
-    section.add "oauth_token", valid_589003
-  var valid_589004 = query.getOrDefault("userIp")
-  valid_589004 = validateParameter(valid_589004, JString, required = false,
+  if valid_578906 != nil:
+    section.add "levels", valid_578906
+  var valid_578907 = query.getOrDefault("address")
+  valid_578907 = validateParameter(valid_578907, JString, required = false,
                                  default = nil)
-  if valid_589004 != nil:
-    section.add "userIp", valid_589004
-  var valid_589005 = query.getOrDefault("levels")
-  valid_589005 = validateParameter(valid_589005, JArray, required = false,
+  if valid_578907 != nil:
+    section.add "address", valid_578907
+  var valid_578908 = query.getOrDefault("fields")
+  valid_578908 = validateParameter(valid_578908, JString, required = false,
                                  default = nil)
-  if valid_589005 != nil:
-    section.add "levels", valid_589005
-  var valid_589006 = query.getOrDefault("key")
-  valid_589006 = validateParameter(valid_589006, JString, required = false,
-                                 default = nil)
-  if valid_589006 != nil:
-    section.add "key", valid_589006
-  var valid_589007 = query.getOrDefault("address")
-  valid_589007 = validateParameter(valid_589007, JString, required = false,
-                                 default = nil)
-  if valid_589007 != nil:
-    section.add "address", valid_589007
-  var valid_589008 = query.getOrDefault("prettyPrint")
-  valid_589008 = validateParameter(valid_589008, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_589008 != nil:
-    section.add "prettyPrint", valid_589008
+  if valid_578908 != nil:
+    section.add "fields", valid_578908
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -491,79 +495,79 @@ proc validate_CivicinfoRepresentativesRepresentativeInfoByAddress_588996(
   if body != nil:
     result.add "body", body
 
-proc call*(call_589010: Call_CivicinfoRepresentativesRepresentativeInfoByAddress_588995;
+proc call*(call_578910: Call_CivicinfoRepresentativesRepresentativeInfoByAddress_578895;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Looks up political geography and representative information for a single address.
   ## 
-  let valid = call_589010.validator(path, query, header, formData, body)
-  let scheme = call_589010.pickScheme
+  let valid = call_578910.validator(path, query, header, formData, body)
+  let scheme = call_578910.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589010.url(scheme.get, call_589010.host, call_589010.base,
-                         call_589010.route, valid.getOrDefault("path"),
+  let url = call_578910.url(scheme.get, call_578910.host, call_578910.base,
+                         call_578910.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589010, url, valid)
+  result = hook(call_578910, url, valid)
 
-proc call*(call_589011: Call_CivicinfoRepresentativesRepresentativeInfoByAddress_588995;
-          fields: string = ""; quotaUser: string = ""; roles: JsonNode = nil;
-          alt: string = "json"; includeOffices: bool = true; oauthToken: string = "";
-          userIp: string = ""; levels: JsonNode = nil; key: string = "";
-          address: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578911: Call_CivicinfoRepresentativesRepresentativeInfoByAddress_578895;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          roles: JsonNode = nil; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; includeOffices: bool = true; levels: JsonNode = nil;
+          body: JsonNode = nil; address: string = ""; fields: string = ""): Recallable =
   ## civicinfoRepresentativesRepresentativeInfoByAddress
   ## Looks up political geography and representative information for a single address.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   roles: JArray
   ##        : A list of office roles to filter by. Only offices fulfilling one of these roles will be returned. Divisions that don't contain a matching office will not be returned.
   ##   alt: string
   ##      : Data format for the response.
-  ##   includeOffices: bool
-  ##                 : Whether to return information about offices and officials. If false, only the top-level district information will be returned.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
   ##   userIp: string
   ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   includeOffices: bool
+  ##                 : Whether to return information about offices and officials. If false, only the top-level district information will be returned.
   ##   levels: JArray
   ##         : A list of office levels to filter by. Only offices that serve at least one of these levels will be returned. Divisions that don't contain a matching office will not be returned.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   body: JObject
   ##   address: string
   ##          : The address to look up. May only be specified if the field ocdId is not given in the URL.
-  ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var query_589012 = newJObject()
-  var body_589013 = newJObject()
-  add(query_589012, "fields", newJString(fields))
-  add(query_589012, "quotaUser", newJString(quotaUser))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_578912 = newJObject()
+  var body_578913 = newJObject()
+  add(query_578912, "key", newJString(key))
+  add(query_578912, "prettyPrint", newJBool(prettyPrint))
+  add(query_578912, "oauth_token", newJString(oauthToken))
   if roles != nil:
-    query_589012.add "roles", roles
-  add(query_589012, "alt", newJString(alt))
-  add(query_589012, "includeOffices", newJBool(includeOffices))
-  add(query_589012, "oauth_token", newJString(oauthToken))
-  add(query_589012, "userIp", newJString(userIp))
+    query_578912.add "roles", roles
+  add(query_578912, "alt", newJString(alt))
+  add(query_578912, "userIp", newJString(userIp))
+  add(query_578912, "quotaUser", newJString(quotaUser))
+  add(query_578912, "includeOffices", newJBool(includeOffices))
   if levels != nil:
-    query_589012.add "levels", levels
-  add(query_589012, "key", newJString(key))
-  add(query_589012, "address", newJString(address))
+    query_578912.add "levels", levels
   if body != nil:
-    body_589013 = body
-  add(query_589012, "prettyPrint", newJBool(prettyPrint))
-  result = call_589011.call(nil, query_589012, nil, nil, body_589013)
+    body_578913 = body
+  add(query_578912, "address", newJString(address))
+  add(query_578912, "fields", newJString(fields))
+  result = call_578911.call(nil, query_578912, nil, nil, body_578913)
 
-var civicinfoRepresentativesRepresentativeInfoByAddress* = Call_CivicinfoRepresentativesRepresentativeInfoByAddress_588995(
+var civicinfoRepresentativesRepresentativeInfoByAddress* = Call_CivicinfoRepresentativesRepresentativeInfoByAddress_578895(
     name: "civicinfoRepresentativesRepresentativeInfoByAddress",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/representatives",
-    validator: validate_CivicinfoRepresentativesRepresentativeInfoByAddress_588996,
+    validator: validate_CivicinfoRepresentativesRepresentativeInfoByAddress_578896,
     base: "/civicinfo/v2",
-    url: url_CivicinfoRepresentativesRepresentativeInfoByAddress_588997,
+    url: url_CivicinfoRepresentativesRepresentativeInfoByAddress_578897,
     schemes: {Scheme.Https})
 type
-  Call_CivicinfoRepresentativesRepresentativeInfoByDivision_589014 = ref object of OpenApiRestCall_588441
-proc url_CivicinfoRepresentativesRepresentativeInfoByDivision_589016(
+  Call_CivicinfoRepresentativesRepresentativeInfoByDivision_578914 = ref object of OpenApiRestCall_578339
+proc url_CivicinfoRepresentativesRepresentativeInfoByDivision_578916(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -579,7 +583,7 @@ proc url_CivicinfoRepresentativesRepresentativeInfoByDivision_589016(
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CivicinfoRepresentativesRepresentativeInfoByDivision_589015(
+proc validate_CivicinfoRepresentativesRepresentativeInfoByDivision_578915(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Looks up representative information for a single geographic division.
@@ -591,83 +595,83 @@ proc validate_CivicinfoRepresentativesRepresentativeInfoByDivision_589015(
   ##        : The Open Civic Data division identifier of the division to look up.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `ocdId` field"
-  var valid_589031 = path.getOrDefault("ocdId")
-  valid_589031 = validateParameter(valid_589031, JString, required = true,
+  var valid_578931 = path.getOrDefault("ocdId")
+  valid_578931 = validateParameter(valid_578931, JString, required = true,
                                  default = nil)
-  if valid_589031 != nil:
-    section.add "ocdId", valid_589031
+  if valid_578931 != nil:
+    section.add "ocdId", valid_578931
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   roles: JArray
-  ##        : A list of office roles to filter by. Only offices fulfilling one of these roles will be returned. Divisions that don't contain a matching office will not be returned.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   levels: JArray
-  ##         : A list of office levels to filter by. Only offices that serve at least one of these levels will be returned. Divisions that don't contain a matching office will not be returned.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   roles: JArray
+  ##        : A list of office roles to filter by. Only offices fulfilling one of these roles will be returned. Divisions that don't contain a matching office will not be returned.
   ##   recursive: JBool
   ##            : If true, information about all divisions contained in the division requested will be included as well. For example, if querying ocd-division/country:us/district:dc, this would also return all DC's wards and ANCs.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   levels: JArray
+  ##         : A list of office levels to filter by. Only offices that serve at least one of these levels will be returned. Divisions that don't contain a matching office will not be returned.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589032 = query.getOrDefault("fields")
-  valid_589032 = validateParameter(valid_589032, JString, required = false,
+  var valid_578932 = query.getOrDefault("key")
+  valid_578932 = validateParameter(valid_578932, JString, required = false,
                                  default = nil)
-  if valid_589032 != nil:
-    section.add "fields", valid_589032
-  var valid_589033 = query.getOrDefault("quotaUser")
-  valid_589033 = validateParameter(valid_589033, JString, required = false,
-                                 default = nil)
-  if valid_589033 != nil:
-    section.add "quotaUser", valid_589033
-  var valid_589034 = query.getOrDefault("roles")
-  valid_589034 = validateParameter(valid_589034, JArray, required = false,
-                                 default = nil)
-  if valid_589034 != nil:
-    section.add "roles", valid_589034
-  var valid_589035 = query.getOrDefault("alt")
-  valid_589035 = validateParameter(valid_589035, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589035 != nil:
-    section.add "alt", valid_589035
-  var valid_589036 = query.getOrDefault("oauth_token")
-  valid_589036 = validateParameter(valid_589036, JString, required = false,
-                                 default = nil)
-  if valid_589036 != nil:
-    section.add "oauth_token", valid_589036
-  var valid_589037 = query.getOrDefault("userIp")
-  valid_589037 = validateParameter(valid_589037, JString, required = false,
-                                 default = nil)
-  if valid_589037 != nil:
-    section.add "userIp", valid_589037
-  var valid_589038 = query.getOrDefault("levels")
-  valid_589038 = validateParameter(valid_589038, JArray, required = false,
-                                 default = nil)
-  if valid_589038 != nil:
-    section.add "levels", valid_589038
-  var valid_589039 = query.getOrDefault("key")
-  valid_589039 = validateParameter(valid_589039, JString, required = false,
-                                 default = nil)
-  if valid_589039 != nil:
-    section.add "key", valid_589039
-  var valid_589040 = query.getOrDefault("prettyPrint")
-  valid_589040 = validateParameter(valid_589040, JBool, required = false,
+  if valid_578932 != nil:
+    section.add "key", valid_578932
+  var valid_578933 = query.getOrDefault("prettyPrint")
+  valid_578933 = validateParameter(valid_578933, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589040 != nil:
-    section.add "prettyPrint", valid_589040
-  var valid_589041 = query.getOrDefault("recursive")
-  valid_589041 = validateParameter(valid_589041, JBool, required = false, default = nil)
-  if valid_589041 != nil:
-    section.add "recursive", valid_589041
+  if valid_578933 != nil:
+    section.add "prettyPrint", valid_578933
+  var valid_578934 = query.getOrDefault("oauth_token")
+  valid_578934 = validateParameter(valid_578934, JString, required = false,
+                                 default = nil)
+  if valid_578934 != nil:
+    section.add "oauth_token", valid_578934
+  var valid_578935 = query.getOrDefault("roles")
+  valid_578935 = validateParameter(valid_578935, JArray, required = false,
+                                 default = nil)
+  if valid_578935 != nil:
+    section.add "roles", valid_578935
+  var valid_578936 = query.getOrDefault("recursive")
+  valid_578936 = validateParameter(valid_578936, JBool, required = false, default = nil)
+  if valid_578936 != nil:
+    section.add "recursive", valid_578936
+  var valid_578937 = query.getOrDefault("alt")
+  valid_578937 = validateParameter(valid_578937, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578937 != nil:
+    section.add "alt", valid_578937
+  var valid_578938 = query.getOrDefault("userIp")
+  valid_578938 = validateParameter(valid_578938, JString, required = false,
+                                 default = nil)
+  if valid_578938 != nil:
+    section.add "userIp", valid_578938
+  var valid_578939 = query.getOrDefault("quotaUser")
+  valid_578939 = validateParameter(valid_578939, JString, required = false,
+                                 default = nil)
+  if valid_578939 != nil:
+    section.add "quotaUser", valid_578939
+  var valid_578940 = query.getOrDefault("levels")
+  valid_578940 = validateParameter(valid_578940, JArray, required = false,
+                                 default = nil)
+  if valid_578940 != nil:
+    section.add "levels", valid_578940
+  var valid_578941 = query.getOrDefault("fields")
+  valid_578941 = validateParameter(valid_578941, JString, required = false,
+                                 default = nil)
+  if valid_578941 != nil:
+    section.add "fields", valid_578941
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -679,88 +683,88 @@ proc validate_CivicinfoRepresentativesRepresentativeInfoByDivision_589015(
   if body != nil:
     result.add "body", body
 
-proc call*(call_589043: Call_CivicinfoRepresentativesRepresentativeInfoByDivision_589014;
+proc call*(call_578943: Call_CivicinfoRepresentativesRepresentativeInfoByDivision_578914;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Looks up representative information for a single geographic division.
   ## 
-  let valid = call_589043.validator(path, query, header, formData, body)
-  let scheme = call_589043.pickScheme
+  let valid = call_578943.validator(path, query, header, formData, body)
+  let scheme = call_578943.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589043.url(scheme.get, call_589043.host, call_589043.base,
-                         call_589043.route, valid.getOrDefault("path"),
+  let url = call_578943.url(scheme.get, call_578943.host, call_578943.base,
+                         call_578943.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589043, url, valid)
+  result = hook(call_578943, url, valid)
 
-proc call*(call_589044: Call_CivicinfoRepresentativesRepresentativeInfoByDivision_589014;
-          ocdId: string; fields: string = ""; quotaUser: string = "";
-          roles: JsonNode = nil; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; levels: JsonNode = nil; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; recursive: bool = false): Recallable =
+proc call*(call_578944: Call_CivicinfoRepresentativesRepresentativeInfoByDivision_578914;
+          ocdId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; roles: JsonNode = nil; recursive: bool = false;
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          levels: JsonNode = nil; body: JsonNode = nil; fields: string = ""): Recallable =
   ## civicinfoRepresentativesRepresentativeInfoByDivision
   ## Looks up representative information for a single geographic division.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   roles: JArray
-  ##        : A list of office roles to filter by. Only offices fulfilling one of these roles will be returned. Divisions that don't contain a matching office will not be returned.
-  ##   alt: string
-  ##      : Data format for the response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
   ##             : OAuth 2.0 token for the current user.
+  ##   roles: JArray
+  ##        : A list of office roles to filter by. Only offices fulfilling one of these roles will be returned. Divisions that don't contain a matching office will not be returned.
+  ##   recursive: bool
+  ##            : If true, information about all divisions contained in the division requested will be included as well. For example, if querying ocd-division/country:us/district:dc, this would also return all DC's wards and ANCs.
+  ##   alt: string
+  ##      : Data format for the response.
   ##   userIp: string
   ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   ocdId: string (required)
   ##        : The Open Civic Data division identifier of the division to look up.
   ##   levels: JArray
   ##         : A list of office levels to filter by. Only offices that serve at least one of these levels will be returned. Divisions that don't contain a matching office will not be returned.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  ##   recursive: bool
-  ##            : If true, information about all divisions contained in the division requested will be included as well. For example, if querying ocd-division/country:us/district:dc, this would also return all DC's wards and ANCs.
-  var path_589045 = newJObject()
-  var query_589046 = newJObject()
-  var body_589047 = newJObject()
-  add(query_589046, "fields", newJString(fields))
-  add(query_589046, "quotaUser", newJString(quotaUser))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578945 = newJObject()
+  var query_578946 = newJObject()
+  var body_578947 = newJObject()
+  add(query_578946, "key", newJString(key))
+  add(query_578946, "prettyPrint", newJBool(prettyPrint))
+  add(query_578946, "oauth_token", newJString(oauthToken))
   if roles != nil:
-    query_589046.add "roles", roles
-  add(query_589046, "alt", newJString(alt))
-  add(query_589046, "oauth_token", newJString(oauthToken))
-  add(query_589046, "userIp", newJString(userIp))
-  add(path_589045, "ocdId", newJString(ocdId))
+    query_578946.add "roles", roles
+  add(query_578946, "recursive", newJBool(recursive))
+  add(query_578946, "alt", newJString(alt))
+  add(query_578946, "userIp", newJString(userIp))
+  add(query_578946, "quotaUser", newJString(quotaUser))
+  add(path_578945, "ocdId", newJString(ocdId))
   if levels != nil:
-    query_589046.add "levels", levels
-  add(query_589046, "key", newJString(key))
+    query_578946.add "levels", levels
   if body != nil:
-    body_589047 = body
-  add(query_589046, "prettyPrint", newJBool(prettyPrint))
-  add(query_589046, "recursive", newJBool(recursive))
-  result = call_589044.call(path_589045, query_589046, nil, nil, body_589047)
+    body_578947 = body
+  add(query_578946, "fields", newJString(fields))
+  result = call_578944.call(path_578945, query_578946, nil, nil, body_578947)
 
-var civicinfoRepresentativesRepresentativeInfoByDivision* = Call_CivicinfoRepresentativesRepresentativeInfoByDivision_589014(
+var civicinfoRepresentativesRepresentativeInfoByDivision* = Call_CivicinfoRepresentativesRepresentativeInfoByDivision_578914(
     name: "civicinfoRepresentativesRepresentativeInfoByDivision",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/representatives/{ocdId}",
-    validator: validate_CivicinfoRepresentativesRepresentativeInfoByDivision_589015,
+    validator: validate_CivicinfoRepresentativesRepresentativeInfoByDivision_578915,
     base: "/civicinfo/v2",
-    url: url_CivicinfoRepresentativesRepresentativeInfoByDivision_589016,
+    url: url_CivicinfoRepresentativesRepresentativeInfoByDivision_578916,
     schemes: {Scheme.Https})
 type
-  Call_CivicinfoElectionsVoterInfoQuery_589048 = ref object of OpenApiRestCall_588441
-proc url_CivicinfoElectionsVoterInfoQuery_589050(protocol: Scheme; host: string;
+  Call_CivicinfoElectionsVoterInfoQuery_578948 = ref object of OpenApiRestCall_578339
+proc url_CivicinfoElectionsVoterInfoQuery_578950(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_CivicinfoElectionsVoterInfoQuery_589049(path: JsonNode;
+proc validate_CivicinfoElectionsVoterInfoQuery_578949(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Looks up information relevant to a voter based on the voter's registered address.
   ## 
@@ -769,85 +773,85 @@ proc validate_CivicinfoElectionsVoterInfoQuery_589049(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   returnAllAvailableData: JBool
-  ##                         : If set to true, the query will return the success codeand include any partial information when it is unable to determine a matching address or unable to determine the election for electionId=0 queries.
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   electionId: JString
-  ##             : The unique ID of the election to look up. A list of election IDs can be obtained at https://www.googleapis.com/civicinfo/{version}/electionsIf no election ID is specified in the query and there is more than one election with data for the given voter, the additional elections are provided in the otherElections response field.
-  ##   officialOnly: JBool
-  ##               : If set to true, only data from official state sources will be returned.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   address: JString (required)
-  ##          : The registered address of the voter to look up.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   officialOnly: JBool
+  ##               : If set to true, only data from official state sources will be returned.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   returnAllAvailableData: JBool
+  ##                         : If set to true, the query will return the success codeand include any partial information when it is unable to determine a matching address or unable to determine the election for electionId=0 queries.
+  ##   address: JString (required)
+  ##          : The registered address of the voter to look up.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   electionId: JString
+  ##             : The unique ID of the election to look up. A list of election IDs can be obtained at https://www.googleapis.com/civicinfo/{version}/electionsIf no election ID is specified in the query and there is more than one election with data for the given voter, the additional elections are provided in the otherElections response field.
   section = newJObject()
-  var valid_589051 = query.getOrDefault("returnAllAvailableData")
-  valid_589051 = validateParameter(valid_589051, JBool, required = false,
-                                 default = newJBool(false))
-  if valid_589051 != nil:
-    section.add "returnAllAvailableData", valid_589051
-  var valid_589052 = query.getOrDefault("fields")
-  valid_589052 = validateParameter(valid_589052, JString, required = false,
+  var valid_578951 = query.getOrDefault("key")
+  valid_578951 = validateParameter(valid_578951, JString, required = false,
                                  default = nil)
-  if valid_589052 != nil:
-    section.add "fields", valid_589052
-  var valid_589053 = query.getOrDefault("quotaUser")
-  valid_589053 = validateParameter(valid_589053, JString, required = false,
-                                 default = nil)
-  if valid_589053 != nil:
-    section.add "quotaUser", valid_589053
-  var valid_589054 = query.getOrDefault("alt")
-  valid_589054 = validateParameter(valid_589054, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589054 != nil:
-    section.add "alt", valid_589054
-  var valid_589055 = query.getOrDefault("electionId")
-  valid_589055 = validateParameter(valid_589055, JString, required = false,
-                                 default = newJString("0"))
-  if valid_589055 != nil:
-    section.add "electionId", valid_589055
-  var valid_589056 = query.getOrDefault("officialOnly")
-  valid_589056 = validateParameter(valid_589056, JBool, required = false,
-                                 default = newJBool(false))
-  if valid_589056 != nil:
-    section.add "officialOnly", valid_589056
-  var valid_589057 = query.getOrDefault("oauth_token")
-  valid_589057 = validateParameter(valid_589057, JString, required = false,
-                                 default = nil)
-  if valid_589057 != nil:
-    section.add "oauth_token", valid_589057
-  var valid_589058 = query.getOrDefault("userIp")
-  valid_589058 = validateParameter(valid_589058, JString, required = false,
-                                 default = nil)
-  if valid_589058 != nil:
-    section.add "userIp", valid_589058
-  var valid_589059 = query.getOrDefault("key")
-  valid_589059 = validateParameter(valid_589059, JString, required = false,
-                                 default = nil)
-  if valid_589059 != nil:
-    section.add "key", valid_589059
-  assert query != nil, "query argument is necessary due to required `address` field"
-  var valid_589060 = query.getOrDefault("address")
-  valid_589060 = validateParameter(valid_589060, JString, required = true,
-                                 default = nil)
-  if valid_589060 != nil:
-    section.add "address", valid_589060
-  var valid_589061 = query.getOrDefault("prettyPrint")
-  valid_589061 = validateParameter(valid_589061, JBool, required = false,
+  if valid_578951 != nil:
+    section.add "key", valid_578951
+  var valid_578952 = query.getOrDefault("prettyPrint")
+  valid_578952 = validateParameter(valid_578952, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589061 != nil:
-    section.add "prettyPrint", valid_589061
+  if valid_578952 != nil:
+    section.add "prettyPrint", valid_578952
+  var valid_578953 = query.getOrDefault("oauth_token")
+  valid_578953 = validateParameter(valid_578953, JString, required = false,
+                                 default = nil)
+  if valid_578953 != nil:
+    section.add "oauth_token", valid_578953
+  var valid_578954 = query.getOrDefault("officialOnly")
+  valid_578954 = validateParameter(valid_578954, JBool, required = false,
+                                 default = newJBool(false))
+  if valid_578954 != nil:
+    section.add "officialOnly", valid_578954
+  var valid_578955 = query.getOrDefault("alt")
+  valid_578955 = validateParameter(valid_578955, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578955 != nil:
+    section.add "alt", valid_578955
+  var valid_578956 = query.getOrDefault("userIp")
+  valid_578956 = validateParameter(valid_578956, JString, required = false,
+                                 default = nil)
+  if valid_578956 != nil:
+    section.add "userIp", valid_578956
+  var valid_578957 = query.getOrDefault("quotaUser")
+  valid_578957 = validateParameter(valid_578957, JString, required = false,
+                                 default = nil)
+  if valid_578957 != nil:
+    section.add "quotaUser", valid_578957
+  var valid_578958 = query.getOrDefault("returnAllAvailableData")
+  valid_578958 = validateParameter(valid_578958, JBool, required = false,
+                                 default = newJBool(false))
+  if valid_578958 != nil:
+    section.add "returnAllAvailableData", valid_578958
+  assert query != nil, "query argument is necessary due to required `address` field"
+  var valid_578959 = query.getOrDefault("address")
+  valid_578959 = validateParameter(valid_578959, JString, required = true,
+                                 default = nil)
+  if valid_578959 != nil:
+    section.add "address", valid_578959
+  var valid_578960 = query.getOrDefault("fields")
+  valid_578960 = validateParameter(valid_578960, JString, required = false,
+                                 default = nil)
+  if valid_578960 != nil:
+    section.add "fields", valid_578960
+  var valid_578961 = query.getOrDefault("electionId")
+  valid_578961 = validateParameter(valid_578961, JString, required = false,
+                                 default = newJString("0"))
+  if valid_578961 != nil:
+    section.add "electionId", valid_578961
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -859,72 +863,73 @@ proc validate_CivicinfoElectionsVoterInfoQuery_589049(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589063: Call_CivicinfoElectionsVoterInfoQuery_589048;
+proc call*(call_578963: Call_CivicinfoElectionsVoterInfoQuery_578948;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Looks up information relevant to a voter based on the voter's registered address.
   ## 
-  let valid = call_589063.validator(path, query, header, formData, body)
-  let scheme = call_589063.pickScheme
+  let valid = call_578963.validator(path, query, header, formData, body)
+  let scheme = call_578963.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589063.url(scheme.get, call_589063.host, call_589063.base,
-                         call_589063.route, valid.getOrDefault("path"),
+  let url = call_578963.url(scheme.get, call_578963.host, call_578963.base,
+                         call_578963.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589063, url, valid)
+  result = hook(call_578963, url, valid)
 
-proc call*(call_589064: Call_CivicinfoElectionsVoterInfoQuery_589048;
-          address: string; returnAllAvailableData: bool = false; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; electionId: string = "0";
-          officialOnly: bool = false; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578964: Call_CivicinfoElectionsVoterInfoQuery_578948;
+          address: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; officialOnly: bool = false; alt: string = "json";
+          userIp: string = ""; quotaUser: string = "";
+          returnAllAvailableData: bool = false; body: JsonNode = nil;
+          fields: string = ""; electionId: string = "0"): Recallable =
   ## civicinfoElectionsVoterInfoQuery
   ## Looks up information relevant to a voter based on the voter's registered address.
-  ##   returnAllAvailableData: bool
-  ##                         : If set to true, the query will return the success codeand include any partial information when it is unable to determine a matching address or unable to determine the election for electionId=0 queries.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   electionId: string
-  ##             : The unique ID of the election to look up. A list of election IDs can be obtained at https://www.googleapis.com/civicinfo/{version}/electionsIf no election ID is specified in the query and there is more than one election with data for the given voter, the additional elections are provided in the otherElections response field.
-  ##   officialOnly: bool
-  ##               : If set to true, only data from official state sources will be returned.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   address: string (required)
-  ##          : The registered address of the voter to look up.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589065 = newJObject()
-  var body_589066 = newJObject()
-  add(query_589065, "returnAllAvailableData", newJBool(returnAllAvailableData))
-  add(query_589065, "fields", newJString(fields))
-  add(query_589065, "quotaUser", newJString(quotaUser))
-  add(query_589065, "alt", newJString(alt))
-  add(query_589065, "electionId", newJString(electionId))
-  add(query_589065, "officialOnly", newJBool(officialOnly))
-  add(query_589065, "oauth_token", newJString(oauthToken))
-  add(query_589065, "userIp", newJString(userIp))
-  add(query_589065, "key", newJString(key))
-  add(query_589065, "address", newJString(address))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   officialOnly: bool
+  ##               : If set to true, only data from official state sources will be returned.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   returnAllAvailableData: bool
+  ##                         : If set to true, the query will return the success codeand include any partial information when it is unable to determine a matching address or unable to determine the election for electionId=0 queries.
+  ##   body: JObject
+  ##   address: string (required)
+  ##          : The registered address of the voter to look up.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   electionId: string
+  ##             : The unique ID of the election to look up. A list of election IDs can be obtained at https://www.googleapis.com/civicinfo/{version}/electionsIf no election ID is specified in the query and there is more than one election with data for the given voter, the additional elections are provided in the otherElections response field.
+  var query_578965 = newJObject()
+  var body_578966 = newJObject()
+  add(query_578965, "key", newJString(key))
+  add(query_578965, "prettyPrint", newJBool(prettyPrint))
+  add(query_578965, "oauth_token", newJString(oauthToken))
+  add(query_578965, "officialOnly", newJBool(officialOnly))
+  add(query_578965, "alt", newJString(alt))
+  add(query_578965, "userIp", newJString(userIp))
+  add(query_578965, "quotaUser", newJString(quotaUser))
+  add(query_578965, "returnAllAvailableData", newJBool(returnAllAvailableData))
   if body != nil:
-    body_589066 = body
-  add(query_589065, "prettyPrint", newJBool(prettyPrint))
-  result = call_589064.call(nil, query_589065, nil, nil, body_589066)
+    body_578966 = body
+  add(query_578965, "address", newJString(address))
+  add(query_578965, "fields", newJString(fields))
+  add(query_578965, "electionId", newJString(electionId))
+  result = call_578964.call(nil, query_578965, nil, nil, body_578966)
 
-var civicinfoElectionsVoterInfoQuery* = Call_CivicinfoElectionsVoterInfoQuery_589048(
+var civicinfoElectionsVoterInfoQuery* = Call_CivicinfoElectionsVoterInfoQuery_578948(
     name: "civicinfoElectionsVoterInfoQuery", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/voterinfo",
-    validator: validate_CivicinfoElectionsVoterInfoQuery_589049,
-    base: "/civicinfo/v2", url: url_CivicinfoElectionsVoterInfoQuery_589050,
+    validator: validate_CivicinfoElectionsVoterInfoQuery_578949,
+    base: "/civicinfo/v2", url: url_CivicinfoElectionsVoterInfoQuery_578950,
     schemes: {Scheme.Https})
 export
   rest

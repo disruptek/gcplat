@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588457 = ref object of OpenApiRestCall
+  OpenApiRestCall_578355 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588457](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578355](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588457): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578355): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,8 +112,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_DeploymentmanagerDeploymentsInsert_589014 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerDeploymentsInsert_589016(protocol: Scheme; host: string;
+  Call_DeploymentmanagerDeploymentsInsert_578914 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerDeploymentsInsert_578916(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -125,7 +129,7 @@ proc url_DeploymentmanagerDeploymentsInsert_589016(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsInsert_589015(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsInsert_578915(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a deployment and all of the resources described by the deployment manifest.
   ## 
@@ -136,76 +140,76 @@ proc validate_DeploymentmanagerDeploymentsInsert_589015(path: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_589017 = path.getOrDefault("project")
-  valid_589017 = validateParameter(valid_589017, JString, required = true,
+  var valid_578917 = path.getOrDefault("project")
+  valid_578917 = validateParameter(valid_578917, JString, required = true,
                                  default = nil)
-  if valid_589017 != nil:
-    section.add "project", valid_589017
+  if valid_578917 != nil:
+    section.add "project", valid_578917
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   createPolicy: JString
-  ##               : Sets the policy to use for creating new resources.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   preview: JBool
-  ##          : If set to true, creates a deployment and creates "shell" resources but does not actually instantiate these resources. This allows you to preview what your deployment looks like. After previewing a deployment, you can deploy your resources by making a request with the update() method or you can use the cancelPreview() method to cancel the preview altogether. Note that the deployment will still exist after you cancel the preview and you must separately delete this deployment if you want to remove it.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   createPolicy: JString
+  ##               : Sets the policy to use for creating new resources.
+  ##   preview: JBool
+  ##          : If set to true, creates a deployment and creates "shell" resources but does not actually instantiate these resources. This allows you to preview what your deployment looks like. After previewing a deployment, you can deploy your resources by making a request with the update() method or you can use the cancelPreview() method to cancel the preview altogether. Note that the deployment will still exist after you cancel the preview and you must separately delete this deployment if you want to remove it.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589018 = query.getOrDefault("fields")
-  valid_589018 = validateParameter(valid_589018, JString, required = false,
+  var valid_578918 = query.getOrDefault("key")
+  valid_578918 = validateParameter(valid_578918, JString, required = false,
                                  default = nil)
-  if valid_589018 != nil:
-    section.add "fields", valid_589018
-  var valid_589019 = query.getOrDefault("quotaUser")
-  valid_589019 = validateParameter(valid_589019, JString, required = false,
-                                 default = nil)
-  if valid_589019 != nil:
-    section.add "quotaUser", valid_589019
-  var valid_589020 = query.getOrDefault("alt")
-  valid_589020 = validateParameter(valid_589020, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589020 != nil:
-    section.add "alt", valid_589020
-  var valid_589021 = query.getOrDefault("createPolicy")
-  valid_589021 = validateParameter(valid_589021, JString, required = false,
-                                 default = newJString("CREATE_OR_ACQUIRE"))
-  if valid_589021 != nil:
-    section.add "createPolicy", valid_589021
-  var valid_589022 = query.getOrDefault("oauth_token")
-  valid_589022 = validateParameter(valid_589022, JString, required = false,
-                                 default = nil)
-  if valid_589022 != nil:
-    section.add "oauth_token", valid_589022
-  var valid_589023 = query.getOrDefault("userIp")
-  valid_589023 = validateParameter(valid_589023, JString, required = false,
-                                 default = nil)
-  if valid_589023 != nil:
-    section.add "userIp", valid_589023
-  var valid_589024 = query.getOrDefault("key")
-  valid_589024 = validateParameter(valid_589024, JString, required = false,
-                                 default = nil)
-  if valid_589024 != nil:
-    section.add "key", valid_589024
-  var valid_589025 = query.getOrDefault("preview")
-  valid_589025 = validateParameter(valid_589025, JBool, required = false, default = nil)
-  if valid_589025 != nil:
-    section.add "preview", valid_589025
-  var valid_589026 = query.getOrDefault("prettyPrint")
-  valid_589026 = validateParameter(valid_589026, JBool, required = false,
+  if valid_578918 != nil:
+    section.add "key", valid_578918
+  var valid_578919 = query.getOrDefault("prettyPrint")
+  valid_578919 = validateParameter(valid_578919, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589026 != nil:
-    section.add "prettyPrint", valid_589026
+  if valid_578919 != nil:
+    section.add "prettyPrint", valid_578919
+  var valid_578920 = query.getOrDefault("oauth_token")
+  valid_578920 = validateParameter(valid_578920, JString, required = false,
+                                 default = nil)
+  if valid_578920 != nil:
+    section.add "oauth_token", valid_578920
+  var valid_578921 = query.getOrDefault("alt")
+  valid_578921 = validateParameter(valid_578921, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578921 != nil:
+    section.add "alt", valid_578921
+  var valid_578922 = query.getOrDefault("userIp")
+  valid_578922 = validateParameter(valid_578922, JString, required = false,
+                                 default = nil)
+  if valid_578922 != nil:
+    section.add "userIp", valid_578922
+  var valid_578923 = query.getOrDefault("quotaUser")
+  valid_578923 = validateParameter(valid_578923, JString, required = false,
+                                 default = nil)
+  if valid_578923 != nil:
+    section.add "quotaUser", valid_578923
+  var valid_578924 = query.getOrDefault("createPolicy")
+  valid_578924 = validateParameter(valid_578924, JString, required = false,
+                                 default = newJString("CREATE_OR_ACQUIRE"))
+  if valid_578924 != nil:
+    section.add "createPolicy", valid_578924
+  var valid_578925 = query.getOrDefault("preview")
+  valid_578925 = validateParameter(valid_578925, JBool, required = false, default = nil)
+  if valid_578925 != nil:
+    section.add "preview", valid_578925
+  var valid_578926 = query.getOrDefault("fields")
+  valid_578926 = validateParameter(valid_578926, JString, required = false,
+                                 default = nil)
+  if valid_578926 != nil:
+    section.add "fields", valid_578926
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -217,74 +221,74 @@ proc validate_DeploymentmanagerDeploymentsInsert_589015(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589028: Call_DeploymentmanagerDeploymentsInsert_589014;
+proc call*(call_578928: Call_DeploymentmanagerDeploymentsInsert_578914;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a deployment and all of the resources described by the deployment manifest.
   ## 
-  let valid = call_589028.validator(path, query, header, formData, body)
-  let scheme = call_589028.pickScheme
+  let valid = call_578928.validator(path, query, header, formData, body)
+  let scheme = call_578928.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589028.url(scheme.get, call_589028.host, call_589028.base,
-                         call_589028.route, valid.getOrDefault("path"),
+  let url = call_578928.url(scheme.get, call_578928.host, call_578928.base,
+                         call_578928.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589028, url, valid)
+  result = hook(call_578928, url, valid)
 
-proc call*(call_589029: Call_DeploymentmanagerDeploymentsInsert_589014;
-          project: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; createPolicy: string = "CREATE_OR_ACQUIRE";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          preview: bool = false; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578929: Call_DeploymentmanagerDeploymentsInsert_578914;
+          project: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; createPolicy: string = "CREATE_OR_ACQUIRE";
+          body: JsonNode = nil; preview: bool = false; fields: string = ""): Recallable =
   ## deploymentmanagerDeploymentsInsert
   ## Creates a deployment and all of the resources described by the deployment manifest.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   createPolicy: string
-  ##               : Sets the policy to use for creating new resources.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   preview: bool
-  ##          : If set to true, creates a deployment and creates "shell" resources but does not actually instantiate these resources. This allows you to preview what your deployment looks like. After previewing a deployment, you can deploy your resources by making a request with the update() method or you can use the cancelPreview() method to cancel the preview altogether. Note that the deployment will still exist after you cancel the preview and you must separately delete this deployment if you want to remove it.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   createPolicy: string
+  ##               : Sets the policy to use for creating new resources.
   ##   project: string (required)
   ##          : The project ID for this request.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589030 = newJObject()
-  var query_589031 = newJObject()
-  var body_589032 = newJObject()
-  add(query_589031, "fields", newJString(fields))
-  add(query_589031, "quotaUser", newJString(quotaUser))
-  add(query_589031, "alt", newJString(alt))
-  add(query_589031, "createPolicy", newJString(createPolicy))
-  add(query_589031, "oauth_token", newJString(oauthToken))
-  add(query_589031, "userIp", newJString(userIp))
-  add(query_589031, "key", newJString(key))
-  add(query_589031, "preview", newJBool(preview))
-  add(path_589030, "project", newJString(project))
+  ##   preview: bool
+  ##          : If set to true, creates a deployment and creates "shell" resources but does not actually instantiate these resources. This allows you to preview what your deployment looks like. After previewing a deployment, you can deploy your resources by making a request with the update() method or you can use the cancelPreview() method to cancel the preview altogether. Note that the deployment will still exist after you cancel the preview and you must separately delete this deployment if you want to remove it.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578930 = newJObject()
+  var query_578931 = newJObject()
+  var body_578932 = newJObject()
+  add(query_578931, "key", newJString(key))
+  add(query_578931, "prettyPrint", newJBool(prettyPrint))
+  add(query_578931, "oauth_token", newJString(oauthToken))
+  add(query_578931, "alt", newJString(alt))
+  add(query_578931, "userIp", newJString(userIp))
+  add(query_578931, "quotaUser", newJString(quotaUser))
+  add(query_578931, "createPolicy", newJString(createPolicy))
+  add(path_578930, "project", newJString(project))
   if body != nil:
-    body_589032 = body
-  add(query_589031, "prettyPrint", newJBool(prettyPrint))
-  result = call_589029.call(path_589030, query_589031, nil, nil, body_589032)
+    body_578932 = body
+  add(query_578931, "preview", newJBool(preview))
+  add(query_578931, "fields", newJString(fields))
+  result = call_578929.call(path_578930, query_578931, nil, nil, body_578932)
 
-var deploymentmanagerDeploymentsInsert* = Call_DeploymentmanagerDeploymentsInsert_589014(
+var deploymentmanagerDeploymentsInsert* = Call_DeploymentmanagerDeploymentsInsert_578914(
     name: "deploymentmanagerDeploymentsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{project}/global/deployments",
-    validator: validate_DeploymentmanagerDeploymentsInsert_589015,
+    validator: validate_DeploymentmanagerDeploymentsInsert_578915,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerDeploymentsInsert_589016, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerDeploymentsInsert_578916, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsList_588725 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerDeploymentsList_588727(protocol: Scheme; host: string;
+  Call_DeploymentmanagerDeploymentsList_578625 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerDeploymentsList_578627(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -300,7 +304,7 @@ proc url_DeploymentmanagerDeploymentsList_588727(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsList_588726(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsList_578626(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all deployments for a given project.
   ## 
@@ -311,37 +315,31 @@ proc validate_DeploymentmanagerDeploymentsList_588726(path: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_588853 = path.getOrDefault("project")
-  valid_588853 = validateParameter(valid_588853, JString, required = true,
+  var valid_578753 = path.getOrDefault("project")
+  valid_578753 = validateParameter(valid_578753, JString, required = true,
                                  default = nil)
-  if valid_588853 != nil:
-    section.add "project", valid_588853
+  if valid_578753 != nil:
+    section.add "project", valid_578753
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
   ##   oauth_token: JString
   ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
   ##   userIp: JString
   ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   orderBy: JString
   ##          : Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.
   ## 
   ## You can also sort results in descending order based on the creation timestamp using orderBy="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.
   ## 
   ## Currently, only sorting by name or creationTimestamp desc is supported.
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
   ##   filter: JString
   ##         : A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <.
   ## 
@@ -350,62 +348,68 @@ proc validate_DeploymentmanagerDeploymentsList_588726(path: JsonNode;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+  ##   pageToken: JString
+  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
   section = newJObject()
-  var valid_588854 = query.getOrDefault("fields")
-  valid_588854 = validateParameter(valid_588854, JString, required = false,
+  var valid_578754 = query.getOrDefault("key")
+  valid_578754 = validateParameter(valid_578754, JString, required = false,
                                  default = nil)
-  if valid_588854 != nil:
-    section.add "fields", valid_588854
-  var valid_588855 = query.getOrDefault("pageToken")
-  valid_588855 = validateParameter(valid_588855, JString, required = false,
-                                 default = nil)
-  if valid_588855 != nil:
-    section.add "pageToken", valid_588855
-  var valid_588856 = query.getOrDefault("quotaUser")
-  valid_588856 = validateParameter(valid_588856, JString, required = false,
-                                 default = nil)
-  if valid_588856 != nil:
-    section.add "quotaUser", valid_588856
-  var valid_588870 = query.getOrDefault("alt")
-  valid_588870 = validateParameter(valid_588870, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588870 != nil:
-    section.add "alt", valid_588870
-  var valid_588871 = query.getOrDefault("oauth_token")
-  valid_588871 = validateParameter(valid_588871, JString, required = false,
-                                 default = nil)
-  if valid_588871 != nil:
-    section.add "oauth_token", valid_588871
-  var valid_588872 = query.getOrDefault("userIp")
-  valid_588872 = validateParameter(valid_588872, JString, required = false,
-                                 default = nil)
-  if valid_588872 != nil:
-    section.add "userIp", valid_588872
-  var valid_588874 = query.getOrDefault("maxResults")
-  valid_588874 = validateParameter(valid_588874, JInt, required = false,
-                                 default = newJInt(500))
-  if valid_588874 != nil:
-    section.add "maxResults", valid_588874
-  var valid_588875 = query.getOrDefault("orderBy")
-  valid_588875 = validateParameter(valid_588875, JString, required = false,
-                                 default = nil)
-  if valid_588875 != nil:
-    section.add "orderBy", valid_588875
-  var valid_588876 = query.getOrDefault("key")
-  valid_588876 = validateParameter(valid_588876, JString, required = false,
-                                 default = nil)
-  if valid_588876 != nil:
-    section.add "key", valid_588876
-  var valid_588877 = query.getOrDefault("prettyPrint")
-  valid_588877 = validateParameter(valid_588877, JBool, required = false,
+  if valid_578754 != nil:
+    section.add "key", valid_578754
+  var valid_578768 = query.getOrDefault("prettyPrint")
+  valid_578768 = validateParameter(valid_578768, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588877 != nil:
-    section.add "prettyPrint", valid_588877
-  var valid_588878 = query.getOrDefault("filter")
-  valid_588878 = validateParameter(valid_588878, JString, required = false,
+  if valid_578768 != nil:
+    section.add "prettyPrint", valid_578768
+  var valid_578769 = query.getOrDefault("oauth_token")
+  valid_578769 = validateParameter(valid_578769, JString, required = false,
                                  default = nil)
-  if valid_588878 != nil:
-    section.add "filter", valid_588878
+  if valid_578769 != nil:
+    section.add "oauth_token", valid_578769
+  var valid_578770 = query.getOrDefault("alt")
+  valid_578770 = validateParameter(valid_578770, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578770 != nil:
+    section.add "alt", valid_578770
+  var valid_578771 = query.getOrDefault("userIp")
+  valid_578771 = validateParameter(valid_578771, JString, required = false,
+                                 default = nil)
+  if valid_578771 != nil:
+    section.add "userIp", valid_578771
+  var valid_578772 = query.getOrDefault("quotaUser")
+  valid_578772 = validateParameter(valid_578772, JString, required = false,
+                                 default = nil)
+  if valid_578772 != nil:
+    section.add "quotaUser", valid_578772
+  var valid_578773 = query.getOrDefault("orderBy")
+  valid_578773 = validateParameter(valid_578773, JString, required = false,
+                                 default = nil)
+  if valid_578773 != nil:
+    section.add "orderBy", valid_578773
+  var valid_578774 = query.getOrDefault("filter")
+  valid_578774 = validateParameter(valid_578774, JString, required = false,
+                                 default = nil)
+  if valid_578774 != nil:
+    section.add "filter", valid_578774
+  var valid_578775 = query.getOrDefault("pageToken")
+  valid_578775 = validateParameter(valid_578775, JString, required = false,
+                                 default = nil)
+  if valid_578775 != nil:
+    section.add "pageToken", valid_578775
+  var valid_578776 = query.getOrDefault("fields")
+  valid_578776 = validateParameter(valid_578776, JString, required = false,
+                                 default = nil)
+  if valid_578776 != nil:
+    section.add "fields", valid_578776
+  var valid_578778 = query.getOrDefault("maxResults")
+  valid_578778 = validateParameter(valid_578778, JInt, required = false,
+                                 default = newJInt(500))
+  if valid_578778 != nil:
+    section.add "maxResults", valid_578778
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -414,53 +418,45 @@ proc validate_DeploymentmanagerDeploymentsList_588726(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588901: Call_DeploymentmanagerDeploymentsList_588725;
+proc call*(call_578801: Call_DeploymentmanagerDeploymentsList_578625;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all deployments for a given project.
   ## 
-  let valid = call_588901.validator(path, query, header, formData, body)
-  let scheme = call_588901.pickScheme
+  let valid = call_578801.validator(path, query, header, formData, body)
+  let scheme = call_578801.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588901.url(scheme.get, call_588901.host, call_588901.base,
-                         call_588901.route, valid.getOrDefault("path"),
+  let url = call_578801.url(scheme.get, call_578801.host, call_578801.base,
+                         call_578801.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588901, url, valid)
+  result = hook(call_578801, url, valid)
 
-proc call*(call_588972: Call_DeploymentmanagerDeploymentsList_588725;
-          project: string; fields: string = ""; pageToken: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; maxResults: int = 500; orderBy: string = "";
-          key: string = ""; prettyPrint: bool = true; filter: string = ""): Recallable =
+proc call*(call_578872: Call_DeploymentmanagerDeploymentsList_578625;
+          project: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; orderBy: string = ""; filter: string = "";
+          pageToken: string = ""; fields: string = ""; maxResults: int = 500): Recallable =
   ## deploymentmanagerDeploymentsList
   ## Lists all deployments for a given project.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
   ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
   ##   userIp: string
   ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   orderBy: string
   ##          : Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.
   ## 
   ## You can also sort results in descending order based on the creation timestamp using orderBy="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.
   ## 
   ## Currently, only sorting by name or creationTimestamp desc is supported.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   project: string (required)
-  ##          : The project ID for this request.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
   ##   filter: string
   ##         : A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <.
   ## 
@@ -469,31 +465,39 @@ proc call*(call_588972: Call_DeploymentmanagerDeploymentsList_588725;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-  var path_588973 = newJObject()
-  var query_588975 = newJObject()
-  add(query_588975, "fields", newJString(fields))
-  add(query_588975, "pageToken", newJString(pageToken))
-  add(query_588975, "quotaUser", newJString(quotaUser))
-  add(query_588975, "alt", newJString(alt))
-  add(query_588975, "oauth_token", newJString(oauthToken))
-  add(query_588975, "userIp", newJString(userIp))
-  add(query_588975, "maxResults", newJInt(maxResults))
-  add(query_588975, "orderBy", newJString(orderBy))
-  add(query_588975, "key", newJString(key))
-  add(path_588973, "project", newJString(project))
-  add(query_588975, "prettyPrint", newJBool(prettyPrint))
-  add(query_588975, "filter", newJString(filter))
-  result = call_588972.call(path_588973, query_588975, nil, nil, nil)
+  ##   pageToken: string
+  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
+  ##   project: string (required)
+  ##          : The project ID for this request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: int
+  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  var path_578873 = newJObject()
+  var query_578875 = newJObject()
+  add(query_578875, "key", newJString(key))
+  add(query_578875, "prettyPrint", newJBool(prettyPrint))
+  add(query_578875, "oauth_token", newJString(oauthToken))
+  add(query_578875, "alt", newJString(alt))
+  add(query_578875, "userIp", newJString(userIp))
+  add(query_578875, "quotaUser", newJString(quotaUser))
+  add(query_578875, "orderBy", newJString(orderBy))
+  add(query_578875, "filter", newJString(filter))
+  add(query_578875, "pageToken", newJString(pageToken))
+  add(path_578873, "project", newJString(project))
+  add(query_578875, "fields", newJString(fields))
+  add(query_578875, "maxResults", newJInt(maxResults))
+  result = call_578872.call(path_578873, query_578875, nil, nil, nil)
 
-var deploymentmanagerDeploymentsList* = Call_DeploymentmanagerDeploymentsList_588725(
+var deploymentmanagerDeploymentsList* = Call_DeploymentmanagerDeploymentsList_578625(
     name: "deploymentmanagerDeploymentsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/global/deployments",
-    validator: validate_DeploymentmanagerDeploymentsList_588726,
+    validator: validate_DeploymentmanagerDeploymentsList_578626,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerDeploymentsList_588727, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerDeploymentsList_578627, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsUpdate_589049 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerDeploymentsUpdate_589051(protocol: Scheme; host: string;
+  Call_DeploymentmanagerDeploymentsUpdate_578949 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerDeploymentsUpdate_578951(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -511,7 +515,7 @@ proc url_DeploymentmanagerDeploymentsUpdate_589051(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsUpdate_589050(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsUpdate_578950(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a deployment and all of the resources described by the deployment manifest.
   ## 
@@ -525,89 +529,89 @@ proc validate_DeploymentmanagerDeploymentsUpdate_589050(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_589052 = path.getOrDefault("deployment")
-  valid_589052 = validateParameter(valid_589052, JString, required = true,
+  var valid_578952 = path.getOrDefault("deployment")
+  valid_578952 = validateParameter(valid_578952, JString, required = true,
                                  default = nil)
-  if valid_589052 != nil:
-    section.add "deployment", valid_589052
-  var valid_589053 = path.getOrDefault("project")
-  valid_589053 = validateParameter(valid_589053, JString, required = true,
+  if valid_578952 != nil:
+    section.add "deployment", valid_578952
+  var valid_578953 = path.getOrDefault("project")
+  valid_578953 = validateParameter(valid_578953, JString, required = true,
                                  default = nil)
-  if valid_589053 != nil:
-    section.add "project", valid_589053
+  if valid_578953 != nil:
+    section.add "project", valid_578953
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   createPolicy: JString
-  ##               : Sets the policy to use for creating new resources.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   preview: JBool
-  ##          : If set to true, updates the deployment and creates and updates the "shell" resources but does not actually alter or instantiate these resources. This allows you to preview what your deployment will look like. You can use this intent to preview how an update would affect your deployment. You must provide a target.config with a configuration if this is set to true. After previewing a deployment, you can deploy your resources by making a request with the update() or you can cancelPreview() to remove the preview altogether. Note that the deployment will still exist after you cancel the preview and you must separately delete this deployment if you want to remove it.
-  ##   deletePolicy: JString
-  ##               : Sets the policy to use for deleting resources.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   createPolicy: JString
+  ##               : Sets the policy to use for creating new resources.
+  ##   deletePolicy: JString
+  ##               : Sets the policy to use for deleting resources.
+  ##   preview: JBool
+  ##          : If set to true, updates the deployment and creates and updates the "shell" resources but does not actually alter or instantiate these resources. This allows you to preview what your deployment will look like. You can use this intent to preview how an update would affect your deployment. You must provide a target.config with a configuration if this is set to true. After previewing a deployment, you can deploy your resources by making a request with the update() or you can cancelPreview() to remove the preview altogether. Note that the deployment will still exist after you cancel the preview and you must separately delete this deployment if you want to remove it.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589054 = query.getOrDefault("fields")
-  valid_589054 = validateParameter(valid_589054, JString, required = false,
+  var valid_578954 = query.getOrDefault("key")
+  valid_578954 = validateParameter(valid_578954, JString, required = false,
                                  default = nil)
-  if valid_589054 != nil:
-    section.add "fields", valid_589054
-  var valid_589055 = query.getOrDefault("quotaUser")
-  valid_589055 = validateParameter(valid_589055, JString, required = false,
-                                 default = nil)
-  if valid_589055 != nil:
-    section.add "quotaUser", valid_589055
-  var valid_589056 = query.getOrDefault("alt")
-  valid_589056 = validateParameter(valid_589056, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589056 != nil:
-    section.add "alt", valid_589056
-  var valid_589057 = query.getOrDefault("createPolicy")
-  valid_589057 = validateParameter(valid_589057, JString, required = false,
-                                 default = newJString("CREATE_OR_ACQUIRE"))
-  if valid_589057 != nil:
-    section.add "createPolicy", valid_589057
-  var valid_589058 = query.getOrDefault("oauth_token")
-  valid_589058 = validateParameter(valid_589058, JString, required = false,
-                                 default = nil)
-  if valid_589058 != nil:
-    section.add "oauth_token", valid_589058
-  var valid_589059 = query.getOrDefault("userIp")
-  valid_589059 = validateParameter(valid_589059, JString, required = false,
-                                 default = nil)
-  if valid_589059 != nil:
-    section.add "userIp", valid_589059
-  var valid_589060 = query.getOrDefault("key")
-  valid_589060 = validateParameter(valid_589060, JString, required = false,
-                                 default = nil)
-  if valid_589060 != nil:
-    section.add "key", valid_589060
-  var valid_589061 = query.getOrDefault("preview")
-  valid_589061 = validateParameter(valid_589061, JBool, required = false,
-                                 default = newJBool(false))
-  if valid_589061 != nil:
-    section.add "preview", valid_589061
-  var valid_589062 = query.getOrDefault("deletePolicy")
-  valid_589062 = validateParameter(valid_589062, JString, required = false,
-                                 default = newJString("DELETE"))
-  if valid_589062 != nil:
-    section.add "deletePolicy", valid_589062
-  var valid_589063 = query.getOrDefault("prettyPrint")
-  valid_589063 = validateParameter(valid_589063, JBool, required = false,
+  if valid_578954 != nil:
+    section.add "key", valid_578954
+  var valid_578955 = query.getOrDefault("prettyPrint")
+  valid_578955 = validateParameter(valid_578955, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589063 != nil:
-    section.add "prettyPrint", valid_589063
+  if valid_578955 != nil:
+    section.add "prettyPrint", valid_578955
+  var valid_578956 = query.getOrDefault("oauth_token")
+  valid_578956 = validateParameter(valid_578956, JString, required = false,
+                                 default = nil)
+  if valid_578956 != nil:
+    section.add "oauth_token", valid_578956
+  var valid_578957 = query.getOrDefault("alt")
+  valid_578957 = validateParameter(valid_578957, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578957 != nil:
+    section.add "alt", valid_578957
+  var valid_578958 = query.getOrDefault("userIp")
+  valid_578958 = validateParameter(valid_578958, JString, required = false,
+                                 default = nil)
+  if valid_578958 != nil:
+    section.add "userIp", valid_578958
+  var valid_578959 = query.getOrDefault("quotaUser")
+  valid_578959 = validateParameter(valid_578959, JString, required = false,
+                                 default = nil)
+  if valid_578959 != nil:
+    section.add "quotaUser", valid_578959
+  var valid_578960 = query.getOrDefault("createPolicy")
+  valid_578960 = validateParameter(valid_578960, JString, required = false,
+                                 default = newJString("CREATE_OR_ACQUIRE"))
+  if valid_578960 != nil:
+    section.add "createPolicy", valid_578960
+  var valid_578961 = query.getOrDefault("deletePolicy")
+  valid_578961 = validateParameter(valid_578961, JString, required = false,
+                                 default = newJString("DELETE"))
+  if valid_578961 != nil:
+    section.add "deletePolicy", valid_578961
+  var valid_578962 = query.getOrDefault("preview")
+  valid_578962 = validateParameter(valid_578962, JBool, required = false,
+                                 default = newJBool(false))
+  if valid_578962 != nil:
+    section.add "preview", valid_578962
+  var valid_578963 = query.getOrDefault("fields")
+  valid_578963 = validateParameter(valid_578963, JString, required = false,
+                                 default = nil)
+  if valid_578963 != nil:
+    section.add "fields", valid_578963
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -619,83 +623,83 @@ proc validate_DeploymentmanagerDeploymentsUpdate_589050(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589065: Call_DeploymentmanagerDeploymentsUpdate_589049;
+proc call*(call_578965: Call_DeploymentmanagerDeploymentsUpdate_578949;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a deployment and all of the resources described by the deployment manifest.
   ## 
-  let valid = call_589065.validator(path, query, header, formData, body)
-  let scheme = call_589065.pickScheme
+  let valid = call_578965.validator(path, query, header, formData, body)
+  let scheme = call_578965.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589065.url(scheme.get, call_589065.host, call_589065.base,
-                         call_589065.route, valid.getOrDefault("path"),
+  let url = call_578965.url(scheme.get, call_578965.host, call_578965.base,
+                         call_578965.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589065, url, valid)
+  result = hook(call_578965, url, valid)
 
-proc call*(call_589066: Call_DeploymentmanagerDeploymentsUpdate_589049;
-          deployment: string; project: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json";
-          createPolicy: string = "CREATE_OR_ACQUIRE"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; preview: bool = false;
-          deletePolicy: string = "DELETE"; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578966: Call_DeploymentmanagerDeploymentsUpdate_578949;
+          deployment: string; project: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = "";
+          createPolicy: string = "CREATE_OR_ACQUIRE";
+          deletePolicy: string = "DELETE"; body: JsonNode = nil; preview: bool = false;
+          fields: string = ""): Recallable =
   ## deploymentmanagerDeploymentsUpdate
   ## Updates a deployment and all of the resources described by the deployment manifest.
-  ##   deployment: string (required)
-  ##             : The name of the deployment for this request.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   createPolicy: string
-  ##               : Sets the policy to use for creating new resources.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   preview: bool
-  ##          : If set to true, updates the deployment and creates and updates the "shell" resources but does not actually alter or instantiate these resources. This allows you to preview what your deployment will look like. You can use this intent to preview how an update would affect your deployment. You must provide a target.config with a configuration if this is set to true. After previewing a deployment, you can deploy your resources by making a request with the update() or you can cancelPreview() to remove the preview altogether. Note that the deployment will still exist after you cancel the preview and you must separately delete this deployment if you want to remove it.
-  ##   deletePolicy: string
-  ##               : Sets the policy to use for deleting resources.
-  ##   project: string (required)
-  ##          : The project ID for this request.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589067 = newJObject()
-  var query_589068 = newJObject()
-  var body_589069 = newJObject()
-  add(path_589067, "deployment", newJString(deployment))
-  add(query_589068, "fields", newJString(fields))
-  add(query_589068, "quotaUser", newJString(quotaUser))
-  add(query_589068, "alt", newJString(alt))
-  add(query_589068, "createPolicy", newJString(createPolicy))
-  add(query_589068, "oauth_token", newJString(oauthToken))
-  add(query_589068, "userIp", newJString(userIp))
-  add(query_589068, "key", newJString(key))
-  add(query_589068, "preview", newJBool(preview))
-  add(query_589068, "deletePolicy", newJString(deletePolicy))
-  add(path_589067, "project", newJString(project))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   deployment: string (required)
+  ##             : The name of the deployment for this request.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   createPolicy: string
+  ##               : Sets the policy to use for creating new resources.
+  ##   project: string (required)
+  ##          : The project ID for this request.
+  ##   deletePolicy: string
+  ##               : Sets the policy to use for deleting resources.
+  ##   body: JObject
+  ##   preview: bool
+  ##          : If set to true, updates the deployment and creates and updates the "shell" resources but does not actually alter or instantiate these resources. This allows you to preview what your deployment will look like. You can use this intent to preview how an update would affect your deployment. You must provide a target.config with a configuration if this is set to true. After previewing a deployment, you can deploy your resources by making a request with the update() or you can cancelPreview() to remove the preview altogether. Note that the deployment will still exist after you cancel the preview and you must separately delete this deployment if you want to remove it.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578967 = newJObject()
+  var query_578968 = newJObject()
+  var body_578969 = newJObject()
+  add(query_578968, "key", newJString(key))
+  add(query_578968, "prettyPrint", newJBool(prettyPrint))
+  add(query_578968, "oauth_token", newJString(oauthToken))
+  add(path_578967, "deployment", newJString(deployment))
+  add(query_578968, "alt", newJString(alt))
+  add(query_578968, "userIp", newJString(userIp))
+  add(query_578968, "quotaUser", newJString(quotaUser))
+  add(query_578968, "createPolicy", newJString(createPolicy))
+  add(path_578967, "project", newJString(project))
+  add(query_578968, "deletePolicy", newJString(deletePolicy))
   if body != nil:
-    body_589069 = body
-  add(query_589068, "prettyPrint", newJBool(prettyPrint))
-  result = call_589066.call(path_589067, query_589068, nil, nil, body_589069)
+    body_578969 = body
+  add(query_578968, "preview", newJBool(preview))
+  add(query_578968, "fields", newJString(fields))
+  result = call_578966.call(path_578967, query_578968, nil, nil, body_578969)
 
-var deploymentmanagerDeploymentsUpdate* = Call_DeploymentmanagerDeploymentsUpdate_589049(
+var deploymentmanagerDeploymentsUpdate* = Call_DeploymentmanagerDeploymentsUpdate_578949(
     name: "deploymentmanagerDeploymentsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}",
-    validator: validate_DeploymentmanagerDeploymentsUpdate_589050,
+    validator: validate_DeploymentmanagerDeploymentsUpdate_578950,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerDeploymentsUpdate_589051, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerDeploymentsUpdate_578951, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsGet_589033 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerDeploymentsGet_589035(protocol: Scheme; host: string;
+  Call_DeploymentmanagerDeploymentsGet_578933 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerDeploymentsGet_578935(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -713,7 +717,7 @@ proc url_DeploymentmanagerDeploymentsGet_589035(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsGet_589034(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsGet_578934(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets information about a specific deployment.
   ## 
@@ -727,68 +731,68 @@ proc validate_DeploymentmanagerDeploymentsGet_589034(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_589036 = path.getOrDefault("deployment")
-  valid_589036 = validateParameter(valid_589036, JString, required = true,
+  var valid_578936 = path.getOrDefault("deployment")
+  valid_578936 = validateParameter(valid_578936, JString, required = true,
                                  default = nil)
-  if valid_589036 != nil:
-    section.add "deployment", valid_589036
-  var valid_589037 = path.getOrDefault("project")
-  valid_589037 = validateParameter(valid_589037, JString, required = true,
+  if valid_578936 != nil:
+    section.add "deployment", valid_578936
+  var valid_578937 = path.getOrDefault("project")
+  valid_578937 = validateParameter(valid_578937, JString, required = true,
                                  default = nil)
-  if valid_589037 != nil:
-    section.add "project", valid_589037
+  if valid_578937 != nil:
+    section.add "project", valid_578937
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589038 = query.getOrDefault("fields")
-  valid_589038 = validateParameter(valid_589038, JString, required = false,
+  var valid_578938 = query.getOrDefault("key")
+  valid_578938 = validateParameter(valid_578938, JString, required = false,
                                  default = nil)
-  if valid_589038 != nil:
-    section.add "fields", valid_589038
-  var valid_589039 = query.getOrDefault("quotaUser")
-  valid_589039 = validateParameter(valid_589039, JString, required = false,
-                                 default = nil)
-  if valid_589039 != nil:
-    section.add "quotaUser", valid_589039
-  var valid_589040 = query.getOrDefault("alt")
-  valid_589040 = validateParameter(valid_589040, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589040 != nil:
-    section.add "alt", valid_589040
-  var valid_589041 = query.getOrDefault("oauth_token")
-  valid_589041 = validateParameter(valid_589041, JString, required = false,
-                                 default = nil)
-  if valid_589041 != nil:
-    section.add "oauth_token", valid_589041
-  var valid_589042 = query.getOrDefault("userIp")
-  valid_589042 = validateParameter(valid_589042, JString, required = false,
-                                 default = nil)
-  if valid_589042 != nil:
-    section.add "userIp", valid_589042
-  var valid_589043 = query.getOrDefault("key")
-  valid_589043 = validateParameter(valid_589043, JString, required = false,
-                                 default = nil)
-  if valid_589043 != nil:
-    section.add "key", valid_589043
-  var valid_589044 = query.getOrDefault("prettyPrint")
-  valid_589044 = validateParameter(valid_589044, JBool, required = false,
+  if valid_578938 != nil:
+    section.add "key", valid_578938
+  var valid_578939 = query.getOrDefault("prettyPrint")
+  valid_578939 = validateParameter(valid_578939, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589044 != nil:
-    section.add "prettyPrint", valid_589044
+  if valid_578939 != nil:
+    section.add "prettyPrint", valid_578939
+  var valid_578940 = query.getOrDefault("oauth_token")
+  valid_578940 = validateParameter(valid_578940, JString, required = false,
+                                 default = nil)
+  if valid_578940 != nil:
+    section.add "oauth_token", valid_578940
+  var valid_578941 = query.getOrDefault("alt")
+  valid_578941 = validateParameter(valid_578941, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578941 != nil:
+    section.add "alt", valid_578941
+  var valid_578942 = query.getOrDefault("userIp")
+  valid_578942 = validateParameter(valid_578942, JString, required = false,
+                                 default = nil)
+  if valid_578942 != nil:
+    section.add "userIp", valid_578942
+  var valid_578943 = query.getOrDefault("quotaUser")
+  valid_578943 = validateParameter(valid_578943, JString, required = false,
+                                 default = nil)
+  if valid_578943 != nil:
+    section.add "quotaUser", valid_578943
+  var valid_578944 = query.getOrDefault("fields")
+  valid_578944 = validateParameter(valid_578944, JString, required = false,
+                                 default = nil)
+  if valid_578944 != nil:
+    section.add "fields", valid_578944
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -797,67 +801,67 @@ proc validate_DeploymentmanagerDeploymentsGet_589034(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589045: Call_DeploymentmanagerDeploymentsGet_589033;
+proc call*(call_578945: Call_DeploymentmanagerDeploymentsGet_578933;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets information about a specific deployment.
   ## 
-  let valid = call_589045.validator(path, query, header, formData, body)
-  let scheme = call_589045.pickScheme
+  let valid = call_578945.validator(path, query, header, formData, body)
+  let scheme = call_578945.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589045.url(scheme.get, call_589045.host, call_589045.base,
-                         call_589045.route, valid.getOrDefault("path"),
+  let url = call_578945.url(scheme.get, call_578945.host, call_578945.base,
+                         call_578945.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589045, url, valid)
+  result = hook(call_578945, url, valid)
 
-proc call*(call_589046: Call_DeploymentmanagerDeploymentsGet_589033;
-          deployment: string; project: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_578946: Call_DeploymentmanagerDeploymentsGet_578933;
+          deployment: string; project: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## deploymentmanagerDeploymentsGet
   ## Gets information about a specific deployment.
-  ##   deployment: string (required)
-  ##             : The name of the deployment for this request.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   project: string (required)
-  ##          : The project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589047 = newJObject()
-  var query_589048 = newJObject()
-  add(path_589047, "deployment", newJString(deployment))
-  add(query_589048, "fields", newJString(fields))
-  add(query_589048, "quotaUser", newJString(quotaUser))
-  add(query_589048, "alt", newJString(alt))
-  add(query_589048, "oauth_token", newJString(oauthToken))
-  add(query_589048, "userIp", newJString(userIp))
-  add(query_589048, "key", newJString(key))
-  add(path_589047, "project", newJString(project))
-  add(query_589048, "prettyPrint", newJBool(prettyPrint))
-  result = call_589046.call(path_589047, query_589048, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   deployment: string (required)
+  ##             : The name of the deployment for this request.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   project: string (required)
+  ##          : The project ID for this request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578947 = newJObject()
+  var query_578948 = newJObject()
+  add(query_578948, "key", newJString(key))
+  add(query_578948, "prettyPrint", newJBool(prettyPrint))
+  add(query_578948, "oauth_token", newJString(oauthToken))
+  add(path_578947, "deployment", newJString(deployment))
+  add(query_578948, "alt", newJString(alt))
+  add(query_578948, "userIp", newJString(userIp))
+  add(query_578948, "quotaUser", newJString(quotaUser))
+  add(path_578947, "project", newJString(project))
+  add(query_578948, "fields", newJString(fields))
+  result = call_578946.call(path_578947, query_578948, nil, nil, nil)
 
-var deploymentmanagerDeploymentsGet* = Call_DeploymentmanagerDeploymentsGet_589033(
+var deploymentmanagerDeploymentsGet* = Call_DeploymentmanagerDeploymentsGet_578933(
     name: "deploymentmanagerDeploymentsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}",
-    validator: validate_DeploymentmanagerDeploymentsGet_589034,
+    validator: validate_DeploymentmanagerDeploymentsGet_578934,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerDeploymentsGet_589035, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerDeploymentsGet_578935, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsPatch_589087 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerDeploymentsPatch_589089(protocol: Scheme; host: string;
+  Call_DeploymentmanagerDeploymentsPatch_578987 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerDeploymentsPatch_578989(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -875,7 +879,7 @@ proc url_DeploymentmanagerDeploymentsPatch_589089(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsPatch_589088(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsPatch_578988(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a deployment and all of the resources described by the deployment manifest. This method supports patch semantics.
   ## 
@@ -889,89 +893,89 @@ proc validate_DeploymentmanagerDeploymentsPatch_589088(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_589090 = path.getOrDefault("deployment")
-  valid_589090 = validateParameter(valid_589090, JString, required = true,
+  var valid_578990 = path.getOrDefault("deployment")
+  valid_578990 = validateParameter(valid_578990, JString, required = true,
                                  default = nil)
-  if valid_589090 != nil:
-    section.add "deployment", valid_589090
-  var valid_589091 = path.getOrDefault("project")
-  valid_589091 = validateParameter(valid_589091, JString, required = true,
+  if valid_578990 != nil:
+    section.add "deployment", valid_578990
+  var valid_578991 = path.getOrDefault("project")
+  valid_578991 = validateParameter(valid_578991, JString, required = true,
                                  default = nil)
-  if valid_589091 != nil:
-    section.add "project", valid_589091
+  if valid_578991 != nil:
+    section.add "project", valid_578991
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   createPolicy: JString
-  ##               : Sets the policy to use for creating new resources.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   preview: JBool
-  ##          : If set to true, updates the deployment and creates and updates the "shell" resources but does not actually alter or instantiate these resources. This allows you to preview what your deployment will look like. You can use this intent to preview how an update would affect your deployment. You must provide a target.config with a configuration if this is set to true. After previewing a deployment, you can deploy your resources by making a request with the update() or you can cancelPreview() to remove the preview altogether. Note that the deployment will still exist after you cancel the preview and you must separately delete this deployment if you want to remove it.
-  ##   deletePolicy: JString
-  ##               : Sets the policy to use for deleting resources.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   createPolicy: JString
+  ##               : Sets the policy to use for creating new resources.
+  ##   deletePolicy: JString
+  ##               : Sets the policy to use for deleting resources.
+  ##   preview: JBool
+  ##          : If set to true, updates the deployment and creates and updates the "shell" resources but does not actually alter or instantiate these resources. This allows you to preview what your deployment will look like. You can use this intent to preview how an update would affect your deployment. You must provide a target.config with a configuration if this is set to true. After previewing a deployment, you can deploy your resources by making a request with the update() or you can cancelPreview() to remove the preview altogether. Note that the deployment will still exist after you cancel the preview and you must separately delete this deployment if you want to remove it.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589092 = query.getOrDefault("fields")
-  valid_589092 = validateParameter(valid_589092, JString, required = false,
+  var valid_578992 = query.getOrDefault("key")
+  valid_578992 = validateParameter(valid_578992, JString, required = false,
                                  default = nil)
-  if valid_589092 != nil:
-    section.add "fields", valid_589092
-  var valid_589093 = query.getOrDefault("quotaUser")
-  valid_589093 = validateParameter(valid_589093, JString, required = false,
-                                 default = nil)
-  if valid_589093 != nil:
-    section.add "quotaUser", valid_589093
-  var valid_589094 = query.getOrDefault("alt")
-  valid_589094 = validateParameter(valid_589094, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589094 != nil:
-    section.add "alt", valid_589094
-  var valid_589095 = query.getOrDefault("createPolicy")
-  valid_589095 = validateParameter(valid_589095, JString, required = false,
-                                 default = newJString("CREATE_OR_ACQUIRE"))
-  if valid_589095 != nil:
-    section.add "createPolicy", valid_589095
-  var valid_589096 = query.getOrDefault("oauth_token")
-  valid_589096 = validateParameter(valid_589096, JString, required = false,
-                                 default = nil)
-  if valid_589096 != nil:
-    section.add "oauth_token", valid_589096
-  var valid_589097 = query.getOrDefault("userIp")
-  valid_589097 = validateParameter(valid_589097, JString, required = false,
-                                 default = nil)
-  if valid_589097 != nil:
-    section.add "userIp", valid_589097
-  var valid_589098 = query.getOrDefault("key")
-  valid_589098 = validateParameter(valid_589098, JString, required = false,
-                                 default = nil)
-  if valid_589098 != nil:
-    section.add "key", valid_589098
-  var valid_589099 = query.getOrDefault("preview")
-  valid_589099 = validateParameter(valid_589099, JBool, required = false,
-                                 default = newJBool(false))
-  if valid_589099 != nil:
-    section.add "preview", valid_589099
-  var valid_589100 = query.getOrDefault("deletePolicy")
-  valid_589100 = validateParameter(valid_589100, JString, required = false,
-                                 default = newJString("DELETE"))
-  if valid_589100 != nil:
-    section.add "deletePolicy", valid_589100
-  var valid_589101 = query.getOrDefault("prettyPrint")
-  valid_589101 = validateParameter(valid_589101, JBool, required = false,
+  if valid_578992 != nil:
+    section.add "key", valid_578992
+  var valid_578993 = query.getOrDefault("prettyPrint")
+  valid_578993 = validateParameter(valid_578993, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589101 != nil:
-    section.add "prettyPrint", valid_589101
+  if valid_578993 != nil:
+    section.add "prettyPrint", valid_578993
+  var valid_578994 = query.getOrDefault("oauth_token")
+  valid_578994 = validateParameter(valid_578994, JString, required = false,
+                                 default = nil)
+  if valid_578994 != nil:
+    section.add "oauth_token", valid_578994
+  var valid_578995 = query.getOrDefault("alt")
+  valid_578995 = validateParameter(valid_578995, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578995 != nil:
+    section.add "alt", valid_578995
+  var valid_578996 = query.getOrDefault("userIp")
+  valid_578996 = validateParameter(valid_578996, JString, required = false,
+                                 default = nil)
+  if valid_578996 != nil:
+    section.add "userIp", valid_578996
+  var valid_578997 = query.getOrDefault("quotaUser")
+  valid_578997 = validateParameter(valid_578997, JString, required = false,
+                                 default = nil)
+  if valid_578997 != nil:
+    section.add "quotaUser", valid_578997
+  var valid_578998 = query.getOrDefault("createPolicy")
+  valid_578998 = validateParameter(valid_578998, JString, required = false,
+                                 default = newJString("CREATE_OR_ACQUIRE"))
+  if valid_578998 != nil:
+    section.add "createPolicy", valid_578998
+  var valid_578999 = query.getOrDefault("deletePolicy")
+  valid_578999 = validateParameter(valid_578999, JString, required = false,
+                                 default = newJString("DELETE"))
+  if valid_578999 != nil:
+    section.add "deletePolicy", valid_578999
+  var valid_579000 = query.getOrDefault("preview")
+  valid_579000 = validateParameter(valid_579000, JBool, required = false,
+                                 default = newJBool(false))
+  if valid_579000 != nil:
+    section.add "preview", valid_579000
+  var valid_579001 = query.getOrDefault("fields")
+  valid_579001 = validateParameter(valid_579001, JString, required = false,
+                                 default = nil)
+  if valid_579001 != nil:
+    section.add "fields", valid_579001
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -983,83 +987,83 @@ proc validate_DeploymentmanagerDeploymentsPatch_589088(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589103: Call_DeploymentmanagerDeploymentsPatch_589087;
+proc call*(call_579003: Call_DeploymentmanagerDeploymentsPatch_578987;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a deployment and all of the resources described by the deployment manifest. This method supports patch semantics.
   ## 
-  let valid = call_589103.validator(path, query, header, formData, body)
-  let scheme = call_589103.pickScheme
+  let valid = call_579003.validator(path, query, header, formData, body)
+  let scheme = call_579003.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589103.url(scheme.get, call_589103.host, call_589103.base,
-                         call_589103.route, valid.getOrDefault("path"),
+  let url = call_579003.url(scheme.get, call_579003.host, call_579003.base,
+                         call_579003.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589103, url, valid)
+  result = hook(call_579003, url, valid)
 
-proc call*(call_589104: Call_DeploymentmanagerDeploymentsPatch_589087;
-          deployment: string; project: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json";
-          createPolicy: string = "CREATE_OR_ACQUIRE"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; preview: bool = false;
-          deletePolicy: string = "DELETE"; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579004: Call_DeploymentmanagerDeploymentsPatch_578987;
+          deployment: string; project: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = "";
+          createPolicy: string = "CREATE_OR_ACQUIRE";
+          deletePolicy: string = "DELETE"; body: JsonNode = nil; preview: bool = false;
+          fields: string = ""): Recallable =
   ## deploymentmanagerDeploymentsPatch
   ## Updates a deployment and all of the resources described by the deployment manifest. This method supports patch semantics.
-  ##   deployment: string (required)
-  ##             : The name of the deployment for this request.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   createPolicy: string
-  ##               : Sets the policy to use for creating new resources.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   preview: bool
-  ##          : If set to true, updates the deployment and creates and updates the "shell" resources but does not actually alter or instantiate these resources. This allows you to preview what your deployment will look like. You can use this intent to preview how an update would affect your deployment. You must provide a target.config with a configuration if this is set to true. After previewing a deployment, you can deploy your resources by making a request with the update() or you can cancelPreview() to remove the preview altogether. Note that the deployment will still exist after you cancel the preview and you must separately delete this deployment if you want to remove it.
-  ##   deletePolicy: string
-  ##               : Sets the policy to use for deleting resources.
-  ##   project: string (required)
-  ##          : The project ID for this request.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589105 = newJObject()
-  var query_589106 = newJObject()
-  var body_589107 = newJObject()
-  add(path_589105, "deployment", newJString(deployment))
-  add(query_589106, "fields", newJString(fields))
-  add(query_589106, "quotaUser", newJString(quotaUser))
-  add(query_589106, "alt", newJString(alt))
-  add(query_589106, "createPolicy", newJString(createPolicy))
-  add(query_589106, "oauth_token", newJString(oauthToken))
-  add(query_589106, "userIp", newJString(userIp))
-  add(query_589106, "key", newJString(key))
-  add(query_589106, "preview", newJBool(preview))
-  add(query_589106, "deletePolicy", newJString(deletePolicy))
-  add(path_589105, "project", newJString(project))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   deployment: string (required)
+  ##             : The name of the deployment for this request.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   createPolicy: string
+  ##               : Sets the policy to use for creating new resources.
+  ##   project: string (required)
+  ##          : The project ID for this request.
+  ##   deletePolicy: string
+  ##               : Sets the policy to use for deleting resources.
+  ##   body: JObject
+  ##   preview: bool
+  ##          : If set to true, updates the deployment and creates and updates the "shell" resources but does not actually alter or instantiate these resources. This allows you to preview what your deployment will look like. You can use this intent to preview how an update would affect your deployment. You must provide a target.config with a configuration if this is set to true. After previewing a deployment, you can deploy your resources by making a request with the update() or you can cancelPreview() to remove the preview altogether. Note that the deployment will still exist after you cancel the preview and you must separately delete this deployment if you want to remove it.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579005 = newJObject()
+  var query_579006 = newJObject()
+  var body_579007 = newJObject()
+  add(query_579006, "key", newJString(key))
+  add(query_579006, "prettyPrint", newJBool(prettyPrint))
+  add(query_579006, "oauth_token", newJString(oauthToken))
+  add(path_579005, "deployment", newJString(deployment))
+  add(query_579006, "alt", newJString(alt))
+  add(query_579006, "userIp", newJString(userIp))
+  add(query_579006, "quotaUser", newJString(quotaUser))
+  add(query_579006, "createPolicy", newJString(createPolicy))
+  add(path_579005, "project", newJString(project))
+  add(query_579006, "deletePolicy", newJString(deletePolicy))
   if body != nil:
-    body_589107 = body
-  add(query_589106, "prettyPrint", newJBool(prettyPrint))
-  result = call_589104.call(path_589105, query_589106, nil, nil, body_589107)
+    body_579007 = body
+  add(query_579006, "preview", newJBool(preview))
+  add(query_579006, "fields", newJString(fields))
+  result = call_579004.call(path_579005, query_579006, nil, nil, body_579007)
 
-var deploymentmanagerDeploymentsPatch* = Call_DeploymentmanagerDeploymentsPatch_589087(
+var deploymentmanagerDeploymentsPatch* = Call_DeploymentmanagerDeploymentsPatch_578987(
     name: "deploymentmanagerDeploymentsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}",
-    validator: validate_DeploymentmanagerDeploymentsPatch_589088,
+    validator: validate_DeploymentmanagerDeploymentsPatch_578988,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerDeploymentsPatch_589089, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerDeploymentsPatch_578989, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsDelete_589070 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerDeploymentsDelete_589072(protocol: Scheme; host: string;
+  Call_DeploymentmanagerDeploymentsDelete_578970 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerDeploymentsDelete_578972(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1077,7 +1081,7 @@ proc url_DeploymentmanagerDeploymentsDelete_589072(protocol: Scheme; host: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsDelete_589071(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsDelete_578971(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a deployment and all of the resources in the deployment.
   ## 
@@ -1091,75 +1095,75 @@ proc validate_DeploymentmanagerDeploymentsDelete_589071(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_589073 = path.getOrDefault("deployment")
-  valid_589073 = validateParameter(valid_589073, JString, required = true,
+  var valid_578973 = path.getOrDefault("deployment")
+  valid_578973 = validateParameter(valid_578973, JString, required = true,
                                  default = nil)
-  if valid_589073 != nil:
-    section.add "deployment", valid_589073
-  var valid_589074 = path.getOrDefault("project")
-  valid_589074 = validateParameter(valid_589074, JString, required = true,
+  if valid_578973 != nil:
+    section.add "deployment", valid_578973
+  var valid_578974 = path.getOrDefault("project")
+  valid_578974 = validateParameter(valid_578974, JString, required = true,
                                  default = nil)
-  if valid_589074 != nil:
-    section.add "project", valid_589074
+  if valid_578974 != nil:
+    section.add "project", valid_578974
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   deletePolicy: JString
-  ##               : Sets the policy to use for deleting resources.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   deletePolicy: JString
+  ##               : Sets the policy to use for deleting resources.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589075 = query.getOrDefault("fields")
-  valid_589075 = validateParameter(valid_589075, JString, required = false,
+  var valid_578975 = query.getOrDefault("key")
+  valid_578975 = validateParameter(valid_578975, JString, required = false,
                                  default = nil)
-  if valid_589075 != nil:
-    section.add "fields", valid_589075
-  var valid_589076 = query.getOrDefault("quotaUser")
-  valid_589076 = validateParameter(valid_589076, JString, required = false,
-                                 default = nil)
-  if valid_589076 != nil:
-    section.add "quotaUser", valid_589076
-  var valid_589077 = query.getOrDefault("alt")
-  valid_589077 = validateParameter(valid_589077, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589077 != nil:
-    section.add "alt", valid_589077
-  var valid_589078 = query.getOrDefault("oauth_token")
-  valid_589078 = validateParameter(valid_589078, JString, required = false,
-                                 default = nil)
-  if valid_589078 != nil:
-    section.add "oauth_token", valid_589078
-  var valid_589079 = query.getOrDefault("userIp")
-  valid_589079 = validateParameter(valid_589079, JString, required = false,
-                                 default = nil)
-  if valid_589079 != nil:
-    section.add "userIp", valid_589079
-  var valid_589080 = query.getOrDefault("key")
-  valid_589080 = validateParameter(valid_589080, JString, required = false,
-                                 default = nil)
-  if valid_589080 != nil:
-    section.add "key", valid_589080
-  var valid_589081 = query.getOrDefault("deletePolicy")
-  valid_589081 = validateParameter(valid_589081, JString, required = false,
-                                 default = newJString("DELETE"))
-  if valid_589081 != nil:
-    section.add "deletePolicy", valid_589081
-  var valid_589082 = query.getOrDefault("prettyPrint")
-  valid_589082 = validateParameter(valid_589082, JBool, required = false,
+  if valid_578975 != nil:
+    section.add "key", valid_578975
+  var valid_578976 = query.getOrDefault("prettyPrint")
+  valid_578976 = validateParameter(valid_578976, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589082 != nil:
-    section.add "prettyPrint", valid_589082
+  if valid_578976 != nil:
+    section.add "prettyPrint", valid_578976
+  var valid_578977 = query.getOrDefault("oauth_token")
+  valid_578977 = validateParameter(valid_578977, JString, required = false,
+                                 default = nil)
+  if valid_578977 != nil:
+    section.add "oauth_token", valid_578977
+  var valid_578978 = query.getOrDefault("alt")
+  valid_578978 = validateParameter(valid_578978, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578978 != nil:
+    section.add "alt", valid_578978
+  var valid_578979 = query.getOrDefault("userIp")
+  valid_578979 = validateParameter(valid_578979, JString, required = false,
+                                 default = nil)
+  if valid_578979 != nil:
+    section.add "userIp", valid_578979
+  var valid_578980 = query.getOrDefault("quotaUser")
+  valid_578980 = validateParameter(valid_578980, JString, required = false,
+                                 default = nil)
+  if valid_578980 != nil:
+    section.add "quotaUser", valid_578980
+  var valid_578981 = query.getOrDefault("deletePolicy")
+  valid_578981 = validateParameter(valid_578981, JString, required = false,
+                                 default = newJString("DELETE"))
+  if valid_578981 != nil:
+    section.add "deletePolicy", valid_578981
+  var valid_578982 = query.getOrDefault("fields")
+  valid_578982 = validateParameter(valid_578982, JString, required = false,
+                                 default = nil)
+  if valid_578982 != nil:
+    section.add "fields", valid_578982
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1168,71 +1172,71 @@ proc validate_DeploymentmanagerDeploymentsDelete_589071(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589083: Call_DeploymentmanagerDeploymentsDelete_589070;
+proc call*(call_578983: Call_DeploymentmanagerDeploymentsDelete_578970;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a deployment and all of the resources in the deployment.
   ## 
-  let valid = call_589083.validator(path, query, header, formData, body)
-  let scheme = call_589083.pickScheme
+  let valid = call_578983.validator(path, query, header, formData, body)
+  let scheme = call_578983.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589083.url(scheme.get, call_589083.host, call_589083.base,
-                         call_589083.route, valid.getOrDefault("path"),
+  let url = call_578983.url(scheme.get, call_578983.host, call_578983.base,
+                         call_578983.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589083, url, valid)
+  result = hook(call_578983, url, valid)
 
-proc call*(call_589084: Call_DeploymentmanagerDeploymentsDelete_589070;
-          deployment: string; project: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; deletePolicy: string = "DELETE";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578984: Call_DeploymentmanagerDeploymentsDelete_578970;
+          deployment: string; project: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; deletePolicy: string = "DELETE";
+          fields: string = ""): Recallable =
   ## deploymentmanagerDeploymentsDelete
   ## Deletes a deployment and all of the resources in the deployment.
-  ##   deployment: string (required)
-  ##             : The name of the deployment for this request.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   deletePolicy: string
-  ##               : Sets the policy to use for deleting resources.
-  ##   project: string (required)
-  ##          : The project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589085 = newJObject()
-  var query_589086 = newJObject()
-  add(path_589085, "deployment", newJString(deployment))
-  add(query_589086, "fields", newJString(fields))
-  add(query_589086, "quotaUser", newJString(quotaUser))
-  add(query_589086, "alt", newJString(alt))
-  add(query_589086, "oauth_token", newJString(oauthToken))
-  add(query_589086, "userIp", newJString(userIp))
-  add(query_589086, "key", newJString(key))
-  add(query_589086, "deletePolicy", newJString(deletePolicy))
-  add(path_589085, "project", newJString(project))
-  add(query_589086, "prettyPrint", newJBool(prettyPrint))
-  result = call_589084.call(path_589085, query_589086, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   deployment: string (required)
+  ##             : The name of the deployment for this request.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   project: string (required)
+  ##          : The project ID for this request.
+  ##   deletePolicy: string
+  ##               : Sets the policy to use for deleting resources.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578985 = newJObject()
+  var query_578986 = newJObject()
+  add(query_578986, "key", newJString(key))
+  add(query_578986, "prettyPrint", newJBool(prettyPrint))
+  add(query_578986, "oauth_token", newJString(oauthToken))
+  add(path_578985, "deployment", newJString(deployment))
+  add(query_578986, "alt", newJString(alt))
+  add(query_578986, "userIp", newJString(userIp))
+  add(query_578986, "quotaUser", newJString(quotaUser))
+  add(path_578985, "project", newJString(project))
+  add(query_578986, "deletePolicy", newJString(deletePolicy))
+  add(query_578986, "fields", newJString(fields))
+  result = call_578984.call(path_578985, query_578986, nil, nil, nil)
 
-var deploymentmanagerDeploymentsDelete* = Call_DeploymentmanagerDeploymentsDelete_589070(
+var deploymentmanagerDeploymentsDelete* = Call_DeploymentmanagerDeploymentsDelete_578970(
     name: "deploymentmanagerDeploymentsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}",
-    validator: validate_DeploymentmanagerDeploymentsDelete_589071,
+    validator: validate_DeploymentmanagerDeploymentsDelete_578971,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerDeploymentsDelete_589072, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerDeploymentsDelete_578972, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsCancelPreview_589108 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerDeploymentsCancelPreview_589110(protocol: Scheme;
+  Call_DeploymentmanagerDeploymentsCancelPreview_579008 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerDeploymentsCancelPreview_579010(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1251,7 +1255,7 @@ proc url_DeploymentmanagerDeploymentsCancelPreview_589110(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsCancelPreview_589109(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsCancelPreview_579009(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Cancels and removes the preview currently associated with the deployment.
   ## 
@@ -1265,68 +1269,68 @@ proc validate_DeploymentmanagerDeploymentsCancelPreview_589109(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_589111 = path.getOrDefault("deployment")
-  valid_589111 = validateParameter(valid_589111, JString, required = true,
+  var valid_579011 = path.getOrDefault("deployment")
+  valid_579011 = validateParameter(valid_579011, JString, required = true,
                                  default = nil)
-  if valid_589111 != nil:
-    section.add "deployment", valid_589111
-  var valid_589112 = path.getOrDefault("project")
-  valid_589112 = validateParameter(valid_589112, JString, required = true,
+  if valid_579011 != nil:
+    section.add "deployment", valid_579011
+  var valid_579012 = path.getOrDefault("project")
+  valid_579012 = validateParameter(valid_579012, JString, required = true,
                                  default = nil)
-  if valid_589112 != nil:
-    section.add "project", valid_589112
+  if valid_579012 != nil:
+    section.add "project", valid_579012
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589113 = query.getOrDefault("fields")
-  valid_589113 = validateParameter(valid_589113, JString, required = false,
+  var valid_579013 = query.getOrDefault("key")
+  valid_579013 = validateParameter(valid_579013, JString, required = false,
                                  default = nil)
-  if valid_589113 != nil:
-    section.add "fields", valid_589113
-  var valid_589114 = query.getOrDefault("quotaUser")
-  valid_589114 = validateParameter(valid_589114, JString, required = false,
-                                 default = nil)
-  if valid_589114 != nil:
-    section.add "quotaUser", valid_589114
-  var valid_589115 = query.getOrDefault("alt")
-  valid_589115 = validateParameter(valid_589115, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589115 != nil:
-    section.add "alt", valid_589115
-  var valid_589116 = query.getOrDefault("oauth_token")
-  valid_589116 = validateParameter(valid_589116, JString, required = false,
-                                 default = nil)
-  if valid_589116 != nil:
-    section.add "oauth_token", valid_589116
-  var valid_589117 = query.getOrDefault("userIp")
-  valid_589117 = validateParameter(valid_589117, JString, required = false,
-                                 default = nil)
-  if valid_589117 != nil:
-    section.add "userIp", valid_589117
-  var valid_589118 = query.getOrDefault("key")
-  valid_589118 = validateParameter(valid_589118, JString, required = false,
-                                 default = nil)
-  if valid_589118 != nil:
-    section.add "key", valid_589118
-  var valid_589119 = query.getOrDefault("prettyPrint")
-  valid_589119 = validateParameter(valid_589119, JBool, required = false,
+  if valid_579013 != nil:
+    section.add "key", valid_579013
+  var valid_579014 = query.getOrDefault("prettyPrint")
+  valid_579014 = validateParameter(valid_579014, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589119 != nil:
-    section.add "prettyPrint", valid_589119
+  if valid_579014 != nil:
+    section.add "prettyPrint", valid_579014
+  var valid_579015 = query.getOrDefault("oauth_token")
+  valid_579015 = validateParameter(valid_579015, JString, required = false,
+                                 default = nil)
+  if valid_579015 != nil:
+    section.add "oauth_token", valid_579015
+  var valid_579016 = query.getOrDefault("alt")
+  valid_579016 = validateParameter(valid_579016, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579016 != nil:
+    section.add "alt", valid_579016
+  var valid_579017 = query.getOrDefault("userIp")
+  valid_579017 = validateParameter(valid_579017, JString, required = false,
+                                 default = nil)
+  if valid_579017 != nil:
+    section.add "userIp", valid_579017
+  var valid_579018 = query.getOrDefault("quotaUser")
+  valid_579018 = validateParameter(valid_579018, JString, required = false,
+                                 default = nil)
+  if valid_579018 != nil:
+    section.add "quotaUser", valid_579018
+  var valid_579019 = query.getOrDefault("fields")
+  valid_579019 = validateParameter(valid_579019, JString, required = false,
+                                 default = nil)
+  if valid_579019 != nil:
+    section.add "fields", valid_579019
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1338,73 +1342,73 @@ proc validate_DeploymentmanagerDeploymentsCancelPreview_589109(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589121: Call_DeploymentmanagerDeploymentsCancelPreview_589108;
+proc call*(call_579021: Call_DeploymentmanagerDeploymentsCancelPreview_579008;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Cancels and removes the preview currently associated with the deployment.
   ## 
-  let valid = call_589121.validator(path, query, header, formData, body)
-  let scheme = call_589121.pickScheme
+  let valid = call_579021.validator(path, query, header, formData, body)
+  let scheme = call_579021.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589121.url(scheme.get, call_589121.host, call_589121.base,
-                         call_589121.route, valid.getOrDefault("path"),
+  let url = call_579021.url(scheme.get, call_579021.host, call_579021.base,
+                         call_579021.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589121, url, valid)
+  result = hook(call_579021, url, valid)
 
-proc call*(call_589122: Call_DeploymentmanagerDeploymentsCancelPreview_589108;
-          deployment: string; project: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579022: Call_DeploymentmanagerDeploymentsCancelPreview_579008;
+          deployment: string; project: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## deploymentmanagerDeploymentsCancelPreview
   ## Cancels and removes the preview currently associated with the deployment.
-  ##   deployment: string (required)
-  ##             : The name of the deployment for this request.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   deployment: string (required)
+  ##             : The name of the deployment for this request.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   project: string (required)
   ##          : The project ID for this request.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589123 = newJObject()
-  var query_589124 = newJObject()
-  var body_589125 = newJObject()
-  add(path_589123, "deployment", newJString(deployment))
-  add(query_589124, "fields", newJString(fields))
-  add(query_589124, "quotaUser", newJString(quotaUser))
-  add(query_589124, "alt", newJString(alt))
-  add(query_589124, "oauth_token", newJString(oauthToken))
-  add(query_589124, "userIp", newJString(userIp))
-  add(query_589124, "key", newJString(key))
-  add(path_589123, "project", newJString(project))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579023 = newJObject()
+  var query_579024 = newJObject()
+  var body_579025 = newJObject()
+  add(query_579024, "key", newJString(key))
+  add(query_579024, "prettyPrint", newJBool(prettyPrint))
+  add(query_579024, "oauth_token", newJString(oauthToken))
+  add(path_579023, "deployment", newJString(deployment))
+  add(query_579024, "alt", newJString(alt))
+  add(query_579024, "userIp", newJString(userIp))
+  add(query_579024, "quotaUser", newJString(quotaUser))
+  add(path_579023, "project", newJString(project))
   if body != nil:
-    body_589125 = body
-  add(query_589124, "prettyPrint", newJBool(prettyPrint))
-  result = call_589122.call(path_589123, query_589124, nil, nil, body_589125)
+    body_579025 = body
+  add(query_579024, "fields", newJString(fields))
+  result = call_579022.call(path_579023, query_579024, nil, nil, body_579025)
 
-var deploymentmanagerDeploymentsCancelPreview* = Call_DeploymentmanagerDeploymentsCancelPreview_589108(
+var deploymentmanagerDeploymentsCancelPreview* = Call_DeploymentmanagerDeploymentsCancelPreview_579008(
     name: "deploymentmanagerDeploymentsCancelPreview", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}/cancelPreview",
-    validator: validate_DeploymentmanagerDeploymentsCancelPreview_589109,
+    validator: validate_DeploymentmanagerDeploymentsCancelPreview_579009,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerDeploymentsCancelPreview_589110,
+    url: url_DeploymentmanagerDeploymentsCancelPreview_579010,
     schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerManifestsList_589126 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerManifestsList_589128(protocol: Scheme; host: string;
+  Call_DeploymentmanagerManifestsList_579026 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerManifestsList_579028(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1423,7 +1427,7 @@ proc url_DeploymentmanagerManifestsList_589128(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerManifestsList_589127(path: JsonNode;
+proc validate_DeploymentmanagerManifestsList_579027(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all manifests for a given deployment.
   ## 
@@ -1437,42 +1441,36 @@ proc validate_DeploymentmanagerManifestsList_589127(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_589129 = path.getOrDefault("deployment")
-  valid_589129 = validateParameter(valid_589129, JString, required = true,
+  var valid_579029 = path.getOrDefault("deployment")
+  valid_579029 = validateParameter(valid_579029, JString, required = true,
                                  default = nil)
-  if valid_589129 != nil:
-    section.add "deployment", valid_589129
-  var valid_589130 = path.getOrDefault("project")
-  valid_589130 = validateParameter(valid_589130, JString, required = true,
+  if valid_579029 != nil:
+    section.add "deployment", valid_579029
+  var valid_579030 = path.getOrDefault("project")
+  valid_579030 = validateParameter(valid_579030, JString, required = true,
                                  default = nil)
-  if valid_589130 != nil:
-    section.add "project", valid_589130
+  if valid_579030 != nil:
+    section.add "project", valid_579030
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
   ##   oauth_token: JString
   ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
   ##   userIp: JString
   ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   orderBy: JString
   ##          : Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.
   ## 
   ## You can also sort results in descending order based on the creation timestamp using orderBy="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.
   ## 
   ## Currently, only sorting by name or creationTimestamp desc is supported.
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
   ##   filter: JString
   ##         : A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <.
   ## 
@@ -1481,62 +1479,68 @@ proc validate_DeploymentmanagerManifestsList_589127(path: JsonNode;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+  ##   pageToken: JString
+  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
   section = newJObject()
-  var valid_589131 = query.getOrDefault("fields")
-  valid_589131 = validateParameter(valid_589131, JString, required = false,
+  var valid_579031 = query.getOrDefault("key")
+  valid_579031 = validateParameter(valid_579031, JString, required = false,
                                  default = nil)
-  if valid_589131 != nil:
-    section.add "fields", valid_589131
-  var valid_589132 = query.getOrDefault("pageToken")
-  valid_589132 = validateParameter(valid_589132, JString, required = false,
-                                 default = nil)
-  if valid_589132 != nil:
-    section.add "pageToken", valid_589132
-  var valid_589133 = query.getOrDefault("quotaUser")
-  valid_589133 = validateParameter(valid_589133, JString, required = false,
-                                 default = nil)
-  if valid_589133 != nil:
-    section.add "quotaUser", valid_589133
-  var valid_589134 = query.getOrDefault("alt")
-  valid_589134 = validateParameter(valid_589134, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589134 != nil:
-    section.add "alt", valid_589134
-  var valid_589135 = query.getOrDefault("oauth_token")
-  valid_589135 = validateParameter(valid_589135, JString, required = false,
-                                 default = nil)
-  if valid_589135 != nil:
-    section.add "oauth_token", valid_589135
-  var valid_589136 = query.getOrDefault("userIp")
-  valid_589136 = validateParameter(valid_589136, JString, required = false,
-                                 default = nil)
-  if valid_589136 != nil:
-    section.add "userIp", valid_589136
-  var valid_589137 = query.getOrDefault("maxResults")
-  valid_589137 = validateParameter(valid_589137, JInt, required = false,
-                                 default = newJInt(500))
-  if valid_589137 != nil:
-    section.add "maxResults", valid_589137
-  var valid_589138 = query.getOrDefault("orderBy")
-  valid_589138 = validateParameter(valid_589138, JString, required = false,
-                                 default = nil)
-  if valid_589138 != nil:
-    section.add "orderBy", valid_589138
-  var valid_589139 = query.getOrDefault("key")
-  valid_589139 = validateParameter(valid_589139, JString, required = false,
-                                 default = nil)
-  if valid_589139 != nil:
-    section.add "key", valid_589139
-  var valid_589140 = query.getOrDefault("prettyPrint")
-  valid_589140 = validateParameter(valid_589140, JBool, required = false,
+  if valid_579031 != nil:
+    section.add "key", valid_579031
+  var valid_579032 = query.getOrDefault("prettyPrint")
+  valid_579032 = validateParameter(valid_579032, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589140 != nil:
-    section.add "prettyPrint", valid_589140
-  var valid_589141 = query.getOrDefault("filter")
-  valid_589141 = validateParameter(valid_589141, JString, required = false,
+  if valid_579032 != nil:
+    section.add "prettyPrint", valid_579032
+  var valid_579033 = query.getOrDefault("oauth_token")
+  valid_579033 = validateParameter(valid_579033, JString, required = false,
                                  default = nil)
-  if valid_589141 != nil:
-    section.add "filter", valid_589141
+  if valid_579033 != nil:
+    section.add "oauth_token", valid_579033
+  var valid_579034 = query.getOrDefault("alt")
+  valid_579034 = validateParameter(valid_579034, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579034 != nil:
+    section.add "alt", valid_579034
+  var valid_579035 = query.getOrDefault("userIp")
+  valid_579035 = validateParameter(valid_579035, JString, required = false,
+                                 default = nil)
+  if valid_579035 != nil:
+    section.add "userIp", valid_579035
+  var valid_579036 = query.getOrDefault("quotaUser")
+  valid_579036 = validateParameter(valid_579036, JString, required = false,
+                                 default = nil)
+  if valid_579036 != nil:
+    section.add "quotaUser", valid_579036
+  var valid_579037 = query.getOrDefault("orderBy")
+  valid_579037 = validateParameter(valid_579037, JString, required = false,
+                                 default = nil)
+  if valid_579037 != nil:
+    section.add "orderBy", valid_579037
+  var valid_579038 = query.getOrDefault("filter")
+  valid_579038 = validateParameter(valid_579038, JString, required = false,
+                                 default = nil)
+  if valid_579038 != nil:
+    section.add "filter", valid_579038
+  var valid_579039 = query.getOrDefault("pageToken")
+  valid_579039 = validateParameter(valid_579039, JString, required = false,
+                                 default = nil)
+  if valid_579039 != nil:
+    section.add "pageToken", valid_579039
+  var valid_579040 = query.getOrDefault("fields")
+  valid_579040 = validateParameter(valid_579040, JString, required = false,
+                                 default = nil)
+  if valid_579040 != nil:
+    section.add "fields", valid_579040
+  var valid_579041 = query.getOrDefault("maxResults")
+  valid_579041 = validateParameter(valid_579041, JInt, required = false,
+                                 default = newJInt(500))
+  if valid_579041 != nil:
+    section.add "maxResults", valid_579041
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1545,55 +1549,47 @@ proc validate_DeploymentmanagerManifestsList_589127(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589142: Call_DeploymentmanagerManifestsList_589126; path: JsonNode;
+proc call*(call_579042: Call_DeploymentmanagerManifestsList_579026; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all manifests for a given deployment.
   ## 
-  let valid = call_589142.validator(path, query, header, formData, body)
-  let scheme = call_589142.pickScheme
+  let valid = call_579042.validator(path, query, header, formData, body)
+  let scheme = call_579042.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589142.url(scheme.get, call_589142.host, call_589142.base,
-                         call_589142.route, valid.getOrDefault("path"),
+  let url = call_579042.url(scheme.get, call_579042.host, call_579042.base,
+                         call_579042.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589142, url, valid)
+  result = hook(call_579042, url, valid)
 
-proc call*(call_589143: Call_DeploymentmanagerManifestsList_589126;
-          deployment: string; project: string; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; maxResults: int = 500;
-          orderBy: string = ""; key: string = ""; prettyPrint: bool = true;
-          filter: string = ""): Recallable =
+proc call*(call_579043: Call_DeploymentmanagerManifestsList_579026;
+          deployment: string; project: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; orderBy: string = "";
+          filter: string = ""; pageToken: string = ""; fields: string = "";
+          maxResults: int = 500): Recallable =
   ## deploymentmanagerManifestsList
   ## Lists all manifests for a given deployment.
-  ##   deployment: string (required)
-  ##             : The name of the deployment for this request.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
   ##             : OAuth 2.0 token for the current user.
+  ##   deployment: string (required)
+  ##             : The name of the deployment for this request.
+  ##   alt: string
+  ##      : Data format for the response.
   ##   userIp: string
   ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   orderBy: string
   ##          : Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.
   ## 
   ## You can also sort results in descending order based on the creation timestamp using orderBy="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.
   ## 
   ## Currently, only sorting by name or creationTimestamp desc is supported.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   project: string (required)
-  ##          : The project ID for this request.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
   ##   filter: string
   ##         : A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <.
   ## 
@@ -1602,33 +1598,41 @@ proc call*(call_589143: Call_DeploymentmanagerManifestsList_589126;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-  var path_589144 = newJObject()
-  var query_589145 = newJObject()
-  add(path_589144, "deployment", newJString(deployment))
-  add(query_589145, "fields", newJString(fields))
-  add(query_589145, "pageToken", newJString(pageToken))
-  add(query_589145, "quotaUser", newJString(quotaUser))
-  add(query_589145, "alt", newJString(alt))
-  add(query_589145, "oauth_token", newJString(oauthToken))
-  add(query_589145, "userIp", newJString(userIp))
-  add(query_589145, "maxResults", newJInt(maxResults))
-  add(query_589145, "orderBy", newJString(orderBy))
-  add(query_589145, "key", newJString(key))
-  add(path_589144, "project", newJString(project))
-  add(query_589145, "prettyPrint", newJBool(prettyPrint))
-  add(query_589145, "filter", newJString(filter))
-  result = call_589143.call(path_589144, query_589145, nil, nil, nil)
+  ##   pageToken: string
+  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
+  ##   project: string (required)
+  ##          : The project ID for this request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: int
+  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  var path_579044 = newJObject()
+  var query_579045 = newJObject()
+  add(query_579045, "key", newJString(key))
+  add(query_579045, "prettyPrint", newJBool(prettyPrint))
+  add(query_579045, "oauth_token", newJString(oauthToken))
+  add(path_579044, "deployment", newJString(deployment))
+  add(query_579045, "alt", newJString(alt))
+  add(query_579045, "userIp", newJString(userIp))
+  add(query_579045, "quotaUser", newJString(quotaUser))
+  add(query_579045, "orderBy", newJString(orderBy))
+  add(query_579045, "filter", newJString(filter))
+  add(query_579045, "pageToken", newJString(pageToken))
+  add(path_579044, "project", newJString(project))
+  add(query_579045, "fields", newJString(fields))
+  add(query_579045, "maxResults", newJInt(maxResults))
+  result = call_579043.call(path_579044, query_579045, nil, nil, nil)
 
-var deploymentmanagerManifestsList* = Call_DeploymentmanagerManifestsList_589126(
+var deploymentmanagerManifestsList* = Call_DeploymentmanagerManifestsList_579026(
     name: "deploymentmanagerManifestsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}/manifests",
-    validator: validate_DeploymentmanagerManifestsList_589127,
+    validator: validate_DeploymentmanagerManifestsList_579027,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerManifestsList_589128, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerManifestsList_579028, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerManifestsGet_589146 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerManifestsGet_589148(protocol: Scheme; host: string;
+  Call_DeploymentmanagerManifestsGet_579046 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerManifestsGet_579048(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1649,7 +1653,7 @@ proc url_DeploymentmanagerManifestsGet_589148(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerManifestsGet_589147(path: JsonNode; query: JsonNode;
+proc validate_DeploymentmanagerManifestsGet_579047(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets information about a specific manifest.
   ## 
@@ -1665,73 +1669,73 @@ proc validate_DeploymentmanagerManifestsGet_589147(path: JsonNode; query: JsonNo
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_589149 = path.getOrDefault("deployment")
-  valid_589149 = validateParameter(valid_589149, JString, required = true,
+  var valid_579049 = path.getOrDefault("deployment")
+  valid_579049 = validateParameter(valid_579049, JString, required = true,
                                  default = nil)
-  if valid_589149 != nil:
-    section.add "deployment", valid_589149
-  var valid_589150 = path.getOrDefault("project")
-  valid_589150 = validateParameter(valid_589150, JString, required = true,
+  if valid_579049 != nil:
+    section.add "deployment", valid_579049
+  var valid_579050 = path.getOrDefault("project")
+  valid_579050 = validateParameter(valid_579050, JString, required = true,
                                  default = nil)
-  if valid_589150 != nil:
-    section.add "project", valid_589150
-  var valid_589151 = path.getOrDefault("manifest")
-  valid_589151 = validateParameter(valid_589151, JString, required = true,
+  if valid_579050 != nil:
+    section.add "project", valid_579050
+  var valid_579051 = path.getOrDefault("manifest")
+  valid_579051 = validateParameter(valid_579051, JString, required = true,
                                  default = nil)
-  if valid_589151 != nil:
-    section.add "manifest", valid_589151
+  if valid_579051 != nil:
+    section.add "manifest", valid_579051
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589152 = query.getOrDefault("fields")
-  valid_589152 = validateParameter(valid_589152, JString, required = false,
+  var valid_579052 = query.getOrDefault("key")
+  valid_579052 = validateParameter(valid_579052, JString, required = false,
                                  default = nil)
-  if valid_589152 != nil:
-    section.add "fields", valid_589152
-  var valid_589153 = query.getOrDefault("quotaUser")
-  valid_589153 = validateParameter(valid_589153, JString, required = false,
-                                 default = nil)
-  if valid_589153 != nil:
-    section.add "quotaUser", valid_589153
-  var valid_589154 = query.getOrDefault("alt")
-  valid_589154 = validateParameter(valid_589154, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589154 != nil:
-    section.add "alt", valid_589154
-  var valid_589155 = query.getOrDefault("oauth_token")
-  valid_589155 = validateParameter(valid_589155, JString, required = false,
-                                 default = nil)
-  if valid_589155 != nil:
-    section.add "oauth_token", valid_589155
-  var valid_589156 = query.getOrDefault("userIp")
-  valid_589156 = validateParameter(valid_589156, JString, required = false,
-                                 default = nil)
-  if valid_589156 != nil:
-    section.add "userIp", valid_589156
-  var valid_589157 = query.getOrDefault("key")
-  valid_589157 = validateParameter(valid_589157, JString, required = false,
-                                 default = nil)
-  if valid_589157 != nil:
-    section.add "key", valid_589157
-  var valid_589158 = query.getOrDefault("prettyPrint")
-  valid_589158 = validateParameter(valid_589158, JBool, required = false,
+  if valid_579052 != nil:
+    section.add "key", valid_579052
+  var valid_579053 = query.getOrDefault("prettyPrint")
+  valid_579053 = validateParameter(valid_579053, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589158 != nil:
-    section.add "prettyPrint", valid_589158
+  if valid_579053 != nil:
+    section.add "prettyPrint", valid_579053
+  var valid_579054 = query.getOrDefault("oauth_token")
+  valid_579054 = validateParameter(valid_579054, JString, required = false,
+                                 default = nil)
+  if valid_579054 != nil:
+    section.add "oauth_token", valid_579054
+  var valid_579055 = query.getOrDefault("alt")
+  valid_579055 = validateParameter(valid_579055, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579055 != nil:
+    section.add "alt", valid_579055
+  var valid_579056 = query.getOrDefault("userIp")
+  valid_579056 = validateParameter(valid_579056, JString, required = false,
+                                 default = nil)
+  if valid_579056 != nil:
+    section.add "userIp", valid_579056
+  var valid_579057 = query.getOrDefault("quotaUser")
+  valid_579057 = validateParameter(valid_579057, JString, required = false,
+                                 default = nil)
+  if valid_579057 != nil:
+    section.add "quotaUser", valid_579057
+  var valid_579058 = query.getOrDefault("fields")
+  valid_579058 = validateParameter(valid_579058, JString, required = false,
+                                 default = nil)
+  if valid_579058 != nil:
+    section.add "fields", valid_579058
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1740,69 +1744,69 @@ proc validate_DeploymentmanagerManifestsGet_589147(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_589159: Call_DeploymentmanagerManifestsGet_589146; path: JsonNode;
+proc call*(call_579059: Call_DeploymentmanagerManifestsGet_579046; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets information about a specific manifest.
   ## 
-  let valid = call_589159.validator(path, query, header, formData, body)
-  let scheme = call_589159.pickScheme
+  let valid = call_579059.validator(path, query, header, formData, body)
+  let scheme = call_579059.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589159.url(scheme.get, call_589159.host, call_589159.base,
-                         call_589159.route, valid.getOrDefault("path"),
+  let url = call_579059.url(scheme.get, call_579059.host, call_579059.base,
+                         call_579059.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589159, url, valid)
+  result = hook(call_579059, url, valid)
 
-proc call*(call_589160: Call_DeploymentmanagerManifestsGet_589146;
-          deployment: string; project: string; manifest: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579060: Call_DeploymentmanagerManifestsGet_579046;
+          deployment: string; project: string; manifest: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## deploymentmanagerManifestsGet
   ## Gets information about a specific manifest.
-  ##   deployment: string (required)
-  ##             : The name of the deployment for this request.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   project: string (required)
-  ##          : The project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   deployment: string (required)
+  ##             : The name of the deployment for this request.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   project: string (required)
+  ##          : The project ID for this request.
   ##   manifest: string (required)
   ##           : The name of the manifest for this request.
-  var path_589161 = newJObject()
-  var query_589162 = newJObject()
-  add(path_589161, "deployment", newJString(deployment))
-  add(query_589162, "fields", newJString(fields))
-  add(query_589162, "quotaUser", newJString(quotaUser))
-  add(query_589162, "alt", newJString(alt))
-  add(query_589162, "oauth_token", newJString(oauthToken))
-  add(query_589162, "userIp", newJString(userIp))
-  add(query_589162, "key", newJString(key))
-  add(path_589161, "project", newJString(project))
-  add(query_589162, "prettyPrint", newJBool(prettyPrint))
-  add(path_589161, "manifest", newJString(manifest))
-  result = call_589160.call(path_589161, query_589162, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579061 = newJObject()
+  var query_579062 = newJObject()
+  add(query_579062, "key", newJString(key))
+  add(query_579062, "prettyPrint", newJBool(prettyPrint))
+  add(query_579062, "oauth_token", newJString(oauthToken))
+  add(path_579061, "deployment", newJString(deployment))
+  add(query_579062, "alt", newJString(alt))
+  add(query_579062, "userIp", newJString(userIp))
+  add(query_579062, "quotaUser", newJString(quotaUser))
+  add(path_579061, "project", newJString(project))
+  add(path_579061, "manifest", newJString(manifest))
+  add(query_579062, "fields", newJString(fields))
+  result = call_579060.call(path_579061, query_579062, nil, nil, nil)
 
-var deploymentmanagerManifestsGet* = Call_DeploymentmanagerManifestsGet_589146(
+var deploymentmanagerManifestsGet* = Call_DeploymentmanagerManifestsGet_579046(
     name: "deploymentmanagerManifestsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}/manifests/{manifest}",
-    validator: validate_DeploymentmanagerManifestsGet_589147,
+    validator: validate_DeploymentmanagerManifestsGet_579047,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerManifestsGet_589148, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerManifestsGet_579048, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerResourcesList_589163 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerResourcesList_589165(protocol: Scheme; host: string;
+  Call_DeploymentmanagerResourcesList_579063 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerResourcesList_579065(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1821,7 +1825,7 @@ proc url_DeploymentmanagerResourcesList_589165(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerResourcesList_589164(path: JsonNode;
+proc validate_DeploymentmanagerResourcesList_579064(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all resources in a given deployment.
   ## 
@@ -1835,42 +1839,36 @@ proc validate_DeploymentmanagerResourcesList_589164(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_589166 = path.getOrDefault("deployment")
-  valid_589166 = validateParameter(valid_589166, JString, required = true,
+  var valid_579066 = path.getOrDefault("deployment")
+  valid_579066 = validateParameter(valid_579066, JString, required = true,
                                  default = nil)
-  if valid_589166 != nil:
-    section.add "deployment", valid_589166
-  var valid_589167 = path.getOrDefault("project")
-  valid_589167 = validateParameter(valid_589167, JString, required = true,
+  if valid_579066 != nil:
+    section.add "deployment", valid_579066
+  var valid_579067 = path.getOrDefault("project")
+  valid_579067 = validateParameter(valid_579067, JString, required = true,
                                  default = nil)
-  if valid_589167 != nil:
-    section.add "project", valid_589167
+  if valid_579067 != nil:
+    section.add "project", valid_579067
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
   ##   oauth_token: JString
   ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
   ##   userIp: JString
   ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   orderBy: JString
   ##          : Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.
   ## 
   ## You can also sort results in descending order based on the creation timestamp using orderBy="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.
   ## 
   ## Currently, only sorting by name or creationTimestamp desc is supported.
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
   ##   filter: JString
   ##         : A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <.
   ## 
@@ -1879,62 +1877,68 @@ proc validate_DeploymentmanagerResourcesList_589164(path: JsonNode;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+  ##   pageToken: JString
+  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
   section = newJObject()
-  var valid_589168 = query.getOrDefault("fields")
-  valid_589168 = validateParameter(valid_589168, JString, required = false,
+  var valid_579068 = query.getOrDefault("key")
+  valid_579068 = validateParameter(valid_579068, JString, required = false,
                                  default = nil)
-  if valid_589168 != nil:
-    section.add "fields", valid_589168
-  var valid_589169 = query.getOrDefault("pageToken")
-  valid_589169 = validateParameter(valid_589169, JString, required = false,
-                                 default = nil)
-  if valid_589169 != nil:
-    section.add "pageToken", valid_589169
-  var valid_589170 = query.getOrDefault("quotaUser")
-  valid_589170 = validateParameter(valid_589170, JString, required = false,
-                                 default = nil)
-  if valid_589170 != nil:
-    section.add "quotaUser", valid_589170
-  var valid_589171 = query.getOrDefault("alt")
-  valid_589171 = validateParameter(valid_589171, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589171 != nil:
-    section.add "alt", valid_589171
-  var valid_589172 = query.getOrDefault("oauth_token")
-  valid_589172 = validateParameter(valid_589172, JString, required = false,
-                                 default = nil)
-  if valid_589172 != nil:
-    section.add "oauth_token", valid_589172
-  var valid_589173 = query.getOrDefault("userIp")
-  valid_589173 = validateParameter(valid_589173, JString, required = false,
-                                 default = nil)
-  if valid_589173 != nil:
-    section.add "userIp", valid_589173
-  var valid_589174 = query.getOrDefault("maxResults")
-  valid_589174 = validateParameter(valid_589174, JInt, required = false,
-                                 default = newJInt(500))
-  if valid_589174 != nil:
-    section.add "maxResults", valid_589174
-  var valid_589175 = query.getOrDefault("orderBy")
-  valid_589175 = validateParameter(valid_589175, JString, required = false,
-                                 default = nil)
-  if valid_589175 != nil:
-    section.add "orderBy", valid_589175
-  var valid_589176 = query.getOrDefault("key")
-  valid_589176 = validateParameter(valid_589176, JString, required = false,
-                                 default = nil)
-  if valid_589176 != nil:
-    section.add "key", valid_589176
-  var valid_589177 = query.getOrDefault("prettyPrint")
-  valid_589177 = validateParameter(valid_589177, JBool, required = false,
+  if valid_579068 != nil:
+    section.add "key", valid_579068
+  var valid_579069 = query.getOrDefault("prettyPrint")
+  valid_579069 = validateParameter(valid_579069, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589177 != nil:
-    section.add "prettyPrint", valid_589177
-  var valid_589178 = query.getOrDefault("filter")
-  valid_589178 = validateParameter(valid_589178, JString, required = false,
+  if valid_579069 != nil:
+    section.add "prettyPrint", valid_579069
+  var valid_579070 = query.getOrDefault("oauth_token")
+  valid_579070 = validateParameter(valid_579070, JString, required = false,
                                  default = nil)
-  if valid_589178 != nil:
-    section.add "filter", valid_589178
+  if valid_579070 != nil:
+    section.add "oauth_token", valid_579070
+  var valid_579071 = query.getOrDefault("alt")
+  valid_579071 = validateParameter(valid_579071, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579071 != nil:
+    section.add "alt", valid_579071
+  var valid_579072 = query.getOrDefault("userIp")
+  valid_579072 = validateParameter(valid_579072, JString, required = false,
+                                 default = nil)
+  if valid_579072 != nil:
+    section.add "userIp", valid_579072
+  var valid_579073 = query.getOrDefault("quotaUser")
+  valid_579073 = validateParameter(valid_579073, JString, required = false,
+                                 default = nil)
+  if valid_579073 != nil:
+    section.add "quotaUser", valid_579073
+  var valid_579074 = query.getOrDefault("orderBy")
+  valid_579074 = validateParameter(valid_579074, JString, required = false,
+                                 default = nil)
+  if valid_579074 != nil:
+    section.add "orderBy", valid_579074
+  var valid_579075 = query.getOrDefault("filter")
+  valid_579075 = validateParameter(valid_579075, JString, required = false,
+                                 default = nil)
+  if valid_579075 != nil:
+    section.add "filter", valid_579075
+  var valid_579076 = query.getOrDefault("pageToken")
+  valid_579076 = validateParameter(valid_579076, JString, required = false,
+                                 default = nil)
+  if valid_579076 != nil:
+    section.add "pageToken", valid_579076
+  var valid_579077 = query.getOrDefault("fields")
+  valid_579077 = validateParameter(valid_579077, JString, required = false,
+                                 default = nil)
+  if valid_579077 != nil:
+    section.add "fields", valid_579077
+  var valid_579078 = query.getOrDefault("maxResults")
+  valid_579078 = validateParameter(valid_579078, JInt, required = false,
+                                 default = newJInt(500))
+  if valid_579078 != nil:
+    section.add "maxResults", valid_579078
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1943,55 +1947,47 @@ proc validate_DeploymentmanagerResourcesList_589164(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589179: Call_DeploymentmanagerResourcesList_589163; path: JsonNode;
+proc call*(call_579079: Call_DeploymentmanagerResourcesList_579063; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all resources in a given deployment.
   ## 
-  let valid = call_589179.validator(path, query, header, formData, body)
-  let scheme = call_589179.pickScheme
+  let valid = call_579079.validator(path, query, header, formData, body)
+  let scheme = call_579079.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589179.url(scheme.get, call_589179.host, call_589179.base,
-                         call_589179.route, valid.getOrDefault("path"),
+  let url = call_579079.url(scheme.get, call_579079.host, call_579079.base,
+                         call_579079.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589179, url, valid)
+  result = hook(call_579079, url, valid)
 
-proc call*(call_589180: Call_DeploymentmanagerResourcesList_589163;
-          deployment: string; project: string; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; maxResults: int = 500;
-          orderBy: string = ""; key: string = ""; prettyPrint: bool = true;
-          filter: string = ""): Recallable =
+proc call*(call_579080: Call_DeploymentmanagerResourcesList_579063;
+          deployment: string; project: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; orderBy: string = "";
+          filter: string = ""; pageToken: string = ""; fields: string = "";
+          maxResults: int = 500): Recallable =
   ## deploymentmanagerResourcesList
   ## Lists all resources in a given deployment.
-  ##   deployment: string (required)
-  ##             : The name of the deployment for this request.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
   ##             : OAuth 2.0 token for the current user.
+  ##   deployment: string (required)
+  ##             : The name of the deployment for this request.
+  ##   alt: string
+  ##      : Data format for the response.
   ##   userIp: string
   ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   orderBy: string
   ##          : Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.
   ## 
   ## You can also sort results in descending order based on the creation timestamp using orderBy="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.
   ## 
   ## Currently, only sorting by name or creationTimestamp desc is supported.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   project: string (required)
-  ##          : The project ID for this request.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
   ##   filter: string
   ##         : A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <.
   ## 
@@ -2000,33 +1996,41 @@ proc call*(call_589180: Call_DeploymentmanagerResourcesList_589163;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-  var path_589181 = newJObject()
-  var query_589182 = newJObject()
-  add(path_589181, "deployment", newJString(deployment))
-  add(query_589182, "fields", newJString(fields))
-  add(query_589182, "pageToken", newJString(pageToken))
-  add(query_589182, "quotaUser", newJString(quotaUser))
-  add(query_589182, "alt", newJString(alt))
-  add(query_589182, "oauth_token", newJString(oauthToken))
-  add(query_589182, "userIp", newJString(userIp))
-  add(query_589182, "maxResults", newJInt(maxResults))
-  add(query_589182, "orderBy", newJString(orderBy))
-  add(query_589182, "key", newJString(key))
-  add(path_589181, "project", newJString(project))
-  add(query_589182, "prettyPrint", newJBool(prettyPrint))
-  add(query_589182, "filter", newJString(filter))
-  result = call_589180.call(path_589181, query_589182, nil, nil, nil)
+  ##   pageToken: string
+  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
+  ##   project: string (required)
+  ##          : The project ID for this request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: int
+  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  var path_579081 = newJObject()
+  var query_579082 = newJObject()
+  add(query_579082, "key", newJString(key))
+  add(query_579082, "prettyPrint", newJBool(prettyPrint))
+  add(query_579082, "oauth_token", newJString(oauthToken))
+  add(path_579081, "deployment", newJString(deployment))
+  add(query_579082, "alt", newJString(alt))
+  add(query_579082, "userIp", newJString(userIp))
+  add(query_579082, "quotaUser", newJString(quotaUser))
+  add(query_579082, "orderBy", newJString(orderBy))
+  add(query_579082, "filter", newJString(filter))
+  add(query_579082, "pageToken", newJString(pageToken))
+  add(path_579081, "project", newJString(project))
+  add(query_579082, "fields", newJString(fields))
+  add(query_579082, "maxResults", newJInt(maxResults))
+  result = call_579080.call(path_579081, query_579082, nil, nil, nil)
 
-var deploymentmanagerResourcesList* = Call_DeploymentmanagerResourcesList_589163(
+var deploymentmanagerResourcesList* = Call_DeploymentmanagerResourcesList_579063(
     name: "deploymentmanagerResourcesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}/resources",
-    validator: validate_DeploymentmanagerResourcesList_589164,
+    validator: validate_DeploymentmanagerResourcesList_579064,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerResourcesList_589165, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerResourcesList_579065, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerResourcesGet_589183 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerResourcesGet_589185(protocol: Scheme; host: string;
+  Call_DeploymentmanagerResourcesGet_579083 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerResourcesGet_579085(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2047,7 +2051,7 @@ proc url_DeploymentmanagerResourcesGet_589185(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerResourcesGet_589184(path: JsonNode; query: JsonNode;
+proc validate_DeploymentmanagerResourcesGet_579084(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets information about a single resource.
   ## 
@@ -2063,73 +2067,73 @@ proc validate_DeploymentmanagerResourcesGet_589184(path: JsonNode; query: JsonNo
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_589186 = path.getOrDefault("deployment")
-  valid_589186 = validateParameter(valid_589186, JString, required = true,
+  var valid_579086 = path.getOrDefault("deployment")
+  valid_579086 = validateParameter(valid_579086, JString, required = true,
                                  default = nil)
-  if valid_589186 != nil:
-    section.add "deployment", valid_589186
-  var valid_589187 = path.getOrDefault("resource")
-  valid_589187 = validateParameter(valid_589187, JString, required = true,
+  if valid_579086 != nil:
+    section.add "deployment", valid_579086
+  var valid_579087 = path.getOrDefault("resource")
+  valid_579087 = validateParameter(valid_579087, JString, required = true,
                                  default = nil)
-  if valid_589187 != nil:
-    section.add "resource", valid_589187
-  var valid_589188 = path.getOrDefault("project")
-  valid_589188 = validateParameter(valid_589188, JString, required = true,
+  if valid_579087 != nil:
+    section.add "resource", valid_579087
+  var valid_579088 = path.getOrDefault("project")
+  valid_579088 = validateParameter(valid_579088, JString, required = true,
                                  default = nil)
-  if valid_589188 != nil:
-    section.add "project", valid_589188
+  if valid_579088 != nil:
+    section.add "project", valid_579088
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589189 = query.getOrDefault("fields")
-  valid_589189 = validateParameter(valid_589189, JString, required = false,
+  var valid_579089 = query.getOrDefault("key")
+  valid_579089 = validateParameter(valid_579089, JString, required = false,
                                  default = nil)
-  if valid_589189 != nil:
-    section.add "fields", valid_589189
-  var valid_589190 = query.getOrDefault("quotaUser")
-  valid_589190 = validateParameter(valid_589190, JString, required = false,
-                                 default = nil)
-  if valid_589190 != nil:
-    section.add "quotaUser", valid_589190
-  var valid_589191 = query.getOrDefault("alt")
-  valid_589191 = validateParameter(valid_589191, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589191 != nil:
-    section.add "alt", valid_589191
-  var valid_589192 = query.getOrDefault("oauth_token")
-  valid_589192 = validateParameter(valid_589192, JString, required = false,
-                                 default = nil)
-  if valid_589192 != nil:
-    section.add "oauth_token", valid_589192
-  var valid_589193 = query.getOrDefault("userIp")
-  valid_589193 = validateParameter(valid_589193, JString, required = false,
-                                 default = nil)
-  if valid_589193 != nil:
-    section.add "userIp", valid_589193
-  var valid_589194 = query.getOrDefault("key")
-  valid_589194 = validateParameter(valid_589194, JString, required = false,
-                                 default = nil)
-  if valid_589194 != nil:
-    section.add "key", valid_589194
-  var valid_589195 = query.getOrDefault("prettyPrint")
-  valid_589195 = validateParameter(valid_589195, JBool, required = false,
+  if valid_579089 != nil:
+    section.add "key", valid_579089
+  var valid_579090 = query.getOrDefault("prettyPrint")
+  valid_579090 = validateParameter(valid_579090, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589195 != nil:
-    section.add "prettyPrint", valid_589195
+  if valid_579090 != nil:
+    section.add "prettyPrint", valid_579090
+  var valid_579091 = query.getOrDefault("oauth_token")
+  valid_579091 = validateParameter(valid_579091, JString, required = false,
+                                 default = nil)
+  if valid_579091 != nil:
+    section.add "oauth_token", valid_579091
+  var valid_579092 = query.getOrDefault("alt")
+  valid_579092 = validateParameter(valid_579092, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579092 != nil:
+    section.add "alt", valid_579092
+  var valid_579093 = query.getOrDefault("userIp")
+  valid_579093 = validateParameter(valid_579093, JString, required = false,
+                                 default = nil)
+  if valid_579093 != nil:
+    section.add "userIp", valid_579093
+  var valid_579094 = query.getOrDefault("quotaUser")
+  valid_579094 = validateParameter(valid_579094, JString, required = false,
+                                 default = nil)
+  if valid_579094 != nil:
+    section.add "quotaUser", valid_579094
+  var valid_579095 = query.getOrDefault("fields")
+  valid_579095 = validateParameter(valid_579095, JString, required = false,
+                                 default = nil)
+  if valid_579095 != nil:
+    section.add "fields", valid_579095
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2138,69 +2142,69 @@ proc validate_DeploymentmanagerResourcesGet_589184(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_589196: Call_DeploymentmanagerResourcesGet_589183; path: JsonNode;
+proc call*(call_579096: Call_DeploymentmanagerResourcesGet_579083; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets information about a single resource.
   ## 
-  let valid = call_589196.validator(path, query, header, formData, body)
-  let scheme = call_589196.pickScheme
+  let valid = call_579096.validator(path, query, header, formData, body)
+  let scheme = call_579096.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589196.url(scheme.get, call_589196.host, call_589196.base,
-                         call_589196.route, valid.getOrDefault("path"),
+  let url = call_579096.url(scheme.get, call_579096.host, call_579096.base,
+                         call_579096.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589196, url, valid)
+  result = hook(call_579096, url, valid)
 
-proc call*(call_589197: Call_DeploymentmanagerResourcesGet_589183;
-          deployment: string; resource: string; project: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579097: Call_DeploymentmanagerResourcesGet_579083;
+          deployment: string; resource: string; project: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## deploymentmanagerResourcesGet
   ## Gets information about a single resource.
-  ##   deployment: string (required)
-  ##             : The name of the deployment for this request.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   deployment: string (required)
+  ##             : The name of the deployment for this request.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   resource: string (required)
   ##           : The name of the resource for this request.
   ##   project: string (required)
   ##          : The project ID for this request.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589198 = newJObject()
-  var query_589199 = newJObject()
-  add(path_589198, "deployment", newJString(deployment))
-  add(query_589199, "fields", newJString(fields))
-  add(query_589199, "quotaUser", newJString(quotaUser))
-  add(query_589199, "alt", newJString(alt))
-  add(query_589199, "oauth_token", newJString(oauthToken))
-  add(query_589199, "userIp", newJString(userIp))
-  add(query_589199, "key", newJString(key))
-  add(path_589198, "resource", newJString(resource))
-  add(path_589198, "project", newJString(project))
-  add(query_589199, "prettyPrint", newJBool(prettyPrint))
-  result = call_589197.call(path_589198, query_589199, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579098 = newJObject()
+  var query_579099 = newJObject()
+  add(query_579099, "key", newJString(key))
+  add(query_579099, "prettyPrint", newJBool(prettyPrint))
+  add(query_579099, "oauth_token", newJString(oauthToken))
+  add(path_579098, "deployment", newJString(deployment))
+  add(query_579099, "alt", newJString(alt))
+  add(query_579099, "userIp", newJString(userIp))
+  add(query_579099, "quotaUser", newJString(quotaUser))
+  add(path_579098, "resource", newJString(resource))
+  add(path_579098, "project", newJString(project))
+  add(query_579099, "fields", newJString(fields))
+  result = call_579097.call(path_579098, query_579099, nil, nil, nil)
 
-var deploymentmanagerResourcesGet* = Call_DeploymentmanagerResourcesGet_589183(
+var deploymentmanagerResourcesGet* = Call_DeploymentmanagerResourcesGet_579083(
     name: "deploymentmanagerResourcesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}/resources/{resource}",
-    validator: validate_DeploymentmanagerResourcesGet_589184,
+    validator: validate_DeploymentmanagerResourcesGet_579084,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerResourcesGet_589185, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerResourcesGet_579085, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsStop_589200 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerDeploymentsStop_589202(protocol: Scheme; host: string;
+  Call_DeploymentmanagerDeploymentsStop_579100 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerDeploymentsStop_579102(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2219,7 +2223,7 @@ proc url_DeploymentmanagerDeploymentsStop_589202(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsStop_589201(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsStop_579101(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Stops an ongoing operation. This does not roll back any work that has already been completed, but prevents any new work from being started.
   ## 
@@ -2233,68 +2237,68 @@ proc validate_DeploymentmanagerDeploymentsStop_589201(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `deployment` field"
-  var valid_589203 = path.getOrDefault("deployment")
-  valid_589203 = validateParameter(valid_589203, JString, required = true,
+  var valid_579103 = path.getOrDefault("deployment")
+  valid_579103 = validateParameter(valid_579103, JString, required = true,
                                  default = nil)
-  if valid_589203 != nil:
-    section.add "deployment", valid_589203
-  var valid_589204 = path.getOrDefault("project")
-  valid_589204 = validateParameter(valid_589204, JString, required = true,
+  if valid_579103 != nil:
+    section.add "deployment", valid_579103
+  var valid_579104 = path.getOrDefault("project")
+  valid_579104 = validateParameter(valid_579104, JString, required = true,
                                  default = nil)
-  if valid_589204 != nil:
-    section.add "project", valid_589204
+  if valid_579104 != nil:
+    section.add "project", valid_579104
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589205 = query.getOrDefault("fields")
-  valid_589205 = validateParameter(valid_589205, JString, required = false,
+  var valid_579105 = query.getOrDefault("key")
+  valid_579105 = validateParameter(valid_579105, JString, required = false,
                                  default = nil)
-  if valid_589205 != nil:
-    section.add "fields", valid_589205
-  var valid_589206 = query.getOrDefault("quotaUser")
-  valid_589206 = validateParameter(valid_589206, JString, required = false,
-                                 default = nil)
-  if valid_589206 != nil:
-    section.add "quotaUser", valid_589206
-  var valid_589207 = query.getOrDefault("alt")
-  valid_589207 = validateParameter(valid_589207, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589207 != nil:
-    section.add "alt", valid_589207
-  var valid_589208 = query.getOrDefault("oauth_token")
-  valid_589208 = validateParameter(valid_589208, JString, required = false,
-                                 default = nil)
-  if valid_589208 != nil:
-    section.add "oauth_token", valid_589208
-  var valid_589209 = query.getOrDefault("userIp")
-  valid_589209 = validateParameter(valid_589209, JString, required = false,
-                                 default = nil)
-  if valid_589209 != nil:
-    section.add "userIp", valid_589209
-  var valid_589210 = query.getOrDefault("key")
-  valid_589210 = validateParameter(valid_589210, JString, required = false,
-                                 default = nil)
-  if valid_589210 != nil:
-    section.add "key", valid_589210
-  var valid_589211 = query.getOrDefault("prettyPrint")
-  valid_589211 = validateParameter(valid_589211, JBool, required = false,
+  if valid_579105 != nil:
+    section.add "key", valid_579105
+  var valid_579106 = query.getOrDefault("prettyPrint")
+  valid_579106 = validateParameter(valid_579106, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589211 != nil:
-    section.add "prettyPrint", valid_589211
+  if valid_579106 != nil:
+    section.add "prettyPrint", valid_579106
+  var valid_579107 = query.getOrDefault("oauth_token")
+  valid_579107 = validateParameter(valid_579107, JString, required = false,
+                                 default = nil)
+  if valid_579107 != nil:
+    section.add "oauth_token", valid_579107
+  var valid_579108 = query.getOrDefault("alt")
+  valid_579108 = validateParameter(valid_579108, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579108 != nil:
+    section.add "alt", valid_579108
+  var valid_579109 = query.getOrDefault("userIp")
+  valid_579109 = validateParameter(valid_579109, JString, required = false,
+                                 default = nil)
+  if valid_579109 != nil:
+    section.add "userIp", valid_579109
+  var valid_579110 = query.getOrDefault("quotaUser")
+  valid_579110 = validateParameter(valid_579110, JString, required = false,
+                                 default = nil)
+  if valid_579110 != nil:
+    section.add "quotaUser", valid_579110
+  var valid_579111 = query.getOrDefault("fields")
+  valid_579111 = validateParameter(valid_579111, JString, required = false,
+                                 default = nil)
+  if valid_579111 != nil:
+    section.add "fields", valid_579111
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2306,72 +2310,72 @@ proc validate_DeploymentmanagerDeploymentsStop_589201(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589213: Call_DeploymentmanagerDeploymentsStop_589200;
+proc call*(call_579113: Call_DeploymentmanagerDeploymentsStop_579100;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Stops an ongoing operation. This does not roll back any work that has already been completed, but prevents any new work from being started.
   ## 
-  let valid = call_589213.validator(path, query, header, formData, body)
-  let scheme = call_589213.pickScheme
+  let valid = call_579113.validator(path, query, header, formData, body)
+  let scheme = call_579113.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589213.url(scheme.get, call_589213.host, call_589213.base,
-                         call_589213.route, valid.getOrDefault("path"),
+  let url = call_579113.url(scheme.get, call_579113.host, call_579113.base,
+                         call_579113.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589213, url, valid)
+  result = hook(call_579113, url, valid)
 
-proc call*(call_589214: Call_DeploymentmanagerDeploymentsStop_589200;
-          deployment: string; project: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579114: Call_DeploymentmanagerDeploymentsStop_579100;
+          deployment: string; project: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## deploymentmanagerDeploymentsStop
   ## Stops an ongoing operation. This does not roll back any work that has already been completed, but prevents any new work from being started.
-  ##   deployment: string (required)
-  ##             : The name of the deployment for this request.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   deployment: string (required)
+  ##             : The name of the deployment for this request.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   project: string (required)
   ##          : The project ID for this request.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589215 = newJObject()
-  var query_589216 = newJObject()
-  var body_589217 = newJObject()
-  add(path_589215, "deployment", newJString(deployment))
-  add(query_589216, "fields", newJString(fields))
-  add(query_589216, "quotaUser", newJString(quotaUser))
-  add(query_589216, "alt", newJString(alt))
-  add(query_589216, "oauth_token", newJString(oauthToken))
-  add(query_589216, "userIp", newJString(userIp))
-  add(query_589216, "key", newJString(key))
-  add(path_589215, "project", newJString(project))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579115 = newJObject()
+  var query_579116 = newJObject()
+  var body_579117 = newJObject()
+  add(query_579116, "key", newJString(key))
+  add(query_579116, "prettyPrint", newJBool(prettyPrint))
+  add(query_579116, "oauth_token", newJString(oauthToken))
+  add(path_579115, "deployment", newJString(deployment))
+  add(query_579116, "alt", newJString(alt))
+  add(query_579116, "userIp", newJString(userIp))
+  add(query_579116, "quotaUser", newJString(quotaUser))
+  add(path_579115, "project", newJString(project))
   if body != nil:
-    body_589217 = body
-  add(query_589216, "prettyPrint", newJBool(prettyPrint))
-  result = call_589214.call(path_589215, query_589216, nil, nil, body_589217)
+    body_579117 = body
+  add(query_579116, "fields", newJString(fields))
+  result = call_579114.call(path_579115, query_579116, nil, nil, body_579117)
 
-var deploymentmanagerDeploymentsStop* = Call_DeploymentmanagerDeploymentsStop_589200(
+var deploymentmanagerDeploymentsStop* = Call_DeploymentmanagerDeploymentsStop_579100(
     name: "deploymentmanagerDeploymentsStop", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{deployment}/stop",
-    validator: validate_DeploymentmanagerDeploymentsStop_589201,
+    validator: validate_DeploymentmanagerDeploymentsStop_579101,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerDeploymentsStop_589202, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerDeploymentsStop_579102, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsGetIamPolicy_589218 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerDeploymentsGetIamPolicy_589220(protocol: Scheme;
+  Call_DeploymentmanagerDeploymentsGetIamPolicy_579118 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerDeploymentsGetIamPolicy_579120(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2390,7 +2394,7 @@ proc url_DeploymentmanagerDeploymentsGetIamPolicy_589220(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsGetIamPolicy_589219(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsGetIamPolicy_579119(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the access control policy for a resource. May be empty if no such policy or resource exists.
   ## 
@@ -2403,68 +2407,68 @@ proc validate_DeploymentmanagerDeploymentsGetIamPolicy_589219(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_589221 = path.getOrDefault("resource")
-  valid_589221 = validateParameter(valid_589221, JString, required = true,
+  var valid_579121 = path.getOrDefault("resource")
+  valid_579121 = validateParameter(valid_579121, JString, required = true,
                                  default = nil)
-  if valid_589221 != nil:
-    section.add "resource", valid_589221
-  var valid_589222 = path.getOrDefault("project")
-  valid_589222 = validateParameter(valid_589222, JString, required = true,
+  if valid_579121 != nil:
+    section.add "resource", valid_579121
+  var valid_579122 = path.getOrDefault("project")
+  valid_579122 = validateParameter(valid_579122, JString, required = true,
                                  default = nil)
-  if valid_589222 != nil:
-    section.add "project", valid_589222
+  if valid_579122 != nil:
+    section.add "project", valid_579122
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589223 = query.getOrDefault("fields")
-  valid_589223 = validateParameter(valid_589223, JString, required = false,
+  var valid_579123 = query.getOrDefault("key")
+  valid_579123 = validateParameter(valid_579123, JString, required = false,
                                  default = nil)
-  if valid_589223 != nil:
-    section.add "fields", valid_589223
-  var valid_589224 = query.getOrDefault("quotaUser")
-  valid_589224 = validateParameter(valid_589224, JString, required = false,
-                                 default = nil)
-  if valid_589224 != nil:
-    section.add "quotaUser", valid_589224
-  var valid_589225 = query.getOrDefault("alt")
-  valid_589225 = validateParameter(valid_589225, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589225 != nil:
-    section.add "alt", valid_589225
-  var valid_589226 = query.getOrDefault("oauth_token")
-  valid_589226 = validateParameter(valid_589226, JString, required = false,
-                                 default = nil)
-  if valid_589226 != nil:
-    section.add "oauth_token", valid_589226
-  var valid_589227 = query.getOrDefault("userIp")
-  valid_589227 = validateParameter(valid_589227, JString, required = false,
-                                 default = nil)
-  if valid_589227 != nil:
-    section.add "userIp", valid_589227
-  var valid_589228 = query.getOrDefault("key")
-  valid_589228 = validateParameter(valid_589228, JString, required = false,
-                                 default = nil)
-  if valid_589228 != nil:
-    section.add "key", valid_589228
-  var valid_589229 = query.getOrDefault("prettyPrint")
-  valid_589229 = validateParameter(valid_589229, JBool, required = false,
+  if valid_579123 != nil:
+    section.add "key", valid_579123
+  var valid_579124 = query.getOrDefault("prettyPrint")
+  valid_579124 = validateParameter(valid_579124, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589229 != nil:
-    section.add "prettyPrint", valid_589229
+  if valid_579124 != nil:
+    section.add "prettyPrint", valid_579124
+  var valid_579125 = query.getOrDefault("oauth_token")
+  valid_579125 = validateParameter(valid_579125, JString, required = false,
+                                 default = nil)
+  if valid_579125 != nil:
+    section.add "oauth_token", valid_579125
+  var valid_579126 = query.getOrDefault("alt")
+  valid_579126 = validateParameter(valid_579126, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579126 != nil:
+    section.add "alt", valid_579126
+  var valid_579127 = query.getOrDefault("userIp")
+  valid_579127 = validateParameter(valid_579127, JString, required = false,
+                                 default = nil)
+  if valid_579127 != nil:
+    section.add "userIp", valid_579127
+  var valid_579128 = query.getOrDefault("quotaUser")
+  valid_579128 = validateParameter(valid_579128, JString, required = false,
+                                 default = nil)
+  if valid_579128 != nil:
+    section.add "quotaUser", valid_579128
+  var valid_579129 = query.getOrDefault("fields")
+  valid_579129 = validateParameter(valid_579129, JString, required = false,
+                                 default = nil)
+  if valid_579129 != nil:
+    section.add "fields", valid_579129
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2473,68 +2477,68 @@ proc validate_DeploymentmanagerDeploymentsGetIamPolicy_589219(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589230: Call_DeploymentmanagerDeploymentsGetIamPolicy_589218;
+proc call*(call_579130: Call_DeploymentmanagerDeploymentsGetIamPolicy_579118;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets the access control policy for a resource. May be empty if no such policy or resource exists.
   ## 
-  let valid = call_589230.validator(path, query, header, formData, body)
-  let scheme = call_589230.pickScheme
+  let valid = call_579130.validator(path, query, header, formData, body)
+  let scheme = call_579130.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589230.url(scheme.get, call_589230.host, call_589230.base,
-                         call_589230.route, valid.getOrDefault("path"),
+  let url = call_579130.url(scheme.get, call_579130.host, call_579130.base,
+                         call_579130.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589230, url, valid)
+  result = hook(call_579130, url, valid)
 
-proc call*(call_589231: Call_DeploymentmanagerDeploymentsGetIamPolicy_589218;
-          resource: string; project: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579131: Call_DeploymentmanagerDeploymentsGetIamPolicy_579118;
+          resource: string; project: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; fields: string = ""): Recallable =
   ## deploymentmanagerDeploymentsGetIamPolicy
   ## Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   resource: string (required)
   ##           : Name or id of the resource for this request.
   ##   project: string (required)
   ##          : Project ID for this request.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589232 = newJObject()
-  var query_589233 = newJObject()
-  add(query_589233, "fields", newJString(fields))
-  add(query_589233, "quotaUser", newJString(quotaUser))
-  add(query_589233, "alt", newJString(alt))
-  add(query_589233, "oauth_token", newJString(oauthToken))
-  add(query_589233, "userIp", newJString(userIp))
-  add(query_589233, "key", newJString(key))
-  add(path_589232, "resource", newJString(resource))
-  add(path_589232, "project", newJString(project))
-  add(query_589233, "prettyPrint", newJBool(prettyPrint))
-  result = call_589231.call(path_589232, query_589233, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579132 = newJObject()
+  var query_579133 = newJObject()
+  add(query_579133, "key", newJString(key))
+  add(query_579133, "prettyPrint", newJBool(prettyPrint))
+  add(query_579133, "oauth_token", newJString(oauthToken))
+  add(query_579133, "alt", newJString(alt))
+  add(query_579133, "userIp", newJString(userIp))
+  add(query_579133, "quotaUser", newJString(quotaUser))
+  add(path_579132, "resource", newJString(resource))
+  add(path_579132, "project", newJString(project))
+  add(query_579133, "fields", newJString(fields))
+  result = call_579131.call(path_579132, query_579133, nil, nil, nil)
 
-var deploymentmanagerDeploymentsGetIamPolicy* = Call_DeploymentmanagerDeploymentsGetIamPolicy_589218(
+var deploymentmanagerDeploymentsGetIamPolicy* = Call_DeploymentmanagerDeploymentsGetIamPolicy_579118(
     name: "deploymentmanagerDeploymentsGetIamPolicy", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{resource}/getIamPolicy",
-    validator: validate_DeploymentmanagerDeploymentsGetIamPolicy_589219,
+    validator: validate_DeploymentmanagerDeploymentsGetIamPolicy_579119,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerDeploymentsGetIamPolicy_589220,
+    url: url_DeploymentmanagerDeploymentsGetIamPolicy_579120,
     schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsSetIamPolicy_589234 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerDeploymentsSetIamPolicy_589236(protocol: Scheme;
+  Call_DeploymentmanagerDeploymentsSetIamPolicy_579134 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerDeploymentsSetIamPolicy_579136(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2553,7 +2557,7 @@ proc url_DeploymentmanagerDeploymentsSetIamPolicy_589236(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsSetIamPolicy_589235(path: JsonNode;
+proc validate_DeploymentmanagerDeploymentsSetIamPolicy_579135(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets the access control policy on the specified resource. Replaces any existing policy.
   ## 
@@ -2566,68 +2570,68 @@ proc validate_DeploymentmanagerDeploymentsSetIamPolicy_589235(path: JsonNode;
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_589237 = path.getOrDefault("resource")
-  valid_589237 = validateParameter(valid_589237, JString, required = true,
+  var valid_579137 = path.getOrDefault("resource")
+  valid_579137 = validateParameter(valid_579137, JString, required = true,
                                  default = nil)
-  if valid_589237 != nil:
-    section.add "resource", valid_589237
-  var valid_589238 = path.getOrDefault("project")
-  valid_589238 = validateParameter(valid_589238, JString, required = true,
+  if valid_579137 != nil:
+    section.add "resource", valid_579137
+  var valid_579138 = path.getOrDefault("project")
+  valid_579138 = validateParameter(valid_579138, JString, required = true,
                                  default = nil)
-  if valid_589238 != nil:
-    section.add "project", valid_589238
+  if valid_579138 != nil:
+    section.add "project", valid_579138
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589239 = query.getOrDefault("fields")
-  valid_589239 = validateParameter(valid_589239, JString, required = false,
+  var valid_579139 = query.getOrDefault("key")
+  valid_579139 = validateParameter(valid_579139, JString, required = false,
                                  default = nil)
-  if valid_589239 != nil:
-    section.add "fields", valid_589239
-  var valid_589240 = query.getOrDefault("quotaUser")
-  valid_589240 = validateParameter(valid_589240, JString, required = false,
-                                 default = nil)
-  if valid_589240 != nil:
-    section.add "quotaUser", valid_589240
-  var valid_589241 = query.getOrDefault("alt")
-  valid_589241 = validateParameter(valid_589241, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589241 != nil:
-    section.add "alt", valid_589241
-  var valid_589242 = query.getOrDefault("oauth_token")
-  valid_589242 = validateParameter(valid_589242, JString, required = false,
-                                 default = nil)
-  if valid_589242 != nil:
-    section.add "oauth_token", valid_589242
-  var valid_589243 = query.getOrDefault("userIp")
-  valid_589243 = validateParameter(valid_589243, JString, required = false,
-                                 default = nil)
-  if valid_589243 != nil:
-    section.add "userIp", valid_589243
-  var valid_589244 = query.getOrDefault("key")
-  valid_589244 = validateParameter(valid_589244, JString, required = false,
-                                 default = nil)
-  if valid_589244 != nil:
-    section.add "key", valid_589244
-  var valid_589245 = query.getOrDefault("prettyPrint")
-  valid_589245 = validateParameter(valid_589245, JBool, required = false,
+  if valid_579139 != nil:
+    section.add "key", valid_579139
+  var valid_579140 = query.getOrDefault("prettyPrint")
+  valid_579140 = validateParameter(valid_579140, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589245 != nil:
-    section.add "prettyPrint", valid_589245
+  if valid_579140 != nil:
+    section.add "prettyPrint", valid_579140
+  var valid_579141 = query.getOrDefault("oauth_token")
+  valid_579141 = validateParameter(valid_579141, JString, required = false,
+                                 default = nil)
+  if valid_579141 != nil:
+    section.add "oauth_token", valid_579141
+  var valid_579142 = query.getOrDefault("alt")
+  valid_579142 = validateParameter(valid_579142, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579142 != nil:
+    section.add "alt", valid_579142
+  var valid_579143 = query.getOrDefault("userIp")
+  valid_579143 = validateParameter(valid_579143, JString, required = false,
+                                 default = nil)
+  if valid_579143 != nil:
+    section.add "userIp", valid_579143
+  var valid_579144 = query.getOrDefault("quotaUser")
+  valid_579144 = validateParameter(valid_579144, JString, required = false,
+                                 default = nil)
+  if valid_579144 != nil:
+    section.add "quotaUser", valid_579144
+  var valid_579145 = query.getOrDefault("fields")
+  valid_579145 = validateParameter(valid_579145, JString, required = false,
+                                 default = nil)
+  if valid_579145 != nil:
+    section.add "fields", valid_579145
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2639,73 +2643,72 @@ proc validate_DeploymentmanagerDeploymentsSetIamPolicy_589235(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589247: Call_DeploymentmanagerDeploymentsSetIamPolicy_589234;
+proc call*(call_579147: Call_DeploymentmanagerDeploymentsSetIamPolicy_579134;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the access control policy on the specified resource. Replaces any existing policy.
   ## 
-  let valid = call_589247.validator(path, query, header, formData, body)
-  let scheme = call_589247.pickScheme
+  let valid = call_579147.validator(path, query, header, formData, body)
+  let scheme = call_579147.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589247.url(scheme.get, call_589247.host, call_589247.base,
-                         call_589247.route, valid.getOrDefault("path"),
+  let url = call_579147.url(scheme.get, call_579147.host, call_579147.base,
+                         call_579147.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589247, url, valid)
+  result = hook(call_579147, url, valid)
 
-proc call*(call_589248: Call_DeploymentmanagerDeploymentsSetIamPolicy_589234;
-          resource: string; project: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579148: Call_DeploymentmanagerDeploymentsSetIamPolicy_579134;
+          resource: string; project: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## deploymentmanagerDeploymentsSetIamPolicy
   ## Sets the access control policy on the specified resource. Replaces any existing policy.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   resource: string (required)
   ##           : Name or id of the resource for this request.
   ##   project: string (required)
   ##          : Project ID for this request.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589249 = newJObject()
-  var query_589250 = newJObject()
-  var body_589251 = newJObject()
-  add(query_589250, "fields", newJString(fields))
-  add(query_589250, "quotaUser", newJString(quotaUser))
-  add(query_589250, "alt", newJString(alt))
-  add(query_589250, "oauth_token", newJString(oauthToken))
-  add(query_589250, "userIp", newJString(userIp))
-  add(query_589250, "key", newJString(key))
-  add(path_589249, "resource", newJString(resource))
-  add(path_589249, "project", newJString(project))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579149 = newJObject()
+  var query_579150 = newJObject()
+  var body_579151 = newJObject()
+  add(query_579150, "key", newJString(key))
+  add(query_579150, "prettyPrint", newJBool(prettyPrint))
+  add(query_579150, "oauth_token", newJString(oauthToken))
+  add(query_579150, "alt", newJString(alt))
+  add(query_579150, "userIp", newJString(userIp))
+  add(query_579150, "quotaUser", newJString(quotaUser))
+  add(path_579149, "resource", newJString(resource))
+  add(path_579149, "project", newJString(project))
   if body != nil:
-    body_589251 = body
-  add(query_589250, "prettyPrint", newJBool(prettyPrint))
-  result = call_589248.call(path_589249, query_589250, nil, nil, body_589251)
+    body_579151 = body
+  add(query_579150, "fields", newJString(fields))
+  result = call_579148.call(path_579149, query_579150, nil, nil, body_579151)
 
-var deploymentmanagerDeploymentsSetIamPolicy* = Call_DeploymentmanagerDeploymentsSetIamPolicy_589234(
+var deploymentmanagerDeploymentsSetIamPolicy* = Call_DeploymentmanagerDeploymentsSetIamPolicy_579134(
     name: "deploymentmanagerDeploymentsSetIamPolicy", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/global/deployments/{resource}/setIamPolicy",
-    validator: validate_DeploymentmanagerDeploymentsSetIamPolicy_589235,
+    validator: validate_DeploymentmanagerDeploymentsSetIamPolicy_579135,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerDeploymentsSetIamPolicy_589236,
+    url: url_DeploymentmanagerDeploymentsSetIamPolicy_579136,
     schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerDeploymentsTestIamPermissions_589252 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerDeploymentsTestIamPermissions_589254(protocol: Scheme;
+  Call_DeploymentmanagerDeploymentsTestIamPermissions_579152 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerDeploymentsTestIamPermissions_579154(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2724,7 +2727,7 @@ proc url_DeploymentmanagerDeploymentsTestIamPermissions_589254(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerDeploymentsTestIamPermissions_589253(
+proc validate_DeploymentmanagerDeploymentsTestIamPermissions_579153(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Returns permissions that a caller has on the specified resource.
@@ -2738,68 +2741,68 @@ proc validate_DeploymentmanagerDeploymentsTestIamPermissions_589253(
   ##          : Project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_589255 = path.getOrDefault("resource")
-  valid_589255 = validateParameter(valid_589255, JString, required = true,
+  var valid_579155 = path.getOrDefault("resource")
+  valid_579155 = validateParameter(valid_579155, JString, required = true,
                                  default = nil)
-  if valid_589255 != nil:
-    section.add "resource", valid_589255
-  var valid_589256 = path.getOrDefault("project")
-  valid_589256 = validateParameter(valid_589256, JString, required = true,
+  if valid_579155 != nil:
+    section.add "resource", valid_579155
+  var valid_579156 = path.getOrDefault("project")
+  valid_579156 = validateParameter(valid_579156, JString, required = true,
                                  default = nil)
-  if valid_589256 != nil:
-    section.add "project", valid_589256
+  if valid_579156 != nil:
+    section.add "project", valid_579156
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589257 = query.getOrDefault("fields")
-  valid_589257 = validateParameter(valid_589257, JString, required = false,
+  var valid_579157 = query.getOrDefault("key")
+  valid_579157 = validateParameter(valid_579157, JString, required = false,
                                  default = nil)
-  if valid_589257 != nil:
-    section.add "fields", valid_589257
-  var valid_589258 = query.getOrDefault("quotaUser")
-  valid_589258 = validateParameter(valid_589258, JString, required = false,
-                                 default = nil)
-  if valid_589258 != nil:
-    section.add "quotaUser", valid_589258
-  var valid_589259 = query.getOrDefault("alt")
-  valid_589259 = validateParameter(valid_589259, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589259 != nil:
-    section.add "alt", valid_589259
-  var valid_589260 = query.getOrDefault("oauth_token")
-  valid_589260 = validateParameter(valid_589260, JString, required = false,
-                                 default = nil)
-  if valid_589260 != nil:
-    section.add "oauth_token", valid_589260
-  var valid_589261 = query.getOrDefault("userIp")
-  valid_589261 = validateParameter(valid_589261, JString, required = false,
-                                 default = nil)
-  if valid_589261 != nil:
-    section.add "userIp", valid_589261
-  var valid_589262 = query.getOrDefault("key")
-  valid_589262 = validateParameter(valid_589262, JString, required = false,
-                                 default = nil)
-  if valid_589262 != nil:
-    section.add "key", valid_589262
-  var valid_589263 = query.getOrDefault("prettyPrint")
-  valid_589263 = validateParameter(valid_589263, JBool, required = false,
+  if valid_579157 != nil:
+    section.add "key", valid_579157
+  var valid_579158 = query.getOrDefault("prettyPrint")
+  valid_579158 = validateParameter(valid_579158, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589263 != nil:
-    section.add "prettyPrint", valid_589263
+  if valid_579158 != nil:
+    section.add "prettyPrint", valid_579158
+  var valid_579159 = query.getOrDefault("oauth_token")
+  valid_579159 = validateParameter(valid_579159, JString, required = false,
+                                 default = nil)
+  if valid_579159 != nil:
+    section.add "oauth_token", valid_579159
+  var valid_579160 = query.getOrDefault("alt")
+  valid_579160 = validateParameter(valid_579160, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579160 != nil:
+    section.add "alt", valid_579160
+  var valid_579161 = query.getOrDefault("userIp")
+  valid_579161 = validateParameter(valid_579161, JString, required = false,
+                                 default = nil)
+  if valid_579161 != nil:
+    section.add "userIp", valid_579161
+  var valid_579162 = query.getOrDefault("quotaUser")
+  valid_579162 = validateParameter(valid_579162, JString, required = false,
+                                 default = nil)
+  if valid_579162 != nil:
+    section.add "quotaUser", valid_579162
+  var valid_579163 = query.getOrDefault("fields")
+  valid_579163 = validateParameter(valid_579163, JString, required = false,
+                                 default = nil)
+  if valid_579163 != nil:
+    section.add "fields", valid_579163
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2811,73 +2814,72 @@ proc validate_DeploymentmanagerDeploymentsTestIamPermissions_589253(
   if body != nil:
     result.add "body", body
 
-proc call*(call_589265: Call_DeploymentmanagerDeploymentsTestIamPermissions_589252;
+proc call*(call_579165: Call_DeploymentmanagerDeploymentsTestIamPermissions_579152;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns permissions that a caller has on the specified resource.
   ## 
-  let valid = call_589265.validator(path, query, header, formData, body)
-  let scheme = call_589265.pickScheme
+  let valid = call_579165.validator(path, query, header, formData, body)
+  let scheme = call_579165.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589265.url(scheme.get, call_589265.host, call_589265.base,
-                         call_589265.route, valid.getOrDefault("path"),
+  let url = call_579165.url(scheme.get, call_579165.host, call_579165.base,
+                         call_579165.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589265, url, valid)
+  result = hook(call_579165, url, valid)
 
-proc call*(call_589266: Call_DeploymentmanagerDeploymentsTestIamPermissions_589252;
-          resource: string; project: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579166: Call_DeploymentmanagerDeploymentsTestIamPermissions_579152;
+          resource: string; project: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## deploymentmanagerDeploymentsTestIamPermissions
   ## Returns permissions that a caller has on the specified resource.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   resource: string (required)
   ##           : Name or id of the resource for this request.
   ##   project: string (required)
   ##          : Project ID for this request.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589267 = newJObject()
-  var query_589268 = newJObject()
-  var body_589269 = newJObject()
-  add(query_589268, "fields", newJString(fields))
-  add(query_589268, "quotaUser", newJString(quotaUser))
-  add(query_589268, "alt", newJString(alt))
-  add(query_589268, "oauth_token", newJString(oauthToken))
-  add(query_589268, "userIp", newJString(userIp))
-  add(query_589268, "key", newJString(key))
-  add(path_589267, "resource", newJString(resource))
-  add(path_589267, "project", newJString(project))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579167 = newJObject()
+  var query_579168 = newJObject()
+  var body_579169 = newJObject()
+  add(query_579168, "key", newJString(key))
+  add(query_579168, "prettyPrint", newJBool(prettyPrint))
+  add(query_579168, "oauth_token", newJString(oauthToken))
+  add(query_579168, "alt", newJString(alt))
+  add(query_579168, "userIp", newJString(userIp))
+  add(query_579168, "quotaUser", newJString(quotaUser))
+  add(path_579167, "resource", newJString(resource))
+  add(path_579167, "project", newJString(project))
   if body != nil:
-    body_589269 = body
-  add(query_589268, "prettyPrint", newJBool(prettyPrint))
-  result = call_589266.call(path_589267, query_589268, nil, nil, body_589269)
+    body_579169 = body
+  add(query_579168, "fields", newJString(fields))
+  result = call_579166.call(path_579167, query_579168, nil, nil, body_579169)
 
-var deploymentmanagerDeploymentsTestIamPermissions* = Call_DeploymentmanagerDeploymentsTestIamPermissions_589252(
+var deploymentmanagerDeploymentsTestIamPermissions* = Call_DeploymentmanagerDeploymentsTestIamPermissions_579152(
     name: "deploymentmanagerDeploymentsTestIamPermissions",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/{project}/global/deployments/{resource}/testIamPermissions",
-    validator: validate_DeploymentmanagerDeploymentsTestIamPermissions_589253,
+    validator: validate_DeploymentmanagerDeploymentsTestIamPermissions_579153,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerDeploymentsTestIamPermissions_589254,
+    url: url_DeploymentmanagerDeploymentsTestIamPermissions_579154,
     schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerOperationsList_589270 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerOperationsList_589272(protocol: Scheme; host: string;
+  Call_DeploymentmanagerOperationsList_579170 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerOperationsList_579172(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2893,7 +2895,7 @@ proc url_DeploymentmanagerOperationsList_589272(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerOperationsList_589271(path: JsonNode;
+proc validate_DeploymentmanagerOperationsList_579171(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all operations for a project.
   ## 
@@ -2904,37 +2906,31 @@ proc validate_DeploymentmanagerOperationsList_589271(path: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_589273 = path.getOrDefault("project")
-  valid_589273 = validateParameter(valid_589273, JString, required = true,
+  var valid_579173 = path.getOrDefault("project")
+  valid_579173 = validateParameter(valid_579173, JString, required = true,
                                  default = nil)
-  if valid_589273 != nil:
-    section.add "project", valid_589273
+  if valid_579173 != nil:
+    section.add "project", valid_579173
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
   ##   oauth_token: JString
   ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
   ##   userIp: JString
   ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   orderBy: JString
   ##          : Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.
   ## 
   ## You can also sort results in descending order based on the creation timestamp using orderBy="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.
   ## 
   ## Currently, only sorting by name or creationTimestamp desc is supported.
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
   ##   filter: JString
   ##         : A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <.
   ## 
@@ -2943,62 +2939,68 @@ proc validate_DeploymentmanagerOperationsList_589271(path: JsonNode;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+  ##   pageToken: JString
+  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
   section = newJObject()
-  var valid_589274 = query.getOrDefault("fields")
-  valid_589274 = validateParameter(valid_589274, JString, required = false,
+  var valid_579174 = query.getOrDefault("key")
+  valid_579174 = validateParameter(valid_579174, JString, required = false,
                                  default = nil)
-  if valid_589274 != nil:
-    section.add "fields", valid_589274
-  var valid_589275 = query.getOrDefault("pageToken")
-  valid_589275 = validateParameter(valid_589275, JString, required = false,
-                                 default = nil)
-  if valid_589275 != nil:
-    section.add "pageToken", valid_589275
-  var valid_589276 = query.getOrDefault("quotaUser")
-  valid_589276 = validateParameter(valid_589276, JString, required = false,
-                                 default = nil)
-  if valid_589276 != nil:
-    section.add "quotaUser", valid_589276
-  var valid_589277 = query.getOrDefault("alt")
-  valid_589277 = validateParameter(valid_589277, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589277 != nil:
-    section.add "alt", valid_589277
-  var valid_589278 = query.getOrDefault("oauth_token")
-  valid_589278 = validateParameter(valid_589278, JString, required = false,
-                                 default = nil)
-  if valid_589278 != nil:
-    section.add "oauth_token", valid_589278
-  var valid_589279 = query.getOrDefault("userIp")
-  valid_589279 = validateParameter(valid_589279, JString, required = false,
-                                 default = nil)
-  if valid_589279 != nil:
-    section.add "userIp", valid_589279
-  var valid_589280 = query.getOrDefault("maxResults")
-  valid_589280 = validateParameter(valid_589280, JInt, required = false,
-                                 default = newJInt(500))
-  if valid_589280 != nil:
-    section.add "maxResults", valid_589280
-  var valid_589281 = query.getOrDefault("orderBy")
-  valid_589281 = validateParameter(valid_589281, JString, required = false,
-                                 default = nil)
-  if valid_589281 != nil:
-    section.add "orderBy", valid_589281
-  var valid_589282 = query.getOrDefault("key")
-  valid_589282 = validateParameter(valid_589282, JString, required = false,
-                                 default = nil)
-  if valid_589282 != nil:
-    section.add "key", valid_589282
-  var valid_589283 = query.getOrDefault("prettyPrint")
-  valid_589283 = validateParameter(valid_589283, JBool, required = false,
+  if valid_579174 != nil:
+    section.add "key", valid_579174
+  var valid_579175 = query.getOrDefault("prettyPrint")
+  valid_579175 = validateParameter(valid_579175, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589283 != nil:
-    section.add "prettyPrint", valid_589283
-  var valid_589284 = query.getOrDefault("filter")
-  valid_589284 = validateParameter(valid_589284, JString, required = false,
+  if valid_579175 != nil:
+    section.add "prettyPrint", valid_579175
+  var valid_579176 = query.getOrDefault("oauth_token")
+  valid_579176 = validateParameter(valid_579176, JString, required = false,
                                  default = nil)
-  if valid_589284 != nil:
-    section.add "filter", valid_589284
+  if valid_579176 != nil:
+    section.add "oauth_token", valid_579176
+  var valid_579177 = query.getOrDefault("alt")
+  valid_579177 = validateParameter(valid_579177, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579177 != nil:
+    section.add "alt", valid_579177
+  var valid_579178 = query.getOrDefault("userIp")
+  valid_579178 = validateParameter(valid_579178, JString, required = false,
+                                 default = nil)
+  if valid_579178 != nil:
+    section.add "userIp", valid_579178
+  var valid_579179 = query.getOrDefault("quotaUser")
+  valid_579179 = validateParameter(valid_579179, JString, required = false,
+                                 default = nil)
+  if valid_579179 != nil:
+    section.add "quotaUser", valid_579179
+  var valid_579180 = query.getOrDefault("orderBy")
+  valid_579180 = validateParameter(valid_579180, JString, required = false,
+                                 default = nil)
+  if valid_579180 != nil:
+    section.add "orderBy", valid_579180
+  var valid_579181 = query.getOrDefault("filter")
+  valid_579181 = validateParameter(valid_579181, JString, required = false,
+                                 default = nil)
+  if valid_579181 != nil:
+    section.add "filter", valid_579181
+  var valid_579182 = query.getOrDefault("pageToken")
+  valid_579182 = validateParameter(valid_579182, JString, required = false,
+                                 default = nil)
+  if valid_579182 != nil:
+    section.add "pageToken", valid_579182
+  var valid_579183 = query.getOrDefault("fields")
+  valid_579183 = validateParameter(valid_579183, JString, required = false,
+                                 default = nil)
+  if valid_579183 != nil:
+    section.add "fields", valid_579183
+  var valid_579184 = query.getOrDefault("maxResults")
+  valid_579184 = validateParameter(valid_579184, JInt, required = false,
+                                 default = newJInt(500))
+  if valid_579184 != nil:
+    section.add "maxResults", valid_579184
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3007,53 +3009,45 @@ proc validate_DeploymentmanagerOperationsList_589271(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589285: Call_DeploymentmanagerOperationsList_589270;
+proc call*(call_579185: Call_DeploymentmanagerOperationsList_579170;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all operations for a project.
   ## 
-  let valid = call_589285.validator(path, query, header, formData, body)
-  let scheme = call_589285.pickScheme
+  let valid = call_579185.validator(path, query, header, formData, body)
+  let scheme = call_579185.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589285.url(scheme.get, call_589285.host, call_589285.base,
-                         call_589285.route, valid.getOrDefault("path"),
+  let url = call_579185.url(scheme.get, call_579185.host, call_579185.base,
+                         call_579185.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589285, url, valid)
+  result = hook(call_579185, url, valid)
 
-proc call*(call_589286: Call_DeploymentmanagerOperationsList_589270;
-          project: string; fields: string = ""; pageToken: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; maxResults: int = 500; orderBy: string = "";
-          key: string = ""; prettyPrint: bool = true; filter: string = ""): Recallable =
+proc call*(call_579186: Call_DeploymentmanagerOperationsList_579170;
+          project: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; orderBy: string = ""; filter: string = "";
+          pageToken: string = ""; fields: string = ""; maxResults: int = 500): Recallable =
   ## deploymentmanagerOperationsList
   ## Lists all operations for a project.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
   ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
   ##   userIp: string
   ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   orderBy: string
   ##          : Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.
   ## 
   ## You can also sort results in descending order based on the creation timestamp using orderBy="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.
   ## 
   ## Currently, only sorting by name or creationTimestamp desc is supported.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   project: string (required)
-  ##          : The project ID for this request.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
   ##   filter: string
   ##         : A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <.
   ## 
@@ -3062,31 +3056,39 @@ proc call*(call_589286: Call_DeploymentmanagerOperationsList_589270;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-  var path_589287 = newJObject()
-  var query_589288 = newJObject()
-  add(query_589288, "fields", newJString(fields))
-  add(query_589288, "pageToken", newJString(pageToken))
-  add(query_589288, "quotaUser", newJString(quotaUser))
-  add(query_589288, "alt", newJString(alt))
-  add(query_589288, "oauth_token", newJString(oauthToken))
-  add(query_589288, "userIp", newJString(userIp))
-  add(query_589288, "maxResults", newJInt(maxResults))
-  add(query_589288, "orderBy", newJString(orderBy))
-  add(query_589288, "key", newJString(key))
-  add(path_589287, "project", newJString(project))
-  add(query_589288, "prettyPrint", newJBool(prettyPrint))
-  add(query_589288, "filter", newJString(filter))
-  result = call_589286.call(path_589287, query_589288, nil, nil, nil)
+  ##   pageToken: string
+  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
+  ##   project: string (required)
+  ##          : The project ID for this request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: int
+  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  var path_579187 = newJObject()
+  var query_579188 = newJObject()
+  add(query_579188, "key", newJString(key))
+  add(query_579188, "prettyPrint", newJBool(prettyPrint))
+  add(query_579188, "oauth_token", newJString(oauthToken))
+  add(query_579188, "alt", newJString(alt))
+  add(query_579188, "userIp", newJString(userIp))
+  add(query_579188, "quotaUser", newJString(quotaUser))
+  add(query_579188, "orderBy", newJString(orderBy))
+  add(query_579188, "filter", newJString(filter))
+  add(query_579188, "pageToken", newJString(pageToken))
+  add(path_579187, "project", newJString(project))
+  add(query_579188, "fields", newJString(fields))
+  add(query_579188, "maxResults", newJInt(maxResults))
+  result = call_579186.call(path_579187, query_579188, nil, nil, nil)
 
-var deploymentmanagerOperationsList* = Call_DeploymentmanagerOperationsList_589270(
+var deploymentmanagerOperationsList* = Call_DeploymentmanagerOperationsList_579170(
     name: "deploymentmanagerOperationsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/global/operations",
-    validator: validate_DeploymentmanagerOperationsList_589271,
+    validator: validate_DeploymentmanagerOperationsList_579171,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerOperationsList_589272, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerOperationsList_579172, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerOperationsGet_589289 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerOperationsGet_589291(protocol: Scheme; host: string;
+  Call_DeploymentmanagerOperationsGet_579189 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerOperationsGet_579191(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3104,7 +3106,7 @@ proc url_DeploymentmanagerOperationsGet_589291(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerOperationsGet_589290(path: JsonNode;
+proc validate_DeploymentmanagerOperationsGet_579190(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets information about a specific operation.
   ## 
@@ -3117,68 +3119,68 @@ proc validate_DeploymentmanagerOperationsGet_589290(path: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `operation` field"
-  var valid_589292 = path.getOrDefault("operation")
-  valid_589292 = validateParameter(valid_589292, JString, required = true,
+  var valid_579192 = path.getOrDefault("operation")
+  valid_579192 = validateParameter(valid_579192, JString, required = true,
                                  default = nil)
-  if valid_589292 != nil:
-    section.add "operation", valid_589292
-  var valid_589293 = path.getOrDefault("project")
-  valid_589293 = validateParameter(valid_589293, JString, required = true,
+  if valid_579192 != nil:
+    section.add "operation", valid_579192
+  var valid_579193 = path.getOrDefault("project")
+  valid_579193 = validateParameter(valid_579193, JString, required = true,
                                  default = nil)
-  if valid_589293 != nil:
-    section.add "project", valid_589293
+  if valid_579193 != nil:
+    section.add "project", valid_579193
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589294 = query.getOrDefault("fields")
-  valid_589294 = validateParameter(valid_589294, JString, required = false,
+  var valid_579194 = query.getOrDefault("key")
+  valid_579194 = validateParameter(valid_579194, JString, required = false,
                                  default = nil)
-  if valid_589294 != nil:
-    section.add "fields", valid_589294
-  var valid_589295 = query.getOrDefault("quotaUser")
-  valid_589295 = validateParameter(valid_589295, JString, required = false,
-                                 default = nil)
-  if valid_589295 != nil:
-    section.add "quotaUser", valid_589295
-  var valid_589296 = query.getOrDefault("alt")
-  valid_589296 = validateParameter(valid_589296, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589296 != nil:
-    section.add "alt", valid_589296
-  var valid_589297 = query.getOrDefault("oauth_token")
-  valid_589297 = validateParameter(valid_589297, JString, required = false,
-                                 default = nil)
-  if valid_589297 != nil:
-    section.add "oauth_token", valid_589297
-  var valid_589298 = query.getOrDefault("userIp")
-  valid_589298 = validateParameter(valid_589298, JString, required = false,
-                                 default = nil)
-  if valid_589298 != nil:
-    section.add "userIp", valid_589298
-  var valid_589299 = query.getOrDefault("key")
-  valid_589299 = validateParameter(valid_589299, JString, required = false,
-                                 default = nil)
-  if valid_589299 != nil:
-    section.add "key", valid_589299
-  var valid_589300 = query.getOrDefault("prettyPrint")
-  valid_589300 = validateParameter(valid_589300, JBool, required = false,
+  if valid_579194 != nil:
+    section.add "key", valid_579194
+  var valid_579195 = query.getOrDefault("prettyPrint")
+  valid_579195 = validateParameter(valid_579195, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589300 != nil:
-    section.add "prettyPrint", valid_589300
+  if valid_579195 != nil:
+    section.add "prettyPrint", valid_579195
+  var valid_579196 = query.getOrDefault("oauth_token")
+  valid_579196 = validateParameter(valid_579196, JString, required = false,
+                                 default = nil)
+  if valid_579196 != nil:
+    section.add "oauth_token", valid_579196
+  var valid_579197 = query.getOrDefault("alt")
+  valid_579197 = validateParameter(valid_579197, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579197 != nil:
+    section.add "alt", valid_579197
+  var valid_579198 = query.getOrDefault("userIp")
+  valid_579198 = validateParameter(valid_579198, JString, required = false,
+                                 default = nil)
+  if valid_579198 != nil:
+    section.add "userIp", valid_579198
+  var valid_579199 = query.getOrDefault("quotaUser")
+  valid_579199 = validateParameter(valid_579199, JString, required = false,
+                                 default = nil)
+  if valid_579199 != nil:
+    section.add "quotaUser", valid_579199
+  var valid_579200 = query.getOrDefault("fields")
+  valid_579200 = validateParameter(valid_579200, JString, required = false,
+                                 default = nil)
+  if valid_579200 != nil:
+    section.add "fields", valid_579200
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3187,65 +3189,65 @@ proc validate_DeploymentmanagerOperationsGet_589290(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589301: Call_DeploymentmanagerOperationsGet_589289; path: JsonNode;
+proc call*(call_579201: Call_DeploymentmanagerOperationsGet_579189; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets information about a specific operation.
   ## 
-  let valid = call_589301.validator(path, query, header, formData, body)
-  let scheme = call_589301.pickScheme
+  let valid = call_579201.validator(path, query, header, formData, body)
+  let scheme = call_579201.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589301.url(scheme.get, call_589301.host, call_589301.base,
-                         call_589301.route, valid.getOrDefault("path"),
+  let url = call_579201.url(scheme.get, call_579201.host, call_579201.base,
+                         call_579201.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589301, url, valid)
+  result = hook(call_579201, url, valid)
 
-proc call*(call_589302: Call_DeploymentmanagerOperationsGet_589289;
-          operation: string; project: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579202: Call_DeploymentmanagerOperationsGet_579189;
+          operation: string; project: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## deploymentmanagerOperationsGet
   ## Gets information about a specific operation.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   operation: string (required)
-  ##            : The name of the operation for this request.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   project: string (required)
-  ##          : The project ID for this request.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589303 = newJObject()
-  var query_589304 = newJObject()
-  add(query_589304, "fields", newJString(fields))
-  add(query_589304, "quotaUser", newJString(quotaUser))
-  add(query_589304, "alt", newJString(alt))
-  add(path_589303, "operation", newJString(operation))
-  add(query_589304, "oauth_token", newJString(oauthToken))
-  add(query_589304, "userIp", newJString(userIp))
-  add(query_589304, "key", newJString(key))
-  add(path_589303, "project", newJString(project))
-  add(query_589304, "prettyPrint", newJBool(prettyPrint))
-  result = call_589302.call(path_589303, query_589304, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   operation: string (required)
+  ##            : The name of the operation for this request.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   project: string (required)
+  ##          : The project ID for this request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579203 = newJObject()
+  var query_579204 = newJObject()
+  add(query_579204, "key", newJString(key))
+  add(query_579204, "prettyPrint", newJBool(prettyPrint))
+  add(query_579204, "oauth_token", newJString(oauthToken))
+  add(path_579203, "operation", newJString(operation))
+  add(query_579204, "alt", newJString(alt))
+  add(query_579204, "userIp", newJString(userIp))
+  add(query_579204, "quotaUser", newJString(quotaUser))
+  add(path_579203, "project", newJString(project))
+  add(query_579204, "fields", newJString(fields))
+  result = call_579202.call(path_579203, query_579204, nil, nil, nil)
 
-var deploymentmanagerOperationsGet* = Call_DeploymentmanagerOperationsGet_589289(
+var deploymentmanagerOperationsGet* = Call_DeploymentmanagerOperationsGet_579189(
     name: "deploymentmanagerOperationsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/global/operations/{operation}",
-    validator: validate_DeploymentmanagerOperationsGet_589290,
+    validator: validate_DeploymentmanagerOperationsGet_579190,
     base: "/deploymentmanager/v2/projects",
-    url: url_DeploymentmanagerOperationsGet_589291, schemes: {Scheme.Https})
+    url: url_DeploymentmanagerOperationsGet_579191, schemes: {Scheme.Https})
 type
-  Call_DeploymentmanagerTypesList_589305 = ref object of OpenApiRestCall_588457
-proc url_DeploymentmanagerTypesList_589307(protocol: Scheme; host: string;
+  Call_DeploymentmanagerTypesList_579205 = ref object of OpenApiRestCall_578355
+proc url_DeploymentmanagerTypesList_579207(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3261,7 +3263,7 @@ proc url_DeploymentmanagerTypesList_589307(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_DeploymentmanagerTypesList_589306(path: JsonNode; query: JsonNode;
+proc validate_DeploymentmanagerTypesList_579206(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all resource types for Deployment Manager.
   ## 
@@ -3272,37 +3274,31 @@ proc validate_DeploymentmanagerTypesList_589306(path: JsonNode; query: JsonNode;
   ##          : The project ID for this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_589308 = path.getOrDefault("project")
-  valid_589308 = validateParameter(valid_589308, JString, required = true,
+  var valid_579208 = path.getOrDefault("project")
+  valid_579208 = validateParameter(valid_579208, JString, required = true,
                                  default = nil)
-  if valid_589308 != nil:
-    section.add "project", valid_589308
+  if valid_579208 != nil:
+    section.add "project", valid_579208
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
   ##   oauth_token: JString
   ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
   ##   userIp: JString
   ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   orderBy: JString
   ##          : Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.
   ## 
   ## You can also sort results in descending order based on the creation timestamp using orderBy="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.
   ## 
   ## Currently, only sorting by name or creationTimestamp desc is supported.
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
   ##   filter: JString
   ##         : A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <.
   ## 
@@ -3311,62 +3307,68 @@ proc validate_DeploymentmanagerTypesList_589306(path: JsonNode; query: JsonNode;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+  ##   pageToken: JString
+  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
   section = newJObject()
-  var valid_589309 = query.getOrDefault("fields")
-  valid_589309 = validateParameter(valid_589309, JString, required = false,
+  var valid_579209 = query.getOrDefault("key")
+  valid_579209 = validateParameter(valid_579209, JString, required = false,
                                  default = nil)
-  if valid_589309 != nil:
-    section.add "fields", valid_589309
-  var valid_589310 = query.getOrDefault("pageToken")
-  valid_589310 = validateParameter(valid_589310, JString, required = false,
-                                 default = nil)
-  if valid_589310 != nil:
-    section.add "pageToken", valid_589310
-  var valid_589311 = query.getOrDefault("quotaUser")
-  valid_589311 = validateParameter(valid_589311, JString, required = false,
-                                 default = nil)
-  if valid_589311 != nil:
-    section.add "quotaUser", valid_589311
-  var valid_589312 = query.getOrDefault("alt")
-  valid_589312 = validateParameter(valid_589312, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589312 != nil:
-    section.add "alt", valid_589312
-  var valid_589313 = query.getOrDefault("oauth_token")
-  valid_589313 = validateParameter(valid_589313, JString, required = false,
-                                 default = nil)
-  if valid_589313 != nil:
-    section.add "oauth_token", valid_589313
-  var valid_589314 = query.getOrDefault("userIp")
-  valid_589314 = validateParameter(valid_589314, JString, required = false,
-                                 default = nil)
-  if valid_589314 != nil:
-    section.add "userIp", valid_589314
-  var valid_589315 = query.getOrDefault("maxResults")
-  valid_589315 = validateParameter(valid_589315, JInt, required = false,
-                                 default = newJInt(500))
-  if valid_589315 != nil:
-    section.add "maxResults", valid_589315
-  var valid_589316 = query.getOrDefault("orderBy")
-  valid_589316 = validateParameter(valid_589316, JString, required = false,
-                                 default = nil)
-  if valid_589316 != nil:
-    section.add "orderBy", valid_589316
-  var valid_589317 = query.getOrDefault("key")
-  valid_589317 = validateParameter(valid_589317, JString, required = false,
-                                 default = nil)
-  if valid_589317 != nil:
-    section.add "key", valid_589317
-  var valid_589318 = query.getOrDefault("prettyPrint")
-  valid_589318 = validateParameter(valid_589318, JBool, required = false,
+  if valid_579209 != nil:
+    section.add "key", valid_579209
+  var valid_579210 = query.getOrDefault("prettyPrint")
+  valid_579210 = validateParameter(valid_579210, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589318 != nil:
-    section.add "prettyPrint", valid_589318
-  var valid_589319 = query.getOrDefault("filter")
-  valid_589319 = validateParameter(valid_589319, JString, required = false,
+  if valid_579210 != nil:
+    section.add "prettyPrint", valid_579210
+  var valid_579211 = query.getOrDefault("oauth_token")
+  valid_579211 = validateParameter(valid_579211, JString, required = false,
                                  default = nil)
-  if valid_589319 != nil:
-    section.add "filter", valid_589319
+  if valid_579211 != nil:
+    section.add "oauth_token", valid_579211
+  var valid_579212 = query.getOrDefault("alt")
+  valid_579212 = validateParameter(valid_579212, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579212 != nil:
+    section.add "alt", valid_579212
+  var valid_579213 = query.getOrDefault("userIp")
+  valid_579213 = validateParameter(valid_579213, JString, required = false,
+                                 default = nil)
+  if valid_579213 != nil:
+    section.add "userIp", valid_579213
+  var valid_579214 = query.getOrDefault("quotaUser")
+  valid_579214 = validateParameter(valid_579214, JString, required = false,
+                                 default = nil)
+  if valid_579214 != nil:
+    section.add "quotaUser", valid_579214
+  var valid_579215 = query.getOrDefault("orderBy")
+  valid_579215 = validateParameter(valid_579215, JString, required = false,
+                                 default = nil)
+  if valid_579215 != nil:
+    section.add "orderBy", valid_579215
+  var valid_579216 = query.getOrDefault("filter")
+  valid_579216 = validateParameter(valid_579216, JString, required = false,
+                                 default = nil)
+  if valid_579216 != nil:
+    section.add "filter", valid_579216
+  var valid_579217 = query.getOrDefault("pageToken")
+  valid_579217 = validateParameter(valid_579217, JString, required = false,
+                                 default = nil)
+  if valid_579217 != nil:
+    section.add "pageToken", valid_579217
+  var valid_579218 = query.getOrDefault("fields")
+  valid_579218 = validateParameter(valid_579218, JString, required = false,
+                                 default = nil)
+  if valid_579218 != nil:
+    section.add "fields", valid_579218
+  var valid_579219 = query.getOrDefault("maxResults")
+  valid_579219 = validateParameter(valid_579219, JInt, required = false,
+                                 default = newJInt(500))
+  if valid_579219 != nil:
+    section.add "maxResults", valid_579219
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3375,52 +3377,44 @@ proc validate_DeploymentmanagerTypesList_589306(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589320: Call_DeploymentmanagerTypesList_589305; path: JsonNode;
+proc call*(call_579220: Call_DeploymentmanagerTypesList_579205; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all resource types for Deployment Manager.
   ## 
-  let valid = call_589320.validator(path, query, header, formData, body)
-  let scheme = call_589320.pickScheme
+  let valid = call_579220.validator(path, query, header, formData, body)
+  let scheme = call_579220.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589320.url(scheme.get, call_589320.host, call_589320.base,
-                         call_589320.route, valid.getOrDefault("path"),
+  let url = call_579220.url(scheme.get, call_579220.host, call_579220.base,
+                         call_579220.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589320, url, valid)
+  result = hook(call_579220, url, valid)
 
-proc call*(call_589321: Call_DeploymentmanagerTypesList_589305; project: string;
-          fields: string = ""; pageToken: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          maxResults: int = 500; orderBy: string = ""; key: string = "";
-          prettyPrint: bool = true; filter: string = ""): Recallable =
+proc call*(call_579221: Call_DeploymentmanagerTypesList_579205; project: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          orderBy: string = ""; filter: string = ""; pageToken: string = "";
+          fields: string = ""; maxResults: int = 500): Recallable =
   ## deploymentmanagerTypesList
   ## Lists all resource types for Deployment Manager.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
   ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
   ##   userIp: string
   ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   orderBy: string
   ##          : Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.
   ## 
   ## You can also sort results in descending order based on the creation timestamp using orderBy="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.
   ## 
   ## Currently, only sorting by name or creationTimestamp desc is supported.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   project: string (required)
-  ##          : The project ID for this request.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
   ##   filter: string
   ##         : A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <.
   ## 
@@ -3429,27 +3423,35 @@ proc call*(call_589321: Call_DeploymentmanagerTypesList_589305; project: string;
   ## You can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.
   ## 
   ## To filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-  var path_589322 = newJObject()
-  var query_589323 = newJObject()
-  add(query_589323, "fields", newJString(fields))
-  add(query_589323, "pageToken", newJString(pageToken))
-  add(query_589323, "quotaUser", newJString(quotaUser))
-  add(query_589323, "alt", newJString(alt))
-  add(query_589323, "oauth_token", newJString(oauthToken))
-  add(query_589323, "userIp", newJString(userIp))
-  add(query_589323, "maxResults", newJInt(maxResults))
-  add(query_589323, "orderBy", newJString(orderBy))
-  add(query_589323, "key", newJString(key))
-  add(path_589322, "project", newJString(project))
-  add(query_589323, "prettyPrint", newJBool(prettyPrint))
-  add(query_589323, "filter", newJString(filter))
-  result = call_589321.call(path_589322, query_589323, nil, nil, nil)
+  ##   pageToken: string
+  ##            : Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.
+  ##   project: string (required)
+  ##          : The project ID for this request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: int
+  ##             : The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)
+  var path_579222 = newJObject()
+  var query_579223 = newJObject()
+  add(query_579223, "key", newJString(key))
+  add(query_579223, "prettyPrint", newJBool(prettyPrint))
+  add(query_579223, "oauth_token", newJString(oauthToken))
+  add(query_579223, "alt", newJString(alt))
+  add(query_579223, "userIp", newJString(userIp))
+  add(query_579223, "quotaUser", newJString(quotaUser))
+  add(query_579223, "orderBy", newJString(orderBy))
+  add(query_579223, "filter", newJString(filter))
+  add(query_579223, "pageToken", newJString(pageToken))
+  add(path_579222, "project", newJString(project))
+  add(query_579223, "fields", newJString(fields))
+  add(query_579223, "maxResults", newJInt(maxResults))
+  result = call_579221.call(path_579222, query_579223, nil, nil, nil)
 
-var deploymentmanagerTypesList* = Call_DeploymentmanagerTypesList_589305(
+var deploymentmanagerTypesList* = Call_DeploymentmanagerTypesList_579205(
     name: "deploymentmanagerTypesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/global/types",
-    validator: validate_DeploymentmanagerTypesList_589306,
-    base: "/deploymentmanager/v2/projects", url: url_DeploymentmanagerTypesList_589307,
+    validator: validate_DeploymentmanagerTypesList_579206,
+    base: "/deploymentmanager/v2/projects", url: url_DeploymentmanagerTypesList_579207,
     schemes: {Scheme.Https})
 export
   rest

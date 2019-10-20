@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588457 = ref object of OpenApiRestCall
+  OpenApiRestCall_578355 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588457](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578355](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588457): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578355): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,8 +112,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_GmailUsersDraftsCreate_589014 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersDraftsCreate_589016(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersDraftsCreate_578914 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersDraftsCreate_578916(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -125,7 +129,7 @@ proc url_GmailUsersDraftsCreate_589016(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersDraftsCreate_589015(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersDraftsCreate_578915(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new draft with the DRAFT label.
   ## 
@@ -136,63 +140,63 @@ proc validate_GmailUsersDraftsCreate_589015(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589017 = path.getOrDefault("userId")
-  valid_589017 = validateParameter(valid_589017, JString, required = true,
+  var valid_578917 = path.getOrDefault("userId")
+  valid_578917 = validateParameter(valid_578917, JString, required = true,
                                  default = newJString("me"))
-  if valid_589017 != nil:
-    section.add "userId", valid_589017
+  if valid_578917 != nil:
+    section.add "userId", valid_578917
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589018 = query.getOrDefault("fields")
-  valid_589018 = validateParameter(valid_589018, JString, required = false,
+  var valid_578918 = query.getOrDefault("key")
+  valid_578918 = validateParameter(valid_578918, JString, required = false,
                                  default = nil)
-  if valid_589018 != nil:
-    section.add "fields", valid_589018
-  var valid_589019 = query.getOrDefault("quotaUser")
-  valid_589019 = validateParameter(valid_589019, JString, required = false,
-                                 default = nil)
-  if valid_589019 != nil:
-    section.add "quotaUser", valid_589019
-  var valid_589020 = query.getOrDefault("alt")
-  valid_589020 = validateParameter(valid_589020, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589020 != nil:
-    section.add "alt", valid_589020
-  var valid_589021 = query.getOrDefault("oauth_token")
-  valid_589021 = validateParameter(valid_589021, JString, required = false,
-                                 default = nil)
-  if valid_589021 != nil:
-    section.add "oauth_token", valid_589021
-  var valid_589022 = query.getOrDefault("userIp")
-  valid_589022 = validateParameter(valid_589022, JString, required = false,
-                                 default = nil)
-  if valid_589022 != nil:
-    section.add "userIp", valid_589022
-  var valid_589023 = query.getOrDefault("key")
-  valid_589023 = validateParameter(valid_589023, JString, required = false,
-                                 default = nil)
-  if valid_589023 != nil:
-    section.add "key", valid_589023
-  var valid_589024 = query.getOrDefault("prettyPrint")
-  valid_589024 = validateParameter(valid_589024, JBool, required = false,
+  if valid_578918 != nil:
+    section.add "key", valid_578918
+  var valid_578919 = query.getOrDefault("prettyPrint")
+  valid_578919 = validateParameter(valid_578919, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589024 != nil:
-    section.add "prettyPrint", valid_589024
+  if valid_578919 != nil:
+    section.add "prettyPrint", valid_578919
+  var valid_578920 = query.getOrDefault("oauth_token")
+  valid_578920 = validateParameter(valid_578920, JString, required = false,
+                                 default = nil)
+  if valid_578920 != nil:
+    section.add "oauth_token", valid_578920
+  var valid_578921 = query.getOrDefault("alt")
+  valid_578921 = validateParameter(valid_578921, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578921 != nil:
+    section.add "alt", valid_578921
+  var valid_578922 = query.getOrDefault("userIp")
+  valid_578922 = validateParameter(valid_578922, JString, required = false,
+                                 default = nil)
+  if valid_578922 != nil:
+    section.add "userIp", valid_578922
+  var valid_578923 = query.getOrDefault("quotaUser")
+  valid_578923 = validateParameter(valid_578923, JString, required = false,
+                                 default = nil)
+  if valid_578923 != nil:
+    section.add "quotaUser", valid_578923
+  var valid_578924 = query.getOrDefault("fields")
+  valid_578924 = validateParameter(valid_578924, JString, required = false,
+                                 default = nil)
+  if valid_578924 != nil:
+    section.add "fields", valid_578924
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -204,65 +208,65 @@ proc validate_GmailUsersDraftsCreate_589015(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589026: Call_GmailUsersDraftsCreate_589014; path: JsonNode;
+proc call*(call_578926: Call_GmailUsersDraftsCreate_578914; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new draft with the DRAFT label.
   ## 
-  let valid = call_589026.validator(path, query, header, formData, body)
-  let scheme = call_589026.pickScheme
+  let valid = call_578926.validator(path, query, header, formData, body)
+  let scheme = call_578926.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589026.url(scheme.get, call_589026.host, call_589026.base,
-                         call_589026.route, valid.getOrDefault("path"),
+  let url = call_578926.url(scheme.get, call_578926.host, call_578926.base,
+                         call_578926.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589026, url, valid)
+  result = hook(call_578926, url, valid)
 
-proc call*(call_589027: Call_GmailUsersDraftsCreate_589014; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_578927: Call_GmailUsersDraftsCreate_578914; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; userId: string = "me";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersDraftsCreate
   ## Creates a new draft with the DRAFT label.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589028 = newJObject()
-  var query_589029 = newJObject()
-  var body_589030 = newJObject()
-  add(query_589029, "fields", newJString(fields))
-  add(query_589029, "quotaUser", newJString(quotaUser))
-  add(query_589029, "alt", newJString(alt))
-  add(query_589029, "oauth_token", newJString(oauthToken))
-  add(query_589029, "userIp", newJString(userIp))
-  add(query_589029, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578928 = newJObject()
+  var query_578929 = newJObject()
+  var body_578930 = newJObject()
+  add(query_578929, "key", newJString(key))
+  add(query_578929, "prettyPrint", newJBool(prettyPrint))
+  add(query_578929, "oauth_token", newJString(oauthToken))
+  add(query_578929, "alt", newJString(alt))
+  add(query_578929, "userIp", newJString(userIp))
+  add(query_578929, "quotaUser", newJString(quotaUser))
+  add(path_578928, "userId", newJString(userId))
   if body != nil:
-    body_589030 = body
-  add(query_589029, "prettyPrint", newJBool(prettyPrint))
-  add(path_589028, "userId", newJString(userId))
-  result = call_589027.call(path_589028, query_589029, nil, nil, body_589030)
+    body_578930 = body
+  add(query_578929, "fields", newJString(fields))
+  result = call_578927.call(path_578928, query_578929, nil, nil, body_578930)
 
-var gmailUsersDraftsCreate* = Call_GmailUsersDraftsCreate_589014(
+var gmailUsersDraftsCreate* = Call_GmailUsersDraftsCreate_578914(
     name: "gmailUsersDraftsCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/drafts",
-    validator: validate_GmailUsersDraftsCreate_589015, base: "/gmail/v1/users",
-    url: url_GmailUsersDraftsCreate_589016, schemes: {Scheme.Https})
+    validator: validate_GmailUsersDraftsCreate_578915, base: "/gmail/v1/users",
+    url: url_GmailUsersDraftsCreate_578916, schemes: {Scheme.Https})
 type
-  Call_GmailUsersDraftsList_588725 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersDraftsList_588727(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersDraftsList_578625 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersDraftsList_578627(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -278,7 +282,7 @@ proc url_GmailUsersDraftsList_588727(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersDraftsList_588726(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersDraftsList_578626(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the drafts in the user's mailbox.
   ## 
@@ -289,91 +293,91 @@ proc validate_GmailUsersDraftsList_588726(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_588866 = path.getOrDefault("userId")
-  valid_588866 = validateParameter(valid_588866, JString, required = true,
+  var valid_578766 = path.getOrDefault("userId")
+  valid_578766 = validateParameter(valid_578766, JString, required = true,
                                  default = newJString("me"))
-  if valid_588866 != nil:
-    section.add "userId", valid_588866
+  if valid_578766 != nil:
+    section.add "userId", valid_578766
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Page token to retrieve a specific page of results in the list.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : Maximum number of drafts to return.
-  ##   includeSpamTrash: JBool
-  ##                   : Include drafts from SPAM and TRASH in the results.
-  ##   q: JString
-  ##    : Only return draft messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread".
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   q: JString
+  ##    : Only return draft messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread".
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   includeSpamTrash: JBool
+  ##                   : Include drafts from SPAM and TRASH in the results.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : Page token to retrieve a specific page of results in the list.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : Maximum number of drafts to return.
   section = newJObject()
-  var valid_588867 = query.getOrDefault("fields")
-  valid_588867 = validateParameter(valid_588867, JString, required = false,
+  var valid_578767 = query.getOrDefault("key")
+  valid_578767 = validateParameter(valid_578767, JString, required = false,
                                  default = nil)
-  if valid_588867 != nil:
-    section.add "fields", valid_588867
-  var valid_588868 = query.getOrDefault("pageToken")
-  valid_588868 = validateParameter(valid_588868, JString, required = false,
-                                 default = nil)
-  if valid_588868 != nil:
-    section.add "pageToken", valid_588868
-  var valid_588869 = query.getOrDefault("quotaUser")
-  valid_588869 = validateParameter(valid_588869, JString, required = false,
-                                 default = nil)
-  if valid_588869 != nil:
-    section.add "quotaUser", valid_588869
-  var valid_588870 = query.getOrDefault("alt")
-  valid_588870 = validateParameter(valid_588870, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588870 != nil:
-    section.add "alt", valid_588870
-  var valid_588871 = query.getOrDefault("oauth_token")
-  valid_588871 = validateParameter(valid_588871, JString, required = false,
-                                 default = nil)
-  if valid_588871 != nil:
-    section.add "oauth_token", valid_588871
-  var valid_588872 = query.getOrDefault("userIp")
-  valid_588872 = validateParameter(valid_588872, JString, required = false,
-                                 default = nil)
-  if valid_588872 != nil:
-    section.add "userIp", valid_588872
-  var valid_588874 = query.getOrDefault("maxResults")
-  valid_588874 = validateParameter(valid_588874, JInt, required = false,
-                                 default = newJInt(100))
-  if valid_588874 != nil:
-    section.add "maxResults", valid_588874
-  var valid_588875 = query.getOrDefault("includeSpamTrash")
-  valid_588875 = validateParameter(valid_588875, JBool, required = false,
-                                 default = newJBool(false))
-  if valid_588875 != nil:
-    section.add "includeSpamTrash", valid_588875
-  var valid_588876 = query.getOrDefault("q")
-  valid_588876 = validateParameter(valid_588876, JString, required = false,
-                                 default = nil)
-  if valid_588876 != nil:
-    section.add "q", valid_588876
-  var valid_588877 = query.getOrDefault("key")
-  valid_588877 = validateParameter(valid_588877, JString, required = false,
-                                 default = nil)
-  if valid_588877 != nil:
-    section.add "key", valid_588877
-  var valid_588878 = query.getOrDefault("prettyPrint")
-  valid_588878 = validateParameter(valid_588878, JBool, required = false,
+  if valid_578767 != nil:
+    section.add "key", valid_578767
+  var valid_578768 = query.getOrDefault("prettyPrint")
+  valid_578768 = validateParameter(valid_578768, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588878 != nil:
-    section.add "prettyPrint", valid_588878
+  if valid_578768 != nil:
+    section.add "prettyPrint", valid_578768
+  var valid_578769 = query.getOrDefault("oauth_token")
+  valid_578769 = validateParameter(valid_578769, JString, required = false,
+                                 default = nil)
+  if valid_578769 != nil:
+    section.add "oauth_token", valid_578769
+  var valid_578770 = query.getOrDefault("q")
+  valid_578770 = validateParameter(valid_578770, JString, required = false,
+                                 default = nil)
+  if valid_578770 != nil:
+    section.add "q", valid_578770
+  var valid_578771 = query.getOrDefault("alt")
+  valid_578771 = validateParameter(valid_578771, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578771 != nil:
+    section.add "alt", valid_578771
+  var valid_578772 = query.getOrDefault("userIp")
+  valid_578772 = validateParameter(valid_578772, JString, required = false,
+                                 default = nil)
+  if valid_578772 != nil:
+    section.add "userIp", valid_578772
+  var valid_578773 = query.getOrDefault("includeSpamTrash")
+  valid_578773 = validateParameter(valid_578773, JBool, required = false,
+                                 default = newJBool(false))
+  if valid_578773 != nil:
+    section.add "includeSpamTrash", valid_578773
+  var valid_578774 = query.getOrDefault("quotaUser")
+  valid_578774 = validateParameter(valid_578774, JString, required = false,
+                                 default = nil)
+  if valid_578774 != nil:
+    section.add "quotaUser", valid_578774
+  var valid_578775 = query.getOrDefault("pageToken")
+  valid_578775 = validateParameter(valid_578775, JString, required = false,
+                                 default = nil)
+  if valid_578775 != nil:
+    section.add "pageToken", valid_578775
+  var valid_578776 = query.getOrDefault("fields")
+  valid_578776 = validateParameter(valid_578776, JString, required = false,
+                                 default = nil)
+  if valid_578776 != nil:
+    section.add "fields", valid_578776
+  var valid_578778 = query.getOrDefault("maxResults")
+  valid_578778 = validateParameter(valid_578778, JInt, required = false,
+                                 default = newJInt(100))
+  if valid_578778 != nil:
+    section.add "maxResults", valid_578778
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -382,74 +386,74 @@ proc validate_GmailUsersDraftsList_588726(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588901: Call_GmailUsersDraftsList_588725; path: JsonNode;
+proc call*(call_578801: Call_GmailUsersDraftsList_578625; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the drafts in the user's mailbox.
   ## 
-  let valid = call_588901.validator(path, query, header, formData, body)
-  let scheme = call_588901.pickScheme
+  let valid = call_578801.validator(path, query, header, formData, body)
+  let scheme = call_578801.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588901.url(scheme.get, call_588901.host, call_588901.base,
-                         call_588901.route, valid.getOrDefault("path"),
+  let url = call_578801.url(scheme.get, call_578801.host, call_578801.base,
+                         call_578801.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588901, url, valid)
+  result = hook(call_578801, url, valid)
 
-proc call*(call_588972: Call_GmailUsersDraftsList_588725; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; maxResults: int = 100;
-          includeSpamTrash: bool = false; q: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_578872: Call_GmailUsersDraftsList_578625; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; q: string = "";
+          alt: string = "json"; userIp: string = ""; includeSpamTrash: bool = false;
+          quotaUser: string = ""; pageToken: string = ""; userId: string = "me";
+          fields: string = ""; maxResults: int = 100): Recallable =
   ## gmailUsersDraftsList
   ## Lists the drafts in the user's mailbox.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Page token to retrieve a specific page of results in the list.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : Maximum number of drafts to return.
-  ##   includeSpamTrash: bool
-  ##                   : Include drafts from SPAM and TRASH in the results.
-  ##   q: string
-  ##    : Only return draft messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread".
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   q: string
+  ##    : Only return draft messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread".
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   includeSpamTrash: bool
+  ##                   : Include drafts from SPAM and TRASH in the results.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : Page token to retrieve a specific page of results in the list.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_588973 = newJObject()
-  var query_588975 = newJObject()
-  add(query_588975, "fields", newJString(fields))
-  add(query_588975, "pageToken", newJString(pageToken))
-  add(query_588975, "quotaUser", newJString(quotaUser))
-  add(query_588975, "alt", newJString(alt))
-  add(query_588975, "oauth_token", newJString(oauthToken))
-  add(query_588975, "userIp", newJString(userIp))
-  add(query_588975, "maxResults", newJInt(maxResults))
-  add(query_588975, "includeSpamTrash", newJBool(includeSpamTrash))
-  add(query_588975, "q", newJString(q))
-  add(query_588975, "key", newJString(key))
-  add(query_588975, "prettyPrint", newJBool(prettyPrint))
-  add(path_588973, "userId", newJString(userId))
-  result = call_588972.call(path_588973, query_588975, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: int
+  ##             : Maximum number of drafts to return.
+  var path_578873 = newJObject()
+  var query_578875 = newJObject()
+  add(query_578875, "key", newJString(key))
+  add(query_578875, "prettyPrint", newJBool(prettyPrint))
+  add(query_578875, "oauth_token", newJString(oauthToken))
+  add(query_578875, "q", newJString(q))
+  add(query_578875, "alt", newJString(alt))
+  add(query_578875, "userIp", newJString(userIp))
+  add(query_578875, "includeSpamTrash", newJBool(includeSpamTrash))
+  add(query_578875, "quotaUser", newJString(quotaUser))
+  add(query_578875, "pageToken", newJString(pageToken))
+  add(path_578873, "userId", newJString(userId))
+  add(query_578875, "fields", newJString(fields))
+  add(query_578875, "maxResults", newJInt(maxResults))
+  result = call_578872.call(path_578873, query_578875, nil, nil, nil)
 
-var gmailUsersDraftsList* = Call_GmailUsersDraftsList_588725(
+var gmailUsersDraftsList* = Call_GmailUsersDraftsList_578625(
     name: "gmailUsersDraftsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/drafts",
-    validator: validate_GmailUsersDraftsList_588726, base: "/gmail/v1/users",
-    url: url_GmailUsersDraftsList_588727, schemes: {Scheme.Https})
+    validator: validate_GmailUsersDraftsList_578626, base: "/gmail/v1/users",
+    url: url_GmailUsersDraftsList_578627, schemes: {Scheme.Https})
 type
-  Call_GmailUsersDraftsSend_589031 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersDraftsSend_589033(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersDraftsSend_578931 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersDraftsSend_578933(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -465,7 +469,7 @@ proc url_GmailUsersDraftsSend_589033(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersDraftsSend_589032(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersDraftsSend_578932(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sends the specified, existing draft to the recipients in the To, Cc, and Bcc headers.
   ## 
@@ -476,63 +480,63 @@ proc validate_GmailUsersDraftsSend_589032(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589034 = path.getOrDefault("userId")
-  valid_589034 = validateParameter(valid_589034, JString, required = true,
+  var valid_578934 = path.getOrDefault("userId")
+  valid_578934 = validateParameter(valid_578934, JString, required = true,
                                  default = newJString("me"))
-  if valid_589034 != nil:
-    section.add "userId", valid_589034
+  if valid_578934 != nil:
+    section.add "userId", valid_578934
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589035 = query.getOrDefault("fields")
-  valid_589035 = validateParameter(valid_589035, JString, required = false,
+  var valid_578935 = query.getOrDefault("key")
+  valid_578935 = validateParameter(valid_578935, JString, required = false,
                                  default = nil)
-  if valid_589035 != nil:
-    section.add "fields", valid_589035
-  var valid_589036 = query.getOrDefault("quotaUser")
-  valid_589036 = validateParameter(valid_589036, JString, required = false,
-                                 default = nil)
-  if valid_589036 != nil:
-    section.add "quotaUser", valid_589036
-  var valid_589037 = query.getOrDefault("alt")
-  valid_589037 = validateParameter(valid_589037, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589037 != nil:
-    section.add "alt", valid_589037
-  var valid_589038 = query.getOrDefault("oauth_token")
-  valid_589038 = validateParameter(valid_589038, JString, required = false,
-                                 default = nil)
-  if valid_589038 != nil:
-    section.add "oauth_token", valid_589038
-  var valid_589039 = query.getOrDefault("userIp")
-  valid_589039 = validateParameter(valid_589039, JString, required = false,
-                                 default = nil)
-  if valid_589039 != nil:
-    section.add "userIp", valid_589039
-  var valid_589040 = query.getOrDefault("key")
-  valid_589040 = validateParameter(valid_589040, JString, required = false,
-                                 default = nil)
-  if valid_589040 != nil:
-    section.add "key", valid_589040
-  var valid_589041 = query.getOrDefault("prettyPrint")
-  valid_589041 = validateParameter(valid_589041, JBool, required = false,
+  if valid_578935 != nil:
+    section.add "key", valid_578935
+  var valid_578936 = query.getOrDefault("prettyPrint")
+  valid_578936 = validateParameter(valid_578936, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589041 != nil:
-    section.add "prettyPrint", valid_589041
+  if valid_578936 != nil:
+    section.add "prettyPrint", valid_578936
+  var valid_578937 = query.getOrDefault("oauth_token")
+  valid_578937 = validateParameter(valid_578937, JString, required = false,
+                                 default = nil)
+  if valid_578937 != nil:
+    section.add "oauth_token", valid_578937
+  var valid_578938 = query.getOrDefault("alt")
+  valid_578938 = validateParameter(valid_578938, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578938 != nil:
+    section.add "alt", valid_578938
+  var valid_578939 = query.getOrDefault("userIp")
+  valid_578939 = validateParameter(valid_578939, JString, required = false,
+                                 default = nil)
+  if valid_578939 != nil:
+    section.add "userIp", valid_578939
+  var valid_578940 = query.getOrDefault("quotaUser")
+  valid_578940 = validateParameter(valid_578940, JString, required = false,
+                                 default = nil)
+  if valid_578940 != nil:
+    section.add "quotaUser", valid_578940
+  var valid_578941 = query.getOrDefault("fields")
+  valid_578941 = validateParameter(valid_578941, JString, required = false,
+                                 default = nil)
+  if valid_578941 != nil:
+    section.add "fields", valid_578941
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -544,65 +548,65 @@ proc validate_GmailUsersDraftsSend_589032(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589043: Call_GmailUsersDraftsSend_589031; path: JsonNode;
+proc call*(call_578943: Call_GmailUsersDraftsSend_578931; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Sends the specified, existing draft to the recipients in the To, Cc, and Bcc headers.
   ## 
-  let valid = call_589043.validator(path, query, header, formData, body)
-  let scheme = call_589043.pickScheme
+  let valid = call_578943.validator(path, query, header, formData, body)
+  let scheme = call_578943.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589043.url(scheme.get, call_589043.host, call_589043.base,
-                         call_589043.route, valid.getOrDefault("path"),
+  let url = call_578943.url(scheme.get, call_578943.host, call_578943.base,
+                         call_578943.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589043, url, valid)
+  result = hook(call_578943, url, valid)
 
-proc call*(call_589044: Call_GmailUsersDraftsSend_589031; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_578944: Call_GmailUsersDraftsSend_578931; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; userId: string = "me";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersDraftsSend
   ## Sends the specified, existing draft to the recipients in the To, Cc, and Bcc headers.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589045 = newJObject()
-  var query_589046 = newJObject()
-  var body_589047 = newJObject()
-  add(query_589046, "fields", newJString(fields))
-  add(query_589046, "quotaUser", newJString(quotaUser))
-  add(query_589046, "alt", newJString(alt))
-  add(query_589046, "oauth_token", newJString(oauthToken))
-  add(query_589046, "userIp", newJString(userIp))
-  add(query_589046, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578945 = newJObject()
+  var query_578946 = newJObject()
+  var body_578947 = newJObject()
+  add(query_578946, "key", newJString(key))
+  add(query_578946, "prettyPrint", newJBool(prettyPrint))
+  add(query_578946, "oauth_token", newJString(oauthToken))
+  add(query_578946, "alt", newJString(alt))
+  add(query_578946, "userIp", newJString(userIp))
+  add(query_578946, "quotaUser", newJString(quotaUser))
+  add(path_578945, "userId", newJString(userId))
   if body != nil:
-    body_589047 = body
-  add(query_589046, "prettyPrint", newJBool(prettyPrint))
-  add(path_589045, "userId", newJString(userId))
-  result = call_589044.call(path_589045, query_589046, nil, nil, body_589047)
+    body_578947 = body
+  add(query_578946, "fields", newJString(fields))
+  result = call_578944.call(path_578945, query_578946, nil, nil, body_578947)
 
-var gmailUsersDraftsSend* = Call_GmailUsersDraftsSend_589031(
+var gmailUsersDraftsSend* = Call_GmailUsersDraftsSend_578931(
     name: "gmailUsersDraftsSend", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/drafts/send",
-    validator: validate_GmailUsersDraftsSend_589032, base: "/gmail/v1/users",
-    url: url_GmailUsersDraftsSend_589033, schemes: {Scheme.Https})
+    validator: validate_GmailUsersDraftsSend_578932, base: "/gmail/v1/users",
+    url: url_GmailUsersDraftsSend_578933, schemes: {Scheme.Https})
 type
-  Call_GmailUsersDraftsUpdate_589065 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersDraftsUpdate_589067(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersDraftsUpdate_578965 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersDraftsUpdate_578967(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -620,7 +624,7 @@ proc url_GmailUsersDraftsUpdate_589067(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersDraftsUpdate_589066(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersDraftsUpdate_578966(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Replaces a draft's content.
   ## 
@@ -633,68 +637,68 @@ proc validate_GmailUsersDraftsUpdate_589066(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589068 = path.getOrDefault("id")
-  valid_589068 = validateParameter(valid_589068, JString, required = true,
+  var valid_578968 = path.getOrDefault("id")
+  valid_578968 = validateParameter(valid_578968, JString, required = true,
                                  default = nil)
-  if valid_589068 != nil:
-    section.add "id", valid_589068
-  var valid_589069 = path.getOrDefault("userId")
-  valid_589069 = validateParameter(valid_589069, JString, required = true,
+  if valid_578968 != nil:
+    section.add "id", valid_578968
+  var valid_578969 = path.getOrDefault("userId")
+  valid_578969 = validateParameter(valid_578969, JString, required = true,
                                  default = newJString("me"))
-  if valid_589069 != nil:
-    section.add "userId", valid_589069
+  if valid_578969 != nil:
+    section.add "userId", valid_578969
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589070 = query.getOrDefault("fields")
-  valid_589070 = validateParameter(valid_589070, JString, required = false,
+  var valid_578970 = query.getOrDefault("key")
+  valid_578970 = validateParameter(valid_578970, JString, required = false,
                                  default = nil)
-  if valid_589070 != nil:
-    section.add "fields", valid_589070
-  var valid_589071 = query.getOrDefault("quotaUser")
-  valid_589071 = validateParameter(valid_589071, JString, required = false,
-                                 default = nil)
-  if valid_589071 != nil:
-    section.add "quotaUser", valid_589071
-  var valid_589072 = query.getOrDefault("alt")
-  valid_589072 = validateParameter(valid_589072, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589072 != nil:
-    section.add "alt", valid_589072
-  var valid_589073 = query.getOrDefault("oauth_token")
-  valid_589073 = validateParameter(valid_589073, JString, required = false,
-                                 default = nil)
-  if valid_589073 != nil:
-    section.add "oauth_token", valid_589073
-  var valid_589074 = query.getOrDefault("userIp")
-  valid_589074 = validateParameter(valid_589074, JString, required = false,
-                                 default = nil)
-  if valid_589074 != nil:
-    section.add "userIp", valid_589074
-  var valid_589075 = query.getOrDefault("key")
-  valid_589075 = validateParameter(valid_589075, JString, required = false,
-                                 default = nil)
-  if valid_589075 != nil:
-    section.add "key", valid_589075
-  var valid_589076 = query.getOrDefault("prettyPrint")
-  valid_589076 = validateParameter(valid_589076, JBool, required = false,
+  if valid_578970 != nil:
+    section.add "key", valid_578970
+  var valid_578971 = query.getOrDefault("prettyPrint")
+  valid_578971 = validateParameter(valid_578971, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589076 != nil:
-    section.add "prettyPrint", valid_589076
+  if valid_578971 != nil:
+    section.add "prettyPrint", valid_578971
+  var valid_578972 = query.getOrDefault("oauth_token")
+  valid_578972 = validateParameter(valid_578972, JString, required = false,
+                                 default = nil)
+  if valid_578972 != nil:
+    section.add "oauth_token", valid_578972
+  var valid_578973 = query.getOrDefault("alt")
+  valid_578973 = validateParameter(valid_578973, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578973 != nil:
+    section.add "alt", valid_578973
+  var valid_578974 = query.getOrDefault("userIp")
+  valid_578974 = validateParameter(valid_578974, JString, required = false,
+                                 default = nil)
+  if valid_578974 != nil:
+    section.add "userIp", valid_578974
+  var valid_578975 = query.getOrDefault("quotaUser")
+  valid_578975 = validateParameter(valid_578975, JString, required = false,
+                                 default = nil)
+  if valid_578975 != nil:
+    section.add "quotaUser", valid_578975
+  var valid_578976 = query.getOrDefault("fields")
+  valid_578976 = validateParameter(valid_578976, JString, required = false,
+                                 default = nil)
+  if valid_578976 != nil:
+    section.add "fields", valid_578976
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -706,68 +710,68 @@ proc validate_GmailUsersDraftsUpdate_589066(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589078: Call_GmailUsersDraftsUpdate_589065; path: JsonNode;
+proc call*(call_578978: Call_GmailUsersDraftsUpdate_578965; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Replaces a draft's content.
   ## 
-  let valid = call_589078.validator(path, query, header, formData, body)
-  let scheme = call_589078.pickScheme
+  let valid = call_578978.validator(path, query, header, formData, body)
+  let scheme = call_578978.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589078.url(scheme.get, call_589078.host, call_589078.base,
-                         call_589078.route, valid.getOrDefault("path"),
+  let url = call_578978.url(scheme.get, call_578978.host, call_578978.base,
+                         call_578978.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589078, url, valid)
+  result = hook(call_578978, url, valid)
 
-proc call*(call_589079: Call_GmailUsersDraftsUpdate_589065; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_578979: Call_GmailUsersDraftsUpdate_578965; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersDraftsUpdate
   ## Replaces a draft's content.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the draft to update.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the draft to update.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589080 = newJObject()
-  var query_589081 = newJObject()
-  var body_589082 = newJObject()
-  add(query_589081, "fields", newJString(fields))
-  add(query_589081, "quotaUser", newJString(quotaUser))
-  add(query_589081, "alt", newJString(alt))
-  add(query_589081, "oauth_token", newJString(oauthToken))
-  add(query_589081, "userIp", newJString(userIp))
-  add(path_589080, "id", newJString(id))
-  add(query_589081, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578980 = newJObject()
+  var query_578981 = newJObject()
+  var body_578982 = newJObject()
+  add(query_578981, "key", newJString(key))
+  add(query_578981, "prettyPrint", newJBool(prettyPrint))
+  add(query_578981, "oauth_token", newJString(oauthToken))
+  add(path_578980, "id", newJString(id))
+  add(query_578981, "alt", newJString(alt))
+  add(query_578981, "userIp", newJString(userIp))
+  add(query_578981, "quotaUser", newJString(quotaUser))
+  add(path_578980, "userId", newJString(userId))
   if body != nil:
-    body_589082 = body
-  add(query_589081, "prettyPrint", newJBool(prettyPrint))
-  add(path_589080, "userId", newJString(userId))
-  result = call_589079.call(path_589080, query_589081, nil, nil, body_589082)
+    body_578982 = body
+  add(query_578981, "fields", newJString(fields))
+  result = call_578979.call(path_578980, query_578981, nil, nil, body_578982)
 
-var gmailUsersDraftsUpdate* = Call_GmailUsersDraftsUpdate_589065(
+var gmailUsersDraftsUpdate* = Call_GmailUsersDraftsUpdate_578965(
     name: "gmailUsersDraftsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{userId}/drafts/{id}",
-    validator: validate_GmailUsersDraftsUpdate_589066, base: "/gmail/v1/users",
-    url: url_GmailUsersDraftsUpdate_589067, schemes: {Scheme.Https})
+    validator: validate_GmailUsersDraftsUpdate_578966, base: "/gmail/v1/users",
+    url: url_GmailUsersDraftsUpdate_578967, schemes: {Scheme.Https})
 type
-  Call_GmailUsersDraftsGet_589048 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersDraftsGet_589050(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersDraftsGet_578948 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersDraftsGet_578950(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -785,7 +789,7 @@ proc url_GmailUsersDraftsGet_589050(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersDraftsGet_589049(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersDraftsGet_578949(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Gets the specified draft.
@@ -799,75 +803,75 @@ proc validate_GmailUsersDraftsGet_589049(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589051 = path.getOrDefault("id")
-  valid_589051 = validateParameter(valid_589051, JString, required = true,
+  var valid_578951 = path.getOrDefault("id")
+  valid_578951 = validateParameter(valid_578951, JString, required = true,
                                  default = nil)
-  if valid_589051 != nil:
-    section.add "id", valid_589051
-  var valid_589052 = path.getOrDefault("userId")
-  valid_589052 = validateParameter(valid_589052, JString, required = true,
+  if valid_578951 != nil:
+    section.add "id", valid_578951
+  var valid_578952 = path.getOrDefault("userId")
+  valid_578952 = validateParameter(valid_578952, JString, required = true,
                                  default = newJString("me"))
-  if valid_589052 != nil:
-    section.add "userId", valid_589052
+  if valid_578952 != nil:
+    section.add "userId", valid_578952
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   ##   format: JString
   ##         : The format to return the draft in.
   section = newJObject()
-  var valid_589053 = query.getOrDefault("fields")
-  valid_589053 = validateParameter(valid_589053, JString, required = false,
+  var valid_578953 = query.getOrDefault("key")
+  valid_578953 = validateParameter(valid_578953, JString, required = false,
                                  default = nil)
-  if valid_589053 != nil:
-    section.add "fields", valid_589053
-  var valid_589054 = query.getOrDefault("quotaUser")
-  valid_589054 = validateParameter(valid_589054, JString, required = false,
-                                 default = nil)
-  if valid_589054 != nil:
-    section.add "quotaUser", valid_589054
-  var valid_589055 = query.getOrDefault("alt")
-  valid_589055 = validateParameter(valid_589055, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589055 != nil:
-    section.add "alt", valid_589055
-  var valid_589056 = query.getOrDefault("oauth_token")
-  valid_589056 = validateParameter(valid_589056, JString, required = false,
-                                 default = nil)
-  if valid_589056 != nil:
-    section.add "oauth_token", valid_589056
-  var valid_589057 = query.getOrDefault("userIp")
-  valid_589057 = validateParameter(valid_589057, JString, required = false,
-                                 default = nil)
-  if valid_589057 != nil:
-    section.add "userIp", valid_589057
-  var valid_589058 = query.getOrDefault("key")
-  valid_589058 = validateParameter(valid_589058, JString, required = false,
-                                 default = nil)
-  if valid_589058 != nil:
-    section.add "key", valid_589058
-  var valid_589059 = query.getOrDefault("prettyPrint")
-  valid_589059 = validateParameter(valid_589059, JBool, required = false,
+  if valid_578953 != nil:
+    section.add "key", valid_578953
+  var valid_578954 = query.getOrDefault("prettyPrint")
+  valid_578954 = validateParameter(valid_578954, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589059 != nil:
-    section.add "prettyPrint", valid_589059
-  var valid_589060 = query.getOrDefault("format")
-  valid_589060 = validateParameter(valid_589060, JString, required = false,
+  if valid_578954 != nil:
+    section.add "prettyPrint", valid_578954
+  var valid_578955 = query.getOrDefault("oauth_token")
+  valid_578955 = validateParameter(valid_578955, JString, required = false,
+                                 default = nil)
+  if valid_578955 != nil:
+    section.add "oauth_token", valid_578955
+  var valid_578956 = query.getOrDefault("alt")
+  valid_578956 = validateParameter(valid_578956, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578956 != nil:
+    section.add "alt", valid_578956
+  var valid_578957 = query.getOrDefault("userIp")
+  valid_578957 = validateParameter(valid_578957, JString, required = false,
+                                 default = nil)
+  if valid_578957 != nil:
+    section.add "userIp", valid_578957
+  var valid_578958 = query.getOrDefault("quotaUser")
+  valid_578958 = validateParameter(valid_578958, JString, required = false,
+                                 default = nil)
+  if valid_578958 != nil:
+    section.add "quotaUser", valid_578958
+  var valid_578959 = query.getOrDefault("fields")
+  valid_578959 = validateParameter(valid_578959, JString, required = false,
+                                 default = nil)
+  if valid_578959 != nil:
+    section.add "fields", valid_578959
+  var valid_578960 = query.getOrDefault("format")
+  valid_578960 = validateParameter(valid_578960, JString, required = false,
                                  default = newJString("full"))
-  if valid_589060 != nil:
-    section.add "format", valid_589060
+  if valid_578960 != nil:
+    section.add "format", valid_578960
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -876,67 +880,67 @@ proc validate_GmailUsersDraftsGet_589049(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589061: Call_GmailUsersDraftsGet_589048; path: JsonNode;
+proc call*(call_578961: Call_GmailUsersDraftsGet_578948; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the specified draft.
   ## 
-  let valid = call_589061.validator(path, query, header, formData, body)
-  let scheme = call_589061.pickScheme
+  let valid = call_578961.validator(path, query, header, formData, body)
+  let scheme = call_578961.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589061.url(scheme.get, call_589061.host, call_589061.base,
-                         call_589061.route, valid.getOrDefault("path"),
+  let url = call_578961.url(scheme.get, call_578961.host, call_578961.base,
+                         call_578961.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589061, url, valid)
+  result = hook(call_578961, url, valid)
 
-proc call*(call_589062: Call_GmailUsersDraftsGet_589048; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; format: string = "full"; userId: string = "me"): Recallable =
+proc call*(call_578962: Call_GmailUsersDraftsGet_578948; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""; format: string = "full"): Recallable =
   ## gmailUsersDraftsGet
   ## Gets the specified draft.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the draft to retrieve.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  ##   format: string
-  ##         : The format to return the draft in.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the draft to retrieve.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589063 = newJObject()
-  var query_589064 = newJObject()
-  add(query_589064, "fields", newJString(fields))
-  add(query_589064, "quotaUser", newJString(quotaUser))
-  add(query_589064, "alt", newJString(alt))
-  add(query_589064, "oauth_token", newJString(oauthToken))
-  add(query_589064, "userIp", newJString(userIp))
-  add(path_589063, "id", newJString(id))
-  add(query_589064, "key", newJString(key))
-  add(query_589064, "prettyPrint", newJBool(prettyPrint))
-  add(query_589064, "format", newJString(format))
-  add(path_589063, "userId", newJString(userId))
-  result = call_589062.call(path_589063, query_589064, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   format: string
+  ##         : The format to return the draft in.
+  var path_578963 = newJObject()
+  var query_578964 = newJObject()
+  add(query_578964, "key", newJString(key))
+  add(query_578964, "prettyPrint", newJBool(prettyPrint))
+  add(query_578964, "oauth_token", newJString(oauthToken))
+  add(path_578963, "id", newJString(id))
+  add(query_578964, "alt", newJString(alt))
+  add(query_578964, "userIp", newJString(userIp))
+  add(query_578964, "quotaUser", newJString(quotaUser))
+  add(path_578963, "userId", newJString(userId))
+  add(query_578964, "fields", newJString(fields))
+  add(query_578964, "format", newJString(format))
+  result = call_578962.call(path_578963, query_578964, nil, nil, nil)
 
-var gmailUsersDraftsGet* = Call_GmailUsersDraftsGet_589048(
+var gmailUsersDraftsGet* = Call_GmailUsersDraftsGet_578948(
     name: "gmailUsersDraftsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/drafts/{id}",
-    validator: validate_GmailUsersDraftsGet_589049, base: "/gmail/v1/users",
-    url: url_GmailUsersDraftsGet_589050, schemes: {Scheme.Https})
+    validator: validate_GmailUsersDraftsGet_578949, base: "/gmail/v1/users",
+    url: url_GmailUsersDraftsGet_578950, schemes: {Scheme.Https})
 type
-  Call_GmailUsersDraftsDelete_589083 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersDraftsDelete_589085(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersDraftsDelete_578983 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersDraftsDelete_578985(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -954,7 +958,7 @@ proc url_GmailUsersDraftsDelete_589085(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersDraftsDelete_589084(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersDraftsDelete_578984(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Immediately and permanently deletes the specified draft. Does not simply trash it.
   ## 
@@ -967,68 +971,68 @@ proc validate_GmailUsersDraftsDelete_589084(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589086 = path.getOrDefault("id")
-  valid_589086 = validateParameter(valid_589086, JString, required = true,
+  var valid_578986 = path.getOrDefault("id")
+  valid_578986 = validateParameter(valid_578986, JString, required = true,
                                  default = nil)
-  if valid_589086 != nil:
-    section.add "id", valid_589086
-  var valid_589087 = path.getOrDefault("userId")
-  valid_589087 = validateParameter(valid_589087, JString, required = true,
+  if valid_578986 != nil:
+    section.add "id", valid_578986
+  var valid_578987 = path.getOrDefault("userId")
+  valid_578987 = validateParameter(valid_578987, JString, required = true,
                                  default = newJString("me"))
-  if valid_589087 != nil:
-    section.add "userId", valid_589087
+  if valid_578987 != nil:
+    section.add "userId", valid_578987
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589088 = query.getOrDefault("fields")
-  valid_589088 = validateParameter(valid_589088, JString, required = false,
+  var valid_578988 = query.getOrDefault("key")
+  valid_578988 = validateParameter(valid_578988, JString, required = false,
                                  default = nil)
-  if valid_589088 != nil:
-    section.add "fields", valid_589088
-  var valid_589089 = query.getOrDefault("quotaUser")
-  valid_589089 = validateParameter(valid_589089, JString, required = false,
-                                 default = nil)
-  if valid_589089 != nil:
-    section.add "quotaUser", valid_589089
-  var valid_589090 = query.getOrDefault("alt")
-  valid_589090 = validateParameter(valid_589090, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589090 != nil:
-    section.add "alt", valid_589090
-  var valid_589091 = query.getOrDefault("oauth_token")
-  valid_589091 = validateParameter(valid_589091, JString, required = false,
-                                 default = nil)
-  if valid_589091 != nil:
-    section.add "oauth_token", valid_589091
-  var valid_589092 = query.getOrDefault("userIp")
-  valid_589092 = validateParameter(valid_589092, JString, required = false,
-                                 default = nil)
-  if valid_589092 != nil:
-    section.add "userIp", valid_589092
-  var valid_589093 = query.getOrDefault("key")
-  valid_589093 = validateParameter(valid_589093, JString, required = false,
-                                 default = nil)
-  if valid_589093 != nil:
-    section.add "key", valid_589093
-  var valid_589094 = query.getOrDefault("prettyPrint")
-  valid_589094 = validateParameter(valid_589094, JBool, required = false,
+  if valid_578988 != nil:
+    section.add "key", valid_578988
+  var valid_578989 = query.getOrDefault("prettyPrint")
+  valid_578989 = validateParameter(valid_578989, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589094 != nil:
-    section.add "prettyPrint", valid_589094
+  if valid_578989 != nil:
+    section.add "prettyPrint", valid_578989
+  var valid_578990 = query.getOrDefault("oauth_token")
+  valid_578990 = validateParameter(valid_578990, JString, required = false,
+                                 default = nil)
+  if valid_578990 != nil:
+    section.add "oauth_token", valid_578990
+  var valid_578991 = query.getOrDefault("alt")
+  valid_578991 = validateParameter(valid_578991, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578991 != nil:
+    section.add "alt", valid_578991
+  var valid_578992 = query.getOrDefault("userIp")
+  valid_578992 = validateParameter(valid_578992, JString, required = false,
+                                 default = nil)
+  if valid_578992 != nil:
+    section.add "userIp", valid_578992
+  var valid_578993 = query.getOrDefault("quotaUser")
+  valid_578993 = validateParameter(valid_578993, JString, required = false,
+                                 default = nil)
+  if valid_578993 != nil:
+    section.add "quotaUser", valid_578993
+  var valid_578994 = query.getOrDefault("fields")
+  valid_578994 = validateParameter(valid_578994, JString, required = false,
+                                 default = nil)
+  if valid_578994 != nil:
+    section.add "fields", valid_578994
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1037,64 +1041,64 @@ proc validate_GmailUsersDraftsDelete_589084(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589095: Call_GmailUsersDraftsDelete_589083; path: JsonNode;
+proc call*(call_578995: Call_GmailUsersDraftsDelete_578983; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Immediately and permanently deletes the specified draft. Does not simply trash it.
   ## 
-  let valid = call_589095.validator(path, query, header, formData, body)
-  let scheme = call_589095.pickScheme
+  let valid = call_578995.validator(path, query, header, formData, body)
+  let scheme = call_578995.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589095.url(scheme.get, call_589095.host, call_589095.base,
-                         call_589095.route, valid.getOrDefault("path"),
+  let url = call_578995.url(scheme.get, call_578995.host, call_578995.base,
+                         call_578995.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589095, url, valid)
+  result = hook(call_578995, url, valid)
 
-proc call*(call_589096: Call_GmailUsersDraftsDelete_589083; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_578996: Call_GmailUsersDraftsDelete_578983; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersDraftsDelete
   ## Immediately and permanently deletes the specified draft. Does not simply trash it.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the draft to delete.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the draft to delete.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589097 = newJObject()
-  var query_589098 = newJObject()
-  add(query_589098, "fields", newJString(fields))
-  add(query_589098, "quotaUser", newJString(quotaUser))
-  add(query_589098, "alt", newJString(alt))
-  add(query_589098, "oauth_token", newJString(oauthToken))
-  add(query_589098, "userIp", newJString(userIp))
-  add(path_589097, "id", newJString(id))
-  add(query_589098, "key", newJString(key))
-  add(query_589098, "prettyPrint", newJBool(prettyPrint))
-  add(path_589097, "userId", newJString(userId))
-  result = call_589096.call(path_589097, query_589098, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578997 = newJObject()
+  var query_578998 = newJObject()
+  add(query_578998, "key", newJString(key))
+  add(query_578998, "prettyPrint", newJBool(prettyPrint))
+  add(query_578998, "oauth_token", newJString(oauthToken))
+  add(path_578997, "id", newJString(id))
+  add(query_578998, "alt", newJString(alt))
+  add(query_578998, "userIp", newJString(userIp))
+  add(query_578998, "quotaUser", newJString(quotaUser))
+  add(path_578997, "userId", newJString(userId))
+  add(query_578998, "fields", newJString(fields))
+  result = call_578996.call(path_578997, query_578998, nil, nil, nil)
 
-var gmailUsersDraftsDelete* = Call_GmailUsersDraftsDelete_589083(
+var gmailUsersDraftsDelete* = Call_GmailUsersDraftsDelete_578983(
     name: "gmailUsersDraftsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{userId}/drafts/{id}",
-    validator: validate_GmailUsersDraftsDelete_589084, base: "/gmail/v1/users",
-    url: url_GmailUsersDraftsDelete_589085, schemes: {Scheme.Https})
+    validator: validate_GmailUsersDraftsDelete_578984, base: "/gmail/v1/users",
+    url: url_GmailUsersDraftsDelete_578985, schemes: {Scheme.Https})
 type
-  Call_GmailUsersHistoryList_589099 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersHistoryList_589101(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersHistoryList_578999 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersHistoryList_579001(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1110,7 +1114,7 @@ proc url_GmailUsersHistoryList_589101(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersHistoryList_589100(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersHistoryList_579000(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the history of all changes to the given mailbox. History results are returned in chronological order (increasing historyId).
   ## 
@@ -1121,98 +1125,98 @@ proc validate_GmailUsersHistoryList_589100(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589102 = path.getOrDefault("userId")
-  valid_589102 = validateParameter(valid_589102, JString, required = true,
+  var valid_579002 = path.getOrDefault("userId")
+  valid_579002 = validateParameter(valid_579002, JString, required = true,
                                  default = newJString("me"))
-  if valid_589102 != nil:
-    section.add "userId", valid_589102
+  if valid_579002 != nil:
+    section.add "userId", valid_579002
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Page token to retrieve a specific page of results in the list.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   labelId: JString
-  ##          : Only return messages with a label matching the ID.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   historyTypes: JArray
-  ##               : History types to be returned by the function
-  ##   startHistoryId: JString
-  ##                 : Required. Returns history records after the specified startHistoryId. The supplied startHistoryId should be obtained from the historyId of a message, thread, or previous list response. History IDs increase chronologically but are not contiguous with random gaps in between valid IDs. Supplying an invalid or out of date startHistoryId typically returns an HTTP 404 error code. A historyId is typically valid for at least a week, but in some rare circumstances may be valid for only a few hours. If you receive an HTTP 404 error response, your application should perform a full sync. If you receive no nextPageToken in the response, there are no updates to retrieve and you can store the returned historyId for a future request.
-  ##   maxResults: JInt
-  ##             : The maximum number of history records to return.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   labelId: JString
+  ##          : Only return messages with a label matching the ID.
+  ##   startHistoryId: JString
+  ##                 : Required. Returns history records after the specified startHistoryId. The supplied startHistoryId should be obtained from the historyId of a message, thread, or previous list response. History IDs increase chronologically but are not contiguous with random gaps in between valid IDs. Supplying an invalid or out of date startHistoryId typically returns an HTTP 404 error code. A historyId is typically valid for at least a week, but in some rare circumstances may be valid for only a few hours. If you receive an HTTP 404 error response, your application should perform a full sync. If you receive no nextPageToken in the response, there are no updates to retrieve and you can store the returned historyId for a future request.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : Page token to retrieve a specific page of results in the list.
+  ##   historyTypes: JArray
+  ##               : History types to be returned by the function
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : The maximum number of history records to return.
   section = newJObject()
-  var valid_589103 = query.getOrDefault("fields")
-  valid_589103 = validateParameter(valid_589103, JString, required = false,
+  var valid_579003 = query.getOrDefault("key")
+  valid_579003 = validateParameter(valid_579003, JString, required = false,
                                  default = nil)
-  if valid_589103 != nil:
-    section.add "fields", valid_589103
-  var valid_589104 = query.getOrDefault("pageToken")
-  valid_589104 = validateParameter(valid_589104, JString, required = false,
-                                 default = nil)
-  if valid_589104 != nil:
-    section.add "pageToken", valid_589104
-  var valid_589105 = query.getOrDefault("quotaUser")
-  valid_589105 = validateParameter(valid_589105, JString, required = false,
-                                 default = nil)
-  if valid_589105 != nil:
-    section.add "quotaUser", valid_589105
-  var valid_589106 = query.getOrDefault("alt")
-  valid_589106 = validateParameter(valid_589106, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589106 != nil:
-    section.add "alt", valid_589106
-  var valid_589107 = query.getOrDefault("labelId")
-  valid_589107 = validateParameter(valid_589107, JString, required = false,
-                                 default = nil)
-  if valid_589107 != nil:
-    section.add "labelId", valid_589107
-  var valid_589108 = query.getOrDefault("oauth_token")
-  valid_589108 = validateParameter(valid_589108, JString, required = false,
-                                 default = nil)
-  if valid_589108 != nil:
-    section.add "oauth_token", valid_589108
-  var valid_589109 = query.getOrDefault("userIp")
-  valid_589109 = validateParameter(valid_589109, JString, required = false,
-                                 default = nil)
-  if valid_589109 != nil:
-    section.add "userIp", valid_589109
-  var valid_589110 = query.getOrDefault("historyTypes")
-  valid_589110 = validateParameter(valid_589110, JArray, required = false,
-                                 default = nil)
-  if valid_589110 != nil:
-    section.add "historyTypes", valid_589110
-  var valid_589111 = query.getOrDefault("startHistoryId")
-  valid_589111 = validateParameter(valid_589111, JString, required = false,
-                                 default = nil)
-  if valid_589111 != nil:
-    section.add "startHistoryId", valid_589111
-  var valid_589112 = query.getOrDefault("maxResults")
-  valid_589112 = validateParameter(valid_589112, JInt, required = false,
-                                 default = newJInt(100))
-  if valid_589112 != nil:
-    section.add "maxResults", valid_589112
-  var valid_589113 = query.getOrDefault("key")
-  valid_589113 = validateParameter(valid_589113, JString, required = false,
-                                 default = nil)
-  if valid_589113 != nil:
-    section.add "key", valid_589113
-  var valid_589114 = query.getOrDefault("prettyPrint")
-  valid_589114 = validateParameter(valid_589114, JBool, required = false,
+  if valid_579003 != nil:
+    section.add "key", valid_579003
+  var valid_579004 = query.getOrDefault("prettyPrint")
+  valid_579004 = validateParameter(valid_579004, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589114 != nil:
-    section.add "prettyPrint", valid_589114
+  if valid_579004 != nil:
+    section.add "prettyPrint", valid_579004
+  var valid_579005 = query.getOrDefault("oauth_token")
+  valid_579005 = validateParameter(valid_579005, JString, required = false,
+                                 default = nil)
+  if valid_579005 != nil:
+    section.add "oauth_token", valid_579005
+  var valid_579006 = query.getOrDefault("labelId")
+  valid_579006 = validateParameter(valid_579006, JString, required = false,
+                                 default = nil)
+  if valid_579006 != nil:
+    section.add "labelId", valid_579006
+  var valid_579007 = query.getOrDefault("startHistoryId")
+  valid_579007 = validateParameter(valid_579007, JString, required = false,
+                                 default = nil)
+  if valid_579007 != nil:
+    section.add "startHistoryId", valid_579007
+  var valid_579008 = query.getOrDefault("alt")
+  valid_579008 = validateParameter(valid_579008, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579008 != nil:
+    section.add "alt", valid_579008
+  var valid_579009 = query.getOrDefault("userIp")
+  valid_579009 = validateParameter(valid_579009, JString, required = false,
+                                 default = nil)
+  if valid_579009 != nil:
+    section.add "userIp", valid_579009
+  var valid_579010 = query.getOrDefault("quotaUser")
+  valid_579010 = validateParameter(valid_579010, JString, required = false,
+                                 default = nil)
+  if valid_579010 != nil:
+    section.add "quotaUser", valid_579010
+  var valid_579011 = query.getOrDefault("pageToken")
+  valid_579011 = validateParameter(valid_579011, JString, required = false,
+                                 default = nil)
+  if valid_579011 != nil:
+    section.add "pageToken", valid_579011
+  var valid_579012 = query.getOrDefault("historyTypes")
+  valid_579012 = validateParameter(valid_579012, JArray, required = false,
+                                 default = nil)
+  if valid_579012 != nil:
+    section.add "historyTypes", valid_579012
+  var valid_579013 = query.getOrDefault("fields")
+  valid_579013 = validateParameter(valid_579013, JString, required = false,
+                                 default = nil)
+  if valid_579013 != nil:
+    section.add "fields", valid_579013
+  var valid_579014 = query.getOrDefault("maxResults")
+  valid_579014 = validateParameter(valid_579014, JInt, required = false,
+                                 default = newJInt(100))
+  if valid_579014 != nil:
+    section.add "maxResults", valid_579014
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1221,79 +1225,78 @@ proc validate_GmailUsersHistoryList_589100(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589115: Call_GmailUsersHistoryList_589099; path: JsonNode;
+proc call*(call_579015: Call_GmailUsersHistoryList_578999; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the history of all changes to the given mailbox. History results are returned in chronological order (increasing historyId).
   ## 
-  let valid = call_589115.validator(path, query, header, formData, body)
-  let scheme = call_589115.pickScheme
+  let valid = call_579015.validator(path, query, header, formData, body)
+  let scheme = call_579015.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589115.url(scheme.get, call_589115.host, call_589115.base,
-                         call_589115.route, valid.getOrDefault("path"),
+  let url = call_579015.url(scheme.get, call_579015.host, call_579015.base,
+                         call_579015.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589115, url, valid)
+  result = hook(call_579015, url, valid)
 
-proc call*(call_589116: Call_GmailUsersHistoryList_589099; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          labelId: string = ""; oauthToken: string = ""; userIp: string = "";
-          historyTypes: JsonNode = nil; startHistoryId: string = "";
-          maxResults: int = 100; key: string = ""; prettyPrint: bool = true;
-          userId: string = "me"): Recallable =
+proc call*(call_579016: Call_GmailUsersHistoryList_578999; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; labelId: string = "";
+          startHistoryId: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; pageToken: string = ""; userId: string = "me";
+          historyTypes: JsonNode = nil; fields: string = ""; maxResults: int = 100): Recallable =
   ## gmailUsersHistoryList
   ## Lists the history of all changes to the given mailbox. History results are returned in chronological order (increasing historyId).
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Page token to retrieve a specific page of results in the list.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   labelId: string
-  ##          : Only return messages with a label matching the ID.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   historyTypes: JArray
-  ##               : History types to be returned by the function
-  ##   startHistoryId: string
-  ##                 : Required. Returns history records after the specified startHistoryId. The supplied startHistoryId should be obtained from the historyId of a message, thread, or previous list response. History IDs increase chronologically but are not contiguous with random gaps in between valid IDs. Supplying an invalid or out of date startHistoryId typically returns an HTTP 404 error code. A historyId is typically valid for at least a week, but in some rare circumstances may be valid for only a few hours. If you receive an HTTP 404 error response, your application should perform a full sync. If you receive no nextPageToken in the response, there are no updates to retrieve and you can store the returned historyId for a future request.
-  ##   maxResults: int
-  ##             : The maximum number of history records to return.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   labelId: string
+  ##          : Only return messages with a label matching the ID.
+  ##   startHistoryId: string
+  ##                 : Required. Returns history records after the specified startHistoryId. The supplied startHistoryId should be obtained from the historyId of a message, thread, or previous list response. History IDs increase chronologically but are not contiguous with random gaps in between valid IDs. Supplying an invalid or out of date startHistoryId typically returns an HTTP 404 error code. A historyId is typically valid for at least a week, but in some rare circumstances may be valid for only a few hours. If you receive an HTTP 404 error response, your application should perform a full sync. If you receive no nextPageToken in the response, there are no updates to retrieve and you can store the returned historyId for a future request.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : Page token to retrieve a specific page of results in the list.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589117 = newJObject()
-  var query_589118 = newJObject()
-  add(query_589118, "fields", newJString(fields))
-  add(query_589118, "pageToken", newJString(pageToken))
-  add(query_589118, "quotaUser", newJString(quotaUser))
-  add(query_589118, "alt", newJString(alt))
-  add(query_589118, "labelId", newJString(labelId))
-  add(query_589118, "oauth_token", newJString(oauthToken))
-  add(query_589118, "userIp", newJString(userIp))
+  ##   historyTypes: JArray
+  ##               : History types to be returned by the function
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: int
+  ##             : The maximum number of history records to return.
+  var path_579017 = newJObject()
+  var query_579018 = newJObject()
+  add(query_579018, "key", newJString(key))
+  add(query_579018, "prettyPrint", newJBool(prettyPrint))
+  add(query_579018, "oauth_token", newJString(oauthToken))
+  add(query_579018, "labelId", newJString(labelId))
+  add(query_579018, "startHistoryId", newJString(startHistoryId))
+  add(query_579018, "alt", newJString(alt))
+  add(query_579018, "userIp", newJString(userIp))
+  add(query_579018, "quotaUser", newJString(quotaUser))
+  add(query_579018, "pageToken", newJString(pageToken))
+  add(path_579017, "userId", newJString(userId))
   if historyTypes != nil:
-    query_589118.add "historyTypes", historyTypes
-  add(query_589118, "startHistoryId", newJString(startHistoryId))
-  add(query_589118, "maxResults", newJInt(maxResults))
-  add(query_589118, "key", newJString(key))
-  add(query_589118, "prettyPrint", newJBool(prettyPrint))
-  add(path_589117, "userId", newJString(userId))
-  result = call_589116.call(path_589117, query_589118, nil, nil, nil)
+    query_579018.add "historyTypes", historyTypes
+  add(query_579018, "fields", newJString(fields))
+  add(query_579018, "maxResults", newJInt(maxResults))
+  result = call_579016.call(path_579017, query_579018, nil, nil, nil)
 
-var gmailUsersHistoryList* = Call_GmailUsersHistoryList_589099(
+var gmailUsersHistoryList* = Call_GmailUsersHistoryList_578999(
     name: "gmailUsersHistoryList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/history",
-    validator: validate_GmailUsersHistoryList_589100, base: "/gmail/v1/users",
-    url: url_GmailUsersHistoryList_589101, schemes: {Scheme.Https})
+    validator: validate_GmailUsersHistoryList_579000, base: "/gmail/v1/users",
+    url: url_GmailUsersHistoryList_579001, schemes: {Scheme.Https})
 type
-  Call_GmailUsersLabelsCreate_589134 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersLabelsCreate_589136(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersLabelsCreate_579034 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersLabelsCreate_579036(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1309,7 +1312,7 @@ proc url_GmailUsersLabelsCreate_589136(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersLabelsCreate_589135(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersLabelsCreate_579035(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new label.
   ## 
@@ -1320,63 +1323,63 @@ proc validate_GmailUsersLabelsCreate_589135(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589137 = path.getOrDefault("userId")
-  valid_589137 = validateParameter(valid_589137, JString, required = true,
+  var valid_579037 = path.getOrDefault("userId")
+  valid_579037 = validateParameter(valid_579037, JString, required = true,
                                  default = newJString("me"))
-  if valid_589137 != nil:
-    section.add "userId", valid_589137
+  if valid_579037 != nil:
+    section.add "userId", valid_579037
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589138 = query.getOrDefault("fields")
-  valid_589138 = validateParameter(valid_589138, JString, required = false,
+  var valid_579038 = query.getOrDefault("key")
+  valid_579038 = validateParameter(valid_579038, JString, required = false,
                                  default = nil)
-  if valid_589138 != nil:
-    section.add "fields", valid_589138
-  var valid_589139 = query.getOrDefault("quotaUser")
-  valid_589139 = validateParameter(valid_589139, JString, required = false,
-                                 default = nil)
-  if valid_589139 != nil:
-    section.add "quotaUser", valid_589139
-  var valid_589140 = query.getOrDefault("alt")
-  valid_589140 = validateParameter(valid_589140, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589140 != nil:
-    section.add "alt", valid_589140
-  var valid_589141 = query.getOrDefault("oauth_token")
-  valid_589141 = validateParameter(valid_589141, JString, required = false,
-                                 default = nil)
-  if valid_589141 != nil:
-    section.add "oauth_token", valid_589141
-  var valid_589142 = query.getOrDefault("userIp")
-  valid_589142 = validateParameter(valid_589142, JString, required = false,
-                                 default = nil)
-  if valid_589142 != nil:
-    section.add "userIp", valid_589142
-  var valid_589143 = query.getOrDefault("key")
-  valid_589143 = validateParameter(valid_589143, JString, required = false,
-                                 default = nil)
-  if valid_589143 != nil:
-    section.add "key", valid_589143
-  var valid_589144 = query.getOrDefault("prettyPrint")
-  valid_589144 = validateParameter(valid_589144, JBool, required = false,
+  if valid_579038 != nil:
+    section.add "key", valid_579038
+  var valid_579039 = query.getOrDefault("prettyPrint")
+  valid_579039 = validateParameter(valid_579039, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589144 != nil:
-    section.add "prettyPrint", valid_589144
+  if valid_579039 != nil:
+    section.add "prettyPrint", valid_579039
+  var valid_579040 = query.getOrDefault("oauth_token")
+  valid_579040 = validateParameter(valid_579040, JString, required = false,
+                                 default = nil)
+  if valid_579040 != nil:
+    section.add "oauth_token", valid_579040
+  var valid_579041 = query.getOrDefault("alt")
+  valid_579041 = validateParameter(valid_579041, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579041 != nil:
+    section.add "alt", valid_579041
+  var valid_579042 = query.getOrDefault("userIp")
+  valid_579042 = validateParameter(valid_579042, JString, required = false,
+                                 default = nil)
+  if valid_579042 != nil:
+    section.add "userIp", valid_579042
+  var valid_579043 = query.getOrDefault("quotaUser")
+  valid_579043 = validateParameter(valid_579043, JString, required = false,
+                                 default = nil)
+  if valid_579043 != nil:
+    section.add "quotaUser", valid_579043
+  var valid_579044 = query.getOrDefault("fields")
+  valid_579044 = validateParameter(valid_579044, JString, required = false,
+                                 default = nil)
+  if valid_579044 != nil:
+    section.add "fields", valid_579044
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1388,65 +1391,65 @@ proc validate_GmailUsersLabelsCreate_589135(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589146: Call_GmailUsersLabelsCreate_589134; path: JsonNode;
+proc call*(call_579046: Call_GmailUsersLabelsCreate_579034; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new label.
   ## 
-  let valid = call_589146.validator(path, query, header, formData, body)
-  let scheme = call_589146.pickScheme
+  let valid = call_579046.validator(path, query, header, formData, body)
+  let scheme = call_579046.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589146.url(scheme.get, call_589146.host, call_589146.base,
-                         call_589146.route, valid.getOrDefault("path"),
+  let url = call_579046.url(scheme.get, call_579046.host, call_579046.base,
+                         call_579046.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589146, url, valid)
+  result = hook(call_579046, url, valid)
 
-proc call*(call_589147: Call_GmailUsersLabelsCreate_589134; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579047: Call_GmailUsersLabelsCreate_579034; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; userId: string = "me";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersLabelsCreate
   ## Creates a new label.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589148 = newJObject()
-  var query_589149 = newJObject()
-  var body_589150 = newJObject()
-  add(query_589149, "fields", newJString(fields))
-  add(query_589149, "quotaUser", newJString(quotaUser))
-  add(query_589149, "alt", newJString(alt))
-  add(query_589149, "oauth_token", newJString(oauthToken))
-  add(query_589149, "userIp", newJString(userIp))
-  add(query_589149, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579048 = newJObject()
+  var query_579049 = newJObject()
+  var body_579050 = newJObject()
+  add(query_579049, "key", newJString(key))
+  add(query_579049, "prettyPrint", newJBool(prettyPrint))
+  add(query_579049, "oauth_token", newJString(oauthToken))
+  add(query_579049, "alt", newJString(alt))
+  add(query_579049, "userIp", newJString(userIp))
+  add(query_579049, "quotaUser", newJString(quotaUser))
+  add(path_579048, "userId", newJString(userId))
   if body != nil:
-    body_589150 = body
-  add(query_589149, "prettyPrint", newJBool(prettyPrint))
-  add(path_589148, "userId", newJString(userId))
-  result = call_589147.call(path_589148, query_589149, nil, nil, body_589150)
+    body_579050 = body
+  add(query_579049, "fields", newJString(fields))
+  result = call_579047.call(path_579048, query_579049, nil, nil, body_579050)
 
-var gmailUsersLabelsCreate* = Call_GmailUsersLabelsCreate_589134(
+var gmailUsersLabelsCreate* = Call_GmailUsersLabelsCreate_579034(
     name: "gmailUsersLabelsCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/labels",
-    validator: validate_GmailUsersLabelsCreate_589135, base: "/gmail/v1/users",
-    url: url_GmailUsersLabelsCreate_589136, schemes: {Scheme.Https})
+    validator: validate_GmailUsersLabelsCreate_579035, base: "/gmail/v1/users",
+    url: url_GmailUsersLabelsCreate_579036, schemes: {Scheme.Https})
 type
-  Call_GmailUsersLabelsList_589119 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersLabelsList_589121(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersLabelsList_579019 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersLabelsList_579021(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1462,7 +1465,7 @@ proc url_GmailUsersLabelsList_589121(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersLabelsList_589120(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersLabelsList_579020(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all labels in the user's mailbox.
   ## 
@@ -1473,63 +1476,63 @@ proc validate_GmailUsersLabelsList_589120(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589122 = path.getOrDefault("userId")
-  valid_589122 = validateParameter(valid_589122, JString, required = true,
+  var valid_579022 = path.getOrDefault("userId")
+  valid_579022 = validateParameter(valid_579022, JString, required = true,
                                  default = newJString("me"))
-  if valid_589122 != nil:
-    section.add "userId", valid_589122
+  if valid_579022 != nil:
+    section.add "userId", valid_579022
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589123 = query.getOrDefault("fields")
-  valid_589123 = validateParameter(valid_589123, JString, required = false,
+  var valid_579023 = query.getOrDefault("key")
+  valid_579023 = validateParameter(valid_579023, JString, required = false,
                                  default = nil)
-  if valid_589123 != nil:
-    section.add "fields", valid_589123
-  var valid_589124 = query.getOrDefault("quotaUser")
-  valid_589124 = validateParameter(valid_589124, JString, required = false,
-                                 default = nil)
-  if valid_589124 != nil:
-    section.add "quotaUser", valid_589124
-  var valid_589125 = query.getOrDefault("alt")
-  valid_589125 = validateParameter(valid_589125, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589125 != nil:
-    section.add "alt", valid_589125
-  var valid_589126 = query.getOrDefault("oauth_token")
-  valid_589126 = validateParameter(valid_589126, JString, required = false,
-                                 default = nil)
-  if valid_589126 != nil:
-    section.add "oauth_token", valid_589126
-  var valid_589127 = query.getOrDefault("userIp")
-  valid_589127 = validateParameter(valid_589127, JString, required = false,
-                                 default = nil)
-  if valid_589127 != nil:
-    section.add "userIp", valid_589127
-  var valid_589128 = query.getOrDefault("key")
-  valid_589128 = validateParameter(valid_589128, JString, required = false,
-                                 default = nil)
-  if valid_589128 != nil:
-    section.add "key", valid_589128
-  var valid_589129 = query.getOrDefault("prettyPrint")
-  valid_589129 = validateParameter(valid_589129, JBool, required = false,
+  if valid_579023 != nil:
+    section.add "key", valid_579023
+  var valid_579024 = query.getOrDefault("prettyPrint")
+  valid_579024 = validateParameter(valid_579024, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589129 != nil:
-    section.add "prettyPrint", valid_589129
+  if valid_579024 != nil:
+    section.add "prettyPrint", valid_579024
+  var valid_579025 = query.getOrDefault("oauth_token")
+  valid_579025 = validateParameter(valid_579025, JString, required = false,
+                                 default = nil)
+  if valid_579025 != nil:
+    section.add "oauth_token", valid_579025
+  var valid_579026 = query.getOrDefault("alt")
+  valid_579026 = validateParameter(valid_579026, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579026 != nil:
+    section.add "alt", valid_579026
+  var valid_579027 = query.getOrDefault("userIp")
+  valid_579027 = validateParameter(valid_579027, JString, required = false,
+                                 default = nil)
+  if valid_579027 != nil:
+    section.add "userIp", valid_579027
+  var valid_579028 = query.getOrDefault("quotaUser")
+  valid_579028 = validateParameter(valid_579028, JString, required = false,
+                                 default = nil)
+  if valid_579028 != nil:
+    section.add "quotaUser", valid_579028
+  var valid_579029 = query.getOrDefault("fields")
+  valid_579029 = validateParameter(valid_579029, JString, required = false,
+                                 default = nil)
+  if valid_579029 != nil:
+    section.add "fields", valid_579029
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1538,61 +1541,61 @@ proc validate_GmailUsersLabelsList_589120(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589130: Call_GmailUsersLabelsList_589119; path: JsonNode;
+proc call*(call_579030: Call_GmailUsersLabelsList_579019; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all labels in the user's mailbox.
   ## 
-  let valid = call_589130.validator(path, query, header, formData, body)
-  let scheme = call_589130.pickScheme
+  let valid = call_579030.validator(path, query, header, formData, body)
+  let scheme = call_579030.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589130.url(scheme.get, call_589130.host, call_589130.base,
-                         call_589130.route, valid.getOrDefault("path"),
+  let url = call_579030.url(scheme.get, call_579030.host, call_579030.base,
+                         call_579030.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589130, url, valid)
+  result = hook(call_579030, url, valid)
 
-proc call*(call_589131: Call_GmailUsersLabelsList_589119; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true;
-          userId: string = "me"): Recallable =
+proc call*(call_579031: Call_GmailUsersLabelsList_579019; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; userId: string = "me";
+          fields: string = ""): Recallable =
   ## gmailUsersLabelsList
   ## Lists all labels in the user's mailbox.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589132 = newJObject()
-  var query_589133 = newJObject()
-  add(query_589133, "fields", newJString(fields))
-  add(query_589133, "quotaUser", newJString(quotaUser))
-  add(query_589133, "alt", newJString(alt))
-  add(query_589133, "oauth_token", newJString(oauthToken))
-  add(query_589133, "userIp", newJString(userIp))
-  add(query_589133, "key", newJString(key))
-  add(query_589133, "prettyPrint", newJBool(prettyPrint))
-  add(path_589132, "userId", newJString(userId))
-  result = call_589131.call(path_589132, query_589133, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579032 = newJObject()
+  var query_579033 = newJObject()
+  add(query_579033, "key", newJString(key))
+  add(query_579033, "prettyPrint", newJBool(prettyPrint))
+  add(query_579033, "oauth_token", newJString(oauthToken))
+  add(query_579033, "alt", newJString(alt))
+  add(query_579033, "userIp", newJString(userIp))
+  add(query_579033, "quotaUser", newJString(quotaUser))
+  add(path_579032, "userId", newJString(userId))
+  add(query_579033, "fields", newJString(fields))
+  result = call_579031.call(path_579032, query_579033, nil, nil, nil)
 
-var gmailUsersLabelsList* = Call_GmailUsersLabelsList_589119(
+var gmailUsersLabelsList* = Call_GmailUsersLabelsList_579019(
     name: "gmailUsersLabelsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/labels",
-    validator: validate_GmailUsersLabelsList_589120, base: "/gmail/v1/users",
-    url: url_GmailUsersLabelsList_589121, schemes: {Scheme.Https})
+    validator: validate_GmailUsersLabelsList_579020, base: "/gmail/v1/users",
+    url: url_GmailUsersLabelsList_579021, schemes: {Scheme.Https})
 type
-  Call_GmailUsersLabelsUpdate_589167 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersLabelsUpdate_589169(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersLabelsUpdate_579067 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersLabelsUpdate_579069(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1610,7 +1613,7 @@ proc url_GmailUsersLabelsUpdate_589169(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersLabelsUpdate_589168(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersLabelsUpdate_579068(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the specified label.
   ## 
@@ -1623,68 +1626,68 @@ proc validate_GmailUsersLabelsUpdate_589168(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589170 = path.getOrDefault("id")
-  valid_589170 = validateParameter(valid_589170, JString, required = true,
+  var valid_579070 = path.getOrDefault("id")
+  valid_579070 = validateParameter(valid_579070, JString, required = true,
                                  default = nil)
-  if valid_589170 != nil:
-    section.add "id", valid_589170
-  var valid_589171 = path.getOrDefault("userId")
-  valid_589171 = validateParameter(valid_589171, JString, required = true,
+  if valid_579070 != nil:
+    section.add "id", valid_579070
+  var valid_579071 = path.getOrDefault("userId")
+  valid_579071 = validateParameter(valid_579071, JString, required = true,
                                  default = newJString("me"))
-  if valid_589171 != nil:
-    section.add "userId", valid_589171
+  if valid_579071 != nil:
+    section.add "userId", valid_579071
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589172 = query.getOrDefault("fields")
-  valid_589172 = validateParameter(valid_589172, JString, required = false,
+  var valid_579072 = query.getOrDefault("key")
+  valid_579072 = validateParameter(valid_579072, JString, required = false,
                                  default = nil)
-  if valid_589172 != nil:
-    section.add "fields", valid_589172
-  var valid_589173 = query.getOrDefault("quotaUser")
-  valid_589173 = validateParameter(valid_589173, JString, required = false,
-                                 default = nil)
-  if valid_589173 != nil:
-    section.add "quotaUser", valid_589173
-  var valid_589174 = query.getOrDefault("alt")
-  valid_589174 = validateParameter(valid_589174, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589174 != nil:
-    section.add "alt", valid_589174
-  var valid_589175 = query.getOrDefault("oauth_token")
-  valid_589175 = validateParameter(valid_589175, JString, required = false,
-                                 default = nil)
-  if valid_589175 != nil:
-    section.add "oauth_token", valid_589175
-  var valid_589176 = query.getOrDefault("userIp")
-  valid_589176 = validateParameter(valid_589176, JString, required = false,
-                                 default = nil)
-  if valid_589176 != nil:
-    section.add "userIp", valid_589176
-  var valid_589177 = query.getOrDefault("key")
-  valid_589177 = validateParameter(valid_589177, JString, required = false,
-                                 default = nil)
-  if valid_589177 != nil:
-    section.add "key", valid_589177
-  var valid_589178 = query.getOrDefault("prettyPrint")
-  valid_589178 = validateParameter(valid_589178, JBool, required = false,
+  if valid_579072 != nil:
+    section.add "key", valid_579072
+  var valid_579073 = query.getOrDefault("prettyPrint")
+  valid_579073 = validateParameter(valid_579073, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589178 != nil:
-    section.add "prettyPrint", valid_589178
+  if valid_579073 != nil:
+    section.add "prettyPrint", valid_579073
+  var valid_579074 = query.getOrDefault("oauth_token")
+  valid_579074 = validateParameter(valid_579074, JString, required = false,
+                                 default = nil)
+  if valid_579074 != nil:
+    section.add "oauth_token", valid_579074
+  var valid_579075 = query.getOrDefault("alt")
+  valid_579075 = validateParameter(valid_579075, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579075 != nil:
+    section.add "alt", valid_579075
+  var valid_579076 = query.getOrDefault("userIp")
+  valid_579076 = validateParameter(valid_579076, JString, required = false,
+                                 default = nil)
+  if valid_579076 != nil:
+    section.add "userIp", valid_579076
+  var valid_579077 = query.getOrDefault("quotaUser")
+  valid_579077 = validateParameter(valid_579077, JString, required = false,
+                                 default = nil)
+  if valid_579077 != nil:
+    section.add "quotaUser", valid_579077
+  var valid_579078 = query.getOrDefault("fields")
+  valid_579078 = validateParameter(valid_579078, JString, required = false,
+                                 default = nil)
+  if valid_579078 != nil:
+    section.add "fields", valid_579078
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1696,68 +1699,68 @@ proc validate_GmailUsersLabelsUpdate_589168(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589180: Call_GmailUsersLabelsUpdate_589167; path: JsonNode;
+proc call*(call_579080: Call_GmailUsersLabelsUpdate_579067; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the specified label.
   ## 
-  let valid = call_589180.validator(path, query, header, formData, body)
-  let scheme = call_589180.pickScheme
+  let valid = call_579080.validator(path, query, header, formData, body)
+  let scheme = call_579080.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589180.url(scheme.get, call_589180.host, call_589180.base,
-                         call_589180.route, valid.getOrDefault("path"),
+  let url = call_579080.url(scheme.get, call_579080.host, call_579080.base,
+                         call_579080.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589180, url, valid)
+  result = hook(call_579080, url, valid)
 
-proc call*(call_589181: Call_GmailUsersLabelsUpdate_589167; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579081: Call_GmailUsersLabelsUpdate_579067; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersLabelsUpdate
   ## Updates the specified label.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the label to update.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the label to update.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589182 = newJObject()
-  var query_589183 = newJObject()
-  var body_589184 = newJObject()
-  add(query_589183, "fields", newJString(fields))
-  add(query_589183, "quotaUser", newJString(quotaUser))
-  add(query_589183, "alt", newJString(alt))
-  add(query_589183, "oauth_token", newJString(oauthToken))
-  add(query_589183, "userIp", newJString(userIp))
-  add(path_589182, "id", newJString(id))
-  add(query_589183, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579082 = newJObject()
+  var query_579083 = newJObject()
+  var body_579084 = newJObject()
+  add(query_579083, "key", newJString(key))
+  add(query_579083, "prettyPrint", newJBool(prettyPrint))
+  add(query_579083, "oauth_token", newJString(oauthToken))
+  add(path_579082, "id", newJString(id))
+  add(query_579083, "alt", newJString(alt))
+  add(query_579083, "userIp", newJString(userIp))
+  add(query_579083, "quotaUser", newJString(quotaUser))
+  add(path_579082, "userId", newJString(userId))
   if body != nil:
-    body_589184 = body
-  add(query_589183, "prettyPrint", newJBool(prettyPrint))
-  add(path_589182, "userId", newJString(userId))
-  result = call_589181.call(path_589182, query_589183, nil, nil, body_589184)
+    body_579084 = body
+  add(query_579083, "fields", newJString(fields))
+  result = call_579081.call(path_579082, query_579083, nil, nil, body_579084)
 
-var gmailUsersLabelsUpdate* = Call_GmailUsersLabelsUpdate_589167(
+var gmailUsersLabelsUpdate* = Call_GmailUsersLabelsUpdate_579067(
     name: "gmailUsersLabelsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{userId}/labels/{id}",
-    validator: validate_GmailUsersLabelsUpdate_589168, base: "/gmail/v1/users",
-    url: url_GmailUsersLabelsUpdate_589169, schemes: {Scheme.Https})
+    validator: validate_GmailUsersLabelsUpdate_579068, base: "/gmail/v1/users",
+    url: url_GmailUsersLabelsUpdate_579069, schemes: {Scheme.Https})
 type
-  Call_GmailUsersLabelsGet_589151 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersLabelsGet_589153(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersLabelsGet_579051 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersLabelsGet_579053(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1775,7 +1778,7 @@ proc url_GmailUsersLabelsGet_589153(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersLabelsGet_589152(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersLabelsGet_579052(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Gets the specified label.
@@ -1789,68 +1792,68 @@ proc validate_GmailUsersLabelsGet_589152(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589154 = path.getOrDefault("id")
-  valid_589154 = validateParameter(valid_589154, JString, required = true,
+  var valid_579054 = path.getOrDefault("id")
+  valid_579054 = validateParameter(valid_579054, JString, required = true,
                                  default = nil)
-  if valid_589154 != nil:
-    section.add "id", valid_589154
-  var valid_589155 = path.getOrDefault("userId")
-  valid_589155 = validateParameter(valid_589155, JString, required = true,
+  if valid_579054 != nil:
+    section.add "id", valid_579054
+  var valid_579055 = path.getOrDefault("userId")
+  valid_579055 = validateParameter(valid_579055, JString, required = true,
                                  default = newJString("me"))
-  if valid_589155 != nil:
-    section.add "userId", valid_589155
+  if valid_579055 != nil:
+    section.add "userId", valid_579055
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589156 = query.getOrDefault("fields")
-  valid_589156 = validateParameter(valid_589156, JString, required = false,
+  var valid_579056 = query.getOrDefault("key")
+  valid_579056 = validateParameter(valid_579056, JString, required = false,
                                  default = nil)
-  if valid_589156 != nil:
-    section.add "fields", valid_589156
-  var valid_589157 = query.getOrDefault("quotaUser")
-  valid_589157 = validateParameter(valid_589157, JString, required = false,
-                                 default = nil)
-  if valid_589157 != nil:
-    section.add "quotaUser", valid_589157
-  var valid_589158 = query.getOrDefault("alt")
-  valid_589158 = validateParameter(valid_589158, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589158 != nil:
-    section.add "alt", valid_589158
-  var valid_589159 = query.getOrDefault("oauth_token")
-  valid_589159 = validateParameter(valid_589159, JString, required = false,
-                                 default = nil)
-  if valid_589159 != nil:
-    section.add "oauth_token", valid_589159
-  var valid_589160 = query.getOrDefault("userIp")
-  valid_589160 = validateParameter(valid_589160, JString, required = false,
-                                 default = nil)
-  if valid_589160 != nil:
-    section.add "userIp", valid_589160
-  var valid_589161 = query.getOrDefault("key")
-  valid_589161 = validateParameter(valid_589161, JString, required = false,
-                                 default = nil)
-  if valid_589161 != nil:
-    section.add "key", valid_589161
-  var valid_589162 = query.getOrDefault("prettyPrint")
-  valid_589162 = validateParameter(valid_589162, JBool, required = false,
+  if valid_579056 != nil:
+    section.add "key", valid_579056
+  var valid_579057 = query.getOrDefault("prettyPrint")
+  valid_579057 = validateParameter(valid_579057, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589162 != nil:
-    section.add "prettyPrint", valid_589162
+  if valid_579057 != nil:
+    section.add "prettyPrint", valid_579057
+  var valid_579058 = query.getOrDefault("oauth_token")
+  valid_579058 = validateParameter(valid_579058, JString, required = false,
+                                 default = nil)
+  if valid_579058 != nil:
+    section.add "oauth_token", valid_579058
+  var valid_579059 = query.getOrDefault("alt")
+  valid_579059 = validateParameter(valid_579059, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579059 != nil:
+    section.add "alt", valid_579059
+  var valid_579060 = query.getOrDefault("userIp")
+  valid_579060 = validateParameter(valid_579060, JString, required = false,
+                                 default = nil)
+  if valid_579060 != nil:
+    section.add "userIp", valid_579060
+  var valid_579061 = query.getOrDefault("quotaUser")
+  valid_579061 = validateParameter(valid_579061, JString, required = false,
+                                 default = nil)
+  if valid_579061 != nil:
+    section.add "quotaUser", valid_579061
+  var valid_579062 = query.getOrDefault("fields")
+  valid_579062 = validateParameter(valid_579062, JString, required = false,
+                                 default = nil)
+  if valid_579062 != nil:
+    section.add "fields", valid_579062
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1859,64 +1862,64 @@ proc validate_GmailUsersLabelsGet_589152(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589163: Call_GmailUsersLabelsGet_589151; path: JsonNode;
+proc call*(call_579063: Call_GmailUsersLabelsGet_579051; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the specified label.
   ## 
-  let valid = call_589163.validator(path, query, header, formData, body)
-  let scheme = call_589163.pickScheme
+  let valid = call_579063.validator(path, query, header, formData, body)
+  let scheme = call_579063.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589163.url(scheme.get, call_589163.host, call_589163.base,
-                         call_589163.route, valid.getOrDefault("path"),
+  let url = call_579063.url(scheme.get, call_579063.host, call_579063.base,
+                         call_579063.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589163, url, valid)
+  result = hook(call_579063, url, valid)
 
-proc call*(call_589164: Call_GmailUsersLabelsGet_589151; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579064: Call_GmailUsersLabelsGet_579051; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersLabelsGet
   ## Gets the specified label.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the label to retrieve.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the label to retrieve.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589165 = newJObject()
-  var query_589166 = newJObject()
-  add(query_589166, "fields", newJString(fields))
-  add(query_589166, "quotaUser", newJString(quotaUser))
-  add(query_589166, "alt", newJString(alt))
-  add(query_589166, "oauth_token", newJString(oauthToken))
-  add(query_589166, "userIp", newJString(userIp))
-  add(path_589165, "id", newJString(id))
-  add(query_589166, "key", newJString(key))
-  add(query_589166, "prettyPrint", newJBool(prettyPrint))
-  add(path_589165, "userId", newJString(userId))
-  result = call_589164.call(path_589165, query_589166, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579065 = newJObject()
+  var query_579066 = newJObject()
+  add(query_579066, "key", newJString(key))
+  add(query_579066, "prettyPrint", newJBool(prettyPrint))
+  add(query_579066, "oauth_token", newJString(oauthToken))
+  add(path_579065, "id", newJString(id))
+  add(query_579066, "alt", newJString(alt))
+  add(query_579066, "userIp", newJString(userIp))
+  add(query_579066, "quotaUser", newJString(quotaUser))
+  add(path_579065, "userId", newJString(userId))
+  add(query_579066, "fields", newJString(fields))
+  result = call_579064.call(path_579065, query_579066, nil, nil, nil)
 
-var gmailUsersLabelsGet* = Call_GmailUsersLabelsGet_589151(
+var gmailUsersLabelsGet* = Call_GmailUsersLabelsGet_579051(
     name: "gmailUsersLabelsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/labels/{id}",
-    validator: validate_GmailUsersLabelsGet_589152, base: "/gmail/v1/users",
-    url: url_GmailUsersLabelsGet_589153, schemes: {Scheme.Https})
+    validator: validate_GmailUsersLabelsGet_579052, base: "/gmail/v1/users",
+    url: url_GmailUsersLabelsGet_579053, schemes: {Scheme.Https})
 type
-  Call_GmailUsersLabelsPatch_589201 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersLabelsPatch_589203(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersLabelsPatch_579101 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersLabelsPatch_579103(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1934,7 +1937,7 @@ proc url_GmailUsersLabelsPatch_589203(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersLabelsPatch_589202(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersLabelsPatch_579102(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the specified label. This method supports patch semantics.
   ## 
@@ -1947,68 +1950,68 @@ proc validate_GmailUsersLabelsPatch_589202(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589204 = path.getOrDefault("id")
-  valid_589204 = validateParameter(valid_589204, JString, required = true,
+  var valid_579104 = path.getOrDefault("id")
+  valid_579104 = validateParameter(valid_579104, JString, required = true,
                                  default = nil)
-  if valid_589204 != nil:
-    section.add "id", valid_589204
-  var valid_589205 = path.getOrDefault("userId")
-  valid_589205 = validateParameter(valid_589205, JString, required = true,
+  if valid_579104 != nil:
+    section.add "id", valid_579104
+  var valid_579105 = path.getOrDefault("userId")
+  valid_579105 = validateParameter(valid_579105, JString, required = true,
                                  default = newJString("me"))
-  if valid_589205 != nil:
-    section.add "userId", valid_589205
+  if valid_579105 != nil:
+    section.add "userId", valid_579105
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589206 = query.getOrDefault("fields")
-  valid_589206 = validateParameter(valid_589206, JString, required = false,
+  var valid_579106 = query.getOrDefault("key")
+  valid_579106 = validateParameter(valid_579106, JString, required = false,
                                  default = nil)
-  if valid_589206 != nil:
-    section.add "fields", valid_589206
-  var valid_589207 = query.getOrDefault("quotaUser")
-  valid_589207 = validateParameter(valid_589207, JString, required = false,
-                                 default = nil)
-  if valid_589207 != nil:
-    section.add "quotaUser", valid_589207
-  var valid_589208 = query.getOrDefault("alt")
-  valid_589208 = validateParameter(valid_589208, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589208 != nil:
-    section.add "alt", valid_589208
-  var valid_589209 = query.getOrDefault("oauth_token")
-  valid_589209 = validateParameter(valid_589209, JString, required = false,
-                                 default = nil)
-  if valid_589209 != nil:
-    section.add "oauth_token", valid_589209
-  var valid_589210 = query.getOrDefault("userIp")
-  valid_589210 = validateParameter(valid_589210, JString, required = false,
-                                 default = nil)
-  if valid_589210 != nil:
-    section.add "userIp", valid_589210
-  var valid_589211 = query.getOrDefault("key")
-  valid_589211 = validateParameter(valid_589211, JString, required = false,
-                                 default = nil)
-  if valid_589211 != nil:
-    section.add "key", valid_589211
-  var valid_589212 = query.getOrDefault("prettyPrint")
-  valid_589212 = validateParameter(valid_589212, JBool, required = false,
+  if valid_579106 != nil:
+    section.add "key", valid_579106
+  var valid_579107 = query.getOrDefault("prettyPrint")
+  valid_579107 = validateParameter(valid_579107, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589212 != nil:
-    section.add "prettyPrint", valid_589212
+  if valid_579107 != nil:
+    section.add "prettyPrint", valid_579107
+  var valid_579108 = query.getOrDefault("oauth_token")
+  valid_579108 = validateParameter(valid_579108, JString, required = false,
+                                 default = nil)
+  if valid_579108 != nil:
+    section.add "oauth_token", valid_579108
+  var valid_579109 = query.getOrDefault("alt")
+  valid_579109 = validateParameter(valid_579109, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579109 != nil:
+    section.add "alt", valid_579109
+  var valid_579110 = query.getOrDefault("userIp")
+  valid_579110 = validateParameter(valid_579110, JString, required = false,
+                                 default = nil)
+  if valid_579110 != nil:
+    section.add "userIp", valid_579110
+  var valid_579111 = query.getOrDefault("quotaUser")
+  valid_579111 = validateParameter(valid_579111, JString, required = false,
+                                 default = nil)
+  if valid_579111 != nil:
+    section.add "quotaUser", valid_579111
+  var valid_579112 = query.getOrDefault("fields")
+  valid_579112 = validateParameter(valid_579112, JString, required = false,
+                                 default = nil)
+  if valid_579112 != nil:
+    section.add "fields", valid_579112
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2020,68 +2023,68 @@ proc validate_GmailUsersLabelsPatch_589202(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589214: Call_GmailUsersLabelsPatch_589201; path: JsonNode;
+proc call*(call_579114: Call_GmailUsersLabelsPatch_579101; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the specified label. This method supports patch semantics.
   ## 
-  let valid = call_589214.validator(path, query, header, formData, body)
-  let scheme = call_589214.pickScheme
+  let valid = call_579114.validator(path, query, header, formData, body)
+  let scheme = call_579114.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589214.url(scheme.get, call_589214.host, call_589214.base,
-                         call_589214.route, valid.getOrDefault("path"),
+  let url = call_579114.url(scheme.get, call_579114.host, call_579114.base,
+                         call_579114.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589214, url, valid)
+  result = hook(call_579114, url, valid)
 
-proc call*(call_589215: Call_GmailUsersLabelsPatch_589201; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579115: Call_GmailUsersLabelsPatch_579101; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersLabelsPatch
   ## Updates the specified label. This method supports patch semantics.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the label to update.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the label to update.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589216 = newJObject()
-  var query_589217 = newJObject()
-  var body_589218 = newJObject()
-  add(query_589217, "fields", newJString(fields))
-  add(query_589217, "quotaUser", newJString(quotaUser))
-  add(query_589217, "alt", newJString(alt))
-  add(query_589217, "oauth_token", newJString(oauthToken))
-  add(query_589217, "userIp", newJString(userIp))
-  add(path_589216, "id", newJString(id))
-  add(query_589217, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579116 = newJObject()
+  var query_579117 = newJObject()
+  var body_579118 = newJObject()
+  add(query_579117, "key", newJString(key))
+  add(query_579117, "prettyPrint", newJBool(prettyPrint))
+  add(query_579117, "oauth_token", newJString(oauthToken))
+  add(path_579116, "id", newJString(id))
+  add(query_579117, "alt", newJString(alt))
+  add(query_579117, "userIp", newJString(userIp))
+  add(query_579117, "quotaUser", newJString(quotaUser))
+  add(path_579116, "userId", newJString(userId))
   if body != nil:
-    body_589218 = body
-  add(query_589217, "prettyPrint", newJBool(prettyPrint))
-  add(path_589216, "userId", newJString(userId))
-  result = call_589215.call(path_589216, query_589217, nil, nil, body_589218)
+    body_579118 = body
+  add(query_579117, "fields", newJString(fields))
+  result = call_579115.call(path_579116, query_579117, nil, nil, body_579118)
 
-var gmailUsersLabelsPatch* = Call_GmailUsersLabelsPatch_589201(
+var gmailUsersLabelsPatch* = Call_GmailUsersLabelsPatch_579101(
     name: "gmailUsersLabelsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/{userId}/labels/{id}",
-    validator: validate_GmailUsersLabelsPatch_589202, base: "/gmail/v1/users",
-    url: url_GmailUsersLabelsPatch_589203, schemes: {Scheme.Https})
+    validator: validate_GmailUsersLabelsPatch_579102, base: "/gmail/v1/users",
+    url: url_GmailUsersLabelsPatch_579103, schemes: {Scheme.Https})
 type
-  Call_GmailUsersLabelsDelete_589185 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersLabelsDelete_589187(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersLabelsDelete_579085 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersLabelsDelete_579087(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2099,7 +2102,7 @@ proc url_GmailUsersLabelsDelete_589187(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersLabelsDelete_589186(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersLabelsDelete_579086(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Immediately and permanently deletes the specified label and removes it from any messages and threads that it is applied to.
   ## 
@@ -2112,68 +2115,68 @@ proc validate_GmailUsersLabelsDelete_589186(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589188 = path.getOrDefault("id")
-  valid_589188 = validateParameter(valid_589188, JString, required = true,
+  var valid_579088 = path.getOrDefault("id")
+  valid_579088 = validateParameter(valid_579088, JString, required = true,
                                  default = nil)
-  if valid_589188 != nil:
-    section.add "id", valid_589188
-  var valid_589189 = path.getOrDefault("userId")
-  valid_589189 = validateParameter(valid_589189, JString, required = true,
+  if valid_579088 != nil:
+    section.add "id", valid_579088
+  var valid_579089 = path.getOrDefault("userId")
+  valid_579089 = validateParameter(valid_579089, JString, required = true,
                                  default = newJString("me"))
-  if valid_589189 != nil:
-    section.add "userId", valid_589189
+  if valid_579089 != nil:
+    section.add "userId", valid_579089
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589190 = query.getOrDefault("fields")
-  valid_589190 = validateParameter(valid_589190, JString, required = false,
+  var valid_579090 = query.getOrDefault("key")
+  valid_579090 = validateParameter(valid_579090, JString, required = false,
                                  default = nil)
-  if valid_589190 != nil:
-    section.add "fields", valid_589190
-  var valid_589191 = query.getOrDefault("quotaUser")
-  valid_589191 = validateParameter(valid_589191, JString, required = false,
-                                 default = nil)
-  if valid_589191 != nil:
-    section.add "quotaUser", valid_589191
-  var valid_589192 = query.getOrDefault("alt")
-  valid_589192 = validateParameter(valid_589192, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589192 != nil:
-    section.add "alt", valid_589192
-  var valid_589193 = query.getOrDefault("oauth_token")
-  valid_589193 = validateParameter(valid_589193, JString, required = false,
-                                 default = nil)
-  if valid_589193 != nil:
-    section.add "oauth_token", valid_589193
-  var valid_589194 = query.getOrDefault("userIp")
-  valid_589194 = validateParameter(valid_589194, JString, required = false,
-                                 default = nil)
-  if valid_589194 != nil:
-    section.add "userIp", valid_589194
-  var valid_589195 = query.getOrDefault("key")
-  valid_589195 = validateParameter(valid_589195, JString, required = false,
-                                 default = nil)
-  if valid_589195 != nil:
-    section.add "key", valid_589195
-  var valid_589196 = query.getOrDefault("prettyPrint")
-  valid_589196 = validateParameter(valid_589196, JBool, required = false,
+  if valid_579090 != nil:
+    section.add "key", valid_579090
+  var valid_579091 = query.getOrDefault("prettyPrint")
+  valid_579091 = validateParameter(valid_579091, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589196 != nil:
-    section.add "prettyPrint", valid_589196
+  if valid_579091 != nil:
+    section.add "prettyPrint", valid_579091
+  var valid_579092 = query.getOrDefault("oauth_token")
+  valid_579092 = validateParameter(valid_579092, JString, required = false,
+                                 default = nil)
+  if valid_579092 != nil:
+    section.add "oauth_token", valid_579092
+  var valid_579093 = query.getOrDefault("alt")
+  valid_579093 = validateParameter(valid_579093, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579093 != nil:
+    section.add "alt", valid_579093
+  var valid_579094 = query.getOrDefault("userIp")
+  valid_579094 = validateParameter(valid_579094, JString, required = false,
+                                 default = nil)
+  if valid_579094 != nil:
+    section.add "userIp", valid_579094
+  var valid_579095 = query.getOrDefault("quotaUser")
+  valid_579095 = validateParameter(valid_579095, JString, required = false,
+                                 default = nil)
+  if valid_579095 != nil:
+    section.add "quotaUser", valid_579095
+  var valid_579096 = query.getOrDefault("fields")
+  valid_579096 = validateParameter(valid_579096, JString, required = false,
+                                 default = nil)
+  if valid_579096 != nil:
+    section.add "fields", valid_579096
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2182,64 +2185,64 @@ proc validate_GmailUsersLabelsDelete_589186(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589197: Call_GmailUsersLabelsDelete_589185; path: JsonNode;
+proc call*(call_579097: Call_GmailUsersLabelsDelete_579085; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Immediately and permanently deletes the specified label and removes it from any messages and threads that it is applied to.
   ## 
-  let valid = call_589197.validator(path, query, header, formData, body)
-  let scheme = call_589197.pickScheme
+  let valid = call_579097.validator(path, query, header, formData, body)
+  let scheme = call_579097.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589197.url(scheme.get, call_589197.host, call_589197.base,
-                         call_589197.route, valid.getOrDefault("path"),
+  let url = call_579097.url(scheme.get, call_579097.host, call_579097.base,
+                         call_579097.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589197, url, valid)
+  result = hook(call_579097, url, valid)
 
-proc call*(call_589198: Call_GmailUsersLabelsDelete_589185; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579098: Call_GmailUsersLabelsDelete_579085; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersLabelsDelete
   ## Immediately and permanently deletes the specified label and removes it from any messages and threads that it is applied to.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the label to delete.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the label to delete.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589199 = newJObject()
-  var query_589200 = newJObject()
-  add(query_589200, "fields", newJString(fields))
-  add(query_589200, "quotaUser", newJString(quotaUser))
-  add(query_589200, "alt", newJString(alt))
-  add(query_589200, "oauth_token", newJString(oauthToken))
-  add(query_589200, "userIp", newJString(userIp))
-  add(path_589199, "id", newJString(id))
-  add(query_589200, "key", newJString(key))
-  add(query_589200, "prettyPrint", newJBool(prettyPrint))
-  add(path_589199, "userId", newJString(userId))
-  result = call_589198.call(path_589199, query_589200, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579099 = newJObject()
+  var query_579100 = newJObject()
+  add(query_579100, "key", newJString(key))
+  add(query_579100, "prettyPrint", newJBool(prettyPrint))
+  add(query_579100, "oauth_token", newJString(oauthToken))
+  add(path_579099, "id", newJString(id))
+  add(query_579100, "alt", newJString(alt))
+  add(query_579100, "userIp", newJString(userIp))
+  add(query_579100, "quotaUser", newJString(quotaUser))
+  add(path_579099, "userId", newJString(userId))
+  add(query_579100, "fields", newJString(fields))
+  result = call_579098.call(path_579099, query_579100, nil, nil, nil)
 
-var gmailUsersLabelsDelete* = Call_GmailUsersLabelsDelete_589185(
+var gmailUsersLabelsDelete* = Call_GmailUsersLabelsDelete_579085(
     name: "gmailUsersLabelsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{userId}/labels/{id}",
-    validator: validate_GmailUsersLabelsDelete_589186, base: "/gmail/v1/users",
-    url: url_GmailUsersLabelsDelete_589187, schemes: {Scheme.Https})
+    validator: validate_GmailUsersLabelsDelete_579086, base: "/gmail/v1/users",
+    url: url_GmailUsersLabelsDelete_579087, schemes: {Scheme.Https})
 type
-  Call_GmailUsersMessagesInsert_589239 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersMessagesInsert_589241(protocol: Scheme; host: string;
+  Call_GmailUsersMessagesInsert_579139 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersMessagesInsert_579141(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -2256,7 +2259,7 @@ proc url_GmailUsersMessagesInsert_589241(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersMessagesInsert_589240(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersMessagesInsert_579140(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Directly inserts a message into only this user's mailbox similar to IMAP APPEND, bypassing most scanning and classification. Does not send a message.
   ## 
@@ -2267,77 +2270,77 @@ proc validate_GmailUsersMessagesInsert_589240(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589242 = path.getOrDefault("userId")
-  valid_589242 = validateParameter(valid_589242, JString, required = true,
+  var valid_579142 = path.getOrDefault("userId")
+  valid_579142 = validateParameter(valid_579142, JString, required = true,
                                  default = newJString("me"))
-  if valid_589242 != nil:
-    section.add "userId", valid_589242
+  if valid_579142 != nil:
+    section.add "userId", valid_579142
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   internalDateSource: JString
-  ##                     : Source for Gmail's internal date of the message.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   deleted: JBool
   ##          : Mark the email as permanently deleted (not TRASH) and only visible in Google Vault to a Vault administrator. Only used for G Suite accounts.
+  ##   internalDateSource: JString
+  ##                     : Source for Gmail's internal date of the message.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589243 = query.getOrDefault("fields")
-  valid_589243 = validateParameter(valid_589243, JString, required = false,
+  var valid_579143 = query.getOrDefault("key")
+  valid_579143 = validateParameter(valid_579143, JString, required = false,
                                  default = nil)
-  if valid_589243 != nil:
-    section.add "fields", valid_589243
-  var valid_589244 = query.getOrDefault("internalDateSource")
-  valid_589244 = validateParameter(valid_589244, JString, required = false,
-                                 default = newJString("receivedTime"))
-  if valid_589244 != nil:
-    section.add "internalDateSource", valid_589244
-  var valid_589245 = query.getOrDefault("quotaUser")
-  valid_589245 = validateParameter(valid_589245, JString, required = false,
-                                 default = nil)
-  if valid_589245 != nil:
-    section.add "quotaUser", valid_589245
-  var valid_589246 = query.getOrDefault("alt")
-  valid_589246 = validateParameter(valid_589246, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589246 != nil:
-    section.add "alt", valid_589246
-  var valid_589247 = query.getOrDefault("oauth_token")
-  valid_589247 = validateParameter(valid_589247, JString, required = false,
-                                 default = nil)
-  if valid_589247 != nil:
-    section.add "oauth_token", valid_589247
-  var valid_589248 = query.getOrDefault("userIp")
-  valid_589248 = validateParameter(valid_589248, JString, required = false,
-                                 default = nil)
-  if valid_589248 != nil:
-    section.add "userIp", valid_589248
-  var valid_589249 = query.getOrDefault("key")
-  valid_589249 = validateParameter(valid_589249, JString, required = false,
-                                 default = nil)
-  if valid_589249 != nil:
-    section.add "key", valid_589249
-  var valid_589250 = query.getOrDefault("prettyPrint")
-  valid_589250 = validateParameter(valid_589250, JBool, required = false,
+  if valid_579143 != nil:
+    section.add "key", valid_579143
+  var valid_579144 = query.getOrDefault("prettyPrint")
+  valid_579144 = validateParameter(valid_579144, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589250 != nil:
-    section.add "prettyPrint", valid_589250
-  var valid_589251 = query.getOrDefault("deleted")
-  valid_589251 = validateParameter(valid_589251, JBool, required = false,
+  if valid_579144 != nil:
+    section.add "prettyPrint", valid_579144
+  var valid_579145 = query.getOrDefault("oauth_token")
+  valid_579145 = validateParameter(valid_579145, JString, required = false,
+                                 default = nil)
+  if valid_579145 != nil:
+    section.add "oauth_token", valid_579145
+  var valid_579146 = query.getOrDefault("alt")
+  valid_579146 = validateParameter(valid_579146, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579146 != nil:
+    section.add "alt", valid_579146
+  var valid_579147 = query.getOrDefault("userIp")
+  valid_579147 = validateParameter(valid_579147, JString, required = false,
+                                 default = nil)
+  if valid_579147 != nil:
+    section.add "userIp", valid_579147
+  var valid_579148 = query.getOrDefault("quotaUser")
+  valid_579148 = validateParameter(valid_579148, JString, required = false,
+                                 default = nil)
+  if valid_579148 != nil:
+    section.add "quotaUser", valid_579148
+  var valid_579149 = query.getOrDefault("deleted")
+  valid_579149 = validateParameter(valid_579149, JBool, required = false,
                                  default = newJBool(false))
-  if valid_589251 != nil:
-    section.add "deleted", valid_589251
+  if valid_579149 != nil:
+    section.add "deleted", valid_579149
+  var valid_579150 = query.getOrDefault("internalDateSource")
+  valid_579150 = validateParameter(valid_579150, JString, required = false,
+                                 default = newJString("receivedTime"))
+  if valid_579150 != nil:
+    section.add "internalDateSource", valid_579150
+  var valid_579151 = query.getOrDefault("fields")
+  valid_579151 = validateParameter(valid_579151, JString, required = false,
+                                 default = nil)
+  if valid_579151 != nil:
+    section.add "fields", valid_579151
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2349,72 +2352,72 @@ proc validate_GmailUsersMessagesInsert_589240(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589253: Call_GmailUsersMessagesInsert_589239; path: JsonNode;
+proc call*(call_579153: Call_GmailUsersMessagesInsert_579139; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Directly inserts a message into only this user's mailbox similar to IMAP APPEND, bypassing most scanning and classification. Does not send a message.
   ## 
-  let valid = call_589253.validator(path, query, header, formData, body)
-  let scheme = call_589253.pickScheme
+  let valid = call_579153.validator(path, query, header, formData, body)
+  let scheme = call_579153.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589253.url(scheme.get, call_589253.host, call_589253.base,
-                         call_589253.route, valid.getOrDefault("path"),
+  let url = call_579153.url(scheme.get, call_579153.host, call_579153.base,
+                         call_579153.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589253, url, valid)
+  result = hook(call_579153, url, valid)
 
-proc call*(call_589254: Call_GmailUsersMessagesInsert_589239; fields: string = "";
-          internalDateSource: string = "receivedTime"; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true;
-          deleted: bool = false; userId: string = "me"): Recallable =
+proc call*(call_579154: Call_GmailUsersMessagesInsert_579139; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; userId: string = "me";
+          deleted: bool = false; body: JsonNode = nil;
+          internalDateSource: string = "receivedTime"; fields: string = ""): Recallable =
   ## gmailUsersMessagesInsert
   ## Directly inserts a message into only this user's mailbox similar to IMAP APPEND, bypassing most scanning and classification. Does not send a message.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   internalDateSource: string
-  ##                     : Source for Gmail's internal date of the message.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  ##   deleted: bool
-  ##          : Mark the email as permanently deleted (not TRASH) and only visible in Google Vault to a Vault administrator. Only used for G Suite accounts.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589255 = newJObject()
-  var query_589256 = newJObject()
-  var body_589257 = newJObject()
-  add(query_589256, "fields", newJString(fields))
-  add(query_589256, "internalDateSource", newJString(internalDateSource))
-  add(query_589256, "quotaUser", newJString(quotaUser))
-  add(query_589256, "alt", newJString(alt))
-  add(query_589256, "oauth_token", newJString(oauthToken))
-  add(query_589256, "userIp", newJString(userIp))
-  add(query_589256, "key", newJString(key))
+  ##   deleted: bool
+  ##          : Mark the email as permanently deleted (not TRASH) and only visible in Google Vault to a Vault administrator. Only used for G Suite accounts.
+  ##   body: JObject
+  ##   internalDateSource: string
+  ##                     : Source for Gmail's internal date of the message.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579155 = newJObject()
+  var query_579156 = newJObject()
+  var body_579157 = newJObject()
+  add(query_579156, "key", newJString(key))
+  add(query_579156, "prettyPrint", newJBool(prettyPrint))
+  add(query_579156, "oauth_token", newJString(oauthToken))
+  add(query_579156, "alt", newJString(alt))
+  add(query_579156, "userIp", newJString(userIp))
+  add(query_579156, "quotaUser", newJString(quotaUser))
+  add(path_579155, "userId", newJString(userId))
+  add(query_579156, "deleted", newJBool(deleted))
   if body != nil:
-    body_589257 = body
-  add(query_589256, "prettyPrint", newJBool(prettyPrint))
-  add(query_589256, "deleted", newJBool(deleted))
-  add(path_589255, "userId", newJString(userId))
-  result = call_589254.call(path_589255, query_589256, nil, nil, body_589257)
+    body_579157 = body
+  add(query_579156, "internalDateSource", newJString(internalDateSource))
+  add(query_579156, "fields", newJString(fields))
+  result = call_579154.call(path_579155, query_579156, nil, nil, body_579157)
 
-var gmailUsersMessagesInsert* = Call_GmailUsersMessagesInsert_589239(
+var gmailUsersMessagesInsert* = Call_GmailUsersMessagesInsert_579139(
     name: "gmailUsersMessagesInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/messages",
-    validator: validate_GmailUsersMessagesInsert_589240, base: "/gmail/v1/users",
-    url: url_GmailUsersMessagesInsert_589241, schemes: {Scheme.Https})
+    validator: validate_GmailUsersMessagesInsert_579140, base: "/gmail/v1/users",
+    url: url_GmailUsersMessagesInsert_579141, schemes: {Scheme.Https})
 type
-  Call_GmailUsersMessagesList_589219 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersMessagesList_589221(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersMessagesList_579119 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersMessagesList_579121(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2430,7 +2433,7 @@ proc url_GmailUsersMessagesList_589221(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersMessagesList_589220(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersMessagesList_579120(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the messages in the user's mailbox.
   ## 
@@ -2441,98 +2444,98 @@ proc validate_GmailUsersMessagesList_589220(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589222 = path.getOrDefault("userId")
-  valid_589222 = validateParameter(valid_589222, JString, required = true,
+  var valid_579122 = path.getOrDefault("userId")
+  valid_579122 = validateParameter(valid_579122, JString, required = true,
                                  default = newJString("me"))
-  if valid_589222 != nil:
-    section.add "userId", valid_589222
+  if valid_579122 != nil:
+    section.add "userId", valid_579122
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Page token to retrieve a specific page of results in the list.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : Maximum number of messages to return.
-  ##   includeSpamTrash: JBool
-  ##                   : Include messages from SPAM and TRASH in the results.
-  ##   q: JString
-  ##    : Only return messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". Parameter cannot be used when accessing the api using the gmail.metadata scope.
-  ##   labelIds: JArray
-  ##           : Only return messages with labels that match all of the specified label IDs.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   labelIds: JArray
+  ##           : Only return messages with labels that match all of the specified label IDs.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   q: JString
+  ##    : Only return messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". Parameter cannot be used when accessing the api using the gmail.metadata scope.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   includeSpamTrash: JBool
+  ##                   : Include messages from SPAM and TRASH in the results.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : Page token to retrieve a specific page of results in the list.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : Maximum number of messages to return.
   section = newJObject()
-  var valid_589223 = query.getOrDefault("fields")
-  valid_589223 = validateParameter(valid_589223, JString, required = false,
+  var valid_579123 = query.getOrDefault("key")
+  valid_579123 = validateParameter(valid_579123, JString, required = false,
                                  default = nil)
-  if valid_589223 != nil:
-    section.add "fields", valid_589223
-  var valid_589224 = query.getOrDefault("pageToken")
-  valid_589224 = validateParameter(valid_589224, JString, required = false,
+  if valid_579123 != nil:
+    section.add "key", valid_579123
+  var valid_579124 = query.getOrDefault("labelIds")
+  valid_579124 = validateParameter(valid_579124, JArray, required = false,
                                  default = nil)
-  if valid_589224 != nil:
-    section.add "pageToken", valid_589224
-  var valid_589225 = query.getOrDefault("quotaUser")
-  valid_589225 = validateParameter(valid_589225, JString, required = false,
-                                 default = nil)
-  if valid_589225 != nil:
-    section.add "quotaUser", valid_589225
-  var valid_589226 = query.getOrDefault("alt")
-  valid_589226 = validateParameter(valid_589226, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589226 != nil:
-    section.add "alt", valid_589226
-  var valid_589227 = query.getOrDefault("oauth_token")
-  valid_589227 = validateParameter(valid_589227, JString, required = false,
-                                 default = nil)
-  if valid_589227 != nil:
-    section.add "oauth_token", valid_589227
-  var valid_589228 = query.getOrDefault("userIp")
-  valid_589228 = validateParameter(valid_589228, JString, required = false,
-                                 default = nil)
-  if valid_589228 != nil:
-    section.add "userIp", valid_589228
-  var valid_589229 = query.getOrDefault("maxResults")
-  valid_589229 = validateParameter(valid_589229, JInt, required = false,
-                                 default = newJInt(100))
-  if valid_589229 != nil:
-    section.add "maxResults", valid_589229
-  var valid_589230 = query.getOrDefault("includeSpamTrash")
-  valid_589230 = validateParameter(valid_589230, JBool, required = false,
-                                 default = newJBool(false))
-  if valid_589230 != nil:
-    section.add "includeSpamTrash", valid_589230
-  var valid_589231 = query.getOrDefault("q")
-  valid_589231 = validateParameter(valid_589231, JString, required = false,
-                                 default = nil)
-  if valid_589231 != nil:
-    section.add "q", valid_589231
-  var valid_589232 = query.getOrDefault("labelIds")
-  valid_589232 = validateParameter(valid_589232, JArray, required = false,
-                                 default = nil)
-  if valid_589232 != nil:
-    section.add "labelIds", valid_589232
-  var valid_589233 = query.getOrDefault("key")
-  valid_589233 = validateParameter(valid_589233, JString, required = false,
-                                 default = nil)
-  if valid_589233 != nil:
-    section.add "key", valid_589233
-  var valid_589234 = query.getOrDefault("prettyPrint")
-  valid_589234 = validateParameter(valid_589234, JBool, required = false,
+  if valid_579124 != nil:
+    section.add "labelIds", valid_579124
+  var valid_579125 = query.getOrDefault("prettyPrint")
+  valid_579125 = validateParameter(valid_579125, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589234 != nil:
-    section.add "prettyPrint", valid_589234
+  if valid_579125 != nil:
+    section.add "prettyPrint", valid_579125
+  var valid_579126 = query.getOrDefault("oauth_token")
+  valid_579126 = validateParameter(valid_579126, JString, required = false,
+                                 default = nil)
+  if valid_579126 != nil:
+    section.add "oauth_token", valid_579126
+  var valid_579127 = query.getOrDefault("q")
+  valid_579127 = validateParameter(valid_579127, JString, required = false,
+                                 default = nil)
+  if valid_579127 != nil:
+    section.add "q", valid_579127
+  var valid_579128 = query.getOrDefault("alt")
+  valid_579128 = validateParameter(valid_579128, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579128 != nil:
+    section.add "alt", valid_579128
+  var valid_579129 = query.getOrDefault("userIp")
+  valid_579129 = validateParameter(valid_579129, JString, required = false,
+                                 default = nil)
+  if valid_579129 != nil:
+    section.add "userIp", valid_579129
+  var valid_579130 = query.getOrDefault("includeSpamTrash")
+  valid_579130 = validateParameter(valid_579130, JBool, required = false,
+                                 default = newJBool(false))
+  if valid_579130 != nil:
+    section.add "includeSpamTrash", valid_579130
+  var valid_579131 = query.getOrDefault("quotaUser")
+  valid_579131 = validateParameter(valid_579131, JString, required = false,
+                                 default = nil)
+  if valid_579131 != nil:
+    section.add "quotaUser", valid_579131
+  var valid_579132 = query.getOrDefault("pageToken")
+  valid_579132 = validateParameter(valid_579132, JString, required = false,
+                                 default = nil)
+  if valid_579132 != nil:
+    section.add "pageToken", valid_579132
+  var valid_579133 = query.getOrDefault("fields")
+  valid_579133 = validateParameter(valid_579133, JString, required = false,
+                                 default = nil)
+  if valid_579133 != nil:
+    section.add "fields", valid_579133
+  var valid_579134 = query.getOrDefault("maxResults")
+  valid_579134 = validateParameter(valid_579134, JInt, required = false,
+                                 default = newJInt(100))
+  if valid_579134 != nil:
+    section.add "maxResults", valid_579134
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2541,78 +2544,79 @@ proc validate_GmailUsersMessagesList_589220(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589235: Call_GmailUsersMessagesList_589219; path: JsonNode;
+proc call*(call_579135: Call_GmailUsersMessagesList_579119; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the messages in the user's mailbox.
   ## 
-  let valid = call_589235.validator(path, query, header, formData, body)
-  let scheme = call_589235.pickScheme
+  let valid = call_579135.validator(path, query, header, formData, body)
+  let scheme = call_579135.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589235.url(scheme.get, call_589235.host, call_589235.base,
-                         call_589235.route, valid.getOrDefault("path"),
+  let url = call_579135.url(scheme.get, call_579135.host, call_579135.base,
+                         call_579135.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589235, url, valid)
+  result = hook(call_579135, url, valid)
 
-proc call*(call_589236: Call_GmailUsersMessagesList_589219; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; maxResults: int = 100;
-          includeSpamTrash: bool = false; q: string = ""; labelIds: JsonNode = nil;
-          key: string = ""; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579136: Call_GmailUsersMessagesList_579119; key: string = "";
+          labelIds: JsonNode = nil; prettyPrint: bool = true; oauthToken: string = "";
+          q: string = ""; alt: string = "json"; userIp: string = "";
+          includeSpamTrash: bool = false; quotaUser: string = "";
+          pageToken: string = ""; userId: string = "me"; fields: string = "";
+          maxResults: int = 100): Recallable =
   ## gmailUsersMessagesList
   ## Lists the messages in the user's mailbox.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Page token to retrieve a specific page of results in the list.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : Maximum number of messages to return.
-  ##   includeSpamTrash: bool
-  ##                   : Include messages from SPAM and TRASH in the results.
-  ##   q: string
-  ##    : Only return messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". Parameter cannot be used when accessing the api using the gmail.metadata scope.
-  ##   labelIds: JArray
-  ##           : Only return messages with labels that match all of the specified label IDs.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   labelIds: JArray
+  ##           : Only return messages with labels that match all of the specified label IDs.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   q: string
+  ##    : Only return messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". Parameter cannot be used when accessing the api using the gmail.metadata scope.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   includeSpamTrash: bool
+  ##                   : Include messages from SPAM and TRASH in the results.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : Page token to retrieve a specific page of results in the list.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589237 = newJObject()
-  var query_589238 = newJObject()
-  add(query_589238, "fields", newJString(fields))
-  add(query_589238, "pageToken", newJString(pageToken))
-  add(query_589238, "quotaUser", newJString(quotaUser))
-  add(query_589238, "alt", newJString(alt))
-  add(query_589238, "oauth_token", newJString(oauthToken))
-  add(query_589238, "userIp", newJString(userIp))
-  add(query_589238, "maxResults", newJInt(maxResults))
-  add(query_589238, "includeSpamTrash", newJBool(includeSpamTrash))
-  add(query_589238, "q", newJString(q))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: int
+  ##             : Maximum number of messages to return.
+  var path_579137 = newJObject()
+  var query_579138 = newJObject()
+  add(query_579138, "key", newJString(key))
   if labelIds != nil:
-    query_589238.add "labelIds", labelIds
-  add(query_589238, "key", newJString(key))
-  add(query_589238, "prettyPrint", newJBool(prettyPrint))
-  add(path_589237, "userId", newJString(userId))
-  result = call_589236.call(path_589237, query_589238, nil, nil, nil)
+    query_579138.add "labelIds", labelIds
+  add(query_579138, "prettyPrint", newJBool(prettyPrint))
+  add(query_579138, "oauth_token", newJString(oauthToken))
+  add(query_579138, "q", newJString(q))
+  add(query_579138, "alt", newJString(alt))
+  add(query_579138, "userIp", newJString(userIp))
+  add(query_579138, "includeSpamTrash", newJBool(includeSpamTrash))
+  add(query_579138, "quotaUser", newJString(quotaUser))
+  add(query_579138, "pageToken", newJString(pageToken))
+  add(path_579137, "userId", newJString(userId))
+  add(query_579138, "fields", newJString(fields))
+  add(query_579138, "maxResults", newJInt(maxResults))
+  result = call_579136.call(path_579137, query_579138, nil, nil, nil)
 
-var gmailUsersMessagesList* = Call_GmailUsersMessagesList_589219(
+var gmailUsersMessagesList* = Call_GmailUsersMessagesList_579119(
     name: "gmailUsersMessagesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/messages",
-    validator: validate_GmailUsersMessagesList_589220, base: "/gmail/v1/users",
-    url: url_GmailUsersMessagesList_589221, schemes: {Scheme.Https})
+    validator: validate_GmailUsersMessagesList_579120, base: "/gmail/v1/users",
+    url: url_GmailUsersMessagesList_579121, schemes: {Scheme.Https})
 type
-  Call_GmailUsersMessagesBatchDelete_589258 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersMessagesBatchDelete_589260(protocol: Scheme; host: string;
+  Call_GmailUsersMessagesBatchDelete_579158 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersMessagesBatchDelete_579160(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2628,7 +2632,7 @@ proc url_GmailUsersMessagesBatchDelete_589260(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersMessagesBatchDelete_589259(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersMessagesBatchDelete_579159(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes many messages by message ID. Provides no guarantees that messages were not already deleted or even existed at all.
   ## 
@@ -2639,63 +2643,63 @@ proc validate_GmailUsersMessagesBatchDelete_589259(path: JsonNode; query: JsonNo
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589261 = path.getOrDefault("userId")
-  valid_589261 = validateParameter(valid_589261, JString, required = true,
+  var valid_579161 = path.getOrDefault("userId")
+  valid_579161 = validateParameter(valid_579161, JString, required = true,
                                  default = newJString("me"))
-  if valid_589261 != nil:
-    section.add "userId", valid_589261
+  if valid_579161 != nil:
+    section.add "userId", valid_579161
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589262 = query.getOrDefault("fields")
-  valid_589262 = validateParameter(valid_589262, JString, required = false,
+  var valid_579162 = query.getOrDefault("key")
+  valid_579162 = validateParameter(valid_579162, JString, required = false,
                                  default = nil)
-  if valid_589262 != nil:
-    section.add "fields", valid_589262
-  var valid_589263 = query.getOrDefault("quotaUser")
-  valid_589263 = validateParameter(valid_589263, JString, required = false,
-                                 default = nil)
-  if valid_589263 != nil:
-    section.add "quotaUser", valid_589263
-  var valid_589264 = query.getOrDefault("alt")
-  valid_589264 = validateParameter(valid_589264, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589264 != nil:
-    section.add "alt", valid_589264
-  var valid_589265 = query.getOrDefault("oauth_token")
-  valid_589265 = validateParameter(valid_589265, JString, required = false,
-                                 default = nil)
-  if valid_589265 != nil:
-    section.add "oauth_token", valid_589265
-  var valid_589266 = query.getOrDefault("userIp")
-  valid_589266 = validateParameter(valid_589266, JString, required = false,
-                                 default = nil)
-  if valid_589266 != nil:
-    section.add "userIp", valid_589266
-  var valid_589267 = query.getOrDefault("key")
-  valid_589267 = validateParameter(valid_589267, JString, required = false,
-                                 default = nil)
-  if valid_589267 != nil:
-    section.add "key", valid_589267
-  var valid_589268 = query.getOrDefault("prettyPrint")
-  valid_589268 = validateParameter(valid_589268, JBool, required = false,
+  if valid_579162 != nil:
+    section.add "key", valid_579162
+  var valid_579163 = query.getOrDefault("prettyPrint")
+  valid_579163 = validateParameter(valid_579163, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589268 != nil:
-    section.add "prettyPrint", valid_589268
+  if valid_579163 != nil:
+    section.add "prettyPrint", valid_579163
+  var valid_579164 = query.getOrDefault("oauth_token")
+  valid_579164 = validateParameter(valid_579164, JString, required = false,
+                                 default = nil)
+  if valid_579164 != nil:
+    section.add "oauth_token", valid_579164
+  var valid_579165 = query.getOrDefault("alt")
+  valid_579165 = validateParameter(valid_579165, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579165 != nil:
+    section.add "alt", valid_579165
+  var valid_579166 = query.getOrDefault("userIp")
+  valid_579166 = validateParameter(valid_579166, JString, required = false,
+                                 default = nil)
+  if valid_579166 != nil:
+    section.add "userIp", valid_579166
+  var valid_579167 = query.getOrDefault("quotaUser")
+  valid_579167 = validateParameter(valid_579167, JString, required = false,
+                                 default = nil)
+  if valid_579167 != nil:
+    section.add "quotaUser", valid_579167
+  var valid_579168 = query.getOrDefault("fields")
+  valid_579168 = validateParameter(valid_579168, JString, required = false,
+                                 default = nil)
+  if valid_579168 != nil:
+    section.add "fields", valid_579168
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2707,66 +2711,66 @@ proc validate_GmailUsersMessagesBatchDelete_589259(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_589270: Call_GmailUsersMessagesBatchDelete_589258; path: JsonNode;
+proc call*(call_579170: Call_GmailUsersMessagesBatchDelete_579158; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes many messages by message ID. Provides no guarantees that messages were not already deleted or even existed at all.
   ## 
-  let valid = call_589270.validator(path, query, header, formData, body)
-  let scheme = call_589270.pickScheme
+  let valid = call_579170.validator(path, query, header, formData, body)
+  let scheme = call_579170.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589270.url(scheme.get, call_589270.host, call_589270.base,
-                         call_589270.route, valid.getOrDefault("path"),
+  let url = call_579170.url(scheme.get, call_579170.host, call_579170.base,
+                         call_579170.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589270, url, valid)
+  result = hook(call_579170, url, valid)
 
-proc call*(call_589271: Call_GmailUsersMessagesBatchDelete_589258;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579171: Call_GmailUsersMessagesBatchDelete_579158;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersMessagesBatchDelete
   ## Deletes many messages by message ID. Provides no guarantees that messages were not already deleted or even existed at all.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589272 = newJObject()
-  var query_589273 = newJObject()
-  var body_589274 = newJObject()
-  add(query_589273, "fields", newJString(fields))
-  add(query_589273, "quotaUser", newJString(quotaUser))
-  add(query_589273, "alt", newJString(alt))
-  add(query_589273, "oauth_token", newJString(oauthToken))
-  add(query_589273, "userIp", newJString(userIp))
-  add(query_589273, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579172 = newJObject()
+  var query_579173 = newJObject()
+  var body_579174 = newJObject()
+  add(query_579173, "key", newJString(key))
+  add(query_579173, "prettyPrint", newJBool(prettyPrint))
+  add(query_579173, "oauth_token", newJString(oauthToken))
+  add(query_579173, "alt", newJString(alt))
+  add(query_579173, "userIp", newJString(userIp))
+  add(query_579173, "quotaUser", newJString(quotaUser))
+  add(path_579172, "userId", newJString(userId))
   if body != nil:
-    body_589274 = body
-  add(query_589273, "prettyPrint", newJBool(prettyPrint))
-  add(path_589272, "userId", newJString(userId))
-  result = call_589271.call(path_589272, query_589273, nil, nil, body_589274)
+    body_579174 = body
+  add(query_579173, "fields", newJString(fields))
+  result = call_579171.call(path_579172, query_579173, nil, nil, body_579174)
 
-var gmailUsersMessagesBatchDelete* = Call_GmailUsersMessagesBatchDelete_589258(
+var gmailUsersMessagesBatchDelete* = Call_GmailUsersMessagesBatchDelete_579158(
     name: "gmailUsersMessagesBatchDelete", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/messages/batchDelete",
-    validator: validate_GmailUsersMessagesBatchDelete_589259,
-    base: "/gmail/v1/users", url: url_GmailUsersMessagesBatchDelete_589260,
+    validator: validate_GmailUsersMessagesBatchDelete_579159,
+    base: "/gmail/v1/users", url: url_GmailUsersMessagesBatchDelete_579160,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersMessagesBatchModify_589275 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersMessagesBatchModify_589277(protocol: Scheme; host: string;
+  Call_GmailUsersMessagesBatchModify_579175 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersMessagesBatchModify_579177(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2782,7 +2786,7 @@ proc url_GmailUsersMessagesBatchModify_589277(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersMessagesBatchModify_589276(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersMessagesBatchModify_579176(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Modifies the labels on the specified messages.
   ## 
@@ -2793,63 +2797,63 @@ proc validate_GmailUsersMessagesBatchModify_589276(path: JsonNode; query: JsonNo
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589278 = path.getOrDefault("userId")
-  valid_589278 = validateParameter(valid_589278, JString, required = true,
+  var valid_579178 = path.getOrDefault("userId")
+  valid_579178 = validateParameter(valid_579178, JString, required = true,
                                  default = newJString("me"))
-  if valid_589278 != nil:
-    section.add "userId", valid_589278
+  if valid_579178 != nil:
+    section.add "userId", valid_579178
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589279 = query.getOrDefault("fields")
-  valid_589279 = validateParameter(valid_589279, JString, required = false,
+  var valid_579179 = query.getOrDefault("key")
+  valid_579179 = validateParameter(valid_579179, JString, required = false,
                                  default = nil)
-  if valid_589279 != nil:
-    section.add "fields", valid_589279
-  var valid_589280 = query.getOrDefault("quotaUser")
-  valid_589280 = validateParameter(valid_589280, JString, required = false,
-                                 default = nil)
-  if valid_589280 != nil:
-    section.add "quotaUser", valid_589280
-  var valid_589281 = query.getOrDefault("alt")
-  valid_589281 = validateParameter(valid_589281, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589281 != nil:
-    section.add "alt", valid_589281
-  var valid_589282 = query.getOrDefault("oauth_token")
-  valid_589282 = validateParameter(valid_589282, JString, required = false,
-                                 default = nil)
-  if valid_589282 != nil:
-    section.add "oauth_token", valid_589282
-  var valid_589283 = query.getOrDefault("userIp")
-  valid_589283 = validateParameter(valid_589283, JString, required = false,
-                                 default = nil)
-  if valid_589283 != nil:
-    section.add "userIp", valid_589283
-  var valid_589284 = query.getOrDefault("key")
-  valid_589284 = validateParameter(valid_589284, JString, required = false,
-                                 default = nil)
-  if valid_589284 != nil:
-    section.add "key", valid_589284
-  var valid_589285 = query.getOrDefault("prettyPrint")
-  valid_589285 = validateParameter(valid_589285, JBool, required = false,
+  if valid_579179 != nil:
+    section.add "key", valid_579179
+  var valid_579180 = query.getOrDefault("prettyPrint")
+  valid_579180 = validateParameter(valid_579180, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589285 != nil:
-    section.add "prettyPrint", valid_589285
+  if valid_579180 != nil:
+    section.add "prettyPrint", valid_579180
+  var valid_579181 = query.getOrDefault("oauth_token")
+  valid_579181 = validateParameter(valid_579181, JString, required = false,
+                                 default = nil)
+  if valid_579181 != nil:
+    section.add "oauth_token", valid_579181
+  var valid_579182 = query.getOrDefault("alt")
+  valid_579182 = validateParameter(valid_579182, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579182 != nil:
+    section.add "alt", valid_579182
+  var valid_579183 = query.getOrDefault("userIp")
+  valid_579183 = validateParameter(valid_579183, JString, required = false,
+                                 default = nil)
+  if valid_579183 != nil:
+    section.add "userIp", valid_579183
+  var valid_579184 = query.getOrDefault("quotaUser")
+  valid_579184 = validateParameter(valid_579184, JString, required = false,
+                                 default = nil)
+  if valid_579184 != nil:
+    section.add "quotaUser", valid_579184
+  var valid_579185 = query.getOrDefault("fields")
+  valid_579185 = validateParameter(valid_579185, JString, required = false,
+                                 default = nil)
+  if valid_579185 != nil:
+    section.add "fields", valid_579185
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2861,66 +2865,66 @@ proc validate_GmailUsersMessagesBatchModify_589276(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_589287: Call_GmailUsersMessagesBatchModify_589275; path: JsonNode;
+proc call*(call_579187: Call_GmailUsersMessagesBatchModify_579175; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Modifies the labels on the specified messages.
   ## 
-  let valid = call_589287.validator(path, query, header, formData, body)
-  let scheme = call_589287.pickScheme
+  let valid = call_579187.validator(path, query, header, formData, body)
+  let scheme = call_579187.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589287.url(scheme.get, call_589287.host, call_589287.base,
-                         call_589287.route, valid.getOrDefault("path"),
+  let url = call_579187.url(scheme.get, call_579187.host, call_579187.base,
+                         call_579187.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589287, url, valid)
+  result = hook(call_579187, url, valid)
 
-proc call*(call_589288: Call_GmailUsersMessagesBatchModify_589275;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579188: Call_GmailUsersMessagesBatchModify_579175;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersMessagesBatchModify
   ## Modifies the labels on the specified messages.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589289 = newJObject()
-  var query_589290 = newJObject()
-  var body_589291 = newJObject()
-  add(query_589290, "fields", newJString(fields))
-  add(query_589290, "quotaUser", newJString(quotaUser))
-  add(query_589290, "alt", newJString(alt))
-  add(query_589290, "oauth_token", newJString(oauthToken))
-  add(query_589290, "userIp", newJString(userIp))
-  add(query_589290, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579189 = newJObject()
+  var query_579190 = newJObject()
+  var body_579191 = newJObject()
+  add(query_579190, "key", newJString(key))
+  add(query_579190, "prettyPrint", newJBool(prettyPrint))
+  add(query_579190, "oauth_token", newJString(oauthToken))
+  add(query_579190, "alt", newJString(alt))
+  add(query_579190, "userIp", newJString(userIp))
+  add(query_579190, "quotaUser", newJString(quotaUser))
+  add(path_579189, "userId", newJString(userId))
   if body != nil:
-    body_589291 = body
-  add(query_589290, "prettyPrint", newJBool(prettyPrint))
-  add(path_589289, "userId", newJString(userId))
-  result = call_589288.call(path_589289, query_589290, nil, nil, body_589291)
+    body_579191 = body
+  add(query_579190, "fields", newJString(fields))
+  result = call_579188.call(path_579189, query_579190, nil, nil, body_579191)
 
-var gmailUsersMessagesBatchModify* = Call_GmailUsersMessagesBatchModify_589275(
+var gmailUsersMessagesBatchModify* = Call_GmailUsersMessagesBatchModify_579175(
     name: "gmailUsersMessagesBatchModify", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/messages/batchModify",
-    validator: validate_GmailUsersMessagesBatchModify_589276,
-    base: "/gmail/v1/users", url: url_GmailUsersMessagesBatchModify_589277,
+    validator: validate_GmailUsersMessagesBatchModify_579176,
+    base: "/gmail/v1/users", url: url_GmailUsersMessagesBatchModify_579177,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersMessagesImport_589292 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersMessagesImport_589294(protocol: Scheme; host: string;
+  Call_GmailUsersMessagesImport_579192 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersMessagesImport_579194(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -2937,7 +2941,7 @@ proc url_GmailUsersMessagesImport_589294(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersMessagesImport_589293(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersMessagesImport_579193(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Imports a message into only this user's mailbox, with standard email delivery scanning and classification similar to receiving via SMTP. Does not send a message.
   ## 
@@ -2948,91 +2952,91 @@ proc validate_GmailUsersMessagesImport_589293(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589295 = path.getOrDefault("userId")
-  valid_589295 = validateParameter(valid_589295, JString, required = true,
+  var valid_579195 = path.getOrDefault("userId")
+  valid_579195 = validateParameter(valid_579195, JString, required = true,
                                  default = newJString("me"))
-  if valid_589295 != nil:
-    section.add "userId", valid_589295
+  if valid_579195 != nil:
+    section.add "userId", valid_579195
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   internalDateSource: JString
-  ##                     : Source for Gmail's internal date of the message.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   neverMarkSpam: JBool
-  ##                : Ignore the Gmail spam classifier decision and never mark this email as SPAM in the mailbox.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   processForCalendar: JBool
-  ##                     : Process calendar invites in the email and add any extracted meetings to the Google Calendar for this user.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   processForCalendar: JBool
+  ##                     : Process calendar invites in the email and add any extracted meetings to the Google Calendar for this user.
+  ##   neverMarkSpam: JBool
+  ##                : Ignore the Gmail spam classifier decision and never mark this email as SPAM in the mailbox.
   ##   deleted: JBool
   ##          : Mark the email as permanently deleted (not TRASH) and only visible in Google Vault to a Vault administrator. Only used for G Suite accounts.
+  ##   internalDateSource: JString
+  ##                     : Source for Gmail's internal date of the message.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589296 = query.getOrDefault("fields")
-  valid_589296 = validateParameter(valid_589296, JString, required = false,
+  var valid_579196 = query.getOrDefault("key")
+  valid_579196 = validateParameter(valid_579196, JString, required = false,
                                  default = nil)
-  if valid_589296 != nil:
-    section.add "fields", valid_589296
-  var valid_589297 = query.getOrDefault("internalDateSource")
-  valid_589297 = validateParameter(valid_589297, JString, required = false,
-                                 default = newJString("dateHeader"))
-  if valid_589297 != nil:
-    section.add "internalDateSource", valid_589297
-  var valid_589298 = query.getOrDefault("quotaUser")
-  valid_589298 = validateParameter(valid_589298, JString, required = false,
-                                 default = nil)
-  if valid_589298 != nil:
-    section.add "quotaUser", valid_589298
-  var valid_589299 = query.getOrDefault("alt")
-  valid_589299 = validateParameter(valid_589299, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589299 != nil:
-    section.add "alt", valid_589299
-  var valid_589300 = query.getOrDefault("oauth_token")
-  valid_589300 = validateParameter(valid_589300, JString, required = false,
-                                 default = nil)
-  if valid_589300 != nil:
-    section.add "oauth_token", valid_589300
-  var valid_589301 = query.getOrDefault("userIp")
-  valid_589301 = validateParameter(valid_589301, JString, required = false,
-                                 default = nil)
-  if valid_589301 != nil:
-    section.add "userIp", valid_589301
-  var valid_589302 = query.getOrDefault("neverMarkSpam")
-  valid_589302 = validateParameter(valid_589302, JBool, required = false,
-                                 default = newJBool(false))
-  if valid_589302 != nil:
-    section.add "neverMarkSpam", valid_589302
-  var valid_589303 = query.getOrDefault("key")
-  valid_589303 = validateParameter(valid_589303, JString, required = false,
-                                 default = nil)
-  if valid_589303 != nil:
-    section.add "key", valid_589303
-  var valid_589304 = query.getOrDefault("processForCalendar")
-  valid_589304 = validateParameter(valid_589304, JBool, required = false,
-                                 default = newJBool(false))
-  if valid_589304 != nil:
-    section.add "processForCalendar", valid_589304
-  var valid_589305 = query.getOrDefault("prettyPrint")
-  valid_589305 = validateParameter(valid_589305, JBool, required = false,
+  if valid_579196 != nil:
+    section.add "key", valid_579196
+  var valid_579197 = query.getOrDefault("prettyPrint")
+  valid_579197 = validateParameter(valid_579197, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589305 != nil:
-    section.add "prettyPrint", valid_589305
-  var valid_589306 = query.getOrDefault("deleted")
-  valid_589306 = validateParameter(valid_589306, JBool, required = false,
+  if valid_579197 != nil:
+    section.add "prettyPrint", valid_579197
+  var valid_579198 = query.getOrDefault("oauth_token")
+  valid_579198 = validateParameter(valid_579198, JString, required = false,
+                                 default = nil)
+  if valid_579198 != nil:
+    section.add "oauth_token", valid_579198
+  var valid_579199 = query.getOrDefault("alt")
+  valid_579199 = validateParameter(valid_579199, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579199 != nil:
+    section.add "alt", valid_579199
+  var valid_579200 = query.getOrDefault("userIp")
+  valid_579200 = validateParameter(valid_579200, JString, required = false,
+                                 default = nil)
+  if valid_579200 != nil:
+    section.add "userIp", valid_579200
+  var valid_579201 = query.getOrDefault("quotaUser")
+  valid_579201 = validateParameter(valid_579201, JString, required = false,
+                                 default = nil)
+  if valid_579201 != nil:
+    section.add "quotaUser", valid_579201
+  var valid_579202 = query.getOrDefault("processForCalendar")
+  valid_579202 = validateParameter(valid_579202, JBool, required = false,
                                  default = newJBool(false))
-  if valid_589306 != nil:
-    section.add "deleted", valid_589306
+  if valid_579202 != nil:
+    section.add "processForCalendar", valid_579202
+  var valid_579203 = query.getOrDefault("neverMarkSpam")
+  valid_579203 = validateParameter(valid_579203, JBool, required = false,
+                                 default = newJBool(false))
+  if valid_579203 != nil:
+    section.add "neverMarkSpam", valid_579203
+  var valid_579204 = query.getOrDefault("deleted")
+  valid_579204 = validateParameter(valid_579204, JBool, required = false,
+                                 default = newJBool(false))
+  if valid_579204 != nil:
+    section.add "deleted", valid_579204
+  var valid_579205 = query.getOrDefault("internalDateSource")
+  valid_579205 = validateParameter(valid_579205, JString, required = false,
+                                 default = newJString("dateHeader"))
+  if valid_579205 != nil:
+    section.add "internalDateSource", valid_579205
+  var valid_579206 = query.getOrDefault("fields")
+  valid_579206 = validateParameter(valid_579206, JString, required = false,
+                                 default = nil)
+  if valid_579206 != nil:
+    section.add "fields", valid_579206
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3044,79 +3048,79 @@ proc validate_GmailUsersMessagesImport_589293(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589308: Call_GmailUsersMessagesImport_589292; path: JsonNode;
+proc call*(call_579208: Call_GmailUsersMessagesImport_579192; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Imports a message into only this user's mailbox, with standard email delivery scanning and classification similar to receiving via SMTP. Does not send a message.
   ## 
-  let valid = call_589308.validator(path, query, header, formData, body)
-  let scheme = call_589308.pickScheme
+  let valid = call_579208.validator(path, query, header, formData, body)
+  let scheme = call_579208.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589308.url(scheme.get, call_589308.host, call_589308.base,
-                         call_589308.route, valid.getOrDefault("path"),
+  let url = call_579208.url(scheme.get, call_579208.host, call_579208.base,
+                         call_579208.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589308, url, valid)
+  result = hook(call_579208, url, valid)
 
-proc call*(call_589309: Call_GmailUsersMessagesImport_589292; fields: string = "";
-          internalDateSource: string = "dateHeader"; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          neverMarkSpam: bool = false; key: string = "";
-          processForCalendar: bool = false; body: JsonNode = nil;
-          prettyPrint: bool = true; deleted: bool = false; userId: string = "me"): Recallable =
+proc call*(call_579209: Call_GmailUsersMessagesImport_579192; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; processForCalendar: bool = false;
+          userId: string = "me"; neverMarkSpam: bool = false; deleted: bool = false;
+          body: JsonNode = nil; internalDateSource: string = "dateHeader";
+          fields: string = ""): Recallable =
   ## gmailUsersMessagesImport
   ## Imports a message into only this user's mailbox, with standard email delivery scanning and classification similar to receiving via SMTP. Does not send a message.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   internalDateSource: string
-  ##                     : Source for Gmail's internal date of the message.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   neverMarkSpam: bool
-  ##                : Ignore the Gmail spam classifier decision and never mark this email as SPAM in the mailbox.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   processForCalendar: bool
-  ##                     : Process calendar invites in the email and add any extracted meetings to the Google Calendar for this user.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  ##   deleted: bool
-  ##          : Mark the email as permanently deleted (not TRASH) and only visible in Google Vault to a Vault administrator. Only used for G Suite accounts.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   processForCalendar: bool
+  ##                     : Process calendar invites in the email and add any extracted meetings to the Google Calendar for this user.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589310 = newJObject()
-  var query_589311 = newJObject()
-  var body_589312 = newJObject()
-  add(query_589311, "fields", newJString(fields))
-  add(query_589311, "internalDateSource", newJString(internalDateSource))
-  add(query_589311, "quotaUser", newJString(quotaUser))
-  add(query_589311, "alt", newJString(alt))
-  add(query_589311, "oauth_token", newJString(oauthToken))
-  add(query_589311, "userIp", newJString(userIp))
-  add(query_589311, "neverMarkSpam", newJBool(neverMarkSpam))
-  add(query_589311, "key", newJString(key))
-  add(query_589311, "processForCalendar", newJBool(processForCalendar))
+  ##   neverMarkSpam: bool
+  ##                : Ignore the Gmail spam classifier decision and never mark this email as SPAM in the mailbox.
+  ##   deleted: bool
+  ##          : Mark the email as permanently deleted (not TRASH) and only visible in Google Vault to a Vault administrator. Only used for G Suite accounts.
+  ##   body: JObject
+  ##   internalDateSource: string
+  ##                     : Source for Gmail's internal date of the message.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579210 = newJObject()
+  var query_579211 = newJObject()
+  var body_579212 = newJObject()
+  add(query_579211, "key", newJString(key))
+  add(query_579211, "prettyPrint", newJBool(prettyPrint))
+  add(query_579211, "oauth_token", newJString(oauthToken))
+  add(query_579211, "alt", newJString(alt))
+  add(query_579211, "userIp", newJString(userIp))
+  add(query_579211, "quotaUser", newJString(quotaUser))
+  add(query_579211, "processForCalendar", newJBool(processForCalendar))
+  add(path_579210, "userId", newJString(userId))
+  add(query_579211, "neverMarkSpam", newJBool(neverMarkSpam))
+  add(query_579211, "deleted", newJBool(deleted))
   if body != nil:
-    body_589312 = body
-  add(query_589311, "prettyPrint", newJBool(prettyPrint))
-  add(query_589311, "deleted", newJBool(deleted))
-  add(path_589310, "userId", newJString(userId))
-  result = call_589309.call(path_589310, query_589311, nil, nil, body_589312)
+    body_579212 = body
+  add(query_579211, "internalDateSource", newJString(internalDateSource))
+  add(query_579211, "fields", newJString(fields))
+  result = call_579209.call(path_579210, query_579211, nil, nil, body_579212)
 
-var gmailUsersMessagesImport* = Call_GmailUsersMessagesImport_589292(
+var gmailUsersMessagesImport* = Call_GmailUsersMessagesImport_579192(
     name: "gmailUsersMessagesImport", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/messages/import",
-    validator: validate_GmailUsersMessagesImport_589293, base: "/gmail/v1/users",
-    url: url_GmailUsersMessagesImport_589294, schemes: {Scheme.Https})
+    validator: validate_GmailUsersMessagesImport_579193, base: "/gmail/v1/users",
+    url: url_GmailUsersMessagesImport_579194, schemes: {Scheme.Https})
 type
-  Call_GmailUsersMessagesSend_589313 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersMessagesSend_589315(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersMessagesSend_579213 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersMessagesSend_579215(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3132,7 +3136,7 @@ proc url_GmailUsersMessagesSend_589315(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersMessagesSend_589314(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersMessagesSend_579214(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sends the specified message to the recipients in the To, Cc, and Bcc headers.
   ## 
@@ -3143,63 +3147,63 @@ proc validate_GmailUsersMessagesSend_589314(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589316 = path.getOrDefault("userId")
-  valid_589316 = validateParameter(valid_589316, JString, required = true,
+  var valid_579216 = path.getOrDefault("userId")
+  valid_579216 = validateParameter(valid_579216, JString, required = true,
                                  default = newJString("me"))
-  if valid_589316 != nil:
-    section.add "userId", valid_589316
+  if valid_579216 != nil:
+    section.add "userId", valid_579216
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589317 = query.getOrDefault("fields")
-  valid_589317 = validateParameter(valid_589317, JString, required = false,
+  var valid_579217 = query.getOrDefault("key")
+  valid_579217 = validateParameter(valid_579217, JString, required = false,
                                  default = nil)
-  if valid_589317 != nil:
-    section.add "fields", valid_589317
-  var valid_589318 = query.getOrDefault("quotaUser")
-  valid_589318 = validateParameter(valid_589318, JString, required = false,
-                                 default = nil)
-  if valid_589318 != nil:
-    section.add "quotaUser", valid_589318
-  var valid_589319 = query.getOrDefault("alt")
-  valid_589319 = validateParameter(valid_589319, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589319 != nil:
-    section.add "alt", valid_589319
-  var valid_589320 = query.getOrDefault("oauth_token")
-  valid_589320 = validateParameter(valid_589320, JString, required = false,
-                                 default = nil)
-  if valid_589320 != nil:
-    section.add "oauth_token", valid_589320
-  var valid_589321 = query.getOrDefault("userIp")
-  valid_589321 = validateParameter(valid_589321, JString, required = false,
-                                 default = nil)
-  if valid_589321 != nil:
-    section.add "userIp", valid_589321
-  var valid_589322 = query.getOrDefault("key")
-  valid_589322 = validateParameter(valid_589322, JString, required = false,
-                                 default = nil)
-  if valid_589322 != nil:
-    section.add "key", valid_589322
-  var valid_589323 = query.getOrDefault("prettyPrint")
-  valid_589323 = validateParameter(valid_589323, JBool, required = false,
+  if valid_579217 != nil:
+    section.add "key", valid_579217
+  var valid_579218 = query.getOrDefault("prettyPrint")
+  valid_579218 = validateParameter(valid_579218, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589323 != nil:
-    section.add "prettyPrint", valid_589323
+  if valid_579218 != nil:
+    section.add "prettyPrint", valid_579218
+  var valid_579219 = query.getOrDefault("oauth_token")
+  valid_579219 = validateParameter(valid_579219, JString, required = false,
+                                 default = nil)
+  if valid_579219 != nil:
+    section.add "oauth_token", valid_579219
+  var valid_579220 = query.getOrDefault("alt")
+  valid_579220 = validateParameter(valid_579220, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579220 != nil:
+    section.add "alt", valid_579220
+  var valid_579221 = query.getOrDefault("userIp")
+  valid_579221 = validateParameter(valid_579221, JString, required = false,
+                                 default = nil)
+  if valid_579221 != nil:
+    section.add "userIp", valid_579221
+  var valid_579222 = query.getOrDefault("quotaUser")
+  valid_579222 = validateParameter(valid_579222, JString, required = false,
+                                 default = nil)
+  if valid_579222 != nil:
+    section.add "quotaUser", valid_579222
+  var valid_579223 = query.getOrDefault("fields")
+  valid_579223 = validateParameter(valid_579223, JString, required = false,
+                                 default = nil)
+  if valid_579223 != nil:
+    section.add "fields", valid_579223
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3211,65 +3215,65 @@ proc validate_GmailUsersMessagesSend_589314(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589325: Call_GmailUsersMessagesSend_589313; path: JsonNode;
+proc call*(call_579225: Call_GmailUsersMessagesSend_579213; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Sends the specified message to the recipients in the To, Cc, and Bcc headers.
   ## 
-  let valid = call_589325.validator(path, query, header, formData, body)
-  let scheme = call_589325.pickScheme
+  let valid = call_579225.validator(path, query, header, formData, body)
+  let scheme = call_579225.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589325.url(scheme.get, call_589325.host, call_589325.base,
-                         call_589325.route, valid.getOrDefault("path"),
+  let url = call_579225.url(scheme.get, call_579225.host, call_579225.base,
+                         call_579225.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589325, url, valid)
+  result = hook(call_579225, url, valid)
 
-proc call*(call_589326: Call_GmailUsersMessagesSend_589313; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579226: Call_GmailUsersMessagesSend_579213; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; userId: string = "me";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersMessagesSend
   ## Sends the specified message to the recipients in the To, Cc, and Bcc headers.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589327 = newJObject()
-  var query_589328 = newJObject()
-  var body_589329 = newJObject()
-  add(query_589328, "fields", newJString(fields))
-  add(query_589328, "quotaUser", newJString(quotaUser))
-  add(query_589328, "alt", newJString(alt))
-  add(query_589328, "oauth_token", newJString(oauthToken))
-  add(query_589328, "userIp", newJString(userIp))
-  add(query_589328, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579227 = newJObject()
+  var query_579228 = newJObject()
+  var body_579229 = newJObject()
+  add(query_579228, "key", newJString(key))
+  add(query_579228, "prettyPrint", newJBool(prettyPrint))
+  add(query_579228, "oauth_token", newJString(oauthToken))
+  add(query_579228, "alt", newJString(alt))
+  add(query_579228, "userIp", newJString(userIp))
+  add(query_579228, "quotaUser", newJString(quotaUser))
+  add(path_579227, "userId", newJString(userId))
   if body != nil:
-    body_589329 = body
-  add(query_589328, "prettyPrint", newJBool(prettyPrint))
-  add(path_589327, "userId", newJString(userId))
-  result = call_589326.call(path_589327, query_589328, nil, nil, body_589329)
+    body_579229 = body
+  add(query_579228, "fields", newJString(fields))
+  result = call_579226.call(path_579227, query_579228, nil, nil, body_579229)
 
-var gmailUsersMessagesSend* = Call_GmailUsersMessagesSend_589313(
+var gmailUsersMessagesSend* = Call_GmailUsersMessagesSend_579213(
     name: "gmailUsersMessagesSend", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/messages/send",
-    validator: validate_GmailUsersMessagesSend_589314, base: "/gmail/v1/users",
-    url: url_GmailUsersMessagesSend_589315, schemes: {Scheme.Https})
+    validator: validate_GmailUsersMessagesSend_579214, base: "/gmail/v1/users",
+    url: url_GmailUsersMessagesSend_579215, schemes: {Scheme.Https})
 type
-  Call_GmailUsersMessagesGet_589330 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersMessagesGet_589332(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersMessagesGet_579230 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersMessagesGet_579232(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3287,7 +3291,7 @@ proc url_GmailUsersMessagesGet_589332(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersMessagesGet_589331(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersMessagesGet_579231(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the specified message.
   ## 
@@ -3300,82 +3304,82 @@ proc validate_GmailUsersMessagesGet_589331(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589333 = path.getOrDefault("id")
-  valid_589333 = validateParameter(valid_589333, JString, required = true,
+  var valid_579233 = path.getOrDefault("id")
+  valid_579233 = validateParameter(valid_579233, JString, required = true,
                                  default = nil)
-  if valid_589333 != nil:
-    section.add "id", valid_589333
-  var valid_589334 = path.getOrDefault("userId")
-  valid_589334 = validateParameter(valid_589334, JString, required = true,
+  if valid_579233 != nil:
+    section.add "id", valid_579233
+  var valid_579234 = path.getOrDefault("userId")
+  valid_579234 = validateParameter(valid_579234, JString, required = true,
                                  default = newJString("me"))
-  if valid_589334 != nil:
-    section.add "userId", valid_589334
+  if valid_579234 != nil:
+    section.add "userId", valid_579234
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   metadataHeaders: JArray
-  ##                  : When given and format is METADATA, only include headers specified.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   metadataHeaders: JArray
+  ##                  : When given and format is METADATA, only include headers specified.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   ##   format: JString
   ##         : The format to return the message in.
   section = newJObject()
-  var valid_589335 = query.getOrDefault("fields")
-  valid_589335 = validateParameter(valid_589335, JString, required = false,
+  var valid_579235 = query.getOrDefault("key")
+  valid_579235 = validateParameter(valid_579235, JString, required = false,
                                  default = nil)
-  if valid_589335 != nil:
-    section.add "fields", valid_589335
-  var valid_589336 = query.getOrDefault("quotaUser")
-  valid_589336 = validateParameter(valid_589336, JString, required = false,
-                                 default = nil)
-  if valid_589336 != nil:
-    section.add "quotaUser", valid_589336
-  var valid_589337 = query.getOrDefault("alt")
-  valid_589337 = validateParameter(valid_589337, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589337 != nil:
-    section.add "alt", valid_589337
-  var valid_589338 = query.getOrDefault("oauth_token")
-  valid_589338 = validateParameter(valid_589338, JString, required = false,
-                                 default = nil)
-  if valid_589338 != nil:
-    section.add "oauth_token", valid_589338
-  var valid_589339 = query.getOrDefault("userIp")
-  valid_589339 = validateParameter(valid_589339, JString, required = false,
-                                 default = nil)
-  if valid_589339 != nil:
-    section.add "userIp", valid_589339
-  var valid_589340 = query.getOrDefault("metadataHeaders")
-  valid_589340 = validateParameter(valid_589340, JArray, required = false,
-                                 default = nil)
-  if valid_589340 != nil:
-    section.add "metadataHeaders", valid_589340
-  var valid_589341 = query.getOrDefault("key")
-  valid_589341 = validateParameter(valid_589341, JString, required = false,
-                                 default = nil)
-  if valid_589341 != nil:
-    section.add "key", valid_589341
-  var valid_589342 = query.getOrDefault("prettyPrint")
-  valid_589342 = validateParameter(valid_589342, JBool, required = false,
+  if valid_579235 != nil:
+    section.add "key", valid_579235
+  var valid_579236 = query.getOrDefault("prettyPrint")
+  valid_579236 = validateParameter(valid_579236, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589342 != nil:
-    section.add "prettyPrint", valid_589342
-  var valid_589343 = query.getOrDefault("format")
-  valid_589343 = validateParameter(valid_589343, JString, required = false,
+  if valid_579236 != nil:
+    section.add "prettyPrint", valid_579236
+  var valid_579237 = query.getOrDefault("oauth_token")
+  valid_579237 = validateParameter(valid_579237, JString, required = false,
+                                 default = nil)
+  if valid_579237 != nil:
+    section.add "oauth_token", valid_579237
+  var valid_579238 = query.getOrDefault("metadataHeaders")
+  valid_579238 = validateParameter(valid_579238, JArray, required = false,
+                                 default = nil)
+  if valid_579238 != nil:
+    section.add "metadataHeaders", valid_579238
+  var valid_579239 = query.getOrDefault("alt")
+  valid_579239 = validateParameter(valid_579239, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579239 != nil:
+    section.add "alt", valid_579239
+  var valid_579240 = query.getOrDefault("userIp")
+  valid_579240 = validateParameter(valid_579240, JString, required = false,
+                                 default = nil)
+  if valid_579240 != nil:
+    section.add "userIp", valid_579240
+  var valid_579241 = query.getOrDefault("quotaUser")
+  valid_579241 = validateParameter(valid_579241, JString, required = false,
+                                 default = nil)
+  if valid_579241 != nil:
+    section.add "quotaUser", valid_579241
+  var valid_579242 = query.getOrDefault("fields")
+  valid_579242 = validateParameter(valid_579242, JString, required = false,
+                                 default = nil)
+  if valid_579242 != nil:
+    section.add "fields", valid_579242
+  var valid_579243 = query.getOrDefault("format")
+  valid_579243 = validateParameter(valid_579243, JString, required = false,
                                  default = newJString("full"))
-  if valid_589343 != nil:
-    section.add "format", valid_589343
+  if valid_579243 != nil:
+    section.add "format", valid_579243
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3384,72 +3388,72 @@ proc validate_GmailUsersMessagesGet_589331(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589344: Call_GmailUsersMessagesGet_589330; path: JsonNode;
+proc call*(call_579244: Call_GmailUsersMessagesGet_579230; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the specified message.
   ## 
-  let valid = call_589344.validator(path, query, header, formData, body)
-  let scheme = call_589344.pickScheme
+  let valid = call_579244.validator(path, query, header, formData, body)
+  let scheme = call_579244.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589344.url(scheme.get, call_589344.host, call_589344.base,
-                         call_589344.route, valid.getOrDefault("path"),
+  let url = call_579244.url(scheme.get, call_579244.host, call_579244.base,
+                         call_579244.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589344, url, valid)
+  result = hook(call_579244, url, valid)
 
-proc call*(call_589345: Call_GmailUsersMessagesGet_589330; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; metadataHeaders: JsonNode = nil;
-          key: string = ""; prettyPrint: bool = true; format: string = "full";
-          userId: string = "me"): Recallable =
+proc call*(call_579245: Call_GmailUsersMessagesGet_579230; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          metadataHeaders: JsonNode = nil; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; fields: string = "";
+          format: string = "full"): Recallable =
   ## gmailUsersMessagesGet
   ## Gets the specified message.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   metadataHeaders: JArray
-  ##                  : When given and format is METADATA, only include headers specified.
-  ##   id: string (required)
-  ##     : The ID of the message to retrieve.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  ##   format: string
-  ##         : The format to return the message in.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   metadataHeaders: JArray
+  ##                  : When given and format is METADATA, only include headers specified.
+  ##   id: string (required)
+  ##     : The ID of the message to retrieve.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589346 = newJObject()
-  var query_589347 = newJObject()
-  add(query_589347, "fields", newJString(fields))
-  add(query_589347, "quotaUser", newJString(quotaUser))
-  add(query_589347, "alt", newJString(alt))
-  add(query_589347, "oauth_token", newJString(oauthToken))
-  add(query_589347, "userIp", newJString(userIp))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   format: string
+  ##         : The format to return the message in.
+  var path_579246 = newJObject()
+  var query_579247 = newJObject()
+  add(query_579247, "key", newJString(key))
+  add(query_579247, "prettyPrint", newJBool(prettyPrint))
+  add(query_579247, "oauth_token", newJString(oauthToken))
   if metadataHeaders != nil:
-    query_589347.add "metadataHeaders", metadataHeaders
-  add(path_589346, "id", newJString(id))
-  add(query_589347, "key", newJString(key))
-  add(query_589347, "prettyPrint", newJBool(prettyPrint))
-  add(query_589347, "format", newJString(format))
-  add(path_589346, "userId", newJString(userId))
-  result = call_589345.call(path_589346, query_589347, nil, nil, nil)
+    query_579247.add "metadataHeaders", metadataHeaders
+  add(path_579246, "id", newJString(id))
+  add(query_579247, "alt", newJString(alt))
+  add(query_579247, "userIp", newJString(userIp))
+  add(query_579247, "quotaUser", newJString(quotaUser))
+  add(path_579246, "userId", newJString(userId))
+  add(query_579247, "fields", newJString(fields))
+  add(query_579247, "format", newJString(format))
+  result = call_579245.call(path_579246, query_579247, nil, nil, nil)
 
-var gmailUsersMessagesGet* = Call_GmailUsersMessagesGet_589330(
+var gmailUsersMessagesGet* = Call_GmailUsersMessagesGet_579230(
     name: "gmailUsersMessagesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/messages/{id}",
-    validator: validate_GmailUsersMessagesGet_589331, base: "/gmail/v1/users",
-    url: url_GmailUsersMessagesGet_589332, schemes: {Scheme.Https})
+    validator: validate_GmailUsersMessagesGet_579231, base: "/gmail/v1/users",
+    url: url_GmailUsersMessagesGet_579232, schemes: {Scheme.Https})
 type
-  Call_GmailUsersMessagesDelete_589348 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersMessagesDelete_589350(protocol: Scheme; host: string;
+  Call_GmailUsersMessagesDelete_579248 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersMessagesDelete_579250(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -3468,7 +3472,7 @@ proc url_GmailUsersMessagesDelete_589350(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersMessagesDelete_589349(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersMessagesDelete_579249(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Immediately and permanently deletes the specified message. This operation cannot be undone. Prefer messages.trash instead.
   ## 
@@ -3481,68 +3485,68 @@ proc validate_GmailUsersMessagesDelete_589349(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589351 = path.getOrDefault("id")
-  valid_589351 = validateParameter(valid_589351, JString, required = true,
+  var valid_579251 = path.getOrDefault("id")
+  valid_579251 = validateParameter(valid_579251, JString, required = true,
                                  default = nil)
-  if valid_589351 != nil:
-    section.add "id", valid_589351
-  var valid_589352 = path.getOrDefault("userId")
-  valid_589352 = validateParameter(valid_589352, JString, required = true,
+  if valid_579251 != nil:
+    section.add "id", valid_579251
+  var valid_579252 = path.getOrDefault("userId")
+  valid_579252 = validateParameter(valid_579252, JString, required = true,
                                  default = newJString("me"))
-  if valid_589352 != nil:
-    section.add "userId", valid_589352
+  if valid_579252 != nil:
+    section.add "userId", valid_579252
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589353 = query.getOrDefault("fields")
-  valid_589353 = validateParameter(valid_589353, JString, required = false,
+  var valid_579253 = query.getOrDefault("key")
+  valid_579253 = validateParameter(valid_579253, JString, required = false,
                                  default = nil)
-  if valid_589353 != nil:
-    section.add "fields", valid_589353
-  var valid_589354 = query.getOrDefault("quotaUser")
-  valid_589354 = validateParameter(valid_589354, JString, required = false,
-                                 default = nil)
-  if valid_589354 != nil:
-    section.add "quotaUser", valid_589354
-  var valid_589355 = query.getOrDefault("alt")
-  valid_589355 = validateParameter(valid_589355, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589355 != nil:
-    section.add "alt", valid_589355
-  var valid_589356 = query.getOrDefault("oauth_token")
-  valid_589356 = validateParameter(valid_589356, JString, required = false,
-                                 default = nil)
-  if valid_589356 != nil:
-    section.add "oauth_token", valid_589356
-  var valid_589357 = query.getOrDefault("userIp")
-  valid_589357 = validateParameter(valid_589357, JString, required = false,
-                                 default = nil)
-  if valid_589357 != nil:
-    section.add "userIp", valid_589357
-  var valid_589358 = query.getOrDefault("key")
-  valid_589358 = validateParameter(valid_589358, JString, required = false,
-                                 default = nil)
-  if valid_589358 != nil:
-    section.add "key", valid_589358
-  var valid_589359 = query.getOrDefault("prettyPrint")
-  valid_589359 = validateParameter(valid_589359, JBool, required = false,
+  if valid_579253 != nil:
+    section.add "key", valid_579253
+  var valid_579254 = query.getOrDefault("prettyPrint")
+  valid_579254 = validateParameter(valid_579254, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589359 != nil:
-    section.add "prettyPrint", valid_589359
+  if valid_579254 != nil:
+    section.add "prettyPrint", valid_579254
+  var valid_579255 = query.getOrDefault("oauth_token")
+  valid_579255 = validateParameter(valid_579255, JString, required = false,
+                                 default = nil)
+  if valid_579255 != nil:
+    section.add "oauth_token", valid_579255
+  var valid_579256 = query.getOrDefault("alt")
+  valid_579256 = validateParameter(valid_579256, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579256 != nil:
+    section.add "alt", valid_579256
+  var valid_579257 = query.getOrDefault("userIp")
+  valid_579257 = validateParameter(valid_579257, JString, required = false,
+                                 default = nil)
+  if valid_579257 != nil:
+    section.add "userIp", valid_579257
+  var valid_579258 = query.getOrDefault("quotaUser")
+  valid_579258 = validateParameter(valid_579258, JString, required = false,
+                                 default = nil)
+  if valid_579258 != nil:
+    section.add "quotaUser", valid_579258
+  var valid_579259 = query.getOrDefault("fields")
+  valid_579259 = validateParameter(valid_579259, JString, required = false,
+                                 default = nil)
+  if valid_579259 != nil:
+    section.add "fields", valid_579259
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3551,64 +3555,64 @@ proc validate_GmailUsersMessagesDelete_589349(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589360: Call_GmailUsersMessagesDelete_589348; path: JsonNode;
+proc call*(call_579260: Call_GmailUsersMessagesDelete_579248; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Immediately and permanently deletes the specified message. This operation cannot be undone. Prefer messages.trash instead.
   ## 
-  let valid = call_589360.validator(path, query, header, formData, body)
-  let scheme = call_589360.pickScheme
+  let valid = call_579260.validator(path, query, header, formData, body)
+  let scheme = call_579260.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589360.url(scheme.get, call_589360.host, call_589360.base,
-                         call_589360.route, valid.getOrDefault("path"),
+  let url = call_579260.url(scheme.get, call_579260.host, call_579260.base,
+                         call_579260.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589360, url, valid)
+  result = hook(call_579260, url, valid)
 
-proc call*(call_589361: Call_GmailUsersMessagesDelete_589348; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579261: Call_GmailUsersMessagesDelete_579248; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersMessagesDelete
   ## Immediately and permanently deletes the specified message. This operation cannot be undone. Prefer messages.trash instead.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the message to delete.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the message to delete.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589362 = newJObject()
-  var query_589363 = newJObject()
-  add(query_589363, "fields", newJString(fields))
-  add(query_589363, "quotaUser", newJString(quotaUser))
-  add(query_589363, "alt", newJString(alt))
-  add(query_589363, "oauth_token", newJString(oauthToken))
-  add(query_589363, "userIp", newJString(userIp))
-  add(path_589362, "id", newJString(id))
-  add(query_589363, "key", newJString(key))
-  add(query_589363, "prettyPrint", newJBool(prettyPrint))
-  add(path_589362, "userId", newJString(userId))
-  result = call_589361.call(path_589362, query_589363, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579262 = newJObject()
+  var query_579263 = newJObject()
+  add(query_579263, "key", newJString(key))
+  add(query_579263, "prettyPrint", newJBool(prettyPrint))
+  add(query_579263, "oauth_token", newJString(oauthToken))
+  add(path_579262, "id", newJString(id))
+  add(query_579263, "alt", newJString(alt))
+  add(query_579263, "userIp", newJString(userIp))
+  add(query_579263, "quotaUser", newJString(quotaUser))
+  add(path_579262, "userId", newJString(userId))
+  add(query_579263, "fields", newJString(fields))
+  result = call_579261.call(path_579262, query_579263, nil, nil, nil)
 
-var gmailUsersMessagesDelete* = Call_GmailUsersMessagesDelete_589348(
+var gmailUsersMessagesDelete* = Call_GmailUsersMessagesDelete_579248(
     name: "gmailUsersMessagesDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{userId}/messages/{id}",
-    validator: validate_GmailUsersMessagesDelete_589349, base: "/gmail/v1/users",
-    url: url_GmailUsersMessagesDelete_589350, schemes: {Scheme.Https})
+    validator: validate_GmailUsersMessagesDelete_579249, base: "/gmail/v1/users",
+    url: url_GmailUsersMessagesDelete_579250, schemes: {Scheme.Https})
 type
-  Call_GmailUsersMessagesModify_589364 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersMessagesModify_589366(protocol: Scheme; host: string;
+  Call_GmailUsersMessagesModify_579264 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersMessagesModify_579266(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -3628,7 +3632,7 @@ proc url_GmailUsersMessagesModify_589366(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersMessagesModify_589365(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersMessagesModify_579265(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Modifies the labels on the specified message.
   ## 
@@ -3641,68 +3645,68 @@ proc validate_GmailUsersMessagesModify_589365(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589367 = path.getOrDefault("id")
-  valid_589367 = validateParameter(valid_589367, JString, required = true,
+  var valid_579267 = path.getOrDefault("id")
+  valid_579267 = validateParameter(valid_579267, JString, required = true,
                                  default = nil)
-  if valid_589367 != nil:
-    section.add "id", valid_589367
-  var valid_589368 = path.getOrDefault("userId")
-  valid_589368 = validateParameter(valid_589368, JString, required = true,
+  if valid_579267 != nil:
+    section.add "id", valid_579267
+  var valid_579268 = path.getOrDefault("userId")
+  valid_579268 = validateParameter(valid_579268, JString, required = true,
                                  default = newJString("me"))
-  if valid_589368 != nil:
-    section.add "userId", valid_589368
+  if valid_579268 != nil:
+    section.add "userId", valid_579268
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589369 = query.getOrDefault("fields")
-  valid_589369 = validateParameter(valid_589369, JString, required = false,
+  var valid_579269 = query.getOrDefault("key")
+  valid_579269 = validateParameter(valid_579269, JString, required = false,
                                  default = nil)
-  if valid_589369 != nil:
-    section.add "fields", valid_589369
-  var valid_589370 = query.getOrDefault("quotaUser")
-  valid_589370 = validateParameter(valid_589370, JString, required = false,
-                                 default = nil)
-  if valid_589370 != nil:
-    section.add "quotaUser", valid_589370
-  var valid_589371 = query.getOrDefault("alt")
-  valid_589371 = validateParameter(valid_589371, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589371 != nil:
-    section.add "alt", valid_589371
-  var valid_589372 = query.getOrDefault("oauth_token")
-  valid_589372 = validateParameter(valid_589372, JString, required = false,
-                                 default = nil)
-  if valid_589372 != nil:
-    section.add "oauth_token", valid_589372
-  var valid_589373 = query.getOrDefault("userIp")
-  valid_589373 = validateParameter(valid_589373, JString, required = false,
-                                 default = nil)
-  if valid_589373 != nil:
-    section.add "userIp", valid_589373
-  var valid_589374 = query.getOrDefault("key")
-  valid_589374 = validateParameter(valid_589374, JString, required = false,
-                                 default = nil)
-  if valid_589374 != nil:
-    section.add "key", valid_589374
-  var valid_589375 = query.getOrDefault("prettyPrint")
-  valid_589375 = validateParameter(valid_589375, JBool, required = false,
+  if valid_579269 != nil:
+    section.add "key", valid_579269
+  var valid_579270 = query.getOrDefault("prettyPrint")
+  valid_579270 = validateParameter(valid_579270, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589375 != nil:
-    section.add "prettyPrint", valid_589375
+  if valid_579270 != nil:
+    section.add "prettyPrint", valid_579270
+  var valid_579271 = query.getOrDefault("oauth_token")
+  valid_579271 = validateParameter(valid_579271, JString, required = false,
+                                 default = nil)
+  if valid_579271 != nil:
+    section.add "oauth_token", valid_579271
+  var valid_579272 = query.getOrDefault("alt")
+  valid_579272 = validateParameter(valid_579272, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579272 != nil:
+    section.add "alt", valid_579272
+  var valid_579273 = query.getOrDefault("userIp")
+  valid_579273 = validateParameter(valid_579273, JString, required = false,
+                                 default = nil)
+  if valid_579273 != nil:
+    section.add "userIp", valid_579273
+  var valid_579274 = query.getOrDefault("quotaUser")
+  valid_579274 = validateParameter(valid_579274, JString, required = false,
+                                 default = nil)
+  if valid_579274 != nil:
+    section.add "quotaUser", valid_579274
+  var valid_579275 = query.getOrDefault("fields")
+  valid_579275 = validateParameter(valid_579275, JString, required = false,
+                                 default = nil)
+  if valid_579275 != nil:
+    section.add "fields", valid_579275
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3714,68 +3718,68 @@ proc validate_GmailUsersMessagesModify_589365(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589377: Call_GmailUsersMessagesModify_589364; path: JsonNode;
+proc call*(call_579277: Call_GmailUsersMessagesModify_579264; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Modifies the labels on the specified message.
   ## 
-  let valid = call_589377.validator(path, query, header, formData, body)
-  let scheme = call_589377.pickScheme
+  let valid = call_579277.validator(path, query, header, formData, body)
+  let scheme = call_579277.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589377.url(scheme.get, call_589377.host, call_589377.base,
-                         call_589377.route, valid.getOrDefault("path"),
+  let url = call_579277.url(scheme.get, call_579277.host, call_579277.base,
+                         call_579277.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589377, url, valid)
+  result = hook(call_579277, url, valid)
 
-proc call*(call_589378: Call_GmailUsersMessagesModify_589364; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579278: Call_GmailUsersMessagesModify_579264; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersMessagesModify
   ## Modifies the labels on the specified message.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the message to modify.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the message to modify.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589379 = newJObject()
-  var query_589380 = newJObject()
-  var body_589381 = newJObject()
-  add(query_589380, "fields", newJString(fields))
-  add(query_589380, "quotaUser", newJString(quotaUser))
-  add(query_589380, "alt", newJString(alt))
-  add(query_589380, "oauth_token", newJString(oauthToken))
-  add(query_589380, "userIp", newJString(userIp))
-  add(path_589379, "id", newJString(id))
-  add(query_589380, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579279 = newJObject()
+  var query_579280 = newJObject()
+  var body_579281 = newJObject()
+  add(query_579280, "key", newJString(key))
+  add(query_579280, "prettyPrint", newJBool(prettyPrint))
+  add(query_579280, "oauth_token", newJString(oauthToken))
+  add(path_579279, "id", newJString(id))
+  add(query_579280, "alt", newJString(alt))
+  add(query_579280, "userIp", newJString(userIp))
+  add(query_579280, "quotaUser", newJString(quotaUser))
+  add(path_579279, "userId", newJString(userId))
   if body != nil:
-    body_589381 = body
-  add(query_589380, "prettyPrint", newJBool(prettyPrint))
-  add(path_589379, "userId", newJString(userId))
-  result = call_589378.call(path_589379, query_589380, nil, nil, body_589381)
+    body_579281 = body
+  add(query_579280, "fields", newJString(fields))
+  result = call_579278.call(path_579279, query_579280, nil, nil, body_579281)
 
-var gmailUsersMessagesModify* = Call_GmailUsersMessagesModify_589364(
+var gmailUsersMessagesModify* = Call_GmailUsersMessagesModify_579264(
     name: "gmailUsersMessagesModify", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/messages/{id}/modify",
-    validator: validate_GmailUsersMessagesModify_589365, base: "/gmail/v1/users",
-    url: url_GmailUsersMessagesModify_589366, schemes: {Scheme.Https})
+    validator: validate_GmailUsersMessagesModify_579265, base: "/gmail/v1/users",
+    url: url_GmailUsersMessagesModify_579266, schemes: {Scheme.Https})
 type
-  Call_GmailUsersMessagesTrash_589382 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersMessagesTrash_589384(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersMessagesTrash_579282 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersMessagesTrash_579284(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -3795,7 +3799,7 @@ proc url_GmailUsersMessagesTrash_589384(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersMessagesTrash_589383(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersMessagesTrash_579283(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Moves the specified message to the trash.
   ## 
@@ -3808,68 +3812,68 @@ proc validate_GmailUsersMessagesTrash_589383(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589385 = path.getOrDefault("id")
-  valid_589385 = validateParameter(valid_589385, JString, required = true,
+  var valid_579285 = path.getOrDefault("id")
+  valid_579285 = validateParameter(valid_579285, JString, required = true,
                                  default = nil)
-  if valid_589385 != nil:
-    section.add "id", valid_589385
-  var valid_589386 = path.getOrDefault("userId")
-  valid_589386 = validateParameter(valid_589386, JString, required = true,
+  if valid_579285 != nil:
+    section.add "id", valid_579285
+  var valid_579286 = path.getOrDefault("userId")
+  valid_579286 = validateParameter(valid_579286, JString, required = true,
                                  default = newJString("me"))
-  if valid_589386 != nil:
-    section.add "userId", valid_589386
+  if valid_579286 != nil:
+    section.add "userId", valid_579286
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589387 = query.getOrDefault("fields")
-  valid_589387 = validateParameter(valid_589387, JString, required = false,
+  var valid_579287 = query.getOrDefault("key")
+  valid_579287 = validateParameter(valid_579287, JString, required = false,
                                  default = nil)
-  if valid_589387 != nil:
-    section.add "fields", valid_589387
-  var valid_589388 = query.getOrDefault("quotaUser")
-  valid_589388 = validateParameter(valid_589388, JString, required = false,
-                                 default = nil)
-  if valid_589388 != nil:
-    section.add "quotaUser", valid_589388
-  var valid_589389 = query.getOrDefault("alt")
-  valid_589389 = validateParameter(valid_589389, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589389 != nil:
-    section.add "alt", valid_589389
-  var valid_589390 = query.getOrDefault("oauth_token")
-  valid_589390 = validateParameter(valid_589390, JString, required = false,
-                                 default = nil)
-  if valid_589390 != nil:
-    section.add "oauth_token", valid_589390
-  var valid_589391 = query.getOrDefault("userIp")
-  valid_589391 = validateParameter(valid_589391, JString, required = false,
-                                 default = nil)
-  if valid_589391 != nil:
-    section.add "userIp", valid_589391
-  var valid_589392 = query.getOrDefault("key")
-  valid_589392 = validateParameter(valid_589392, JString, required = false,
-                                 default = nil)
-  if valid_589392 != nil:
-    section.add "key", valid_589392
-  var valid_589393 = query.getOrDefault("prettyPrint")
-  valid_589393 = validateParameter(valid_589393, JBool, required = false,
+  if valid_579287 != nil:
+    section.add "key", valid_579287
+  var valid_579288 = query.getOrDefault("prettyPrint")
+  valid_579288 = validateParameter(valid_579288, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589393 != nil:
-    section.add "prettyPrint", valid_589393
+  if valid_579288 != nil:
+    section.add "prettyPrint", valid_579288
+  var valid_579289 = query.getOrDefault("oauth_token")
+  valid_579289 = validateParameter(valid_579289, JString, required = false,
+                                 default = nil)
+  if valid_579289 != nil:
+    section.add "oauth_token", valid_579289
+  var valid_579290 = query.getOrDefault("alt")
+  valid_579290 = validateParameter(valid_579290, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579290 != nil:
+    section.add "alt", valid_579290
+  var valid_579291 = query.getOrDefault("userIp")
+  valid_579291 = validateParameter(valid_579291, JString, required = false,
+                                 default = nil)
+  if valid_579291 != nil:
+    section.add "userIp", valid_579291
+  var valid_579292 = query.getOrDefault("quotaUser")
+  valid_579292 = validateParameter(valid_579292, JString, required = false,
+                                 default = nil)
+  if valid_579292 != nil:
+    section.add "quotaUser", valid_579292
+  var valid_579293 = query.getOrDefault("fields")
+  valid_579293 = validateParameter(valid_579293, JString, required = false,
+                                 default = nil)
+  if valid_579293 != nil:
+    section.add "fields", valid_579293
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3878,64 +3882,64 @@ proc validate_GmailUsersMessagesTrash_589383(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589394: Call_GmailUsersMessagesTrash_589382; path: JsonNode;
+proc call*(call_579294: Call_GmailUsersMessagesTrash_579282; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Moves the specified message to the trash.
   ## 
-  let valid = call_589394.validator(path, query, header, formData, body)
-  let scheme = call_589394.pickScheme
+  let valid = call_579294.validator(path, query, header, formData, body)
+  let scheme = call_579294.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589394.url(scheme.get, call_589394.host, call_589394.base,
-                         call_589394.route, valid.getOrDefault("path"),
+  let url = call_579294.url(scheme.get, call_579294.host, call_579294.base,
+                         call_579294.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589394, url, valid)
+  result = hook(call_579294, url, valid)
 
-proc call*(call_589395: Call_GmailUsersMessagesTrash_589382; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579295: Call_GmailUsersMessagesTrash_579282; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersMessagesTrash
   ## Moves the specified message to the trash.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the message to Trash.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the message to Trash.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589396 = newJObject()
-  var query_589397 = newJObject()
-  add(query_589397, "fields", newJString(fields))
-  add(query_589397, "quotaUser", newJString(quotaUser))
-  add(query_589397, "alt", newJString(alt))
-  add(query_589397, "oauth_token", newJString(oauthToken))
-  add(query_589397, "userIp", newJString(userIp))
-  add(path_589396, "id", newJString(id))
-  add(query_589397, "key", newJString(key))
-  add(query_589397, "prettyPrint", newJBool(prettyPrint))
-  add(path_589396, "userId", newJString(userId))
-  result = call_589395.call(path_589396, query_589397, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579296 = newJObject()
+  var query_579297 = newJObject()
+  add(query_579297, "key", newJString(key))
+  add(query_579297, "prettyPrint", newJBool(prettyPrint))
+  add(query_579297, "oauth_token", newJString(oauthToken))
+  add(path_579296, "id", newJString(id))
+  add(query_579297, "alt", newJString(alt))
+  add(query_579297, "userIp", newJString(userIp))
+  add(query_579297, "quotaUser", newJString(quotaUser))
+  add(path_579296, "userId", newJString(userId))
+  add(query_579297, "fields", newJString(fields))
+  result = call_579295.call(path_579296, query_579297, nil, nil, nil)
 
-var gmailUsersMessagesTrash* = Call_GmailUsersMessagesTrash_589382(
+var gmailUsersMessagesTrash* = Call_GmailUsersMessagesTrash_579282(
     name: "gmailUsersMessagesTrash", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/messages/{id}/trash",
-    validator: validate_GmailUsersMessagesTrash_589383, base: "/gmail/v1/users",
-    url: url_GmailUsersMessagesTrash_589384, schemes: {Scheme.Https})
+    validator: validate_GmailUsersMessagesTrash_579283, base: "/gmail/v1/users",
+    url: url_GmailUsersMessagesTrash_579284, schemes: {Scheme.Https})
 type
-  Call_GmailUsersMessagesUntrash_589398 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersMessagesUntrash_589400(protocol: Scheme; host: string;
+  Call_GmailUsersMessagesUntrash_579298 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersMessagesUntrash_579300(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3954,7 +3958,7 @@ proc url_GmailUsersMessagesUntrash_589400(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersMessagesUntrash_589399(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersMessagesUntrash_579299(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes the specified message from the trash.
   ## 
@@ -3967,68 +3971,68 @@ proc validate_GmailUsersMessagesUntrash_589399(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589401 = path.getOrDefault("id")
-  valid_589401 = validateParameter(valid_589401, JString, required = true,
+  var valid_579301 = path.getOrDefault("id")
+  valid_579301 = validateParameter(valid_579301, JString, required = true,
                                  default = nil)
-  if valid_589401 != nil:
-    section.add "id", valid_589401
-  var valid_589402 = path.getOrDefault("userId")
-  valid_589402 = validateParameter(valid_589402, JString, required = true,
+  if valid_579301 != nil:
+    section.add "id", valid_579301
+  var valid_579302 = path.getOrDefault("userId")
+  valid_579302 = validateParameter(valid_579302, JString, required = true,
                                  default = newJString("me"))
-  if valid_589402 != nil:
-    section.add "userId", valid_589402
+  if valid_579302 != nil:
+    section.add "userId", valid_579302
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589403 = query.getOrDefault("fields")
-  valid_589403 = validateParameter(valid_589403, JString, required = false,
+  var valid_579303 = query.getOrDefault("key")
+  valid_579303 = validateParameter(valid_579303, JString, required = false,
                                  default = nil)
-  if valid_589403 != nil:
-    section.add "fields", valid_589403
-  var valid_589404 = query.getOrDefault("quotaUser")
-  valid_589404 = validateParameter(valid_589404, JString, required = false,
-                                 default = nil)
-  if valid_589404 != nil:
-    section.add "quotaUser", valid_589404
-  var valid_589405 = query.getOrDefault("alt")
-  valid_589405 = validateParameter(valid_589405, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589405 != nil:
-    section.add "alt", valid_589405
-  var valid_589406 = query.getOrDefault("oauth_token")
-  valid_589406 = validateParameter(valid_589406, JString, required = false,
-                                 default = nil)
-  if valid_589406 != nil:
-    section.add "oauth_token", valid_589406
-  var valid_589407 = query.getOrDefault("userIp")
-  valid_589407 = validateParameter(valid_589407, JString, required = false,
-                                 default = nil)
-  if valid_589407 != nil:
-    section.add "userIp", valid_589407
-  var valid_589408 = query.getOrDefault("key")
-  valid_589408 = validateParameter(valid_589408, JString, required = false,
-                                 default = nil)
-  if valid_589408 != nil:
-    section.add "key", valid_589408
-  var valid_589409 = query.getOrDefault("prettyPrint")
-  valid_589409 = validateParameter(valid_589409, JBool, required = false,
+  if valid_579303 != nil:
+    section.add "key", valid_579303
+  var valid_579304 = query.getOrDefault("prettyPrint")
+  valid_579304 = validateParameter(valid_579304, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589409 != nil:
-    section.add "prettyPrint", valid_589409
+  if valid_579304 != nil:
+    section.add "prettyPrint", valid_579304
+  var valid_579305 = query.getOrDefault("oauth_token")
+  valid_579305 = validateParameter(valid_579305, JString, required = false,
+                                 default = nil)
+  if valid_579305 != nil:
+    section.add "oauth_token", valid_579305
+  var valid_579306 = query.getOrDefault("alt")
+  valid_579306 = validateParameter(valid_579306, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579306 != nil:
+    section.add "alt", valid_579306
+  var valid_579307 = query.getOrDefault("userIp")
+  valid_579307 = validateParameter(valid_579307, JString, required = false,
+                                 default = nil)
+  if valid_579307 != nil:
+    section.add "userIp", valid_579307
+  var valid_579308 = query.getOrDefault("quotaUser")
+  valid_579308 = validateParameter(valid_579308, JString, required = false,
+                                 default = nil)
+  if valid_579308 != nil:
+    section.add "quotaUser", valid_579308
+  var valid_579309 = query.getOrDefault("fields")
+  valid_579309 = validateParameter(valid_579309, JString, required = false,
+                                 default = nil)
+  if valid_579309 != nil:
+    section.add "fields", valid_579309
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4037,64 +4041,64 @@ proc validate_GmailUsersMessagesUntrash_589399(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589410: Call_GmailUsersMessagesUntrash_589398; path: JsonNode;
+proc call*(call_579310: Call_GmailUsersMessagesUntrash_579298; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Removes the specified message from the trash.
   ## 
-  let valid = call_589410.validator(path, query, header, formData, body)
-  let scheme = call_589410.pickScheme
+  let valid = call_579310.validator(path, query, header, formData, body)
+  let scheme = call_579310.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589410.url(scheme.get, call_589410.host, call_589410.base,
-                         call_589410.route, valid.getOrDefault("path"),
+  let url = call_579310.url(scheme.get, call_579310.host, call_579310.base,
+                         call_579310.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589410, url, valid)
+  result = hook(call_579310, url, valid)
 
-proc call*(call_589411: Call_GmailUsersMessagesUntrash_589398; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579311: Call_GmailUsersMessagesUntrash_579298; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersMessagesUntrash
   ## Removes the specified message from the trash.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the message to remove from Trash.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the message to remove from Trash.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589412 = newJObject()
-  var query_589413 = newJObject()
-  add(query_589413, "fields", newJString(fields))
-  add(query_589413, "quotaUser", newJString(quotaUser))
-  add(query_589413, "alt", newJString(alt))
-  add(query_589413, "oauth_token", newJString(oauthToken))
-  add(query_589413, "userIp", newJString(userIp))
-  add(path_589412, "id", newJString(id))
-  add(query_589413, "key", newJString(key))
-  add(query_589413, "prettyPrint", newJBool(prettyPrint))
-  add(path_589412, "userId", newJString(userId))
-  result = call_589411.call(path_589412, query_589413, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579312 = newJObject()
+  var query_579313 = newJObject()
+  add(query_579313, "key", newJString(key))
+  add(query_579313, "prettyPrint", newJBool(prettyPrint))
+  add(query_579313, "oauth_token", newJString(oauthToken))
+  add(path_579312, "id", newJString(id))
+  add(query_579313, "alt", newJString(alt))
+  add(query_579313, "userIp", newJString(userIp))
+  add(query_579313, "quotaUser", newJString(quotaUser))
+  add(path_579312, "userId", newJString(userId))
+  add(query_579313, "fields", newJString(fields))
+  result = call_579311.call(path_579312, query_579313, nil, nil, nil)
 
-var gmailUsersMessagesUntrash* = Call_GmailUsersMessagesUntrash_589398(
+var gmailUsersMessagesUntrash* = Call_GmailUsersMessagesUntrash_579298(
     name: "gmailUsersMessagesUntrash", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/messages/{id}/untrash",
-    validator: validate_GmailUsersMessagesUntrash_589399, base: "/gmail/v1/users",
-    url: url_GmailUsersMessagesUntrash_589400, schemes: {Scheme.Https})
+    validator: validate_GmailUsersMessagesUntrash_579299, base: "/gmail/v1/users",
+    url: url_GmailUsersMessagesUntrash_579300, schemes: {Scheme.Https})
 type
-  Call_GmailUsersMessagesAttachmentsGet_589414 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersMessagesAttachmentsGet_589416(protocol: Scheme; host: string;
+  Call_GmailUsersMessagesAttachmentsGet_579314 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersMessagesAttachmentsGet_579316(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4115,7 +4119,7 @@ proc url_GmailUsersMessagesAttachmentsGet_589416(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersMessagesAttachmentsGet_589415(path: JsonNode;
+proc validate_GmailUsersMessagesAttachmentsGet_579315(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the specified message attachment.
   ## 
@@ -4130,73 +4134,73 @@ proc validate_GmailUsersMessagesAttachmentsGet_589415(path: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `messageId` field"
-  var valid_589417 = path.getOrDefault("messageId")
-  valid_589417 = validateParameter(valid_589417, JString, required = true,
+  var valid_579317 = path.getOrDefault("messageId")
+  valid_579317 = validateParameter(valid_579317, JString, required = true,
                                  default = nil)
-  if valid_589417 != nil:
-    section.add "messageId", valid_589417
-  var valid_589418 = path.getOrDefault("id")
-  valid_589418 = validateParameter(valid_589418, JString, required = true,
+  if valid_579317 != nil:
+    section.add "messageId", valid_579317
+  var valid_579318 = path.getOrDefault("id")
+  valid_579318 = validateParameter(valid_579318, JString, required = true,
                                  default = nil)
-  if valid_589418 != nil:
-    section.add "id", valid_589418
-  var valid_589419 = path.getOrDefault("userId")
-  valid_589419 = validateParameter(valid_589419, JString, required = true,
+  if valid_579318 != nil:
+    section.add "id", valid_579318
+  var valid_579319 = path.getOrDefault("userId")
+  valid_579319 = validateParameter(valid_579319, JString, required = true,
                                  default = newJString("me"))
-  if valid_589419 != nil:
-    section.add "userId", valid_589419
+  if valid_579319 != nil:
+    section.add "userId", valid_579319
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589420 = query.getOrDefault("fields")
-  valid_589420 = validateParameter(valid_589420, JString, required = false,
+  var valid_579320 = query.getOrDefault("key")
+  valid_579320 = validateParameter(valid_579320, JString, required = false,
                                  default = nil)
-  if valid_589420 != nil:
-    section.add "fields", valid_589420
-  var valid_589421 = query.getOrDefault("quotaUser")
-  valid_589421 = validateParameter(valid_589421, JString, required = false,
-                                 default = nil)
-  if valid_589421 != nil:
-    section.add "quotaUser", valid_589421
-  var valid_589422 = query.getOrDefault("alt")
-  valid_589422 = validateParameter(valid_589422, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589422 != nil:
-    section.add "alt", valid_589422
-  var valid_589423 = query.getOrDefault("oauth_token")
-  valid_589423 = validateParameter(valid_589423, JString, required = false,
-                                 default = nil)
-  if valid_589423 != nil:
-    section.add "oauth_token", valid_589423
-  var valid_589424 = query.getOrDefault("userIp")
-  valid_589424 = validateParameter(valid_589424, JString, required = false,
-                                 default = nil)
-  if valid_589424 != nil:
-    section.add "userIp", valid_589424
-  var valid_589425 = query.getOrDefault("key")
-  valid_589425 = validateParameter(valid_589425, JString, required = false,
-                                 default = nil)
-  if valid_589425 != nil:
-    section.add "key", valid_589425
-  var valid_589426 = query.getOrDefault("prettyPrint")
-  valid_589426 = validateParameter(valid_589426, JBool, required = false,
+  if valid_579320 != nil:
+    section.add "key", valid_579320
+  var valid_579321 = query.getOrDefault("prettyPrint")
+  valid_579321 = validateParameter(valid_579321, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589426 != nil:
-    section.add "prettyPrint", valid_589426
+  if valid_579321 != nil:
+    section.add "prettyPrint", valid_579321
+  var valid_579322 = query.getOrDefault("oauth_token")
+  valid_579322 = validateParameter(valid_579322, JString, required = false,
+                                 default = nil)
+  if valid_579322 != nil:
+    section.add "oauth_token", valid_579322
+  var valid_579323 = query.getOrDefault("alt")
+  valid_579323 = validateParameter(valid_579323, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579323 != nil:
+    section.add "alt", valid_579323
+  var valid_579324 = query.getOrDefault("userIp")
+  valid_579324 = validateParameter(valid_579324, JString, required = false,
+                                 default = nil)
+  if valid_579324 != nil:
+    section.add "userIp", valid_579324
+  var valid_579325 = query.getOrDefault("quotaUser")
+  valid_579325 = validateParameter(valid_579325, JString, required = false,
+                                 default = nil)
+  if valid_579325 != nil:
+    section.add "quotaUser", valid_579325
+  var valid_579326 = query.getOrDefault("fields")
+  valid_579326 = validateParameter(valid_579326, JString, required = false,
+                                 default = nil)
+  if valid_579326 != nil:
+    section.add "fields", valid_579326
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4205,70 +4209,70 @@ proc validate_GmailUsersMessagesAttachmentsGet_589415(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589427: Call_GmailUsersMessagesAttachmentsGet_589414;
+proc call*(call_579327: Call_GmailUsersMessagesAttachmentsGet_579314;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets the specified message attachment.
   ## 
-  let valid = call_589427.validator(path, query, header, formData, body)
-  let scheme = call_589427.pickScheme
+  let valid = call_579327.validator(path, query, header, formData, body)
+  let scheme = call_579327.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589427.url(scheme.get, call_589427.host, call_589427.base,
-                         call_589427.route, valid.getOrDefault("path"),
+  let url = call_579327.url(scheme.get, call_579327.host, call_579327.base,
+                         call_579327.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589427, url, valid)
+  result = hook(call_579327, url, valid)
 
-proc call*(call_589428: Call_GmailUsersMessagesAttachmentsGet_589414;
-          messageId: string; id: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579328: Call_GmailUsersMessagesAttachmentsGet_579314;
+          messageId: string; id: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersMessagesAttachmentsGet
   ## Gets the specified message attachment.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   messageId: string (required)
-  ##            : The ID of the message containing the attachment.
-  ##   id: string (required)
-  ##     : The ID of the attachment.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   messageId: string (required)
+  ##            : The ID of the message containing the attachment.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the attachment.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589429 = newJObject()
-  var query_589430 = newJObject()
-  add(query_589430, "fields", newJString(fields))
-  add(query_589430, "quotaUser", newJString(quotaUser))
-  add(query_589430, "alt", newJString(alt))
-  add(query_589430, "oauth_token", newJString(oauthToken))
-  add(query_589430, "userIp", newJString(userIp))
-  add(path_589429, "messageId", newJString(messageId))
-  add(path_589429, "id", newJString(id))
-  add(query_589430, "key", newJString(key))
-  add(query_589430, "prettyPrint", newJBool(prettyPrint))
-  add(path_589429, "userId", newJString(userId))
-  result = call_589428.call(path_589429, query_589430, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579329 = newJObject()
+  var query_579330 = newJObject()
+  add(query_579330, "key", newJString(key))
+  add(path_579329, "messageId", newJString(messageId))
+  add(query_579330, "prettyPrint", newJBool(prettyPrint))
+  add(query_579330, "oauth_token", newJString(oauthToken))
+  add(path_579329, "id", newJString(id))
+  add(query_579330, "alt", newJString(alt))
+  add(query_579330, "userIp", newJString(userIp))
+  add(query_579330, "quotaUser", newJString(quotaUser))
+  add(path_579329, "userId", newJString(userId))
+  add(query_579330, "fields", newJString(fields))
+  result = call_579328.call(path_579329, query_579330, nil, nil, nil)
 
-var gmailUsersMessagesAttachmentsGet* = Call_GmailUsersMessagesAttachmentsGet_589414(
+var gmailUsersMessagesAttachmentsGet* = Call_GmailUsersMessagesAttachmentsGet_579314(
     name: "gmailUsersMessagesAttachmentsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{userId}/messages/{messageId}/attachments/{id}",
-    validator: validate_GmailUsersMessagesAttachmentsGet_589415,
-    base: "/gmail/v1/users", url: url_GmailUsersMessagesAttachmentsGet_589416,
+    validator: validate_GmailUsersMessagesAttachmentsGet_579315,
+    base: "/gmail/v1/users", url: url_GmailUsersMessagesAttachmentsGet_579316,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersGetProfile_589431 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersGetProfile_589433(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersGetProfile_579331 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersGetProfile_579333(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4284,7 +4288,7 @@ proc url_GmailUsersGetProfile_589433(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersGetProfile_589432(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersGetProfile_579332(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the current user's Gmail profile.
   ## 
@@ -4295,63 +4299,63 @@ proc validate_GmailUsersGetProfile_589432(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589434 = path.getOrDefault("userId")
-  valid_589434 = validateParameter(valid_589434, JString, required = true,
+  var valid_579334 = path.getOrDefault("userId")
+  valid_579334 = validateParameter(valid_579334, JString, required = true,
                                  default = newJString("me"))
-  if valid_589434 != nil:
-    section.add "userId", valid_589434
+  if valid_579334 != nil:
+    section.add "userId", valid_579334
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589435 = query.getOrDefault("fields")
-  valid_589435 = validateParameter(valid_589435, JString, required = false,
+  var valid_579335 = query.getOrDefault("key")
+  valid_579335 = validateParameter(valid_579335, JString, required = false,
                                  default = nil)
-  if valid_589435 != nil:
-    section.add "fields", valid_589435
-  var valid_589436 = query.getOrDefault("quotaUser")
-  valid_589436 = validateParameter(valid_589436, JString, required = false,
-                                 default = nil)
-  if valid_589436 != nil:
-    section.add "quotaUser", valid_589436
-  var valid_589437 = query.getOrDefault("alt")
-  valid_589437 = validateParameter(valid_589437, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589437 != nil:
-    section.add "alt", valid_589437
-  var valid_589438 = query.getOrDefault("oauth_token")
-  valid_589438 = validateParameter(valid_589438, JString, required = false,
-                                 default = nil)
-  if valid_589438 != nil:
-    section.add "oauth_token", valid_589438
-  var valid_589439 = query.getOrDefault("userIp")
-  valid_589439 = validateParameter(valid_589439, JString, required = false,
-                                 default = nil)
-  if valid_589439 != nil:
-    section.add "userIp", valid_589439
-  var valid_589440 = query.getOrDefault("key")
-  valid_589440 = validateParameter(valid_589440, JString, required = false,
-                                 default = nil)
-  if valid_589440 != nil:
-    section.add "key", valid_589440
-  var valid_589441 = query.getOrDefault("prettyPrint")
-  valid_589441 = validateParameter(valid_589441, JBool, required = false,
+  if valid_579335 != nil:
+    section.add "key", valid_579335
+  var valid_579336 = query.getOrDefault("prettyPrint")
+  valid_579336 = validateParameter(valid_579336, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589441 != nil:
-    section.add "prettyPrint", valid_589441
+  if valid_579336 != nil:
+    section.add "prettyPrint", valid_579336
+  var valid_579337 = query.getOrDefault("oauth_token")
+  valid_579337 = validateParameter(valid_579337, JString, required = false,
+                                 default = nil)
+  if valid_579337 != nil:
+    section.add "oauth_token", valid_579337
+  var valid_579338 = query.getOrDefault("alt")
+  valid_579338 = validateParameter(valid_579338, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579338 != nil:
+    section.add "alt", valid_579338
+  var valid_579339 = query.getOrDefault("userIp")
+  valid_579339 = validateParameter(valid_579339, JString, required = false,
+                                 default = nil)
+  if valid_579339 != nil:
+    section.add "userIp", valid_579339
+  var valid_579340 = query.getOrDefault("quotaUser")
+  valid_579340 = validateParameter(valid_579340, JString, required = false,
+                                 default = nil)
+  if valid_579340 != nil:
+    section.add "quotaUser", valid_579340
+  var valid_579341 = query.getOrDefault("fields")
+  valid_579341 = validateParameter(valid_579341, JString, required = false,
+                                 default = nil)
+  if valid_579341 != nil:
+    section.add "fields", valid_579341
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4360,61 +4364,61 @@ proc validate_GmailUsersGetProfile_589432(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589442: Call_GmailUsersGetProfile_589431; path: JsonNode;
+proc call*(call_579342: Call_GmailUsersGetProfile_579331; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the current user's Gmail profile.
   ## 
-  let valid = call_589442.validator(path, query, header, formData, body)
-  let scheme = call_589442.pickScheme
+  let valid = call_579342.validator(path, query, header, formData, body)
+  let scheme = call_579342.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589442.url(scheme.get, call_589442.host, call_589442.base,
-                         call_589442.route, valid.getOrDefault("path"),
+  let url = call_579342.url(scheme.get, call_579342.host, call_579342.base,
+                         call_579342.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589442, url, valid)
+  result = hook(call_579342, url, valid)
 
-proc call*(call_589443: Call_GmailUsersGetProfile_589431; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true;
-          userId: string = "me"): Recallable =
+proc call*(call_579343: Call_GmailUsersGetProfile_579331; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; userId: string = "me";
+          fields: string = ""): Recallable =
   ## gmailUsersGetProfile
   ## Gets the current user's Gmail profile.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589444 = newJObject()
-  var query_589445 = newJObject()
-  add(query_589445, "fields", newJString(fields))
-  add(query_589445, "quotaUser", newJString(quotaUser))
-  add(query_589445, "alt", newJString(alt))
-  add(query_589445, "oauth_token", newJString(oauthToken))
-  add(query_589445, "userIp", newJString(userIp))
-  add(query_589445, "key", newJString(key))
-  add(query_589445, "prettyPrint", newJBool(prettyPrint))
-  add(path_589444, "userId", newJString(userId))
-  result = call_589443.call(path_589444, query_589445, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579344 = newJObject()
+  var query_579345 = newJObject()
+  add(query_579345, "key", newJString(key))
+  add(query_579345, "prettyPrint", newJBool(prettyPrint))
+  add(query_579345, "oauth_token", newJString(oauthToken))
+  add(query_579345, "alt", newJString(alt))
+  add(query_579345, "userIp", newJString(userIp))
+  add(query_579345, "quotaUser", newJString(quotaUser))
+  add(path_579344, "userId", newJString(userId))
+  add(query_579345, "fields", newJString(fields))
+  result = call_579343.call(path_579344, query_579345, nil, nil, nil)
 
-var gmailUsersGetProfile* = Call_GmailUsersGetProfile_589431(
+var gmailUsersGetProfile* = Call_GmailUsersGetProfile_579331(
     name: "gmailUsersGetProfile", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/profile",
-    validator: validate_GmailUsersGetProfile_589432, base: "/gmail/v1/users",
-    url: url_GmailUsersGetProfile_589433, schemes: {Scheme.Https})
+    validator: validate_GmailUsersGetProfile_579332, base: "/gmail/v1/users",
+    url: url_GmailUsersGetProfile_579333, schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsUpdateAutoForwarding_589461 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsUpdateAutoForwarding_589463(protocol: Scheme;
+  Call_GmailUsersSettingsUpdateAutoForwarding_579361 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsUpdateAutoForwarding_579363(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4430,7 +4434,7 @@ proc url_GmailUsersSettingsUpdateAutoForwarding_589463(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsUpdateAutoForwarding_589462(path: JsonNode;
+proc validate_GmailUsersSettingsUpdateAutoForwarding_579362(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the auto-forwarding setting for the specified account. A verified forwarding address must be specified when auto-forwarding is enabled.
   ## 
@@ -4443,63 +4447,63 @@ proc validate_GmailUsersSettingsUpdateAutoForwarding_589462(path: JsonNode;
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589464 = path.getOrDefault("userId")
-  valid_589464 = validateParameter(valid_589464, JString, required = true,
+  var valid_579364 = path.getOrDefault("userId")
+  valid_579364 = validateParameter(valid_579364, JString, required = true,
                                  default = newJString("me"))
-  if valid_589464 != nil:
-    section.add "userId", valid_589464
+  if valid_579364 != nil:
+    section.add "userId", valid_579364
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589465 = query.getOrDefault("fields")
-  valid_589465 = validateParameter(valid_589465, JString, required = false,
+  var valid_579365 = query.getOrDefault("key")
+  valid_579365 = validateParameter(valid_579365, JString, required = false,
                                  default = nil)
-  if valid_589465 != nil:
-    section.add "fields", valid_589465
-  var valid_589466 = query.getOrDefault("quotaUser")
-  valid_589466 = validateParameter(valid_589466, JString, required = false,
-                                 default = nil)
-  if valid_589466 != nil:
-    section.add "quotaUser", valid_589466
-  var valid_589467 = query.getOrDefault("alt")
-  valid_589467 = validateParameter(valid_589467, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589467 != nil:
-    section.add "alt", valid_589467
-  var valid_589468 = query.getOrDefault("oauth_token")
-  valid_589468 = validateParameter(valid_589468, JString, required = false,
-                                 default = nil)
-  if valid_589468 != nil:
-    section.add "oauth_token", valid_589468
-  var valid_589469 = query.getOrDefault("userIp")
-  valid_589469 = validateParameter(valid_589469, JString, required = false,
-                                 default = nil)
-  if valid_589469 != nil:
-    section.add "userIp", valid_589469
-  var valid_589470 = query.getOrDefault("key")
-  valid_589470 = validateParameter(valid_589470, JString, required = false,
-                                 default = nil)
-  if valid_589470 != nil:
-    section.add "key", valid_589470
-  var valid_589471 = query.getOrDefault("prettyPrint")
-  valid_589471 = validateParameter(valid_589471, JBool, required = false,
+  if valid_579365 != nil:
+    section.add "key", valid_579365
+  var valid_579366 = query.getOrDefault("prettyPrint")
+  valid_579366 = validateParameter(valid_579366, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589471 != nil:
-    section.add "prettyPrint", valid_589471
+  if valid_579366 != nil:
+    section.add "prettyPrint", valid_579366
+  var valid_579367 = query.getOrDefault("oauth_token")
+  valid_579367 = validateParameter(valid_579367, JString, required = false,
+                                 default = nil)
+  if valid_579367 != nil:
+    section.add "oauth_token", valid_579367
+  var valid_579368 = query.getOrDefault("alt")
+  valid_579368 = validateParameter(valid_579368, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579368 != nil:
+    section.add "alt", valid_579368
+  var valid_579369 = query.getOrDefault("userIp")
+  valid_579369 = validateParameter(valid_579369, JString, required = false,
+                                 default = nil)
+  if valid_579369 != nil:
+    section.add "userIp", valid_579369
+  var valid_579370 = query.getOrDefault("quotaUser")
+  valid_579370 = validateParameter(valid_579370, JString, required = false,
+                                 default = nil)
+  if valid_579370 != nil:
+    section.add "quotaUser", valid_579370
+  var valid_579371 = query.getOrDefault("fields")
+  valid_579371 = validateParameter(valid_579371, JString, required = false,
+                                 default = nil)
+  if valid_579371 != nil:
+    section.add "fields", valid_579371
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4511,71 +4515,71 @@ proc validate_GmailUsersSettingsUpdateAutoForwarding_589462(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589473: Call_GmailUsersSettingsUpdateAutoForwarding_589461;
+proc call*(call_579373: Call_GmailUsersSettingsUpdateAutoForwarding_579361;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates the auto-forwarding setting for the specified account. A verified forwarding address must be specified when auto-forwarding is enabled.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
   ## 
-  let valid = call_589473.validator(path, query, header, formData, body)
-  let scheme = call_589473.pickScheme
+  let valid = call_579373.validator(path, query, header, formData, body)
+  let scheme = call_579373.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589473.url(scheme.get, call_589473.host, call_589473.base,
-                         call_589473.route, valid.getOrDefault("path"),
+  let url = call_579373.url(scheme.get, call_579373.host, call_579373.base,
+                         call_579373.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589473, url, valid)
+  result = hook(call_579373, url, valid)
 
-proc call*(call_589474: Call_GmailUsersSettingsUpdateAutoForwarding_589461;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579374: Call_GmailUsersSettingsUpdateAutoForwarding_579361;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersSettingsUpdateAutoForwarding
   ## Updates the auto-forwarding setting for the specified account. A verified forwarding address must be specified when auto-forwarding is enabled.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589475 = newJObject()
-  var query_589476 = newJObject()
-  var body_589477 = newJObject()
-  add(query_589476, "fields", newJString(fields))
-  add(query_589476, "quotaUser", newJString(quotaUser))
-  add(query_589476, "alt", newJString(alt))
-  add(query_589476, "oauth_token", newJString(oauthToken))
-  add(query_589476, "userIp", newJString(userIp))
-  add(query_589476, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579375 = newJObject()
+  var query_579376 = newJObject()
+  var body_579377 = newJObject()
+  add(query_579376, "key", newJString(key))
+  add(query_579376, "prettyPrint", newJBool(prettyPrint))
+  add(query_579376, "oauth_token", newJString(oauthToken))
+  add(query_579376, "alt", newJString(alt))
+  add(query_579376, "userIp", newJString(userIp))
+  add(query_579376, "quotaUser", newJString(quotaUser))
+  add(path_579375, "userId", newJString(userId))
   if body != nil:
-    body_589477 = body
-  add(query_589476, "prettyPrint", newJBool(prettyPrint))
-  add(path_589475, "userId", newJString(userId))
-  result = call_589474.call(path_589475, query_589476, nil, nil, body_589477)
+    body_579377 = body
+  add(query_579376, "fields", newJString(fields))
+  result = call_579374.call(path_579375, query_579376, nil, nil, body_579377)
 
-var gmailUsersSettingsUpdateAutoForwarding* = Call_GmailUsersSettingsUpdateAutoForwarding_589461(
+var gmailUsersSettingsUpdateAutoForwarding* = Call_GmailUsersSettingsUpdateAutoForwarding_579361(
     name: "gmailUsersSettingsUpdateAutoForwarding", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{userId}/settings/autoForwarding",
-    validator: validate_GmailUsersSettingsUpdateAutoForwarding_589462,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsUpdateAutoForwarding_589463,
+    validator: validate_GmailUsersSettingsUpdateAutoForwarding_579362,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsUpdateAutoForwarding_579363,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsGetAutoForwarding_589446 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsGetAutoForwarding_589448(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsGetAutoForwarding_579346 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsGetAutoForwarding_579348(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4591,7 +4595,7 @@ proc url_GmailUsersSettingsGetAutoForwarding_589448(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsGetAutoForwarding_589447(path: JsonNode;
+proc validate_GmailUsersSettingsGetAutoForwarding_579347(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the auto-forwarding setting for the specified account.
   ## 
@@ -4602,63 +4606,63 @@ proc validate_GmailUsersSettingsGetAutoForwarding_589447(path: JsonNode;
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589449 = path.getOrDefault("userId")
-  valid_589449 = validateParameter(valid_589449, JString, required = true,
+  var valid_579349 = path.getOrDefault("userId")
+  valid_579349 = validateParameter(valid_579349, JString, required = true,
                                  default = newJString("me"))
-  if valid_589449 != nil:
-    section.add "userId", valid_589449
+  if valid_579349 != nil:
+    section.add "userId", valid_579349
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589450 = query.getOrDefault("fields")
-  valid_589450 = validateParameter(valid_589450, JString, required = false,
+  var valid_579350 = query.getOrDefault("key")
+  valid_579350 = validateParameter(valid_579350, JString, required = false,
                                  default = nil)
-  if valid_589450 != nil:
-    section.add "fields", valid_589450
-  var valid_589451 = query.getOrDefault("quotaUser")
-  valid_589451 = validateParameter(valid_589451, JString, required = false,
-                                 default = nil)
-  if valid_589451 != nil:
-    section.add "quotaUser", valid_589451
-  var valid_589452 = query.getOrDefault("alt")
-  valid_589452 = validateParameter(valid_589452, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589452 != nil:
-    section.add "alt", valid_589452
-  var valid_589453 = query.getOrDefault("oauth_token")
-  valid_589453 = validateParameter(valid_589453, JString, required = false,
-                                 default = nil)
-  if valid_589453 != nil:
-    section.add "oauth_token", valid_589453
-  var valid_589454 = query.getOrDefault("userIp")
-  valid_589454 = validateParameter(valid_589454, JString, required = false,
-                                 default = nil)
-  if valid_589454 != nil:
-    section.add "userIp", valid_589454
-  var valid_589455 = query.getOrDefault("key")
-  valid_589455 = validateParameter(valid_589455, JString, required = false,
-                                 default = nil)
-  if valid_589455 != nil:
-    section.add "key", valid_589455
-  var valid_589456 = query.getOrDefault("prettyPrint")
-  valid_589456 = validateParameter(valid_589456, JBool, required = false,
+  if valid_579350 != nil:
+    section.add "key", valid_579350
+  var valid_579351 = query.getOrDefault("prettyPrint")
+  valid_579351 = validateParameter(valid_579351, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589456 != nil:
-    section.add "prettyPrint", valid_589456
+  if valid_579351 != nil:
+    section.add "prettyPrint", valid_579351
+  var valid_579352 = query.getOrDefault("oauth_token")
+  valid_579352 = validateParameter(valid_579352, JString, required = false,
+                                 default = nil)
+  if valid_579352 != nil:
+    section.add "oauth_token", valid_579352
+  var valid_579353 = query.getOrDefault("alt")
+  valid_579353 = validateParameter(valid_579353, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579353 != nil:
+    section.add "alt", valid_579353
+  var valid_579354 = query.getOrDefault("userIp")
+  valid_579354 = validateParameter(valid_579354, JString, required = false,
+                                 default = nil)
+  if valid_579354 != nil:
+    section.add "userIp", valid_579354
+  var valid_579355 = query.getOrDefault("quotaUser")
+  valid_579355 = validateParameter(valid_579355, JString, required = false,
+                                 default = nil)
+  if valid_579355 != nil:
+    section.add "quotaUser", valid_579355
+  var valid_579356 = query.getOrDefault("fields")
+  valid_579356 = validateParameter(valid_579356, JString, required = false,
+                                 default = nil)
+  if valid_579356 != nil:
+    section.add "fields", valid_579356
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4667,63 +4671,63 @@ proc validate_GmailUsersSettingsGetAutoForwarding_589447(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589457: Call_GmailUsersSettingsGetAutoForwarding_589446;
+proc call*(call_579357: Call_GmailUsersSettingsGetAutoForwarding_579346;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets the auto-forwarding setting for the specified account.
   ## 
-  let valid = call_589457.validator(path, query, header, formData, body)
-  let scheme = call_589457.pickScheme
+  let valid = call_579357.validator(path, query, header, formData, body)
+  let scheme = call_579357.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589457.url(scheme.get, call_589457.host, call_589457.base,
-                         call_589457.route, valid.getOrDefault("path"),
+  let url = call_579357.url(scheme.get, call_579357.host, call_579357.base,
+                         call_579357.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589457, url, valid)
+  result = hook(call_579357, url, valid)
 
-proc call*(call_589458: Call_GmailUsersSettingsGetAutoForwarding_589446;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579358: Call_GmailUsersSettingsGetAutoForwarding_579346;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsGetAutoForwarding
   ## Gets the auto-forwarding setting for the specified account.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589459 = newJObject()
-  var query_589460 = newJObject()
-  add(query_589460, "fields", newJString(fields))
-  add(query_589460, "quotaUser", newJString(quotaUser))
-  add(query_589460, "alt", newJString(alt))
-  add(query_589460, "oauth_token", newJString(oauthToken))
-  add(query_589460, "userIp", newJString(userIp))
-  add(query_589460, "key", newJString(key))
-  add(query_589460, "prettyPrint", newJBool(prettyPrint))
-  add(path_589459, "userId", newJString(userId))
-  result = call_589458.call(path_589459, query_589460, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579359 = newJObject()
+  var query_579360 = newJObject()
+  add(query_579360, "key", newJString(key))
+  add(query_579360, "prettyPrint", newJBool(prettyPrint))
+  add(query_579360, "oauth_token", newJString(oauthToken))
+  add(query_579360, "alt", newJString(alt))
+  add(query_579360, "userIp", newJString(userIp))
+  add(query_579360, "quotaUser", newJString(quotaUser))
+  add(path_579359, "userId", newJString(userId))
+  add(query_579360, "fields", newJString(fields))
+  result = call_579358.call(path_579359, query_579360, nil, nil, nil)
 
-var gmailUsersSettingsGetAutoForwarding* = Call_GmailUsersSettingsGetAutoForwarding_589446(
+var gmailUsersSettingsGetAutoForwarding* = Call_GmailUsersSettingsGetAutoForwarding_579346(
     name: "gmailUsersSettingsGetAutoForwarding", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/settings/autoForwarding",
-    validator: validate_GmailUsersSettingsGetAutoForwarding_589447,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsGetAutoForwarding_589448,
+    validator: validate_GmailUsersSettingsGetAutoForwarding_579347,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsGetAutoForwarding_579348,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsDelegatesCreate_589493 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsDelegatesCreate_589495(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsDelegatesCreate_579393 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsDelegatesCreate_579395(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4739,7 +4743,7 @@ proc url_GmailUsersSettingsDelegatesCreate_589495(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsDelegatesCreate_589494(path: JsonNode;
+proc validate_GmailUsersSettingsDelegatesCreate_579394(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Adds a delegate with its verification status set directly to accepted, without sending any verification email. The delegate user must be a member of the same G Suite organization as the delegator user.
   ## 
@@ -4758,63 +4762,63 @@ proc validate_GmailUsersSettingsDelegatesCreate_589494(path: JsonNode;
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589496 = path.getOrDefault("userId")
-  valid_589496 = validateParameter(valid_589496, JString, required = true,
+  var valid_579396 = path.getOrDefault("userId")
+  valid_579396 = validateParameter(valid_579396, JString, required = true,
                                  default = newJString("me"))
-  if valid_589496 != nil:
-    section.add "userId", valid_589496
+  if valid_579396 != nil:
+    section.add "userId", valid_579396
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589497 = query.getOrDefault("fields")
-  valid_589497 = validateParameter(valid_589497, JString, required = false,
+  var valid_579397 = query.getOrDefault("key")
+  valid_579397 = validateParameter(valid_579397, JString, required = false,
                                  default = nil)
-  if valid_589497 != nil:
-    section.add "fields", valid_589497
-  var valid_589498 = query.getOrDefault("quotaUser")
-  valid_589498 = validateParameter(valid_589498, JString, required = false,
-                                 default = nil)
-  if valid_589498 != nil:
-    section.add "quotaUser", valid_589498
-  var valid_589499 = query.getOrDefault("alt")
-  valid_589499 = validateParameter(valid_589499, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589499 != nil:
-    section.add "alt", valid_589499
-  var valid_589500 = query.getOrDefault("oauth_token")
-  valid_589500 = validateParameter(valid_589500, JString, required = false,
-                                 default = nil)
-  if valid_589500 != nil:
-    section.add "oauth_token", valid_589500
-  var valid_589501 = query.getOrDefault("userIp")
-  valid_589501 = validateParameter(valid_589501, JString, required = false,
-                                 default = nil)
-  if valid_589501 != nil:
-    section.add "userIp", valid_589501
-  var valid_589502 = query.getOrDefault("key")
-  valid_589502 = validateParameter(valid_589502, JString, required = false,
-                                 default = nil)
-  if valid_589502 != nil:
-    section.add "key", valid_589502
-  var valid_589503 = query.getOrDefault("prettyPrint")
-  valid_589503 = validateParameter(valid_589503, JBool, required = false,
+  if valid_579397 != nil:
+    section.add "key", valid_579397
+  var valid_579398 = query.getOrDefault("prettyPrint")
+  valid_579398 = validateParameter(valid_579398, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589503 != nil:
-    section.add "prettyPrint", valid_589503
+  if valid_579398 != nil:
+    section.add "prettyPrint", valid_579398
+  var valid_579399 = query.getOrDefault("oauth_token")
+  valid_579399 = validateParameter(valid_579399, JString, required = false,
+                                 default = nil)
+  if valid_579399 != nil:
+    section.add "oauth_token", valid_579399
+  var valid_579400 = query.getOrDefault("alt")
+  valid_579400 = validateParameter(valid_579400, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579400 != nil:
+    section.add "alt", valid_579400
+  var valid_579401 = query.getOrDefault("userIp")
+  valid_579401 = validateParameter(valid_579401, JString, required = false,
+                                 default = nil)
+  if valid_579401 != nil:
+    section.add "userIp", valid_579401
+  var valid_579402 = query.getOrDefault("quotaUser")
+  valid_579402 = validateParameter(valid_579402, JString, required = false,
+                                 default = nil)
+  if valid_579402 != nil:
+    section.add "quotaUser", valid_579402
+  var valid_579403 = query.getOrDefault("fields")
+  valid_579403 = validateParameter(valid_579403, JString, required = false,
+                                 default = nil)
+  if valid_579403 != nil:
+    section.add "fields", valid_579403
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4826,7 +4830,7 @@ proc validate_GmailUsersSettingsDelegatesCreate_589494(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589505: Call_GmailUsersSettingsDelegatesCreate_589493;
+proc call*(call_579405: Call_GmailUsersSettingsDelegatesCreate_579393;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Adds a delegate with its verification status set directly to accepted, without sending any verification email. The delegate user must be a member of the same G Suite organization as the delegator user.
@@ -4839,19 +4843,19 @@ proc call*(call_589505: Call_GmailUsersSettingsDelegatesCreate_589493;
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
   ## 
-  let valid = call_589505.validator(path, query, header, formData, body)
-  let scheme = call_589505.pickScheme
+  let valid = call_579405.validator(path, query, header, formData, body)
+  let scheme = call_579405.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589505.url(scheme.get, call_589505.host, call_589505.base,
-                         call_589505.route, valid.getOrDefault("path"),
+  let url = call_579405.url(scheme.get, call_579405.host, call_579405.base,
+                         call_579405.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589505, url, valid)
+  result = hook(call_579405, url, valid)
 
-proc call*(call_589506: Call_GmailUsersSettingsDelegatesCreate_589493;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579406: Call_GmailUsersSettingsDelegatesCreate_579393;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersSettingsDelegatesCreate
   ## Adds a delegate with its verification status set directly to accepted, without sending any verification email. The delegate user must be a member of the same G Suite organization as the delegator user.
   ## 
@@ -4862,47 +4866,47 @@ proc call*(call_589506: Call_GmailUsersSettingsDelegatesCreate_589493;
   ## Also note that when a new delegate is created, there may be up to a one minute delay before the new delegate is available for use.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589507 = newJObject()
-  var query_589508 = newJObject()
-  var body_589509 = newJObject()
-  add(query_589508, "fields", newJString(fields))
-  add(query_589508, "quotaUser", newJString(quotaUser))
-  add(query_589508, "alt", newJString(alt))
-  add(query_589508, "oauth_token", newJString(oauthToken))
-  add(query_589508, "userIp", newJString(userIp))
-  add(query_589508, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579407 = newJObject()
+  var query_579408 = newJObject()
+  var body_579409 = newJObject()
+  add(query_579408, "key", newJString(key))
+  add(query_579408, "prettyPrint", newJBool(prettyPrint))
+  add(query_579408, "oauth_token", newJString(oauthToken))
+  add(query_579408, "alt", newJString(alt))
+  add(query_579408, "userIp", newJString(userIp))
+  add(query_579408, "quotaUser", newJString(quotaUser))
+  add(path_579407, "userId", newJString(userId))
   if body != nil:
-    body_589509 = body
-  add(query_589508, "prettyPrint", newJBool(prettyPrint))
-  add(path_589507, "userId", newJString(userId))
-  result = call_589506.call(path_589507, query_589508, nil, nil, body_589509)
+    body_579409 = body
+  add(query_579408, "fields", newJString(fields))
+  result = call_579406.call(path_579407, query_579408, nil, nil, body_579409)
 
-var gmailUsersSettingsDelegatesCreate* = Call_GmailUsersSettingsDelegatesCreate_589493(
+var gmailUsersSettingsDelegatesCreate* = Call_GmailUsersSettingsDelegatesCreate_579393(
     name: "gmailUsersSettingsDelegatesCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/settings/delegates",
-    validator: validate_GmailUsersSettingsDelegatesCreate_589494,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsDelegatesCreate_589495,
+    validator: validate_GmailUsersSettingsDelegatesCreate_579394,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsDelegatesCreate_579395,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsDelegatesList_589478 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsDelegatesList_589480(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsDelegatesList_579378 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsDelegatesList_579380(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4918,7 +4922,7 @@ proc url_GmailUsersSettingsDelegatesList_589480(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsDelegatesList_589479(path: JsonNode;
+proc validate_GmailUsersSettingsDelegatesList_579379(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the delegates for the specified account.
   ## 
@@ -4931,63 +4935,63 @@ proc validate_GmailUsersSettingsDelegatesList_589479(path: JsonNode;
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589481 = path.getOrDefault("userId")
-  valid_589481 = validateParameter(valid_589481, JString, required = true,
+  var valid_579381 = path.getOrDefault("userId")
+  valid_579381 = validateParameter(valid_579381, JString, required = true,
                                  default = newJString("me"))
-  if valid_589481 != nil:
-    section.add "userId", valid_589481
+  if valid_579381 != nil:
+    section.add "userId", valid_579381
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589482 = query.getOrDefault("fields")
-  valid_589482 = validateParameter(valid_589482, JString, required = false,
+  var valid_579382 = query.getOrDefault("key")
+  valid_579382 = validateParameter(valid_579382, JString, required = false,
                                  default = nil)
-  if valid_589482 != nil:
-    section.add "fields", valid_589482
-  var valid_589483 = query.getOrDefault("quotaUser")
-  valid_589483 = validateParameter(valid_589483, JString, required = false,
-                                 default = nil)
-  if valid_589483 != nil:
-    section.add "quotaUser", valid_589483
-  var valid_589484 = query.getOrDefault("alt")
-  valid_589484 = validateParameter(valid_589484, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589484 != nil:
-    section.add "alt", valid_589484
-  var valid_589485 = query.getOrDefault("oauth_token")
-  valid_589485 = validateParameter(valid_589485, JString, required = false,
-                                 default = nil)
-  if valid_589485 != nil:
-    section.add "oauth_token", valid_589485
-  var valid_589486 = query.getOrDefault("userIp")
-  valid_589486 = validateParameter(valid_589486, JString, required = false,
-                                 default = nil)
-  if valid_589486 != nil:
-    section.add "userIp", valid_589486
-  var valid_589487 = query.getOrDefault("key")
-  valid_589487 = validateParameter(valid_589487, JString, required = false,
-                                 default = nil)
-  if valid_589487 != nil:
-    section.add "key", valid_589487
-  var valid_589488 = query.getOrDefault("prettyPrint")
-  valid_589488 = validateParameter(valid_589488, JBool, required = false,
+  if valid_579382 != nil:
+    section.add "key", valid_579382
+  var valid_579383 = query.getOrDefault("prettyPrint")
+  valid_579383 = validateParameter(valid_579383, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589488 != nil:
-    section.add "prettyPrint", valid_589488
+  if valid_579383 != nil:
+    section.add "prettyPrint", valid_579383
+  var valid_579384 = query.getOrDefault("oauth_token")
+  valid_579384 = validateParameter(valid_579384, JString, required = false,
+                                 default = nil)
+  if valid_579384 != nil:
+    section.add "oauth_token", valid_579384
+  var valid_579385 = query.getOrDefault("alt")
+  valid_579385 = validateParameter(valid_579385, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579385 != nil:
+    section.add "alt", valid_579385
+  var valid_579386 = query.getOrDefault("userIp")
+  valid_579386 = validateParameter(valid_579386, JString, required = false,
+                                 default = nil)
+  if valid_579386 != nil:
+    section.add "userIp", valid_579386
+  var valid_579387 = query.getOrDefault("quotaUser")
+  valid_579387 = validateParameter(valid_579387, JString, required = false,
+                                 default = nil)
+  if valid_579387 != nil:
+    section.add "quotaUser", valid_579387
+  var valid_579388 = query.getOrDefault("fields")
+  valid_579388 = validateParameter(valid_579388, JString, required = false,
+                                 default = nil)
+  if valid_579388 != nil:
+    section.add "fields", valid_579388
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4996,67 +5000,67 @@ proc validate_GmailUsersSettingsDelegatesList_589479(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589489: Call_GmailUsersSettingsDelegatesList_589478;
+proc call*(call_579389: Call_GmailUsersSettingsDelegatesList_579378;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists the delegates for the specified account.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
   ## 
-  let valid = call_589489.validator(path, query, header, formData, body)
-  let scheme = call_589489.pickScheme
+  let valid = call_579389.validator(path, query, header, formData, body)
+  let scheme = call_579389.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589489.url(scheme.get, call_589489.host, call_589489.base,
-                         call_589489.route, valid.getOrDefault("path"),
+  let url = call_579389.url(scheme.get, call_579389.host, call_579389.base,
+                         call_579389.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589489, url, valid)
+  result = hook(call_579389, url, valid)
 
-proc call*(call_589490: Call_GmailUsersSettingsDelegatesList_589478;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579390: Call_GmailUsersSettingsDelegatesList_579378;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsDelegatesList
   ## Lists the delegates for the specified account.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589491 = newJObject()
-  var query_589492 = newJObject()
-  add(query_589492, "fields", newJString(fields))
-  add(query_589492, "quotaUser", newJString(quotaUser))
-  add(query_589492, "alt", newJString(alt))
-  add(query_589492, "oauth_token", newJString(oauthToken))
-  add(query_589492, "userIp", newJString(userIp))
-  add(query_589492, "key", newJString(key))
-  add(query_589492, "prettyPrint", newJBool(prettyPrint))
-  add(path_589491, "userId", newJString(userId))
-  result = call_589490.call(path_589491, query_589492, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579391 = newJObject()
+  var query_579392 = newJObject()
+  add(query_579392, "key", newJString(key))
+  add(query_579392, "prettyPrint", newJBool(prettyPrint))
+  add(query_579392, "oauth_token", newJString(oauthToken))
+  add(query_579392, "alt", newJString(alt))
+  add(query_579392, "userIp", newJString(userIp))
+  add(query_579392, "quotaUser", newJString(quotaUser))
+  add(path_579391, "userId", newJString(userId))
+  add(query_579392, "fields", newJString(fields))
+  result = call_579390.call(path_579391, query_579392, nil, nil, nil)
 
-var gmailUsersSettingsDelegatesList* = Call_GmailUsersSettingsDelegatesList_589478(
+var gmailUsersSettingsDelegatesList* = Call_GmailUsersSettingsDelegatesList_579378(
     name: "gmailUsersSettingsDelegatesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/settings/delegates",
-    validator: validate_GmailUsersSettingsDelegatesList_589479,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsDelegatesList_589480,
+    validator: validate_GmailUsersSettingsDelegatesList_579379,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsDelegatesList_579380,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsDelegatesGet_589510 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsDelegatesGet_589512(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsDelegatesGet_579410 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsDelegatesGet_579412(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5074,7 +5078,7 @@ proc url_GmailUsersSettingsDelegatesGet_589512(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsDelegatesGet_589511(path: JsonNode;
+proc validate_GmailUsersSettingsDelegatesGet_579411(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the specified delegate.
   ## 
@@ -5092,68 +5096,68 @@ proc validate_GmailUsersSettingsDelegatesGet_589511(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `delegateEmail` field"
-  var valid_589513 = path.getOrDefault("delegateEmail")
-  valid_589513 = validateParameter(valid_589513, JString, required = true,
+  var valid_579413 = path.getOrDefault("delegateEmail")
+  valid_579413 = validateParameter(valid_579413, JString, required = true,
                                  default = nil)
-  if valid_589513 != nil:
-    section.add "delegateEmail", valid_589513
-  var valid_589514 = path.getOrDefault("userId")
-  valid_589514 = validateParameter(valid_589514, JString, required = true,
+  if valid_579413 != nil:
+    section.add "delegateEmail", valid_579413
+  var valid_579414 = path.getOrDefault("userId")
+  valid_579414 = validateParameter(valid_579414, JString, required = true,
                                  default = newJString("me"))
-  if valid_589514 != nil:
-    section.add "userId", valid_589514
+  if valid_579414 != nil:
+    section.add "userId", valid_579414
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589515 = query.getOrDefault("fields")
-  valid_589515 = validateParameter(valid_589515, JString, required = false,
+  var valid_579415 = query.getOrDefault("key")
+  valid_579415 = validateParameter(valid_579415, JString, required = false,
                                  default = nil)
-  if valid_589515 != nil:
-    section.add "fields", valid_589515
-  var valid_589516 = query.getOrDefault("quotaUser")
-  valid_589516 = validateParameter(valid_589516, JString, required = false,
-                                 default = nil)
-  if valid_589516 != nil:
-    section.add "quotaUser", valid_589516
-  var valid_589517 = query.getOrDefault("alt")
-  valid_589517 = validateParameter(valid_589517, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589517 != nil:
-    section.add "alt", valid_589517
-  var valid_589518 = query.getOrDefault("oauth_token")
-  valid_589518 = validateParameter(valid_589518, JString, required = false,
-                                 default = nil)
-  if valid_589518 != nil:
-    section.add "oauth_token", valid_589518
-  var valid_589519 = query.getOrDefault("userIp")
-  valid_589519 = validateParameter(valid_589519, JString, required = false,
-                                 default = nil)
-  if valid_589519 != nil:
-    section.add "userIp", valid_589519
-  var valid_589520 = query.getOrDefault("key")
-  valid_589520 = validateParameter(valid_589520, JString, required = false,
-                                 default = nil)
-  if valid_589520 != nil:
-    section.add "key", valid_589520
-  var valid_589521 = query.getOrDefault("prettyPrint")
-  valid_589521 = validateParameter(valid_589521, JBool, required = false,
+  if valid_579415 != nil:
+    section.add "key", valid_579415
+  var valid_579416 = query.getOrDefault("prettyPrint")
+  valid_579416 = validateParameter(valid_579416, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589521 != nil:
-    section.add "prettyPrint", valid_589521
+  if valid_579416 != nil:
+    section.add "prettyPrint", valid_579416
+  var valid_579417 = query.getOrDefault("oauth_token")
+  valid_579417 = validateParameter(valid_579417, JString, required = false,
+                                 default = nil)
+  if valid_579417 != nil:
+    section.add "oauth_token", valid_579417
+  var valid_579418 = query.getOrDefault("alt")
+  valid_579418 = validateParameter(valid_579418, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579418 != nil:
+    section.add "alt", valid_579418
+  var valid_579419 = query.getOrDefault("userIp")
+  valid_579419 = validateParameter(valid_579419, JString, required = false,
+                                 default = nil)
+  if valid_579419 != nil:
+    section.add "userIp", valid_579419
+  var valid_579420 = query.getOrDefault("quotaUser")
+  valid_579420 = validateParameter(valid_579420, JString, required = false,
+                                 default = nil)
+  if valid_579420 != nil:
+    section.add "quotaUser", valid_579420
+  var valid_579421 = query.getOrDefault("fields")
+  valid_579421 = validateParameter(valid_579421, JString, required = false,
+                                 default = nil)
+  if valid_579421 != nil:
+    section.add "fields", valid_579421
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5162,7 +5166,7 @@ proc validate_GmailUsersSettingsDelegatesGet_589511(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589522: Call_GmailUsersSettingsDelegatesGet_589510; path: JsonNode;
+proc call*(call_579422: Call_GmailUsersSettingsDelegatesGet_579410; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the specified delegate.
   ## 
@@ -5170,66 +5174,66 @@ proc call*(call_589522: Call_GmailUsersSettingsDelegatesGet_589510; path: JsonNo
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
   ## 
-  let valid = call_589522.validator(path, query, header, formData, body)
-  let scheme = call_589522.pickScheme
+  let valid = call_579422.validator(path, query, header, formData, body)
+  let scheme = call_579422.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589522.url(scheme.get, call_589522.host, call_589522.base,
-                         call_589522.route, valid.getOrDefault("path"),
+  let url = call_579422.url(scheme.get, call_579422.host, call_579422.base,
+                         call_579422.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589522, url, valid)
+  result = hook(call_579422, url, valid)
 
-proc call*(call_589523: Call_GmailUsersSettingsDelegatesGet_589510;
-          delegateEmail: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579423: Call_GmailUsersSettingsDelegatesGet_579410;
+          delegateEmail: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsDelegatesGet
   ## Gets the specified delegate.
   ## 
   ## Note that a delegate user must be referred to by their primary email address, and not an email alias.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   delegateEmail: string (required)
-  ##                : The email address of the user whose delegate relationship is to be retrieved.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   delegateEmail: string (required)
+  ##                : The email address of the user whose delegate relationship is to be retrieved.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589524 = newJObject()
-  var query_589525 = newJObject()
-  add(query_589525, "fields", newJString(fields))
-  add(query_589525, "quotaUser", newJString(quotaUser))
-  add(query_589525, "alt", newJString(alt))
-  add(path_589524, "delegateEmail", newJString(delegateEmail))
-  add(query_589525, "oauth_token", newJString(oauthToken))
-  add(query_589525, "userIp", newJString(userIp))
-  add(query_589525, "key", newJString(key))
-  add(query_589525, "prettyPrint", newJBool(prettyPrint))
-  add(path_589524, "userId", newJString(userId))
-  result = call_589523.call(path_589524, query_589525, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579424 = newJObject()
+  var query_579425 = newJObject()
+  add(query_579425, "key", newJString(key))
+  add(query_579425, "prettyPrint", newJBool(prettyPrint))
+  add(query_579425, "oauth_token", newJString(oauthToken))
+  add(path_579424, "delegateEmail", newJString(delegateEmail))
+  add(query_579425, "alt", newJString(alt))
+  add(query_579425, "userIp", newJString(userIp))
+  add(query_579425, "quotaUser", newJString(quotaUser))
+  add(path_579424, "userId", newJString(userId))
+  add(query_579425, "fields", newJString(fields))
+  result = call_579423.call(path_579424, query_579425, nil, nil, nil)
 
-var gmailUsersSettingsDelegatesGet* = Call_GmailUsersSettingsDelegatesGet_589510(
+var gmailUsersSettingsDelegatesGet* = Call_GmailUsersSettingsDelegatesGet_579410(
     name: "gmailUsersSettingsDelegatesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{userId}/settings/delegates/{delegateEmail}",
-    validator: validate_GmailUsersSettingsDelegatesGet_589511,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsDelegatesGet_589512,
+    validator: validate_GmailUsersSettingsDelegatesGet_579411,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsDelegatesGet_579412,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsDelegatesDelete_589526 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsDelegatesDelete_589528(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsDelegatesDelete_579426 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsDelegatesDelete_579428(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5247,7 +5251,7 @@ proc url_GmailUsersSettingsDelegatesDelete_589528(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsDelegatesDelete_589527(path: JsonNode;
+proc validate_GmailUsersSettingsDelegatesDelete_579427(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes the specified delegate (which can be of any verification status), and revokes any verification that may have been required for using it.
   ## 
@@ -5265,68 +5269,68 @@ proc validate_GmailUsersSettingsDelegatesDelete_589527(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `delegateEmail` field"
-  var valid_589529 = path.getOrDefault("delegateEmail")
-  valid_589529 = validateParameter(valid_589529, JString, required = true,
+  var valid_579429 = path.getOrDefault("delegateEmail")
+  valid_579429 = validateParameter(valid_579429, JString, required = true,
                                  default = nil)
-  if valid_589529 != nil:
-    section.add "delegateEmail", valid_589529
-  var valid_589530 = path.getOrDefault("userId")
-  valid_589530 = validateParameter(valid_589530, JString, required = true,
+  if valid_579429 != nil:
+    section.add "delegateEmail", valid_579429
+  var valid_579430 = path.getOrDefault("userId")
+  valid_579430 = validateParameter(valid_579430, JString, required = true,
                                  default = newJString("me"))
-  if valid_589530 != nil:
-    section.add "userId", valid_589530
+  if valid_579430 != nil:
+    section.add "userId", valid_579430
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589531 = query.getOrDefault("fields")
-  valid_589531 = validateParameter(valid_589531, JString, required = false,
+  var valid_579431 = query.getOrDefault("key")
+  valid_579431 = validateParameter(valid_579431, JString, required = false,
                                  default = nil)
-  if valid_589531 != nil:
-    section.add "fields", valid_589531
-  var valid_589532 = query.getOrDefault("quotaUser")
-  valid_589532 = validateParameter(valid_589532, JString, required = false,
-                                 default = nil)
-  if valid_589532 != nil:
-    section.add "quotaUser", valid_589532
-  var valid_589533 = query.getOrDefault("alt")
-  valid_589533 = validateParameter(valid_589533, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589533 != nil:
-    section.add "alt", valid_589533
-  var valid_589534 = query.getOrDefault("oauth_token")
-  valid_589534 = validateParameter(valid_589534, JString, required = false,
-                                 default = nil)
-  if valid_589534 != nil:
-    section.add "oauth_token", valid_589534
-  var valid_589535 = query.getOrDefault("userIp")
-  valid_589535 = validateParameter(valid_589535, JString, required = false,
-                                 default = nil)
-  if valid_589535 != nil:
-    section.add "userIp", valid_589535
-  var valid_589536 = query.getOrDefault("key")
-  valid_589536 = validateParameter(valid_589536, JString, required = false,
-                                 default = nil)
-  if valid_589536 != nil:
-    section.add "key", valid_589536
-  var valid_589537 = query.getOrDefault("prettyPrint")
-  valid_589537 = validateParameter(valid_589537, JBool, required = false,
+  if valid_579431 != nil:
+    section.add "key", valid_579431
+  var valid_579432 = query.getOrDefault("prettyPrint")
+  valid_579432 = validateParameter(valid_579432, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589537 != nil:
-    section.add "prettyPrint", valid_589537
+  if valid_579432 != nil:
+    section.add "prettyPrint", valid_579432
+  var valid_579433 = query.getOrDefault("oauth_token")
+  valid_579433 = validateParameter(valid_579433, JString, required = false,
+                                 default = nil)
+  if valid_579433 != nil:
+    section.add "oauth_token", valid_579433
+  var valid_579434 = query.getOrDefault("alt")
+  valid_579434 = validateParameter(valid_579434, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579434 != nil:
+    section.add "alt", valid_579434
+  var valid_579435 = query.getOrDefault("userIp")
+  valid_579435 = validateParameter(valid_579435, JString, required = false,
+                                 default = nil)
+  if valid_579435 != nil:
+    section.add "userIp", valid_579435
+  var valid_579436 = query.getOrDefault("quotaUser")
+  valid_579436 = validateParameter(valid_579436, JString, required = false,
+                                 default = nil)
+  if valid_579436 != nil:
+    section.add "quotaUser", valid_579436
+  var valid_579437 = query.getOrDefault("fields")
+  valid_579437 = validateParameter(valid_579437, JString, required = false,
+                                 default = nil)
+  if valid_579437 != nil:
+    section.add "fields", valid_579437
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5335,7 +5339,7 @@ proc validate_GmailUsersSettingsDelegatesDelete_589527(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589538: Call_GmailUsersSettingsDelegatesDelete_589526;
+proc call*(call_579438: Call_GmailUsersSettingsDelegatesDelete_579426;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Removes the specified delegate (which can be of any verification status), and revokes any verification that may have been required for using it.
@@ -5344,66 +5348,66 @@ proc call*(call_589538: Call_GmailUsersSettingsDelegatesDelete_589526;
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
   ## 
-  let valid = call_589538.validator(path, query, header, formData, body)
-  let scheme = call_589538.pickScheme
+  let valid = call_579438.validator(path, query, header, formData, body)
+  let scheme = call_579438.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589538.url(scheme.get, call_589538.host, call_589538.base,
-                         call_589538.route, valid.getOrDefault("path"),
+  let url = call_579438.url(scheme.get, call_579438.host, call_579438.base,
+                         call_579438.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589538, url, valid)
+  result = hook(call_579438, url, valid)
 
-proc call*(call_589539: Call_GmailUsersSettingsDelegatesDelete_589526;
-          delegateEmail: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579439: Call_GmailUsersSettingsDelegatesDelete_579426;
+          delegateEmail: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsDelegatesDelete
   ## Removes the specified delegate (which can be of any verification status), and revokes any verification that may have been required for using it.
   ## 
   ## Note that a delegate user must be referred to by their primary email address, and not an email alias.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   delegateEmail: string (required)
-  ##                : The email address of the user to be removed as a delegate.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   delegateEmail: string (required)
+  ##                : The email address of the user to be removed as a delegate.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589540 = newJObject()
-  var query_589541 = newJObject()
-  add(query_589541, "fields", newJString(fields))
-  add(query_589541, "quotaUser", newJString(quotaUser))
-  add(query_589541, "alt", newJString(alt))
-  add(path_589540, "delegateEmail", newJString(delegateEmail))
-  add(query_589541, "oauth_token", newJString(oauthToken))
-  add(query_589541, "userIp", newJString(userIp))
-  add(query_589541, "key", newJString(key))
-  add(query_589541, "prettyPrint", newJBool(prettyPrint))
-  add(path_589540, "userId", newJString(userId))
-  result = call_589539.call(path_589540, query_589541, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579440 = newJObject()
+  var query_579441 = newJObject()
+  add(query_579441, "key", newJString(key))
+  add(query_579441, "prettyPrint", newJBool(prettyPrint))
+  add(query_579441, "oauth_token", newJString(oauthToken))
+  add(path_579440, "delegateEmail", newJString(delegateEmail))
+  add(query_579441, "alt", newJString(alt))
+  add(query_579441, "userIp", newJString(userIp))
+  add(query_579441, "quotaUser", newJString(quotaUser))
+  add(path_579440, "userId", newJString(userId))
+  add(query_579441, "fields", newJString(fields))
+  result = call_579439.call(path_579440, query_579441, nil, nil, nil)
 
-var gmailUsersSettingsDelegatesDelete* = Call_GmailUsersSettingsDelegatesDelete_589526(
+var gmailUsersSettingsDelegatesDelete* = Call_GmailUsersSettingsDelegatesDelete_579426(
     name: "gmailUsersSettingsDelegatesDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/{userId}/settings/delegates/{delegateEmail}",
-    validator: validate_GmailUsersSettingsDelegatesDelete_589527,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsDelegatesDelete_589528,
+    validator: validate_GmailUsersSettingsDelegatesDelete_579427,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsDelegatesDelete_579428,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsFiltersCreate_589557 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsFiltersCreate_589559(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsFiltersCreate_579457 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsFiltersCreate_579459(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5419,7 +5423,7 @@ proc url_GmailUsersSettingsFiltersCreate_589559(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsFiltersCreate_589558(path: JsonNode;
+proc validate_GmailUsersSettingsFiltersCreate_579458(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a filter.
   ## 
@@ -5430,63 +5434,63 @@ proc validate_GmailUsersSettingsFiltersCreate_589558(path: JsonNode;
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589560 = path.getOrDefault("userId")
-  valid_589560 = validateParameter(valid_589560, JString, required = true,
+  var valid_579460 = path.getOrDefault("userId")
+  valid_579460 = validateParameter(valid_579460, JString, required = true,
                                  default = newJString("me"))
-  if valid_589560 != nil:
-    section.add "userId", valid_589560
+  if valid_579460 != nil:
+    section.add "userId", valid_579460
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589561 = query.getOrDefault("fields")
-  valid_589561 = validateParameter(valid_589561, JString, required = false,
+  var valid_579461 = query.getOrDefault("key")
+  valid_579461 = validateParameter(valid_579461, JString, required = false,
                                  default = nil)
-  if valid_589561 != nil:
-    section.add "fields", valid_589561
-  var valid_589562 = query.getOrDefault("quotaUser")
-  valid_589562 = validateParameter(valid_589562, JString, required = false,
-                                 default = nil)
-  if valid_589562 != nil:
-    section.add "quotaUser", valid_589562
-  var valid_589563 = query.getOrDefault("alt")
-  valid_589563 = validateParameter(valid_589563, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589563 != nil:
-    section.add "alt", valid_589563
-  var valid_589564 = query.getOrDefault("oauth_token")
-  valid_589564 = validateParameter(valid_589564, JString, required = false,
-                                 default = nil)
-  if valid_589564 != nil:
-    section.add "oauth_token", valid_589564
-  var valid_589565 = query.getOrDefault("userIp")
-  valid_589565 = validateParameter(valid_589565, JString, required = false,
-                                 default = nil)
-  if valid_589565 != nil:
-    section.add "userIp", valid_589565
-  var valid_589566 = query.getOrDefault("key")
-  valid_589566 = validateParameter(valid_589566, JString, required = false,
-                                 default = nil)
-  if valid_589566 != nil:
-    section.add "key", valid_589566
-  var valid_589567 = query.getOrDefault("prettyPrint")
-  valid_589567 = validateParameter(valid_589567, JBool, required = false,
+  if valid_579461 != nil:
+    section.add "key", valid_579461
+  var valid_579462 = query.getOrDefault("prettyPrint")
+  valid_579462 = validateParameter(valid_579462, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589567 != nil:
-    section.add "prettyPrint", valid_589567
+  if valid_579462 != nil:
+    section.add "prettyPrint", valid_579462
+  var valid_579463 = query.getOrDefault("oauth_token")
+  valid_579463 = validateParameter(valid_579463, JString, required = false,
+                                 default = nil)
+  if valid_579463 != nil:
+    section.add "oauth_token", valid_579463
+  var valid_579464 = query.getOrDefault("alt")
+  valid_579464 = validateParameter(valid_579464, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579464 != nil:
+    section.add "alt", valid_579464
+  var valid_579465 = query.getOrDefault("userIp")
+  valid_579465 = validateParameter(valid_579465, JString, required = false,
+                                 default = nil)
+  if valid_579465 != nil:
+    section.add "userIp", valid_579465
+  var valid_579466 = query.getOrDefault("quotaUser")
+  valid_579466 = validateParameter(valid_579466, JString, required = false,
+                                 default = nil)
+  if valid_579466 != nil:
+    section.add "quotaUser", valid_579466
+  var valid_579467 = query.getOrDefault("fields")
+  valid_579467 = validateParameter(valid_579467, JString, required = false,
+                                 default = nil)
+  if valid_579467 != nil:
+    section.add "fields", valid_579467
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5498,67 +5502,67 @@ proc validate_GmailUsersSettingsFiltersCreate_589558(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589569: Call_GmailUsersSettingsFiltersCreate_589557;
+proc call*(call_579469: Call_GmailUsersSettingsFiltersCreate_579457;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a filter.
   ## 
-  let valid = call_589569.validator(path, query, header, formData, body)
-  let scheme = call_589569.pickScheme
+  let valid = call_579469.validator(path, query, header, formData, body)
+  let scheme = call_579469.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589569.url(scheme.get, call_589569.host, call_589569.base,
-                         call_589569.route, valid.getOrDefault("path"),
+  let url = call_579469.url(scheme.get, call_579469.host, call_579469.base,
+                         call_579469.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589569, url, valid)
+  result = hook(call_579469, url, valid)
 
-proc call*(call_589570: Call_GmailUsersSettingsFiltersCreate_589557;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579470: Call_GmailUsersSettingsFiltersCreate_579457;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersSettingsFiltersCreate
   ## Creates a filter.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589571 = newJObject()
-  var query_589572 = newJObject()
-  var body_589573 = newJObject()
-  add(query_589572, "fields", newJString(fields))
-  add(query_589572, "quotaUser", newJString(quotaUser))
-  add(query_589572, "alt", newJString(alt))
-  add(query_589572, "oauth_token", newJString(oauthToken))
-  add(query_589572, "userIp", newJString(userIp))
-  add(query_589572, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579471 = newJObject()
+  var query_579472 = newJObject()
+  var body_579473 = newJObject()
+  add(query_579472, "key", newJString(key))
+  add(query_579472, "prettyPrint", newJBool(prettyPrint))
+  add(query_579472, "oauth_token", newJString(oauthToken))
+  add(query_579472, "alt", newJString(alt))
+  add(query_579472, "userIp", newJString(userIp))
+  add(query_579472, "quotaUser", newJString(quotaUser))
+  add(path_579471, "userId", newJString(userId))
   if body != nil:
-    body_589573 = body
-  add(query_589572, "prettyPrint", newJBool(prettyPrint))
-  add(path_589571, "userId", newJString(userId))
-  result = call_589570.call(path_589571, query_589572, nil, nil, body_589573)
+    body_579473 = body
+  add(query_579472, "fields", newJString(fields))
+  result = call_579470.call(path_579471, query_579472, nil, nil, body_579473)
 
-var gmailUsersSettingsFiltersCreate* = Call_GmailUsersSettingsFiltersCreate_589557(
+var gmailUsersSettingsFiltersCreate* = Call_GmailUsersSettingsFiltersCreate_579457(
     name: "gmailUsersSettingsFiltersCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/settings/filters",
-    validator: validate_GmailUsersSettingsFiltersCreate_589558,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsFiltersCreate_589559,
+    validator: validate_GmailUsersSettingsFiltersCreate_579458,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsFiltersCreate_579459,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsFiltersList_589542 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsFiltersList_589544(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsFiltersList_579442 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsFiltersList_579444(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5574,7 +5578,7 @@ proc url_GmailUsersSettingsFiltersList_589544(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsFiltersList_589543(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersSettingsFiltersList_579443(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the message filters of a Gmail user.
   ## 
@@ -5585,63 +5589,63 @@ proc validate_GmailUsersSettingsFiltersList_589543(path: JsonNode; query: JsonNo
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589545 = path.getOrDefault("userId")
-  valid_589545 = validateParameter(valid_589545, JString, required = true,
+  var valid_579445 = path.getOrDefault("userId")
+  valid_579445 = validateParameter(valid_579445, JString, required = true,
                                  default = newJString("me"))
-  if valid_589545 != nil:
-    section.add "userId", valid_589545
+  if valid_579445 != nil:
+    section.add "userId", valid_579445
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589546 = query.getOrDefault("fields")
-  valid_589546 = validateParameter(valid_589546, JString, required = false,
+  var valid_579446 = query.getOrDefault("key")
+  valid_579446 = validateParameter(valid_579446, JString, required = false,
                                  default = nil)
-  if valid_589546 != nil:
-    section.add "fields", valid_589546
-  var valid_589547 = query.getOrDefault("quotaUser")
-  valid_589547 = validateParameter(valid_589547, JString, required = false,
-                                 default = nil)
-  if valid_589547 != nil:
-    section.add "quotaUser", valid_589547
-  var valid_589548 = query.getOrDefault("alt")
-  valid_589548 = validateParameter(valid_589548, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589548 != nil:
-    section.add "alt", valid_589548
-  var valid_589549 = query.getOrDefault("oauth_token")
-  valid_589549 = validateParameter(valid_589549, JString, required = false,
-                                 default = nil)
-  if valid_589549 != nil:
-    section.add "oauth_token", valid_589549
-  var valid_589550 = query.getOrDefault("userIp")
-  valid_589550 = validateParameter(valid_589550, JString, required = false,
-                                 default = nil)
-  if valid_589550 != nil:
-    section.add "userIp", valid_589550
-  var valid_589551 = query.getOrDefault("key")
-  valid_589551 = validateParameter(valid_589551, JString, required = false,
-                                 default = nil)
-  if valid_589551 != nil:
-    section.add "key", valid_589551
-  var valid_589552 = query.getOrDefault("prettyPrint")
-  valid_589552 = validateParameter(valid_589552, JBool, required = false,
+  if valid_579446 != nil:
+    section.add "key", valid_579446
+  var valid_579447 = query.getOrDefault("prettyPrint")
+  valid_579447 = validateParameter(valid_579447, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589552 != nil:
-    section.add "prettyPrint", valid_589552
+  if valid_579447 != nil:
+    section.add "prettyPrint", valid_579447
+  var valid_579448 = query.getOrDefault("oauth_token")
+  valid_579448 = validateParameter(valid_579448, JString, required = false,
+                                 default = nil)
+  if valid_579448 != nil:
+    section.add "oauth_token", valid_579448
+  var valid_579449 = query.getOrDefault("alt")
+  valid_579449 = validateParameter(valid_579449, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579449 != nil:
+    section.add "alt", valid_579449
+  var valid_579450 = query.getOrDefault("userIp")
+  valid_579450 = validateParameter(valid_579450, JString, required = false,
+                                 default = nil)
+  if valid_579450 != nil:
+    section.add "userIp", valid_579450
+  var valid_579451 = query.getOrDefault("quotaUser")
+  valid_579451 = validateParameter(valid_579451, JString, required = false,
+                                 default = nil)
+  if valid_579451 != nil:
+    section.add "quotaUser", valid_579451
+  var valid_579452 = query.getOrDefault("fields")
+  valid_579452 = validateParameter(valid_579452, JString, required = false,
+                                 default = nil)
+  if valid_579452 != nil:
+    section.add "fields", valid_579452
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5650,62 +5654,62 @@ proc validate_GmailUsersSettingsFiltersList_589543(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_589553: Call_GmailUsersSettingsFiltersList_589542; path: JsonNode;
+proc call*(call_579453: Call_GmailUsersSettingsFiltersList_579442; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the message filters of a Gmail user.
   ## 
-  let valid = call_589553.validator(path, query, header, formData, body)
-  let scheme = call_589553.pickScheme
+  let valid = call_579453.validator(path, query, header, formData, body)
+  let scheme = call_579453.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589553.url(scheme.get, call_589553.host, call_589553.base,
-                         call_589553.route, valid.getOrDefault("path"),
+  let url = call_579453.url(scheme.get, call_579453.host, call_579453.base,
+                         call_579453.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589553, url, valid)
+  result = hook(call_579453, url, valid)
 
-proc call*(call_589554: Call_GmailUsersSettingsFiltersList_589542;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579454: Call_GmailUsersSettingsFiltersList_579442;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsFiltersList
   ## Lists the message filters of a Gmail user.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589555 = newJObject()
-  var query_589556 = newJObject()
-  add(query_589556, "fields", newJString(fields))
-  add(query_589556, "quotaUser", newJString(quotaUser))
-  add(query_589556, "alt", newJString(alt))
-  add(query_589556, "oauth_token", newJString(oauthToken))
-  add(query_589556, "userIp", newJString(userIp))
-  add(query_589556, "key", newJString(key))
-  add(query_589556, "prettyPrint", newJBool(prettyPrint))
-  add(path_589555, "userId", newJString(userId))
-  result = call_589554.call(path_589555, query_589556, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579455 = newJObject()
+  var query_579456 = newJObject()
+  add(query_579456, "key", newJString(key))
+  add(query_579456, "prettyPrint", newJBool(prettyPrint))
+  add(query_579456, "oauth_token", newJString(oauthToken))
+  add(query_579456, "alt", newJString(alt))
+  add(query_579456, "userIp", newJString(userIp))
+  add(query_579456, "quotaUser", newJString(quotaUser))
+  add(path_579455, "userId", newJString(userId))
+  add(query_579456, "fields", newJString(fields))
+  result = call_579454.call(path_579455, query_579456, nil, nil, nil)
 
-var gmailUsersSettingsFiltersList* = Call_GmailUsersSettingsFiltersList_589542(
+var gmailUsersSettingsFiltersList* = Call_GmailUsersSettingsFiltersList_579442(
     name: "gmailUsersSettingsFiltersList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/settings/filters",
-    validator: validate_GmailUsersSettingsFiltersList_589543,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsFiltersList_589544,
+    validator: validate_GmailUsersSettingsFiltersList_579443,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsFiltersList_579444,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsFiltersGet_589574 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsFiltersGet_589576(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsFiltersGet_579474 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsFiltersGet_579476(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5723,7 +5727,7 @@ proc url_GmailUsersSettingsFiltersGet_589576(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsFiltersGet_589575(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersSettingsFiltersGet_579475(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a filter.
   ## 
@@ -5736,68 +5740,68 @@ proc validate_GmailUsersSettingsFiltersGet_589575(path: JsonNode; query: JsonNod
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589577 = path.getOrDefault("id")
-  valid_589577 = validateParameter(valid_589577, JString, required = true,
+  var valid_579477 = path.getOrDefault("id")
+  valid_579477 = validateParameter(valid_579477, JString, required = true,
                                  default = nil)
-  if valid_589577 != nil:
-    section.add "id", valid_589577
-  var valid_589578 = path.getOrDefault("userId")
-  valid_589578 = validateParameter(valid_589578, JString, required = true,
+  if valid_579477 != nil:
+    section.add "id", valid_579477
+  var valid_579478 = path.getOrDefault("userId")
+  valid_579478 = validateParameter(valid_579478, JString, required = true,
                                  default = newJString("me"))
-  if valid_589578 != nil:
-    section.add "userId", valid_589578
+  if valid_579478 != nil:
+    section.add "userId", valid_579478
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589579 = query.getOrDefault("fields")
-  valid_589579 = validateParameter(valid_589579, JString, required = false,
+  var valid_579479 = query.getOrDefault("key")
+  valid_579479 = validateParameter(valid_579479, JString, required = false,
                                  default = nil)
-  if valid_589579 != nil:
-    section.add "fields", valid_589579
-  var valid_589580 = query.getOrDefault("quotaUser")
-  valid_589580 = validateParameter(valid_589580, JString, required = false,
-                                 default = nil)
-  if valid_589580 != nil:
-    section.add "quotaUser", valid_589580
-  var valid_589581 = query.getOrDefault("alt")
-  valid_589581 = validateParameter(valid_589581, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589581 != nil:
-    section.add "alt", valid_589581
-  var valid_589582 = query.getOrDefault("oauth_token")
-  valid_589582 = validateParameter(valid_589582, JString, required = false,
-                                 default = nil)
-  if valid_589582 != nil:
-    section.add "oauth_token", valid_589582
-  var valid_589583 = query.getOrDefault("userIp")
-  valid_589583 = validateParameter(valid_589583, JString, required = false,
-                                 default = nil)
-  if valid_589583 != nil:
-    section.add "userIp", valid_589583
-  var valid_589584 = query.getOrDefault("key")
-  valid_589584 = validateParameter(valid_589584, JString, required = false,
-                                 default = nil)
-  if valid_589584 != nil:
-    section.add "key", valid_589584
-  var valid_589585 = query.getOrDefault("prettyPrint")
-  valid_589585 = validateParameter(valid_589585, JBool, required = false,
+  if valid_579479 != nil:
+    section.add "key", valid_579479
+  var valid_579480 = query.getOrDefault("prettyPrint")
+  valid_579480 = validateParameter(valid_579480, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589585 != nil:
-    section.add "prettyPrint", valid_589585
+  if valid_579480 != nil:
+    section.add "prettyPrint", valid_579480
+  var valid_579481 = query.getOrDefault("oauth_token")
+  valid_579481 = validateParameter(valid_579481, JString, required = false,
+                                 default = nil)
+  if valid_579481 != nil:
+    section.add "oauth_token", valid_579481
+  var valid_579482 = query.getOrDefault("alt")
+  valid_579482 = validateParameter(valid_579482, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579482 != nil:
+    section.add "alt", valid_579482
+  var valid_579483 = query.getOrDefault("userIp")
+  valid_579483 = validateParameter(valid_579483, JString, required = false,
+                                 default = nil)
+  if valid_579483 != nil:
+    section.add "userIp", valid_579483
+  var valid_579484 = query.getOrDefault("quotaUser")
+  valid_579484 = validateParameter(valid_579484, JString, required = false,
+                                 default = nil)
+  if valid_579484 != nil:
+    section.add "quotaUser", valid_579484
+  var valid_579485 = query.getOrDefault("fields")
+  valid_579485 = validateParameter(valid_579485, JString, required = false,
+                                 default = nil)
+  if valid_579485 != nil:
+    section.add "fields", valid_579485
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5806,65 +5810,65 @@ proc validate_GmailUsersSettingsFiltersGet_589575(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_589586: Call_GmailUsersSettingsFiltersGet_589574; path: JsonNode;
+proc call*(call_579486: Call_GmailUsersSettingsFiltersGet_579474; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets a filter.
   ## 
-  let valid = call_589586.validator(path, query, header, formData, body)
-  let scheme = call_589586.pickScheme
+  let valid = call_579486.validator(path, query, header, formData, body)
+  let scheme = call_579486.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589586.url(scheme.get, call_589586.host, call_589586.base,
-                         call_589586.route, valid.getOrDefault("path"),
+  let url = call_579486.url(scheme.get, call_579486.host, call_579486.base,
+                         call_579486.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589586, url, valid)
+  result = hook(call_579486, url, valid)
 
-proc call*(call_589587: Call_GmailUsersSettingsFiltersGet_589574; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579487: Call_GmailUsersSettingsFiltersGet_579474; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsFiltersGet
   ## Gets a filter.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the filter to be fetched.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the filter to be fetched.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589588 = newJObject()
-  var query_589589 = newJObject()
-  add(query_589589, "fields", newJString(fields))
-  add(query_589589, "quotaUser", newJString(quotaUser))
-  add(query_589589, "alt", newJString(alt))
-  add(query_589589, "oauth_token", newJString(oauthToken))
-  add(query_589589, "userIp", newJString(userIp))
-  add(path_589588, "id", newJString(id))
-  add(query_589589, "key", newJString(key))
-  add(query_589589, "prettyPrint", newJBool(prettyPrint))
-  add(path_589588, "userId", newJString(userId))
-  result = call_589587.call(path_589588, query_589589, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579488 = newJObject()
+  var query_579489 = newJObject()
+  add(query_579489, "key", newJString(key))
+  add(query_579489, "prettyPrint", newJBool(prettyPrint))
+  add(query_579489, "oauth_token", newJString(oauthToken))
+  add(path_579488, "id", newJString(id))
+  add(query_579489, "alt", newJString(alt))
+  add(query_579489, "userIp", newJString(userIp))
+  add(query_579489, "quotaUser", newJString(quotaUser))
+  add(path_579488, "userId", newJString(userId))
+  add(query_579489, "fields", newJString(fields))
+  result = call_579487.call(path_579488, query_579489, nil, nil, nil)
 
-var gmailUsersSettingsFiltersGet* = Call_GmailUsersSettingsFiltersGet_589574(
+var gmailUsersSettingsFiltersGet* = Call_GmailUsersSettingsFiltersGet_579474(
     name: "gmailUsersSettingsFiltersGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/settings/filters/{id}",
-    validator: validate_GmailUsersSettingsFiltersGet_589575,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsFiltersGet_589576,
+    validator: validate_GmailUsersSettingsFiltersGet_579475,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsFiltersGet_579476,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsFiltersDelete_589590 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsFiltersDelete_589592(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsFiltersDelete_579490 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsFiltersDelete_579492(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5882,7 +5886,7 @@ proc url_GmailUsersSettingsFiltersDelete_589592(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsFiltersDelete_589591(path: JsonNode;
+proc validate_GmailUsersSettingsFiltersDelete_579491(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a filter.
   ## 
@@ -5895,68 +5899,68 @@ proc validate_GmailUsersSettingsFiltersDelete_589591(path: JsonNode;
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589593 = path.getOrDefault("id")
-  valid_589593 = validateParameter(valid_589593, JString, required = true,
+  var valid_579493 = path.getOrDefault("id")
+  valid_579493 = validateParameter(valid_579493, JString, required = true,
                                  default = nil)
-  if valid_589593 != nil:
-    section.add "id", valid_589593
-  var valid_589594 = path.getOrDefault("userId")
-  valid_589594 = validateParameter(valid_589594, JString, required = true,
+  if valid_579493 != nil:
+    section.add "id", valid_579493
+  var valid_579494 = path.getOrDefault("userId")
+  valid_579494 = validateParameter(valid_579494, JString, required = true,
                                  default = newJString("me"))
-  if valid_589594 != nil:
-    section.add "userId", valid_589594
+  if valid_579494 != nil:
+    section.add "userId", valid_579494
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589595 = query.getOrDefault("fields")
-  valid_589595 = validateParameter(valid_589595, JString, required = false,
+  var valid_579495 = query.getOrDefault("key")
+  valid_579495 = validateParameter(valid_579495, JString, required = false,
                                  default = nil)
-  if valid_589595 != nil:
-    section.add "fields", valid_589595
-  var valid_589596 = query.getOrDefault("quotaUser")
-  valid_589596 = validateParameter(valid_589596, JString, required = false,
-                                 default = nil)
-  if valid_589596 != nil:
-    section.add "quotaUser", valid_589596
-  var valid_589597 = query.getOrDefault("alt")
-  valid_589597 = validateParameter(valid_589597, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589597 != nil:
-    section.add "alt", valid_589597
-  var valid_589598 = query.getOrDefault("oauth_token")
-  valid_589598 = validateParameter(valid_589598, JString, required = false,
-                                 default = nil)
-  if valid_589598 != nil:
-    section.add "oauth_token", valid_589598
-  var valid_589599 = query.getOrDefault("userIp")
-  valid_589599 = validateParameter(valid_589599, JString, required = false,
-                                 default = nil)
-  if valid_589599 != nil:
-    section.add "userIp", valid_589599
-  var valid_589600 = query.getOrDefault("key")
-  valid_589600 = validateParameter(valid_589600, JString, required = false,
-                                 default = nil)
-  if valid_589600 != nil:
-    section.add "key", valid_589600
-  var valid_589601 = query.getOrDefault("prettyPrint")
-  valid_589601 = validateParameter(valid_589601, JBool, required = false,
+  if valid_579495 != nil:
+    section.add "key", valid_579495
+  var valid_579496 = query.getOrDefault("prettyPrint")
+  valid_579496 = validateParameter(valid_579496, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589601 != nil:
-    section.add "prettyPrint", valid_589601
+  if valid_579496 != nil:
+    section.add "prettyPrint", valid_579496
+  var valid_579497 = query.getOrDefault("oauth_token")
+  valid_579497 = validateParameter(valid_579497, JString, required = false,
+                                 default = nil)
+  if valid_579497 != nil:
+    section.add "oauth_token", valid_579497
+  var valid_579498 = query.getOrDefault("alt")
+  valid_579498 = validateParameter(valid_579498, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579498 != nil:
+    section.add "alt", valid_579498
+  var valid_579499 = query.getOrDefault("userIp")
+  valid_579499 = validateParameter(valid_579499, JString, required = false,
+                                 default = nil)
+  if valid_579499 != nil:
+    section.add "userIp", valid_579499
+  var valid_579500 = query.getOrDefault("quotaUser")
+  valid_579500 = validateParameter(valid_579500, JString, required = false,
+                                 default = nil)
+  if valid_579500 != nil:
+    section.add "quotaUser", valid_579500
+  var valid_579501 = query.getOrDefault("fields")
+  valid_579501 = validateParameter(valid_579501, JString, required = false,
+                                 default = nil)
+  if valid_579501 != nil:
+    section.add "fields", valid_579501
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5965,66 +5969,66 @@ proc validate_GmailUsersSettingsFiltersDelete_589591(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589602: Call_GmailUsersSettingsFiltersDelete_589590;
+proc call*(call_579502: Call_GmailUsersSettingsFiltersDelete_579490;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a filter.
   ## 
-  let valid = call_589602.validator(path, query, header, formData, body)
-  let scheme = call_589602.pickScheme
+  let valid = call_579502.validator(path, query, header, formData, body)
+  let scheme = call_579502.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589602.url(scheme.get, call_589602.host, call_589602.base,
-                         call_589602.route, valid.getOrDefault("path"),
+  let url = call_579502.url(scheme.get, call_579502.host, call_579502.base,
+                         call_579502.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589602, url, valid)
+  result = hook(call_579502, url, valid)
 
-proc call*(call_589603: Call_GmailUsersSettingsFiltersDelete_589590; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579503: Call_GmailUsersSettingsFiltersDelete_579490; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsFiltersDelete
   ## Deletes a filter.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the filter to be deleted.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the filter to be deleted.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589604 = newJObject()
-  var query_589605 = newJObject()
-  add(query_589605, "fields", newJString(fields))
-  add(query_589605, "quotaUser", newJString(quotaUser))
-  add(query_589605, "alt", newJString(alt))
-  add(query_589605, "oauth_token", newJString(oauthToken))
-  add(query_589605, "userIp", newJString(userIp))
-  add(path_589604, "id", newJString(id))
-  add(query_589605, "key", newJString(key))
-  add(query_589605, "prettyPrint", newJBool(prettyPrint))
-  add(path_589604, "userId", newJString(userId))
-  result = call_589603.call(path_589604, query_589605, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579504 = newJObject()
+  var query_579505 = newJObject()
+  add(query_579505, "key", newJString(key))
+  add(query_579505, "prettyPrint", newJBool(prettyPrint))
+  add(query_579505, "oauth_token", newJString(oauthToken))
+  add(path_579504, "id", newJString(id))
+  add(query_579505, "alt", newJString(alt))
+  add(query_579505, "userIp", newJString(userIp))
+  add(query_579505, "quotaUser", newJString(quotaUser))
+  add(path_579504, "userId", newJString(userId))
+  add(query_579505, "fields", newJString(fields))
+  result = call_579503.call(path_579504, query_579505, nil, nil, nil)
 
-var gmailUsersSettingsFiltersDelete* = Call_GmailUsersSettingsFiltersDelete_589590(
+var gmailUsersSettingsFiltersDelete* = Call_GmailUsersSettingsFiltersDelete_579490(
     name: "gmailUsersSettingsFiltersDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{userId}/settings/filters/{id}",
-    validator: validate_GmailUsersSettingsFiltersDelete_589591,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsFiltersDelete_589592,
+    validator: validate_GmailUsersSettingsFiltersDelete_579491,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsFiltersDelete_579492,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsForwardingAddressesCreate_589621 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsForwardingAddressesCreate_589623(protocol: Scheme;
+  Call_GmailUsersSettingsForwardingAddressesCreate_579521 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsForwardingAddressesCreate_579523(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6040,7 +6044,7 @@ proc url_GmailUsersSettingsForwardingAddressesCreate_589623(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsForwardingAddressesCreate_589622(path: JsonNode;
+proc validate_GmailUsersSettingsForwardingAddressesCreate_579522(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted.
   ## 
@@ -6053,63 +6057,63 @@ proc validate_GmailUsersSettingsForwardingAddressesCreate_589622(path: JsonNode;
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589624 = path.getOrDefault("userId")
-  valid_589624 = validateParameter(valid_589624, JString, required = true,
+  var valid_579524 = path.getOrDefault("userId")
+  valid_579524 = validateParameter(valid_579524, JString, required = true,
                                  default = newJString("me"))
-  if valid_589624 != nil:
-    section.add "userId", valid_589624
+  if valid_579524 != nil:
+    section.add "userId", valid_579524
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589625 = query.getOrDefault("fields")
-  valid_589625 = validateParameter(valid_589625, JString, required = false,
+  var valid_579525 = query.getOrDefault("key")
+  valid_579525 = validateParameter(valid_579525, JString, required = false,
                                  default = nil)
-  if valid_589625 != nil:
-    section.add "fields", valid_589625
-  var valid_589626 = query.getOrDefault("quotaUser")
-  valid_589626 = validateParameter(valid_589626, JString, required = false,
-                                 default = nil)
-  if valid_589626 != nil:
-    section.add "quotaUser", valid_589626
-  var valid_589627 = query.getOrDefault("alt")
-  valid_589627 = validateParameter(valid_589627, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589627 != nil:
-    section.add "alt", valid_589627
-  var valid_589628 = query.getOrDefault("oauth_token")
-  valid_589628 = validateParameter(valid_589628, JString, required = false,
-                                 default = nil)
-  if valid_589628 != nil:
-    section.add "oauth_token", valid_589628
-  var valid_589629 = query.getOrDefault("userIp")
-  valid_589629 = validateParameter(valid_589629, JString, required = false,
-                                 default = nil)
-  if valid_589629 != nil:
-    section.add "userIp", valid_589629
-  var valid_589630 = query.getOrDefault("key")
-  valid_589630 = validateParameter(valid_589630, JString, required = false,
-                                 default = nil)
-  if valid_589630 != nil:
-    section.add "key", valid_589630
-  var valid_589631 = query.getOrDefault("prettyPrint")
-  valid_589631 = validateParameter(valid_589631, JBool, required = false,
+  if valid_579525 != nil:
+    section.add "key", valid_579525
+  var valid_579526 = query.getOrDefault("prettyPrint")
+  valid_579526 = validateParameter(valid_579526, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589631 != nil:
-    section.add "prettyPrint", valid_589631
+  if valid_579526 != nil:
+    section.add "prettyPrint", valid_579526
+  var valid_579527 = query.getOrDefault("oauth_token")
+  valid_579527 = validateParameter(valid_579527, JString, required = false,
+                                 default = nil)
+  if valid_579527 != nil:
+    section.add "oauth_token", valid_579527
+  var valid_579528 = query.getOrDefault("alt")
+  valid_579528 = validateParameter(valid_579528, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579528 != nil:
+    section.add "alt", valid_579528
+  var valid_579529 = query.getOrDefault("userIp")
+  valid_579529 = validateParameter(valid_579529, JString, required = false,
+                                 default = nil)
+  if valid_579529 != nil:
+    section.add "userIp", valid_579529
+  var valid_579530 = query.getOrDefault("quotaUser")
+  valid_579530 = validateParameter(valid_579530, JString, required = false,
+                                 default = nil)
+  if valid_579530 != nil:
+    section.add "quotaUser", valid_579530
+  var valid_579531 = query.getOrDefault("fields")
+  valid_579531 = validateParameter(valid_579531, JString, required = false,
+                                 default = nil)
+  if valid_579531 != nil:
+    section.add "fields", valid_579531
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6121,72 +6125,72 @@ proc validate_GmailUsersSettingsForwardingAddressesCreate_589622(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589633: Call_GmailUsersSettingsForwardingAddressesCreate_589621;
+proc call*(call_579533: Call_GmailUsersSettingsForwardingAddressesCreate_579521;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
   ## 
-  let valid = call_589633.validator(path, query, header, formData, body)
-  let scheme = call_589633.pickScheme
+  let valid = call_579533.validator(path, query, header, formData, body)
+  let scheme = call_579533.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589633.url(scheme.get, call_589633.host, call_589633.base,
-                         call_589633.route, valid.getOrDefault("path"),
+  let url = call_579533.url(scheme.get, call_579533.host, call_579533.base,
+                         call_579533.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589633, url, valid)
+  result = hook(call_579533, url, valid)
 
-proc call*(call_589634: Call_GmailUsersSettingsForwardingAddressesCreate_589621;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579534: Call_GmailUsersSettingsForwardingAddressesCreate_579521;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersSettingsForwardingAddressesCreate
   ## Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589635 = newJObject()
-  var query_589636 = newJObject()
-  var body_589637 = newJObject()
-  add(query_589636, "fields", newJString(fields))
-  add(query_589636, "quotaUser", newJString(quotaUser))
-  add(query_589636, "alt", newJString(alt))
-  add(query_589636, "oauth_token", newJString(oauthToken))
-  add(query_589636, "userIp", newJString(userIp))
-  add(query_589636, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579535 = newJObject()
+  var query_579536 = newJObject()
+  var body_579537 = newJObject()
+  add(query_579536, "key", newJString(key))
+  add(query_579536, "prettyPrint", newJBool(prettyPrint))
+  add(query_579536, "oauth_token", newJString(oauthToken))
+  add(query_579536, "alt", newJString(alt))
+  add(query_579536, "userIp", newJString(userIp))
+  add(query_579536, "quotaUser", newJString(quotaUser))
+  add(path_579535, "userId", newJString(userId))
   if body != nil:
-    body_589637 = body
-  add(query_589636, "prettyPrint", newJBool(prettyPrint))
-  add(path_589635, "userId", newJString(userId))
-  result = call_589634.call(path_589635, query_589636, nil, nil, body_589637)
+    body_579537 = body
+  add(query_579536, "fields", newJString(fields))
+  result = call_579534.call(path_579535, query_579536, nil, nil, body_579537)
 
-var gmailUsersSettingsForwardingAddressesCreate* = Call_GmailUsersSettingsForwardingAddressesCreate_589621(
+var gmailUsersSettingsForwardingAddressesCreate* = Call_GmailUsersSettingsForwardingAddressesCreate_579521(
     name: "gmailUsersSettingsForwardingAddressesCreate",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/{userId}/settings/forwardingAddresses",
-    validator: validate_GmailUsersSettingsForwardingAddressesCreate_589622,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsForwardingAddressesCreate_589623,
+    validator: validate_GmailUsersSettingsForwardingAddressesCreate_579522,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsForwardingAddressesCreate_579523,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsForwardingAddressesList_589606 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsForwardingAddressesList_589608(protocol: Scheme;
+  Call_GmailUsersSettingsForwardingAddressesList_579506 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsForwardingAddressesList_579508(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6202,7 +6206,7 @@ proc url_GmailUsersSettingsForwardingAddressesList_589608(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsForwardingAddressesList_589607(path: JsonNode;
+proc validate_GmailUsersSettingsForwardingAddressesList_579507(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the forwarding addresses for the specified account.
   ## 
@@ -6213,63 +6217,63 @@ proc validate_GmailUsersSettingsForwardingAddressesList_589607(path: JsonNode;
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589609 = path.getOrDefault("userId")
-  valid_589609 = validateParameter(valid_589609, JString, required = true,
+  var valid_579509 = path.getOrDefault("userId")
+  valid_579509 = validateParameter(valid_579509, JString, required = true,
                                  default = newJString("me"))
-  if valid_589609 != nil:
-    section.add "userId", valid_589609
+  if valid_579509 != nil:
+    section.add "userId", valid_579509
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589610 = query.getOrDefault("fields")
-  valid_589610 = validateParameter(valid_589610, JString, required = false,
+  var valid_579510 = query.getOrDefault("key")
+  valid_579510 = validateParameter(valid_579510, JString, required = false,
                                  default = nil)
-  if valid_589610 != nil:
-    section.add "fields", valid_589610
-  var valid_589611 = query.getOrDefault("quotaUser")
-  valid_589611 = validateParameter(valid_589611, JString, required = false,
-                                 default = nil)
-  if valid_589611 != nil:
-    section.add "quotaUser", valid_589611
-  var valid_589612 = query.getOrDefault("alt")
-  valid_589612 = validateParameter(valid_589612, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589612 != nil:
-    section.add "alt", valid_589612
-  var valid_589613 = query.getOrDefault("oauth_token")
-  valid_589613 = validateParameter(valid_589613, JString, required = false,
-                                 default = nil)
-  if valid_589613 != nil:
-    section.add "oauth_token", valid_589613
-  var valid_589614 = query.getOrDefault("userIp")
-  valid_589614 = validateParameter(valid_589614, JString, required = false,
-                                 default = nil)
-  if valid_589614 != nil:
-    section.add "userIp", valid_589614
-  var valid_589615 = query.getOrDefault("key")
-  valid_589615 = validateParameter(valid_589615, JString, required = false,
-                                 default = nil)
-  if valid_589615 != nil:
-    section.add "key", valid_589615
-  var valid_589616 = query.getOrDefault("prettyPrint")
-  valid_589616 = validateParameter(valid_589616, JBool, required = false,
+  if valid_579510 != nil:
+    section.add "key", valid_579510
+  var valid_579511 = query.getOrDefault("prettyPrint")
+  valid_579511 = validateParameter(valid_579511, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589616 != nil:
-    section.add "prettyPrint", valid_589616
+  if valid_579511 != nil:
+    section.add "prettyPrint", valid_579511
+  var valid_579512 = query.getOrDefault("oauth_token")
+  valid_579512 = validateParameter(valid_579512, JString, required = false,
+                                 default = nil)
+  if valid_579512 != nil:
+    section.add "oauth_token", valid_579512
+  var valid_579513 = query.getOrDefault("alt")
+  valid_579513 = validateParameter(valid_579513, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579513 != nil:
+    section.add "alt", valid_579513
+  var valid_579514 = query.getOrDefault("userIp")
+  valid_579514 = validateParameter(valid_579514, JString, required = false,
+                                 default = nil)
+  if valid_579514 != nil:
+    section.add "userIp", valid_579514
+  var valid_579515 = query.getOrDefault("quotaUser")
+  valid_579515 = validateParameter(valid_579515, JString, required = false,
+                                 default = nil)
+  if valid_579515 != nil:
+    section.add "quotaUser", valid_579515
+  var valid_579516 = query.getOrDefault("fields")
+  valid_579516 = validateParameter(valid_579516, JString, required = false,
+                                 default = nil)
+  if valid_579516 != nil:
+    section.add "fields", valid_579516
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6278,63 +6282,63 @@ proc validate_GmailUsersSettingsForwardingAddressesList_589607(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589617: Call_GmailUsersSettingsForwardingAddressesList_589606;
+proc call*(call_579517: Call_GmailUsersSettingsForwardingAddressesList_579506;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists the forwarding addresses for the specified account.
   ## 
-  let valid = call_589617.validator(path, query, header, formData, body)
-  let scheme = call_589617.pickScheme
+  let valid = call_579517.validator(path, query, header, formData, body)
+  let scheme = call_579517.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589617.url(scheme.get, call_589617.host, call_589617.base,
-                         call_589617.route, valid.getOrDefault("path"),
+  let url = call_579517.url(scheme.get, call_579517.host, call_579517.base,
+                         call_579517.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589617, url, valid)
+  result = hook(call_579517, url, valid)
 
-proc call*(call_589618: Call_GmailUsersSettingsForwardingAddressesList_589606;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579518: Call_GmailUsersSettingsForwardingAddressesList_579506;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsForwardingAddressesList
   ## Lists the forwarding addresses for the specified account.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589619 = newJObject()
-  var query_589620 = newJObject()
-  add(query_589620, "fields", newJString(fields))
-  add(query_589620, "quotaUser", newJString(quotaUser))
-  add(query_589620, "alt", newJString(alt))
-  add(query_589620, "oauth_token", newJString(oauthToken))
-  add(query_589620, "userIp", newJString(userIp))
-  add(query_589620, "key", newJString(key))
-  add(query_589620, "prettyPrint", newJBool(prettyPrint))
-  add(path_589619, "userId", newJString(userId))
-  result = call_589618.call(path_589619, query_589620, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579519 = newJObject()
+  var query_579520 = newJObject()
+  add(query_579520, "key", newJString(key))
+  add(query_579520, "prettyPrint", newJBool(prettyPrint))
+  add(query_579520, "oauth_token", newJString(oauthToken))
+  add(query_579520, "alt", newJString(alt))
+  add(query_579520, "userIp", newJString(userIp))
+  add(query_579520, "quotaUser", newJString(quotaUser))
+  add(path_579519, "userId", newJString(userId))
+  add(query_579520, "fields", newJString(fields))
+  result = call_579518.call(path_579519, query_579520, nil, nil, nil)
 
-var gmailUsersSettingsForwardingAddressesList* = Call_GmailUsersSettingsForwardingAddressesList_589606(
+var gmailUsersSettingsForwardingAddressesList* = Call_GmailUsersSettingsForwardingAddressesList_579506(
     name: "gmailUsersSettingsForwardingAddressesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/settings/forwardingAddresses",
-    validator: validate_GmailUsersSettingsForwardingAddressesList_589607,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsForwardingAddressesList_589608,
+    validator: validate_GmailUsersSettingsForwardingAddressesList_579507,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsForwardingAddressesList_579508,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsForwardingAddressesGet_589638 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsForwardingAddressesGet_589640(protocol: Scheme;
+  Call_GmailUsersSettingsForwardingAddressesGet_579538 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsForwardingAddressesGet_579540(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6352,82 +6356,81 @@ proc url_GmailUsersSettingsForwardingAddressesGet_589640(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsForwardingAddressesGet_589639(path: JsonNode;
+proc validate_GmailUsersSettingsForwardingAddressesGet_579539(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the specified forwarding address.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   forwardingEmail: JString (required)
-  ##                  : The forwarding address to be retrieved.
   ##   userId: JString (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
+  ##   forwardingEmail: JString (required)
+  ##                  : The forwarding address to be retrieved.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `forwardingEmail` field"
-  var valid_589641 = path.getOrDefault("forwardingEmail")
-  valid_589641 = validateParameter(valid_589641, JString, required = true,
-                                 default = nil)
-  if valid_589641 != nil:
-    section.add "forwardingEmail", valid_589641
-  var valid_589642 = path.getOrDefault("userId")
-  valid_589642 = validateParameter(valid_589642, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `userId` field"
+  var valid_579541 = path.getOrDefault("userId")
+  valid_579541 = validateParameter(valid_579541, JString, required = true,
                                  default = newJString("me"))
-  if valid_589642 != nil:
-    section.add "userId", valid_589642
+  if valid_579541 != nil:
+    section.add "userId", valid_579541
+  var valid_579542 = path.getOrDefault("forwardingEmail")
+  valid_579542 = validateParameter(valid_579542, JString, required = true,
+                                 default = nil)
+  if valid_579542 != nil:
+    section.add "forwardingEmail", valid_579542
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589643 = query.getOrDefault("fields")
-  valid_589643 = validateParameter(valid_589643, JString, required = false,
+  var valid_579543 = query.getOrDefault("key")
+  valid_579543 = validateParameter(valid_579543, JString, required = false,
                                  default = nil)
-  if valid_589643 != nil:
-    section.add "fields", valid_589643
-  var valid_589644 = query.getOrDefault("quotaUser")
-  valid_589644 = validateParameter(valid_589644, JString, required = false,
-                                 default = nil)
-  if valid_589644 != nil:
-    section.add "quotaUser", valid_589644
-  var valid_589645 = query.getOrDefault("alt")
-  valid_589645 = validateParameter(valid_589645, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589645 != nil:
-    section.add "alt", valid_589645
-  var valid_589646 = query.getOrDefault("oauth_token")
-  valid_589646 = validateParameter(valid_589646, JString, required = false,
-                                 default = nil)
-  if valid_589646 != nil:
-    section.add "oauth_token", valid_589646
-  var valid_589647 = query.getOrDefault("userIp")
-  valid_589647 = validateParameter(valid_589647, JString, required = false,
-                                 default = nil)
-  if valid_589647 != nil:
-    section.add "userIp", valid_589647
-  var valid_589648 = query.getOrDefault("key")
-  valid_589648 = validateParameter(valid_589648, JString, required = false,
-                                 default = nil)
-  if valid_589648 != nil:
-    section.add "key", valid_589648
-  var valid_589649 = query.getOrDefault("prettyPrint")
-  valid_589649 = validateParameter(valid_589649, JBool, required = false,
+  if valid_579543 != nil:
+    section.add "key", valid_579543
+  var valid_579544 = query.getOrDefault("prettyPrint")
+  valid_579544 = validateParameter(valid_579544, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589649 != nil:
-    section.add "prettyPrint", valid_589649
+  if valid_579544 != nil:
+    section.add "prettyPrint", valid_579544
+  var valid_579545 = query.getOrDefault("oauth_token")
+  valid_579545 = validateParameter(valid_579545, JString, required = false,
+                                 default = nil)
+  if valid_579545 != nil:
+    section.add "oauth_token", valid_579545
+  var valid_579546 = query.getOrDefault("alt")
+  valid_579546 = validateParameter(valid_579546, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579546 != nil:
+    section.add "alt", valid_579546
+  var valid_579547 = query.getOrDefault("userIp")
+  valid_579547 = validateParameter(valid_579547, JString, required = false,
+                                 default = nil)
+  if valid_579547 != nil:
+    section.add "userIp", valid_579547
+  var valid_579548 = query.getOrDefault("quotaUser")
+  valid_579548 = validateParameter(valid_579548, JString, required = false,
+                                 default = nil)
+  if valid_579548 != nil:
+    section.add "quotaUser", valid_579548
+  var valid_579549 = query.getOrDefault("fields")
+  valid_579549 = validateParameter(valid_579549, JString, required = false,
+                                 default = nil)
+  if valid_579549 != nil:
+    section.add "fields", valid_579549
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6436,67 +6439,67 @@ proc validate_GmailUsersSettingsForwardingAddressesGet_589639(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589650: Call_GmailUsersSettingsForwardingAddressesGet_589638;
+proc call*(call_579550: Call_GmailUsersSettingsForwardingAddressesGet_579538;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets the specified forwarding address.
   ## 
-  let valid = call_589650.validator(path, query, header, formData, body)
-  let scheme = call_589650.pickScheme
+  let valid = call_579550.validator(path, query, header, formData, body)
+  let scheme = call_579550.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589650.url(scheme.get, call_589650.host, call_589650.base,
-                         call_589650.route, valid.getOrDefault("path"),
+  let url = call_579550.url(scheme.get, call_579550.host, call_579550.base,
+                         call_579550.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589650, url, valid)
+  result = hook(call_579550, url, valid)
 
-proc call*(call_589651: Call_GmailUsersSettingsForwardingAddressesGet_589638;
-          forwardingEmail: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579551: Call_GmailUsersSettingsForwardingAddressesGet_579538;
+          forwardingEmail: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsForwardingAddressesGet
   ## Gets the specified forwarding address.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   forwardingEmail: string (required)
-  ##                  : The forwarding address to be retrieved.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589652 = newJObject()
-  var query_589653 = newJObject()
-  add(query_589653, "fields", newJString(fields))
-  add(query_589653, "quotaUser", newJString(quotaUser))
-  add(query_589653, "alt", newJString(alt))
-  add(path_589652, "forwardingEmail", newJString(forwardingEmail))
-  add(query_589653, "oauth_token", newJString(oauthToken))
-  add(query_589653, "userIp", newJString(userIp))
-  add(query_589653, "key", newJString(key))
-  add(query_589653, "prettyPrint", newJBool(prettyPrint))
-  add(path_589652, "userId", newJString(userId))
-  result = call_589651.call(path_589652, query_589653, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   forwardingEmail: string (required)
+  ##                  : The forwarding address to be retrieved.
+  var path_579552 = newJObject()
+  var query_579553 = newJObject()
+  add(query_579553, "key", newJString(key))
+  add(query_579553, "prettyPrint", newJBool(prettyPrint))
+  add(query_579553, "oauth_token", newJString(oauthToken))
+  add(query_579553, "alt", newJString(alt))
+  add(query_579553, "userIp", newJString(userIp))
+  add(query_579553, "quotaUser", newJString(quotaUser))
+  add(path_579552, "userId", newJString(userId))
+  add(query_579553, "fields", newJString(fields))
+  add(path_579552, "forwardingEmail", newJString(forwardingEmail))
+  result = call_579551.call(path_579552, query_579553, nil, nil, nil)
 
-var gmailUsersSettingsForwardingAddressesGet* = Call_GmailUsersSettingsForwardingAddressesGet_589638(
+var gmailUsersSettingsForwardingAddressesGet* = Call_GmailUsersSettingsForwardingAddressesGet_579538(
     name: "gmailUsersSettingsForwardingAddressesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{userId}/settings/forwardingAddresses/{forwardingEmail}",
-    validator: validate_GmailUsersSettingsForwardingAddressesGet_589639,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsForwardingAddressesGet_589640,
+    validator: validate_GmailUsersSettingsForwardingAddressesGet_579539,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsForwardingAddressesGet_579540,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsForwardingAddressesDelete_589654 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsForwardingAddressesDelete_589656(protocol: Scheme;
+  Call_GmailUsersSettingsForwardingAddressesDelete_579554 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsForwardingAddressesDelete_579556(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6514,7 +6517,7 @@ proc url_GmailUsersSettingsForwardingAddressesDelete_589656(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsForwardingAddressesDelete_589655(path: JsonNode;
+proc validate_GmailUsersSettingsForwardingAddressesDelete_579555(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the specified forwarding address and revokes any verification that may have been required.
   ## 
@@ -6523,75 +6526,74 @@ proc validate_GmailUsersSettingsForwardingAddressesDelete_589655(path: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   forwardingEmail: JString (required)
-  ##                  : The forwarding address to be deleted.
   ##   userId: JString (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
+  ##   forwardingEmail: JString (required)
+  ##                  : The forwarding address to be deleted.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `forwardingEmail` field"
-  var valid_589657 = path.getOrDefault("forwardingEmail")
-  valid_589657 = validateParameter(valid_589657, JString, required = true,
-                                 default = nil)
-  if valid_589657 != nil:
-    section.add "forwardingEmail", valid_589657
-  var valid_589658 = path.getOrDefault("userId")
-  valid_589658 = validateParameter(valid_589658, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `userId` field"
+  var valid_579557 = path.getOrDefault("userId")
+  valid_579557 = validateParameter(valid_579557, JString, required = true,
                                  default = newJString("me"))
-  if valid_589658 != nil:
-    section.add "userId", valid_589658
+  if valid_579557 != nil:
+    section.add "userId", valid_579557
+  var valid_579558 = path.getOrDefault("forwardingEmail")
+  valid_579558 = validateParameter(valid_579558, JString, required = true,
+                                 default = nil)
+  if valid_579558 != nil:
+    section.add "forwardingEmail", valid_579558
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589659 = query.getOrDefault("fields")
-  valid_589659 = validateParameter(valid_589659, JString, required = false,
+  var valid_579559 = query.getOrDefault("key")
+  valid_579559 = validateParameter(valid_579559, JString, required = false,
                                  default = nil)
-  if valid_589659 != nil:
-    section.add "fields", valid_589659
-  var valid_589660 = query.getOrDefault("quotaUser")
-  valid_589660 = validateParameter(valid_589660, JString, required = false,
-                                 default = nil)
-  if valid_589660 != nil:
-    section.add "quotaUser", valid_589660
-  var valid_589661 = query.getOrDefault("alt")
-  valid_589661 = validateParameter(valid_589661, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589661 != nil:
-    section.add "alt", valid_589661
-  var valid_589662 = query.getOrDefault("oauth_token")
-  valid_589662 = validateParameter(valid_589662, JString, required = false,
-                                 default = nil)
-  if valid_589662 != nil:
-    section.add "oauth_token", valid_589662
-  var valid_589663 = query.getOrDefault("userIp")
-  valid_589663 = validateParameter(valid_589663, JString, required = false,
-                                 default = nil)
-  if valid_589663 != nil:
-    section.add "userIp", valid_589663
-  var valid_589664 = query.getOrDefault("key")
-  valid_589664 = validateParameter(valid_589664, JString, required = false,
-                                 default = nil)
-  if valid_589664 != nil:
-    section.add "key", valid_589664
-  var valid_589665 = query.getOrDefault("prettyPrint")
-  valid_589665 = validateParameter(valid_589665, JBool, required = false,
+  if valid_579559 != nil:
+    section.add "key", valid_579559
+  var valid_579560 = query.getOrDefault("prettyPrint")
+  valid_579560 = validateParameter(valid_579560, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589665 != nil:
-    section.add "prettyPrint", valid_589665
+  if valid_579560 != nil:
+    section.add "prettyPrint", valid_579560
+  var valid_579561 = query.getOrDefault("oauth_token")
+  valid_579561 = validateParameter(valid_579561, JString, required = false,
+                                 default = nil)
+  if valid_579561 != nil:
+    section.add "oauth_token", valid_579561
+  var valid_579562 = query.getOrDefault("alt")
+  valid_579562 = validateParameter(valid_579562, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579562 != nil:
+    section.add "alt", valid_579562
+  var valid_579563 = query.getOrDefault("userIp")
+  valid_579563 = validateParameter(valid_579563, JString, required = false,
+                                 default = nil)
+  if valid_579563 != nil:
+    section.add "userIp", valid_579563
+  var valid_579564 = query.getOrDefault("quotaUser")
+  valid_579564 = validateParameter(valid_579564, JString, required = false,
+                                 default = nil)
+  if valid_579564 != nil:
+    section.add "quotaUser", valid_579564
+  var valid_579565 = query.getOrDefault("fields")
+  valid_579565 = validateParameter(valid_579565, JString, required = false,
+                                 default = nil)
+  if valid_579565 != nil:
+    section.add "fields", valid_579565
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6600,71 +6602,71 @@ proc validate_GmailUsersSettingsForwardingAddressesDelete_589655(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589666: Call_GmailUsersSettingsForwardingAddressesDelete_589654;
+proc call*(call_579566: Call_GmailUsersSettingsForwardingAddressesDelete_579554;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes the specified forwarding address and revokes any verification that may have been required.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
   ## 
-  let valid = call_589666.validator(path, query, header, formData, body)
-  let scheme = call_589666.pickScheme
+  let valid = call_579566.validator(path, query, header, formData, body)
+  let scheme = call_579566.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589666.url(scheme.get, call_589666.host, call_589666.base,
-                         call_589666.route, valid.getOrDefault("path"),
+  let url = call_579566.url(scheme.get, call_579566.host, call_579566.base,
+                         call_579566.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589666, url, valid)
+  result = hook(call_579566, url, valid)
 
-proc call*(call_589667: Call_GmailUsersSettingsForwardingAddressesDelete_589654;
-          forwardingEmail: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579567: Call_GmailUsersSettingsForwardingAddressesDelete_579554;
+          forwardingEmail: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsForwardingAddressesDelete
   ## Deletes the specified forwarding address and revokes any verification that may have been required.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   forwardingEmail: string (required)
-  ##                  : The forwarding address to be deleted.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589668 = newJObject()
-  var query_589669 = newJObject()
-  add(query_589669, "fields", newJString(fields))
-  add(query_589669, "quotaUser", newJString(quotaUser))
-  add(query_589669, "alt", newJString(alt))
-  add(path_589668, "forwardingEmail", newJString(forwardingEmail))
-  add(query_589669, "oauth_token", newJString(oauthToken))
-  add(query_589669, "userIp", newJString(userIp))
-  add(query_589669, "key", newJString(key))
-  add(query_589669, "prettyPrint", newJBool(prettyPrint))
-  add(path_589668, "userId", newJString(userId))
-  result = call_589667.call(path_589668, query_589669, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   forwardingEmail: string (required)
+  ##                  : The forwarding address to be deleted.
+  var path_579568 = newJObject()
+  var query_579569 = newJObject()
+  add(query_579569, "key", newJString(key))
+  add(query_579569, "prettyPrint", newJBool(prettyPrint))
+  add(query_579569, "oauth_token", newJString(oauthToken))
+  add(query_579569, "alt", newJString(alt))
+  add(query_579569, "userIp", newJString(userIp))
+  add(query_579569, "quotaUser", newJString(quotaUser))
+  add(path_579568, "userId", newJString(userId))
+  add(query_579569, "fields", newJString(fields))
+  add(path_579568, "forwardingEmail", newJString(forwardingEmail))
+  result = call_579567.call(path_579568, query_579569, nil, nil, nil)
 
-var gmailUsersSettingsForwardingAddressesDelete* = Call_GmailUsersSettingsForwardingAddressesDelete_589654(
+var gmailUsersSettingsForwardingAddressesDelete* = Call_GmailUsersSettingsForwardingAddressesDelete_579554(
     name: "gmailUsersSettingsForwardingAddressesDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com",
     route: "/{userId}/settings/forwardingAddresses/{forwardingEmail}",
-    validator: validate_GmailUsersSettingsForwardingAddressesDelete_589655,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsForwardingAddressesDelete_589656,
+    validator: validate_GmailUsersSettingsForwardingAddressesDelete_579555,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsForwardingAddressesDelete_579556,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsUpdateImap_589685 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsUpdateImap_589687(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsUpdateImap_579585 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsUpdateImap_579587(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6680,7 +6682,7 @@ proc url_GmailUsersSettingsUpdateImap_589687(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsUpdateImap_589686(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersSettingsUpdateImap_579586(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates IMAP settings.
   ## 
@@ -6691,63 +6693,63 @@ proc validate_GmailUsersSettingsUpdateImap_589686(path: JsonNode; query: JsonNod
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589688 = path.getOrDefault("userId")
-  valid_589688 = validateParameter(valid_589688, JString, required = true,
+  var valid_579588 = path.getOrDefault("userId")
+  valid_579588 = validateParameter(valid_579588, JString, required = true,
                                  default = newJString("me"))
-  if valid_589688 != nil:
-    section.add "userId", valid_589688
+  if valid_579588 != nil:
+    section.add "userId", valid_579588
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589689 = query.getOrDefault("fields")
-  valid_589689 = validateParameter(valid_589689, JString, required = false,
+  var valid_579589 = query.getOrDefault("key")
+  valid_579589 = validateParameter(valid_579589, JString, required = false,
                                  default = nil)
-  if valid_589689 != nil:
-    section.add "fields", valid_589689
-  var valid_589690 = query.getOrDefault("quotaUser")
-  valid_589690 = validateParameter(valid_589690, JString, required = false,
-                                 default = nil)
-  if valid_589690 != nil:
-    section.add "quotaUser", valid_589690
-  var valid_589691 = query.getOrDefault("alt")
-  valid_589691 = validateParameter(valid_589691, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589691 != nil:
-    section.add "alt", valid_589691
-  var valid_589692 = query.getOrDefault("oauth_token")
-  valid_589692 = validateParameter(valid_589692, JString, required = false,
-                                 default = nil)
-  if valid_589692 != nil:
-    section.add "oauth_token", valid_589692
-  var valid_589693 = query.getOrDefault("userIp")
-  valid_589693 = validateParameter(valid_589693, JString, required = false,
-                                 default = nil)
-  if valid_589693 != nil:
-    section.add "userIp", valid_589693
-  var valid_589694 = query.getOrDefault("key")
-  valid_589694 = validateParameter(valid_589694, JString, required = false,
-                                 default = nil)
-  if valid_589694 != nil:
-    section.add "key", valid_589694
-  var valid_589695 = query.getOrDefault("prettyPrint")
-  valid_589695 = validateParameter(valid_589695, JBool, required = false,
+  if valid_579589 != nil:
+    section.add "key", valid_579589
+  var valid_579590 = query.getOrDefault("prettyPrint")
+  valid_579590 = validateParameter(valid_579590, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589695 != nil:
-    section.add "prettyPrint", valid_589695
+  if valid_579590 != nil:
+    section.add "prettyPrint", valid_579590
+  var valid_579591 = query.getOrDefault("oauth_token")
+  valid_579591 = validateParameter(valid_579591, JString, required = false,
+                                 default = nil)
+  if valid_579591 != nil:
+    section.add "oauth_token", valid_579591
+  var valid_579592 = query.getOrDefault("alt")
+  valid_579592 = validateParameter(valid_579592, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579592 != nil:
+    section.add "alt", valid_579592
+  var valid_579593 = query.getOrDefault("userIp")
+  valid_579593 = validateParameter(valid_579593, JString, required = false,
+                                 default = nil)
+  if valid_579593 != nil:
+    section.add "userIp", valid_579593
+  var valid_579594 = query.getOrDefault("quotaUser")
+  valid_579594 = validateParameter(valid_579594, JString, required = false,
+                                 default = nil)
+  if valid_579594 != nil:
+    section.add "quotaUser", valid_579594
+  var valid_579595 = query.getOrDefault("fields")
+  valid_579595 = validateParameter(valid_579595, JString, required = false,
+                                 default = nil)
+  if valid_579595 != nil:
+    section.add "fields", valid_579595
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6759,66 +6761,66 @@ proc validate_GmailUsersSettingsUpdateImap_589686(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_589697: Call_GmailUsersSettingsUpdateImap_589685; path: JsonNode;
+proc call*(call_579597: Call_GmailUsersSettingsUpdateImap_579585; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates IMAP settings.
   ## 
-  let valid = call_589697.validator(path, query, header, formData, body)
-  let scheme = call_589697.pickScheme
+  let valid = call_579597.validator(path, query, header, formData, body)
+  let scheme = call_579597.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589697.url(scheme.get, call_589697.host, call_589697.base,
-                         call_589697.route, valid.getOrDefault("path"),
+  let url = call_579597.url(scheme.get, call_579597.host, call_579597.base,
+                         call_579597.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589697, url, valid)
+  result = hook(call_579597, url, valid)
 
-proc call*(call_589698: Call_GmailUsersSettingsUpdateImap_589685;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579598: Call_GmailUsersSettingsUpdateImap_579585; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; userId: string = "me";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersSettingsUpdateImap
   ## Updates IMAP settings.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589699 = newJObject()
-  var query_589700 = newJObject()
-  var body_589701 = newJObject()
-  add(query_589700, "fields", newJString(fields))
-  add(query_589700, "quotaUser", newJString(quotaUser))
-  add(query_589700, "alt", newJString(alt))
-  add(query_589700, "oauth_token", newJString(oauthToken))
-  add(query_589700, "userIp", newJString(userIp))
-  add(query_589700, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579599 = newJObject()
+  var query_579600 = newJObject()
+  var body_579601 = newJObject()
+  add(query_579600, "key", newJString(key))
+  add(query_579600, "prettyPrint", newJBool(prettyPrint))
+  add(query_579600, "oauth_token", newJString(oauthToken))
+  add(query_579600, "alt", newJString(alt))
+  add(query_579600, "userIp", newJString(userIp))
+  add(query_579600, "quotaUser", newJString(quotaUser))
+  add(path_579599, "userId", newJString(userId))
   if body != nil:
-    body_589701 = body
-  add(query_589700, "prettyPrint", newJBool(prettyPrint))
-  add(path_589699, "userId", newJString(userId))
-  result = call_589698.call(path_589699, query_589700, nil, nil, body_589701)
+    body_579601 = body
+  add(query_579600, "fields", newJString(fields))
+  result = call_579598.call(path_579599, query_579600, nil, nil, body_579601)
 
-var gmailUsersSettingsUpdateImap* = Call_GmailUsersSettingsUpdateImap_589685(
+var gmailUsersSettingsUpdateImap* = Call_GmailUsersSettingsUpdateImap_579585(
     name: "gmailUsersSettingsUpdateImap", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{userId}/settings/imap",
-    validator: validate_GmailUsersSettingsUpdateImap_589686,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsUpdateImap_589687,
+    validator: validate_GmailUsersSettingsUpdateImap_579586,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsUpdateImap_579587,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsGetImap_589670 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsGetImap_589672(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsGetImap_579570 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsGetImap_579572(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6834,7 +6836,7 @@ proc url_GmailUsersSettingsGetImap_589672(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsGetImap_589671(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersSettingsGetImap_579571(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets IMAP settings.
   ## 
@@ -6845,63 +6847,63 @@ proc validate_GmailUsersSettingsGetImap_589671(path: JsonNode; query: JsonNode;
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589673 = path.getOrDefault("userId")
-  valid_589673 = validateParameter(valid_589673, JString, required = true,
+  var valid_579573 = path.getOrDefault("userId")
+  valid_579573 = validateParameter(valid_579573, JString, required = true,
                                  default = newJString("me"))
-  if valid_589673 != nil:
-    section.add "userId", valid_589673
+  if valid_579573 != nil:
+    section.add "userId", valid_579573
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589674 = query.getOrDefault("fields")
-  valid_589674 = validateParameter(valid_589674, JString, required = false,
+  var valid_579574 = query.getOrDefault("key")
+  valid_579574 = validateParameter(valid_579574, JString, required = false,
                                  default = nil)
-  if valid_589674 != nil:
-    section.add "fields", valid_589674
-  var valid_589675 = query.getOrDefault("quotaUser")
-  valid_589675 = validateParameter(valid_589675, JString, required = false,
-                                 default = nil)
-  if valid_589675 != nil:
-    section.add "quotaUser", valid_589675
-  var valid_589676 = query.getOrDefault("alt")
-  valid_589676 = validateParameter(valid_589676, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589676 != nil:
-    section.add "alt", valid_589676
-  var valid_589677 = query.getOrDefault("oauth_token")
-  valid_589677 = validateParameter(valid_589677, JString, required = false,
-                                 default = nil)
-  if valid_589677 != nil:
-    section.add "oauth_token", valid_589677
-  var valid_589678 = query.getOrDefault("userIp")
-  valid_589678 = validateParameter(valid_589678, JString, required = false,
-                                 default = nil)
-  if valid_589678 != nil:
-    section.add "userIp", valid_589678
-  var valid_589679 = query.getOrDefault("key")
-  valid_589679 = validateParameter(valid_589679, JString, required = false,
-                                 default = nil)
-  if valid_589679 != nil:
-    section.add "key", valid_589679
-  var valid_589680 = query.getOrDefault("prettyPrint")
-  valid_589680 = validateParameter(valid_589680, JBool, required = false,
+  if valid_579574 != nil:
+    section.add "key", valid_579574
+  var valid_579575 = query.getOrDefault("prettyPrint")
+  valid_579575 = validateParameter(valid_579575, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589680 != nil:
-    section.add "prettyPrint", valid_589680
+  if valid_579575 != nil:
+    section.add "prettyPrint", valid_579575
+  var valid_579576 = query.getOrDefault("oauth_token")
+  valid_579576 = validateParameter(valid_579576, JString, required = false,
+                                 default = nil)
+  if valid_579576 != nil:
+    section.add "oauth_token", valid_579576
+  var valid_579577 = query.getOrDefault("alt")
+  valid_579577 = validateParameter(valid_579577, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579577 != nil:
+    section.add "alt", valid_579577
+  var valid_579578 = query.getOrDefault("userIp")
+  valid_579578 = validateParameter(valid_579578, JString, required = false,
+                                 default = nil)
+  if valid_579578 != nil:
+    section.add "userIp", valid_579578
+  var valid_579579 = query.getOrDefault("quotaUser")
+  valid_579579 = validateParameter(valid_579579, JString, required = false,
+                                 default = nil)
+  if valid_579579 != nil:
+    section.add "quotaUser", valid_579579
+  var valid_579580 = query.getOrDefault("fields")
+  valid_579580 = validateParameter(valid_579580, JString, required = false,
+                                 default = nil)
+  if valid_579580 != nil:
+    section.add "fields", valid_579580
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6910,61 +6912,61 @@ proc validate_GmailUsersSettingsGetImap_589671(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589681: Call_GmailUsersSettingsGetImap_589670; path: JsonNode;
+proc call*(call_579581: Call_GmailUsersSettingsGetImap_579570; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets IMAP settings.
   ## 
-  let valid = call_589681.validator(path, query, header, formData, body)
-  let scheme = call_589681.pickScheme
+  let valid = call_579581.validator(path, query, header, formData, body)
+  let scheme = call_579581.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589681.url(scheme.get, call_589681.host, call_589681.base,
-                         call_589681.route, valid.getOrDefault("path"),
+  let url = call_579581.url(scheme.get, call_579581.host, call_579581.base,
+                         call_579581.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589681, url, valid)
+  result = hook(call_579581, url, valid)
 
-proc call*(call_589682: Call_GmailUsersSettingsGetImap_589670; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true;
-          userId: string = "me"): Recallable =
+proc call*(call_579582: Call_GmailUsersSettingsGetImap_579570; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; userId: string = "me";
+          fields: string = ""): Recallable =
   ## gmailUsersSettingsGetImap
   ## Gets IMAP settings.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589683 = newJObject()
-  var query_589684 = newJObject()
-  add(query_589684, "fields", newJString(fields))
-  add(query_589684, "quotaUser", newJString(quotaUser))
-  add(query_589684, "alt", newJString(alt))
-  add(query_589684, "oauth_token", newJString(oauthToken))
-  add(query_589684, "userIp", newJString(userIp))
-  add(query_589684, "key", newJString(key))
-  add(query_589684, "prettyPrint", newJBool(prettyPrint))
-  add(path_589683, "userId", newJString(userId))
-  result = call_589682.call(path_589683, query_589684, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579583 = newJObject()
+  var query_579584 = newJObject()
+  add(query_579584, "key", newJString(key))
+  add(query_579584, "prettyPrint", newJBool(prettyPrint))
+  add(query_579584, "oauth_token", newJString(oauthToken))
+  add(query_579584, "alt", newJString(alt))
+  add(query_579584, "userIp", newJString(userIp))
+  add(query_579584, "quotaUser", newJString(quotaUser))
+  add(path_579583, "userId", newJString(userId))
+  add(query_579584, "fields", newJString(fields))
+  result = call_579582.call(path_579583, query_579584, nil, nil, nil)
 
-var gmailUsersSettingsGetImap* = Call_GmailUsersSettingsGetImap_589670(
+var gmailUsersSettingsGetImap* = Call_GmailUsersSettingsGetImap_579570(
     name: "gmailUsersSettingsGetImap", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/settings/imap",
-    validator: validate_GmailUsersSettingsGetImap_589671, base: "/gmail/v1/users",
-    url: url_GmailUsersSettingsGetImap_589672, schemes: {Scheme.Https})
+    validator: validate_GmailUsersSettingsGetImap_579571, base: "/gmail/v1/users",
+    url: url_GmailUsersSettingsGetImap_579572, schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsUpdateLanguage_589717 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsUpdateLanguage_589719(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsUpdateLanguage_579617 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsUpdateLanguage_579619(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6980,7 +6982,7 @@ proc url_GmailUsersSettingsUpdateLanguage_589719(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsUpdateLanguage_589718(path: JsonNode;
+proc validate_GmailUsersSettingsUpdateLanguage_579618(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates language settings.
   ## 
@@ -6993,63 +6995,63 @@ proc validate_GmailUsersSettingsUpdateLanguage_589718(path: JsonNode;
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589720 = path.getOrDefault("userId")
-  valid_589720 = validateParameter(valid_589720, JString, required = true,
+  var valid_579620 = path.getOrDefault("userId")
+  valid_579620 = validateParameter(valid_579620, JString, required = true,
                                  default = newJString("me"))
-  if valid_589720 != nil:
-    section.add "userId", valid_589720
+  if valid_579620 != nil:
+    section.add "userId", valid_579620
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589721 = query.getOrDefault("fields")
-  valid_589721 = validateParameter(valid_589721, JString, required = false,
+  var valid_579621 = query.getOrDefault("key")
+  valid_579621 = validateParameter(valid_579621, JString, required = false,
                                  default = nil)
-  if valid_589721 != nil:
-    section.add "fields", valid_589721
-  var valid_589722 = query.getOrDefault("quotaUser")
-  valid_589722 = validateParameter(valid_589722, JString, required = false,
-                                 default = nil)
-  if valid_589722 != nil:
-    section.add "quotaUser", valid_589722
-  var valid_589723 = query.getOrDefault("alt")
-  valid_589723 = validateParameter(valid_589723, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589723 != nil:
-    section.add "alt", valid_589723
-  var valid_589724 = query.getOrDefault("oauth_token")
-  valid_589724 = validateParameter(valid_589724, JString, required = false,
-                                 default = nil)
-  if valid_589724 != nil:
-    section.add "oauth_token", valid_589724
-  var valid_589725 = query.getOrDefault("userIp")
-  valid_589725 = validateParameter(valid_589725, JString, required = false,
-                                 default = nil)
-  if valid_589725 != nil:
-    section.add "userIp", valid_589725
-  var valid_589726 = query.getOrDefault("key")
-  valid_589726 = validateParameter(valid_589726, JString, required = false,
-                                 default = nil)
-  if valid_589726 != nil:
-    section.add "key", valid_589726
-  var valid_589727 = query.getOrDefault("prettyPrint")
-  valid_589727 = validateParameter(valid_589727, JBool, required = false,
+  if valid_579621 != nil:
+    section.add "key", valid_579621
+  var valid_579622 = query.getOrDefault("prettyPrint")
+  valid_579622 = validateParameter(valid_579622, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589727 != nil:
-    section.add "prettyPrint", valid_589727
+  if valid_579622 != nil:
+    section.add "prettyPrint", valid_579622
+  var valid_579623 = query.getOrDefault("oauth_token")
+  valid_579623 = validateParameter(valid_579623, JString, required = false,
+                                 default = nil)
+  if valid_579623 != nil:
+    section.add "oauth_token", valid_579623
+  var valid_579624 = query.getOrDefault("alt")
+  valid_579624 = validateParameter(valid_579624, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579624 != nil:
+    section.add "alt", valid_579624
+  var valid_579625 = query.getOrDefault("userIp")
+  valid_579625 = validateParameter(valid_579625, JString, required = false,
+                                 default = nil)
+  if valid_579625 != nil:
+    section.add "userIp", valid_579625
+  var valid_579626 = query.getOrDefault("quotaUser")
+  valid_579626 = validateParameter(valid_579626, JString, required = false,
+                                 default = nil)
+  if valid_579626 != nil:
+    section.add "quotaUser", valid_579626
+  var valid_579627 = query.getOrDefault("fields")
+  valid_579627 = validateParameter(valid_579627, JString, required = false,
+                                 default = nil)
+  if valid_579627 != nil:
+    section.add "fields", valid_579627
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7061,71 +7063,71 @@ proc validate_GmailUsersSettingsUpdateLanguage_589718(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589729: Call_GmailUsersSettingsUpdateLanguage_589717;
+proc call*(call_579629: Call_GmailUsersSettingsUpdateLanguage_579617;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates language settings.
   ## 
   ## If successful, the return object contains the displayLanguage that was saved for the user, which may differ from the value passed into the request. This is because the requested displayLanguage may not be directly supported by Gmail but have a close variant that is, and so the variant may be chosen and saved instead.
   ## 
-  let valid = call_589729.validator(path, query, header, formData, body)
-  let scheme = call_589729.pickScheme
+  let valid = call_579629.validator(path, query, header, formData, body)
+  let scheme = call_579629.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589729.url(scheme.get, call_589729.host, call_589729.base,
-                         call_589729.route, valid.getOrDefault("path"),
+  let url = call_579629.url(scheme.get, call_579629.host, call_579629.base,
+                         call_579629.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589729, url, valid)
+  result = hook(call_579629, url, valid)
 
-proc call*(call_589730: Call_GmailUsersSettingsUpdateLanguage_589717;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579630: Call_GmailUsersSettingsUpdateLanguage_579617;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersSettingsUpdateLanguage
   ## Updates language settings.
   ## 
   ## If successful, the return object contains the displayLanguage that was saved for the user, which may differ from the value passed into the request. This is because the requested displayLanguage may not be directly supported by Gmail but have a close variant that is, and so the variant may be chosen and saved instead.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589731 = newJObject()
-  var query_589732 = newJObject()
-  var body_589733 = newJObject()
-  add(query_589732, "fields", newJString(fields))
-  add(query_589732, "quotaUser", newJString(quotaUser))
-  add(query_589732, "alt", newJString(alt))
-  add(query_589732, "oauth_token", newJString(oauthToken))
-  add(query_589732, "userIp", newJString(userIp))
-  add(query_589732, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579631 = newJObject()
+  var query_579632 = newJObject()
+  var body_579633 = newJObject()
+  add(query_579632, "key", newJString(key))
+  add(query_579632, "prettyPrint", newJBool(prettyPrint))
+  add(query_579632, "oauth_token", newJString(oauthToken))
+  add(query_579632, "alt", newJString(alt))
+  add(query_579632, "userIp", newJString(userIp))
+  add(query_579632, "quotaUser", newJString(quotaUser))
+  add(path_579631, "userId", newJString(userId))
   if body != nil:
-    body_589733 = body
-  add(query_589732, "prettyPrint", newJBool(prettyPrint))
-  add(path_589731, "userId", newJString(userId))
-  result = call_589730.call(path_589731, query_589732, nil, nil, body_589733)
+    body_579633 = body
+  add(query_579632, "fields", newJString(fields))
+  result = call_579630.call(path_579631, query_579632, nil, nil, body_579633)
 
-var gmailUsersSettingsUpdateLanguage* = Call_GmailUsersSettingsUpdateLanguage_589717(
+var gmailUsersSettingsUpdateLanguage* = Call_GmailUsersSettingsUpdateLanguage_579617(
     name: "gmailUsersSettingsUpdateLanguage", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{userId}/settings/language",
-    validator: validate_GmailUsersSettingsUpdateLanguage_589718,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsUpdateLanguage_589719,
+    validator: validate_GmailUsersSettingsUpdateLanguage_579618,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsUpdateLanguage_579619,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsGetLanguage_589702 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsGetLanguage_589704(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsGetLanguage_579602 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsGetLanguage_579604(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7141,7 +7143,7 @@ proc url_GmailUsersSettingsGetLanguage_589704(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsGetLanguage_589703(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersSettingsGetLanguage_579603(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets language settings.
   ## 
@@ -7152,63 +7154,63 @@ proc validate_GmailUsersSettingsGetLanguage_589703(path: JsonNode; query: JsonNo
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589705 = path.getOrDefault("userId")
-  valid_589705 = validateParameter(valid_589705, JString, required = true,
+  var valid_579605 = path.getOrDefault("userId")
+  valid_579605 = validateParameter(valid_579605, JString, required = true,
                                  default = newJString("me"))
-  if valid_589705 != nil:
-    section.add "userId", valid_589705
+  if valid_579605 != nil:
+    section.add "userId", valid_579605
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589706 = query.getOrDefault("fields")
-  valid_589706 = validateParameter(valid_589706, JString, required = false,
+  var valid_579606 = query.getOrDefault("key")
+  valid_579606 = validateParameter(valid_579606, JString, required = false,
                                  default = nil)
-  if valid_589706 != nil:
-    section.add "fields", valid_589706
-  var valid_589707 = query.getOrDefault("quotaUser")
-  valid_589707 = validateParameter(valid_589707, JString, required = false,
-                                 default = nil)
-  if valid_589707 != nil:
-    section.add "quotaUser", valid_589707
-  var valid_589708 = query.getOrDefault("alt")
-  valid_589708 = validateParameter(valid_589708, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589708 != nil:
-    section.add "alt", valid_589708
-  var valid_589709 = query.getOrDefault("oauth_token")
-  valid_589709 = validateParameter(valid_589709, JString, required = false,
-                                 default = nil)
-  if valid_589709 != nil:
-    section.add "oauth_token", valid_589709
-  var valid_589710 = query.getOrDefault("userIp")
-  valid_589710 = validateParameter(valid_589710, JString, required = false,
-                                 default = nil)
-  if valid_589710 != nil:
-    section.add "userIp", valid_589710
-  var valid_589711 = query.getOrDefault("key")
-  valid_589711 = validateParameter(valid_589711, JString, required = false,
-                                 default = nil)
-  if valid_589711 != nil:
-    section.add "key", valid_589711
-  var valid_589712 = query.getOrDefault("prettyPrint")
-  valid_589712 = validateParameter(valid_589712, JBool, required = false,
+  if valid_579606 != nil:
+    section.add "key", valid_579606
+  var valid_579607 = query.getOrDefault("prettyPrint")
+  valid_579607 = validateParameter(valid_579607, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589712 != nil:
-    section.add "prettyPrint", valid_589712
+  if valid_579607 != nil:
+    section.add "prettyPrint", valid_579607
+  var valid_579608 = query.getOrDefault("oauth_token")
+  valid_579608 = validateParameter(valid_579608, JString, required = false,
+                                 default = nil)
+  if valid_579608 != nil:
+    section.add "oauth_token", valid_579608
+  var valid_579609 = query.getOrDefault("alt")
+  valid_579609 = validateParameter(valid_579609, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579609 != nil:
+    section.add "alt", valid_579609
+  var valid_579610 = query.getOrDefault("userIp")
+  valid_579610 = validateParameter(valid_579610, JString, required = false,
+                                 default = nil)
+  if valid_579610 != nil:
+    section.add "userIp", valid_579610
+  var valid_579611 = query.getOrDefault("quotaUser")
+  valid_579611 = validateParameter(valid_579611, JString, required = false,
+                                 default = nil)
+  if valid_579611 != nil:
+    section.add "quotaUser", valid_579611
+  var valid_579612 = query.getOrDefault("fields")
+  valid_579612 = validateParameter(valid_579612, JString, required = false,
+                                 default = nil)
+  if valid_579612 != nil:
+    section.add "fields", valid_579612
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7217,62 +7219,62 @@ proc validate_GmailUsersSettingsGetLanguage_589703(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_589713: Call_GmailUsersSettingsGetLanguage_589702; path: JsonNode;
+proc call*(call_579613: Call_GmailUsersSettingsGetLanguage_579602; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets language settings.
   ## 
-  let valid = call_589713.validator(path, query, header, formData, body)
-  let scheme = call_589713.pickScheme
+  let valid = call_579613.validator(path, query, header, formData, body)
+  let scheme = call_579613.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589713.url(scheme.get, call_589713.host, call_589713.base,
-                         call_589713.route, valid.getOrDefault("path"),
+  let url = call_579613.url(scheme.get, call_579613.host, call_579613.base,
+                         call_579613.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589713, url, valid)
+  result = hook(call_579613, url, valid)
 
-proc call*(call_589714: Call_GmailUsersSettingsGetLanguage_589702;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579614: Call_GmailUsersSettingsGetLanguage_579602;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsGetLanguage
   ## Gets language settings.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589715 = newJObject()
-  var query_589716 = newJObject()
-  add(query_589716, "fields", newJString(fields))
-  add(query_589716, "quotaUser", newJString(quotaUser))
-  add(query_589716, "alt", newJString(alt))
-  add(query_589716, "oauth_token", newJString(oauthToken))
-  add(query_589716, "userIp", newJString(userIp))
-  add(query_589716, "key", newJString(key))
-  add(query_589716, "prettyPrint", newJBool(prettyPrint))
-  add(path_589715, "userId", newJString(userId))
-  result = call_589714.call(path_589715, query_589716, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579615 = newJObject()
+  var query_579616 = newJObject()
+  add(query_579616, "key", newJString(key))
+  add(query_579616, "prettyPrint", newJBool(prettyPrint))
+  add(query_579616, "oauth_token", newJString(oauthToken))
+  add(query_579616, "alt", newJString(alt))
+  add(query_579616, "userIp", newJString(userIp))
+  add(query_579616, "quotaUser", newJString(quotaUser))
+  add(path_579615, "userId", newJString(userId))
+  add(query_579616, "fields", newJString(fields))
+  result = call_579614.call(path_579615, query_579616, nil, nil, nil)
 
-var gmailUsersSettingsGetLanguage* = Call_GmailUsersSettingsGetLanguage_589702(
+var gmailUsersSettingsGetLanguage* = Call_GmailUsersSettingsGetLanguage_579602(
     name: "gmailUsersSettingsGetLanguage", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/settings/language",
-    validator: validate_GmailUsersSettingsGetLanguage_589703,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsGetLanguage_589704,
+    validator: validate_GmailUsersSettingsGetLanguage_579603,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsGetLanguage_579604,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsUpdatePop_589749 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsUpdatePop_589751(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsUpdatePop_579649 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsUpdatePop_579651(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7288,7 +7290,7 @@ proc url_GmailUsersSettingsUpdatePop_589751(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsUpdatePop_589750(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersSettingsUpdatePop_579650(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates POP settings.
   ## 
@@ -7299,63 +7301,63 @@ proc validate_GmailUsersSettingsUpdatePop_589750(path: JsonNode; query: JsonNode
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589752 = path.getOrDefault("userId")
-  valid_589752 = validateParameter(valid_589752, JString, required = true,
+  var valid_579652 = path.getOrDefault("userId")
+  valid_579652 = validateParameter(valid_579652, JString, required = true,
                                  default = newJString("me"))
-  if valid_589752 != nil:
-    section.add "userId", valid_589752
+  if valid_579652 != nil:
+    section.add "userId", valid_579652
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589753 = query.getOrDefault("fields")
-  valid_589753 = validateParameter(valid_589753, JString, required = false,
+  var valid_579653 = query.getOrDefault("key")
+  valid_579653 = validateParameter(valid_579653, JString, required = false,
                                  default = nil)
-  if valid_589753 != nil:
-    section.add "fields", valid_589753
-  var valid_589754 = query.getOrDefault("quotaUser")
-  valid_589754 = validateParameter(valid_589754, JString, required = false,
-                                 default = nil)
-  if valid_589754 != nil:
-    section.add "quotaUser", valid_589754
-  var valid_589755 = query.getOrDefault("alt")
-  valid_589755 = validateParameter(valid_589755, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589755 != nil:
-    section.add "alt", valid_589755
-  var valid_589756 = query.getOrDefault("oauth_token")
-  valid_589756 = validateParameter(valid_589756, JString, required = false,
-                                 default = nil)
-  if valid_589756 != nil:
-    section.add "oauth_token", valid_589756
-  var valid_589757 = query.getOrDefault("userIp")
-  valid_589757 = validateParameter(valid_589757, JString, required = false,
-                                 default = nil)
-  if valid_589757 != nil:
-    section.add "userIp", valid_589757
-  var valid_589758 = query.getOrDefault("key")
-  valid_589758 = validateParameter(valid_589758, JString, required = false,
-                                 default = nil)
-  if valid_589758 != nil:
-    section.add "key", valid_589758
-  var valid_589759 = query.getOrDefault("prettyPrint")
-  valid_589759 = validateParameter(valid_589759, JBool, required = false,
+  if valid_579653 != nil:
+    section.add "key", valid_579653
+  var valid_579654 = query.getOrDefault("prettyPrint")
+  valid_579654 = validateParameter(valid_579654, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589759 != nil:
-    section.add "prettyPrint", valid_589759
+  if valid_579654 != nil:
+    section.add "prettyPrint", valid_579654
+  var valid_579655 = query.getOrDefault("oauth_token")
+  valid_579655 = validateParameter(valid_579655, JString, required = false,
+                                 default = nil)
+  if valid_579655 != nil:
+    section.add "oauth_token", valid_579655
+  var valid_579656 = query.getOrDefault("alt")
+  valid_579656 = validateParameter(valid_579656, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579656 != nil:
+    section.add "alt", valid_579656
+  var valid_579657 = query.getOrDefault("userIp")
+  valid_579657 = validateParameter(valid_579657, JString, required = false,
+                                 default = nil)
+  if valid_579657 != nil:
+    section.add "userIp", valid_579657
+  var valid_579658 = query.getOrDefault("quotaUser")
+  valid_579658 = validateParameter(valid_579658, JString, required = false,
+                                 default = nil)
+  if valid_579658 != nil:
+    section.add "quotaUser", valid_579658
+  var valid_579659 = query.getOrDefault("fields")
+  valid_579659 = validateParameter(valid_579659, JString, required = false,
+                                 default = nil)
+  if valid_579659 != nil:
+    section.add "fields", valid_579659
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7367,66 +7369,66 @@ proc validate_GmailUsersSettingsUpdatePop_589750(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_589761: Call_GmailUsersSettingsUpdatePop_589749; path: JsonNode;
+proc call*(call_579661: Call_GmailUsersSettingsUpdatePop_579649; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates POP settings.
   ## 
-  let valid = call_589761.validator(path, query, header, formData, body)
-  let scheme = call_589761.pickScheme
+  let valid = call_579661.validator(path, query, header, formData, body)
+  let scheme = call_579661.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589761.url(scheme.get, call_589761.host, call_589761.base,
-                         call_589761.route, valid.getOrDefault("path"),
+  let url = call_579661.url(scheme.get, call_579661.host, call_579661.base,
+                         call_579661.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589761, url, valid)
+  result = hook(call_579661, url, valid)
 
-proc call*(call_589762: Call_GmailUsersSettingsUpdatePop_589749;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579662: Call_GmailUsersSettingsUpdatePop_579649; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; userId: string = "me";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersSettingsUpdatePop
   ## Updates POP settings.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589763 = newJObject()
-  var query_589764 = newJObject()
-  var body_589765 = newJObject()
-  add(query_589764, "fields", newJString(fields))
-  add(query_589764, "quotaUser", newJString(quotaUser))
-  add(query_589764, "alt", newJString(alt))
-  add(query_589764, "oauth_token", newJString(oauthToken))
-  add(query_589764, "userIp", newJString(userIp))
-  add(query_589764, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579663 = newJObject()
+  var query_579664 = newJObject()
+  var body_579665 = newJObject()
+  add(query_579664, "key", newJString(key))
+  add(query_579664, "prettyPrint", newJBool(prettyPrint))
+  add(query_579664, "oauth_token", newJString(oauthToken))
+  add(query_579664, "alt", newJString(alt))
+  add(query_579664, "userIp", newJString(userIp))
+  add(query_579664, "quotaUser", newJString(quotaUser))
+  add(path_579663, "userId", newJString(userId))
   if body != nil:
-    body_589765 = body
-  add(query_589764, "prettyPrint", newJBool(prettyPrint))
-  add(path_589763, "userId", newJString(userId))
-  result = call_589762.call(path_589763, query_589764, nil, nil, body_589765)
+    body_579665 = body
+  add(query_579664, "fields", newJString(fields))
+  result = call_579662.call(path_579663, query_579664, nil, nil, body_579665)
 
-var gmailUsersSettingsUpdatePop* = Call_GmailUsersSettingsUpdatePop_589749(
+var gmailUsersSettingsUpdatePop* = Call_GmailUsersSettingsUpdatePop_579649(
     name: "gmailUsersSettingsUpdatePop", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{userId}/settings/pop",
-    validator: validate_GmailUsersSettingsUpdatePop_589750,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsUpdatePop_589751,
+    validator: validate_GmailUsersSettingsUpdatePop_579650,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsUpdatePop_579651,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsGetPop_589734 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsGetPop_589736(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsGetPop_579634 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsGetPop_579636(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -7443,7 +7445,7 @@ proc url_GmailUsersSettingsGetPop_589736(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsGetPop_589735(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersSettingsGetPop_579635(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets POP settings.
   ## 
@@ -7454,63 +7456,63 @@ proc validate_GmailUsersSettingsGetPop_589735(path: JsonNode; query: JsonNode;
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589737 = path.getOrDefault("userId")
-  valid_589737 = validateParameter(valid_589737, JString, required = true,
+  var valid_579637 = path.getOrDefault("userId")
+  valid_579637 = validateParameter(valid_579637, JString, required = true,
                                  default = newJString("me"))
-  if valid_589737 != nil:
-    section.add "userId", valid_589737
+  if valid_579637 != nil:
+    section.add "userId", valid_579637
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589738 = query.getOrDefault("fields")
-  valid_589738 = validateParameter(valid_589738, JString, required = false,
+  var valid_579638 = query.getOrDefault("key")
+  valid_579638 = validateParameter(valid_579638, JString, required = false,
                                  default = nil)
-  if valid_589738 != nil:
-    section.add "fields", valid_589738
-  var valid_589739 = query.getOrDefault("quotaUser")
-  valid_589739 = validateParameter(valid_589739, JString, required = false,
-                                 default = nil)
-  if valid_589739 != nil:
-    section.add "quotaUser", valid_589739
-  var valid_589740 = query.getOrDefault("alt")
-  valid_589740 = validateParameter(valid_589740, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589740 != nil:
-    section.add "alt", valid_589740
-  var valid_589741 = query.getOrDefault("oauth_token")
-  valid_589741 = validateParameter(valid_589741, JString, required = false,
-                                 default = nil)
-  if valid_589741 != nil:
-    section.add "oauth_token", valid_589741
-  var valid_589742 = query.getOrDefault("userIp")
-  valid_589742 = validateParameter(valid_589742, JString, required = false,
-                                 default = nil)
-  if valid_589742 != nil:
-    section.add "userIp", valid_589742
-  var valid_589743 = query.getOrDefault("key")
-  valid_589743 = validateParameter(valid_589743, JString, required = false,
-                                 default = nil)
-  if valid_589743 != nil:
-    section.add "key", valid_589743
-  var valid_589744 = query.getOrDefault("prettyPrint")
-  valid_589744 = validateParameter(valid_589744, JBool, required = false,
+  if valid_579638 != nil:
+    section.add "key", valid_579638
+  var valid_579639 = query.getOrDefault("prettyPrint")
+  valid_579639 = validateParameter(valid_579639, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589744 != nil:
-    section.add "prettyPrint", valid_589744
+  if valid_579639 != nil:
+    section.add "prettyPrint", valid_579639
+  var valid_579640 = query.getOrDefault("oauth_token")
+  valid_579640 = validateParameter(valid_579640, JString, required = false,
+                                 default = nil)
+  if valid_579640 != nil:
+    section.add "oauth_token", valid_579640
+  var valid_579641 = query.getOrDefault("alt")
+  valid_579641 = validateParameter(valid_579641, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579641 != nil:
+    section.add "alt", valid_579641
+  var valid_579642 = query.getOrDefault("userIp")
+  valid_579642 = validateParameter(valid_579642, JString, required = false,
+                                 default = nil)
+  if valid_579642 != nil:
+    section.add "userIp", valid_579642
+  var valid_579643 = query.getOrDefault("quotaUser")
+  valid_579643 = validateParameter(valid_579643, JString, required = false,
+                                 default = nil)
+  if valid_579643 != nil:
+    section.add "quotaUser", valid_579643
+  var valid_579644 = query.getOrDefault("fields")
+  valid_579644 = validateParameter(valid_579644, JString, required = false,
+                                 default = nil)
+  if valid_579644 != nil:
+    section.add "fields", valid_579644
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7519,61 +7521,61 @@ proc validate_GmailUsersSettingsGetPop_589735(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589745: Call_GmailUsersSettingsGetPop_589734; path: JsonNode;
+proc call*(call_579645: Call_GmailUsersSettingsGetPop_579634; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets POP settings.
   ## 
-  let valid = call_589745.validator(path, query, header, formData, body)
-  let scheme = call_589745.pickScheme
+  let valid = call_579645.validator(path, query, header, formData, body)
+  let scheme = call_579645.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589745.url(scheme.get, call_589745.host, call_589745.base,
-                         call_589745.route, valid.getOrDefault("path"),
+  let url = call_579645.url(scheme.get, call_579645.host, call_579645.base,
+                         call_579645.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589745, url, valid)
+  result = hook(call_579645, url, valid)
 
-proc call*(call_589746: Call_GmailUsersSettingsGetPop_589734; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true;
-          userId: string = "me"): Recallable =
+proc call*(call_579646: Call_GmailUsersSettingsGetPop_579634; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; userId: string = "me";
+          fields: string = ""): Recallable =
   ## gmailUsersSettingsGetPop
   ## Gets POP settings.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589747 = newJObject()
-  var query_589748 = newJObject()
-  add(query_589748, "fields", newJString(fields))
-  add(query_589748, "quotaUser", newJString(quotaUser))
-  add(query_589748, "alt", newJString(alt))
-  add(query_589748, "oauth_token", newJString(oauthToken))
-  add(query_589748, "userIp", newJString(userIp))
-  add(query_589748, "key", newJString(key))
-  add(query_589748, "prettyPrint", newJBool(prettyPrint))
-  add(path_589747, "userId", newJString(userId))
-  result = call_589746.call(path_589747, query_589748, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579647 = newJObject()
+  var query_579648 = newJObject()
+  add(query_579648, "key", newJString(key))
+  add(query_579648, "prettyPrint", newJBool(prettyPrint))
+  add(query_579648, "oauth_token", newJString(oauthToken))
+  add(query_579648, "alt", newJString(alt))
+  add(query_579648, "userIp", newJString(userIp))
+  add(query_579648, "quotaUser", newJString(quotaUser))
+  add(path_579647, "userId", newJString(userId))
+  add(query_579648, "fields", newJString(fields))
+  result = call_579646.call(path_579647, query_579648, nil, nil, nil)
 
-var gmailUsersSettingsGetPop* = Call_GmailUsersSettingsGetPop_589734(
+var gmailUsersSettingsGetPop* = Call_GmailUsersSettingsGetPop_579634(
     name: "gmailUsersSettingsGetPop", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/settings/pop",
-    validator: validate_GmailUsersSettingsGetPop_589735, base: "/gmail/v1/users",
-    url: url_GmailUsersSettingsGetPop_589736, schemes: {Scheme.Https})
+    validator: validate_GmailUsersSettingsGetPop_579635, base: "/gmail/v1/users",
+    url: url_GmailUsersSettingsGetPop_579636, schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsSendAsCreate_589781 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsSendAsCreate_589783(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsSendAsCreate_579681 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsSendAsCreate_579683(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7589,7 +7591,7 @@ proc url_GmailUsersSettingsSendAsCreate_589783(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsSendAsCreate_589782(path: JsonNode;
+proc validate_GmailUsersSettingsSendAsCreate_579682(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP service to validate the configuration before creating the alias. If ownership verification is required for the alias, a message will be sent to the email address and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
   ## 
@@ -7602,63 +7604,63 @@ proc validate_GmailUsersSettingsSendAsCreate_589782(path: JsonNode;
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589784 = path.getOrDefault("userId")
-  valid_589784 = validateParameter(valid_589784, JString, required = true,
+  var valid_579684 = path.getOrDefault("userId")
+  valid_579684 = validateParameter(valid_579684, JString, required = true,
                                  default = newJString("me"))
-  if valid_589784 != nil:
-    section.add "userId", valid_589784
+  if valid_579684 != nil:
+    section.add "userId", valid_579684
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589785 = query.getOrDefault("fields")
-  valid_589785 = validateParameter(valid_589785, JString, required = false,
+  var valid_579685 = query.getOrDefault("key")
+  valid_579685 = validateParameter(valid_579685, JString, required = false,
                                  default = nil)
-  if valid_589785 != nil:
-    section.add "fields", valid_589785
-  var valid_589786 = query.getOrDefault("quotaUser")
-  valid_589786 = validateParameter(valid_589786, JString, required = false,
-                                 default = nil)
-  if valid_589786 != nil:
-    section.add "quotaUser", valid_589786
-  var valid_589787 = query.getOrDefault("alt")
-  valid_589787 = validateParameter(valid_589787, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589787 != nil:
-    section.add "alt", valid_589787
-  var valid_589788 = query.getOrDefault("oauth_token")
-  valid_589788 = validateParameter(valid_589788, JString, required = false,
-                                 default = nil)
-  if valid_589788 != nil:
-    section.add "oauth_token", valid_589788
-  var valid_589789 = query.getOrDefault("userIp")
-  valid_589789 = validateParameter(valid_589789, JString, required = false,
-                                 default = nil)
-  if valid_589789 != nil:
-    section.add "userIp", valid_589789
-  var valid_589790 = query.getOrDefault("key")
-  valid_589790 = validateParameter(valid_589790, JString, required = false,
-                                 default = nil)
-  if valid_589790 != nil:
-    section.add "key", valid_589790
-  var valid_589791 = query.getOrDefault("prettyPrint")
-  valid_589791 = validateParameter(valid_589791, JBool, required = false,
+  if valid_579685 != nil:
+    section.add "key", valid_579685
+  var valid_579686 = query.getOrDefault("prettyPrint")
+  valid_579686 = validateParameter(valid_579686, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589791 != nil:
-    section.add "prettyPrint", valid_589791
+  if valid_579686 != nil:
+    section.add "prettyPrint", valid_579686
+  var valid_579687 = query.getOrDefault("oauth_token")
+  valid_579687 = validateParameter(valid_579687, JString, required = false,
+                                 default = nil)
+  if valid_579687 != nil:
+    section.add "oauth_token", valid_579687
+  var valid_579688 = query.getOrDefault("alt")
+  valid_579688 = validateParameter(valid_579688, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579688 != nil:
+    section.add "alt", valid_579688
+  var valid_579689 = query.getOrDefault("userIp")
+  valid_579689 = validateParameter(valid_579689, JString, required = false,
+                                 default = nil)
+  if valid_579689 != nil:
+    section.add "userIp", valid_579689
+  var valid_579690 = query.getOrDefault("quotaUser")
+  valid_579690 = validateParameter(valid_579690, JString, required = false,
+                                 default = nil)
+  if valid_579690 != nil:
+    section.add "quotaUser", valid_579690
+  var valid_579691 = query.getOrDefault("fields")
+  valid_579691 = validateParameter(valid_579691, JString, required = false,
+                                 default = nil)
+  if valid_579691 != nil:
+    section.add "fields", valid_579691
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7670,70 +7672,70 @@ proc validate_GmailUsersSettingsSendAsCreate_589782(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589793: Call_GmailUsersSettingsSendAsCreate_589781; path: JsonNode;
+proc call*(call_579693: Call_GmailUsersSettingsSendAsCreate_579681; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP service to validate the configuration before creating the alias. If ownership verification is required for the alias, a message will be sent to the email address and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
   ## 
-  let valid = call_589793.validator(path, query, header, formData, body)
-  let scheme = call_589793.pickScheme
+  let valid = call_579693.validator(path, query, header, formData, body)
+  let scheme = call_579693.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589793.url(scheme.get, call_589793.host, call_589793.base,
-                         call_589793.route, valid.getOrDefault("path"),
+  let url = call_579693.url(scheme.get, call_579693.host, call_579693.base,
+                         call_579693.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589793, url, valid)
+  result = hook(call_579693, url, valid)
 
-proc call*(call_589794: Call_GmailUsersSettingsSendAsCreate_589781;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579694: Call_GmailUsersSettingsSendAsCreate_579681;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersSettingsSendAsCreate
   ## Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP service to validate the configuration before creating the alias. If ownership verification is required for the alias, a message will be sent to the email address and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589795 = newJObject()
-  var query_589796 = newJObject()
-  var body_589797 = newJObject()
-  add(query_589796, "fields", newJString(fields))
-  add(query_589796, "quotaUser", newJString(quotaUser))
-  add(query_589796, "alt", newJString(alt))
-  add(query_589796, "oauth_token", newJString(oauthToken))
-  add(query_589796, "userIp", newJString(userIp))
-  add(query_589796, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579695 = newJObject()
+  var query_579696 = newJObject()
+  var body_579697 = newJObject()
+  add(query_579696, "key", newJString(key))
+  add(query_579696, "prettyPrint", newJBool(prettyPrint))
+  add(query_579696, "oauth_token", newJString(oauthToken))
+  add(query_579696, "alt", newJString(alt))
+  add(query_579696, "userIp", newJString(userIp))
+  add(query_579696, "quotaUser", newJString(quotaUser))
+  add(path_579695, "userId", newJString(userId))
   if body != nil:
-    body_589797 = body
-  add(query_589796, "prettyPrint", newJBool(prettyPrint))
-  add(path_589795, "userId", newJString(userId))
-  result = call_589794.call(path_589795, query_589796, nil, nil, body_589797)
+    body_579697 = body
+  add(query_579696, "fields", newJString(fields))
+  result = call_579694.call(path_579695, query_579696, nil, nil, body_579697)
 
-var gmailUsersSettingsSendAsCreate* = Call_GmailUsersSettingsSendAsCreate_589781(
+var gmailUsersSettingsSendAsCreate* = Call_GmailUsersSettingsSendAsCreate_579681(
     name: "gmailUsersSettingsSendAsCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/settings/sendAs",
-    validator: validate_GmailUsersSettingsSendAsCreate_589782,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsCreate_589783,
+    validator: validate_GmailUsersSettingsSendAsCreate_579682,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsCreate_579683,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsSendAsList_589766 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsSendAsList_589768(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsSendAsList_579666 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsSendAsList_579668(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7749,7 +7751,7 @@ proc url_GmailUsersSettingsSendAsList_589768(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsSendAsList_589767(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersSettingsSendAsList_579667(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the send-as aliases for the specified account. The result includes the primary send-as address associated with the account as well as any custom "from" aliases.
   ## 
@@ -7760,63 +7762,63 @@ proc validate_GmailUsersSettingsSendAsList_589767(path: JsonNode; query: JsonNod
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589769 = path.getOrDefault("userId")
-  valid_589769 = validateParameter(valid_589769, JString, required = true,
+  var valid_579669 = path.getOrDefault("userId")
+  valid_579669 = validateParameter(valid_579669, JString, required = true,
                                  default = newJString("me"))
-  if valid_589769 != nil:
-    section.add "userId", valid_589769
+  if valid_579669 != nil:
+    section.add "userId", valid_579669
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589770 = query.getOrDefault("fields")
-  valid_589770 = validateParameter(valid_589770, JString, required = false,
+  var valid_579670 = query.getOrDefault("key")
+  valid_579670 = validateParameter(valid_579670, JString, required = false,
                                  default = nil)
-  if valid_589770 != nil:
-    section.add "fields", valid_589770
-  var valid_589771 = query.getOrDefault("quotaUser")
-  valid_589771 = validateParameter(valid_589771, JString, required = false,
-                                 default = nil)
-  if valid_589771 != nil:
-    section.add "quotaUser", valid_589771
-  var valid_589772 = query.getOrDefault("alt")
-  valid_589772 = validateParameter(valid_589772, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589772 != nil:
-    section.add "alt", valid_589772
-  var valid_589773 = query.getOrDefault("oauth_token")
-  valid_589773 = validateParameter(valid_589773, JString, required = false,
-                                 default = nil)
-  if valid_589773 != nil:
-    section.add "oauth_token", valid_589773
-  var valid_589774 = query.getOrDefault("userIp")
-  valid_589774 = validateParameter(valid_589774, JString, required = false,
-                                 default = nil)
-  if valid_589774 != nil:
-    section.add "userIp", valid_589774
-  var valid_589775 = query.getOrDefault("key")
-  valid_589775 = validateParameter(valid_589775, JString, required = false,
-                                 default = nil)
-  if valid_589775 != nil:
-    section.add "key", valid_589775
-  var valid_589776 = query.getOrDefault("prettyPrint")
-  valid_589776 = validateParameter(valid_589776, JBool, required = false,
+  if valid_579670 != nil:
+    section.add "key", valid_579670
+  var valid_579671 = query.getOrDefault("prettyPrint")
+  valid_579671 = validateParameter(valid_579671, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589776 != nil:
-    section.add "prettyPrint", valid_589776
+  if valid_579671 != nil:
+    section.add "prettyPrint", valid_579671
+  var valid_579672 = query.getOrDefault("oauth_token")
+  valid_579672 = validateParameter(valid_579672, JString, required = false,
+                                 default = nil)
+  if valid_579672 != nil:
+    section.add "oauth_token", valid_579672
+  var valid_579673 = query.getOrDefault("alt")
+  valid_579673 = validateParameter(valid_579673, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579673 != nil:
+    section.add "alt", valid_579673
+  var valid_579674 = query.getOrDefault("userIp")
+  valid_579674 = validateParameter(valid_579674, JString, required = false,
+                                 default = nil)
+  if valid_579674 != nil:
+    section.add "userIp", valid_579674
+  var valid_579675 = query.getOrDefault("quotaUser")
+  valid_579675 = validateParameter(valid_579675, JString, required = false,
+                                 default = nil)
+  if valid_579675 != nil:
+    section.add "quotaUser", valid_579675
+  var valid_579676 = query.getOrDefault("fields")
+  valid_579676 = validateParameter(valid_579676, JString, required = false,
+                                 default = nil)
+  if valid_579676 != nil:
+    section.add "fields", valid_579676
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7825,62 +7827,62 @@ proc validate_GmailUsersSettingsSendAsList_589767(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_589777: Call_GmailUsersSettingsSendAsList_589766; path: JsonNode;
+proc call*(call_579677: Call_GmailUsersSettingsSendAsList_579666; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the send-as aliases for the specified account. The result includes the primary send-as address associated with the account as well as any custom "from" aliases.
   ## 
-  let valid = call_589777.validator(path, query, header, formData, body)
-  let scheme = call_589777.pickScheme
+  let valid = call_579677.validator(path, query, header, formData, body)
+  let scheme = call_579677.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589777.url(scheme.get, call_589777.host, call_589777.base,
-                         call_589777.route, valid.getOrDefault("path"),
+  let url = call_579677.url(scheme.get, call_579677.host, call_579677.base,
+                         call_579677.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589777, url, valid)
+  result = hook(call_579677, url, valid)
 
-proc call*(call_589778: Call_GmailUsersSettingsSendAsList_589766;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579678: Call_GmailUsersSettingsSendAsList_579666; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; userId: string = "me";
+          fields: string = ""): Recallable =
   ## gmailUsersSettingsSendAsList
   ## Lists the send-as aliases for the specified account. The result includes the primary send-as address associated with the account as well as any custom "from" aliases.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589779 = newJObject()
-  var query_589780 = newJObject()
-  add(query_589780, "fields", newJString(fields))
-  add(query_589780, "quotaUser", newJString(quotaUser))
-  add(query_589780, "alt", newJString(alt))
-  add(query_589780, "oauth_token", newJString(oauthToken))
-  add(query_589780, "userIp", newJString(userIp))
-  add(query_589780, "key", newJString(key))
-  add(query_589780, "prettyPrint", newJBool(prettyPrint))
-  add(path_589779, "userId", newJString(userId))
-  result = call_589778.call(path_589779, query_589780, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579679 = newJObject()
+  var query_579680 = newJObject()
+  add(query_579680, "key", newJString(key))
+  add(query_579680, "prettyPrint", newJBool(prettyPrint))
+  add(query_579680, "oauth_token", newJString(oauthToken))
+  add(query_579680, "alt", newJString(alt))
+  add(query_579680, "userIp", newJString(userIp))
+  add(query_579680, "quotaUser", newJString(quotaUser))
+  add(path_579679, "userId", newJString(userId))
+  add(query_579680, "fields", newJString(fields))
+  result = call_579678.call(path_579679, query_579680, nil, nil, nil)
 
-var gmailUsersSettingsSendAsList* = Call_GmailUsersSettingsSendAsList_589766(
+var gmailUsersSettingsSendAsList* = Call_GmailUsersSettingsSendAsList_579666(
     name: "gmailUsersSettingsSendAsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/settings/sendAs",
-    validator: validate_GmailUsersSettingsSendAsList_589767,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsList_589768,
+    validator: validate_GmailUsersSettingsSendAsList_579667,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsList_579668,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsSendAsUpdate_589814 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsSendAsUpdate_589816(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsSendAsUpdate_579714 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsSendAsUpdate_579716(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7898,7 +7900,7 @@ proc url_GmailUsersSettingsSendAsUpdate_589816(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsSendAsUpdate_589815(path: JsonNode;
+proc validate_GmailUsersSettingsSendAsUpdate_579715(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a send-as alias. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
   ## 
@@ -7907,75 +7909,74 @@ proc validate_GmailUsersSettingsSendAsUpdate_589815(path: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   sendAsEmail: JString (required)
-  ##              : The send-as alias to be updated.
   ##   userId: JString (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
+  ##   sendAsEmail: JString (required)
+  ##              : The send-as alias to be updated.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `sendAsEmail` field"
-  var valid_589817 = path.getOrDefault("sendAsEmail")
-  valid_589817 = validateParameter(valid_589817, JString, required = true,
-                                 default = nil)
-  if valid_589817 != nil:
-    section.add "sendAsEmail", valid_589817
-  var valid_589818 = path.getOrDefault("userId")
-  valid_589818 = validateParameter(valid_589818, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `userId` field"
+  var valid_579717 = path.getOrDefault("userId")
+  valid_579717 = validateParameter(valid_579717, JString, required = true,
                                  default = newJString("me"))
-  if valid_589818 != nil:
-    section.add "userId", valid_589818
+  if valid_579717 != nil:
+    section.add "userId", valid_579717
+  var valid_579718 = path.getOrDefault("sendAsEmail")
+  valid_579718 = validateParameter(valid_579718, JString, required = true,
+                                 default = nil)
+  if valid_579718 != nil:
+    section.add "sendAsEmail", valid_579718
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589819 = query.getOrDefault("fields")
-  valid_589819 = validateParameter(valid_589819, JString, required = false,
+  var valid_579719 = query.getOrDefault("key")
+  valid_579719 = validateParameter(valid_579719, JString, required = false,
                                  default = nil)
-  if valid_589819 != nil:
-    section.add "fields", valid_589819
-  var valid_589820 = query.getOrDefault("quotaUser")
-  valid_589820 = validateParameter(valid_589820, JString, required = false,
-                                 default = nil)
-  if valid_589820 != nil:
-    section.add "quotaUser", valid_589820
-  var valid_589821 = query.getOrDefault("alt")
-  valid_589821 = validateParameter(valid_589821, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589821 != nil:
-    section.add "alt", valid_589821
-  var valid_589822 = query.getOrDefault("oauth_token")
-  valid_589822 = validateParameter(valid_589822, JString, required = false,
-                                 default = nil)
-  if valid_589822 != nil:
-    section.add "oauth_token", valid_589822
-  var valid_589823 = query.getOrDefault("userIp")
-  valid_589823 = validateParameter(valid_589823, JString, required = false,
-                                 default = nil)
-  if valid_589823 != nil:
-    section.add "userIp", valid_589823
-  var valid_589824 = query.getOrDefault("key")
-  valid_589824 = validateParameter(valid_589824, JString, required = false,
-                                 default = nil)
-  if valid_589824 != nil:
-    section.add "key", valid_589824
-  var valid_589825 = query.getOrDefault("prettyPrint")
-  valid_589825 = validateParameter(valid_589825, JBool, required = false,
+  if valid_579719 != nil:
+    section.add "key", valid_579719
+  var valid_579720 = query.getOrDefault("prettyPrint")
+  valid_579720 = validateParameter(valid_579720, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589825 != nil:
-    section.add "prettyPrint", valid_589825
+  if valid_579720 != nil:
+    section.add "prettyPrint", valid_579720
+  var valid_579721 = query.getOrDefault("oauth_token")
+  valid_579721 = validateParameter(valid_579721, JString, required = false,
+                                 default = nil)
+  if valid_579721 != nil:
+    section.add "oauth_token", valid_579721
+  var valid_579722 = query.getOrDefault("alt")
+  valid_579722 = validateParameter(valid_579722, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579722 != nil:
+    section.add "alt", valid_579722
+  var valid_579723 = query.getOrDefault("userIp")
+  valid_579723 = validateParameter(valid_579723, JString, required = false,
+                                 default = nil)
+  if valid_579723 != nil:
+    section.add "userIp", valid_579723
+  var valid_579724 = query.getOrDefault("quotaUser")
+  valid_579724 = validateParameter(valid_579724, JString, required = false,
+                                 default = nil)
+  if valid_579724 != nil:
+    section.add "quotaUser", valid_579724
+  var valid_579725 = query.getOrDefault("fields")
+  valid_579725 = validateParameter(valid_579725, JString, required = false,
+                                 default = nil)
+  if valid_579725 != nil:
+    section.add "fields", valid_579725
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7987,74 +7988,74 @@ proc validate_GmailUsersSettingsSendAsUpdate_589815(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589827: Call_GmailUsersSettingsSendAsUpdate_589814; path: JsonNode;
+proc call*(call_579727: Call_GmailUsersSettingsSendAsUpdate_579714; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a send-as alias. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
   ## 
   ## Addresses other than the primary address for the account can only be updated by service account clients that have been delegated domain-wide authority.
   ## 
-  let valid = call_589827.validator(path, query, header, formData, body)
-  let scheme = call_589827.pickScheme
+  let valid = call_579727.validator(path, query, header, formData, body)
+  let scheme = call_579727.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589827.url(scheme.get, call_589827.host, call_589827.base,
-                         call_589827.route, valid.getOrDefault("path"),
+  let url = call_579727.url(scheme.get, call_579727.host, call_579727.base,
+                         call_579727.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589827, url, valid)
+  result = hook(call_579727, url, valid)
 
-proc call*(call_589828: Call_GmailUsersSettingsSendAsUpdate_589814;
-          sendAsEmail: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true;
-          userId: string = "me"): Recallable =
+proc call*(call_579728: Call_GmailUsersSettingsSendAsUpdate_579714;
+          sendAsEmail: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## gmailUsersSettingsSendAsUpdate
   ## Updates a send-as alias. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
   ## 
   ## Addresses other than the primary address for the account can only be updated by service account clients that have been delegated domain-wide authority.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   sendAsEmail: string (required)
-  ##              : The send-as alias to be updated.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589829 = newJObject()
-  var query_589830 = newJObject()
-  var body_589831 = newJObject()
-  add(query_589830, "fields", newJString(fields))
-  add(query_589830, "quotaUser", newJString(quotaUser))
-  add(query_589830, "alt", newJString(alt))
-  add(path_589829, "sendAsEmail", newJString(sendAsEmail))
-  add(query_589830, "oauth_token", newJString(oauthToken))
-  add(query_589830, "userIp", newJString(userIp))
-  add(query_589830, "key", newJString(key))
+  ##   sendAsEmail: string (required)
+  ##              : The send-as alias to be updated.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579729 = newJObject()
+  var query_579730 = newJObject()
+  var body_579731 = newJObject()
+  add(query_579730, "key", newJString(key))
+  add(query_579730, "prettyPrint", newJBool(prettyPrint))
+  add(query_579730, "oauth_token", newJString(oauthToken))
+  add(query_579730, "alt", newJString(alt))
+  add(query_579730, "userIp", newJString(userIp))
+  add(query_579730, "quotaUser", newJString(quotaUser))
+  add(path_579729, "userId", newJString(userId))
+  add(path_579729, "sendAsEmail", newJString(sendAsEmail))
   if body != nil:
-    body_589831 = body
-  add(query_589830, "prettyPrint", newJBool(prettyPrint))
-  add(path_589829, "userId", newJString(userId))
-  result = call_589828.call(path_589829, query_589830, nil, nil, body_589831)
+    body_579731 = body
+  add(query_579730, "fields", newJString(fields))
+  result = call_579728.call(path_579729, query_579730, nil, nil, body_579731)
 
-var gmailUsersSettingsSendAsUpdate* = Call_GmailUsersSettingsSendAsUpdate_589814(
+var gmailUsersSettingsSendAsUpdate* = Call_GmailUsersSettingsSendAsUpdate_579714(
     name: "gmailUsersSettingsSendAsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{userId}/settings/sendAs/{sendAsEmail}",
-    validator: validate_GmailUsersSettingsSendAsUpdate_589815,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsUpdate_589816,
+    validator: validate_GmailUsersSettingsSendAsUpdate_579715,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsUpdate_579716,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsSendAsGet_589798 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsSendAsGet_589800(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsSendAsGet_579698 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsSendAsGet_579700(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8072,82 +8073,81 @@ proc url_GmailUsersSettingsSendAsGet_589800(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsSendAsGet_589799(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersSettingsSendAsGet_579699(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the specified send-as alias. Fails with an HTTP 404 error if the specified address is not a member of the collection.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   sendAsEmail: JString (required)
-  ##              : The send-as alias to be retrieved.
   ##   userId: JString (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
+  ##   sendAsEmail: JString (required)
+  ##              : The send-as alias to be retrieved.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `sendAsEmail` field"
-  var valid_589801 = path.getOrDefault("sendAsEmail")
-  valid_589801 = validateParameter(valid_589801, JString, required = true,
-                                 default = nil)
-  if valid_589801 != nil:
-    section.add "sendAsEmail", valid_589801
-  var valid_589802 = path.getOrDefault("userId")
-  valid_589802 = validateParameter(valid_589802, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `userId` field"
+  var valid_579701 = path.getOrDefault("userId")
+  valid_579701 = validateParameter(valid_579701, JString, required = true,
                                  default = newJString("me"))
-  if valid_589802 != nil:
-    section.add "userId", valid_589802
+  if valid_579701 != nil:
+    section.add "userId", valid_579701
+  var valid_579702 = path.getOrDefault("sendAsEmail")
+  valid_579702 = validateParameter(valid_579702, JString, required = true,
+                                 default = nil)
+  if valid_579702 != nil:
+    section.add "sendAsEmail", valid_579702
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589803 = query.getOrDefault("fields")
-  valid_589803 = validateParameter(valid_589803, JString, required = false,
+  var valid_579703 = query.getOrDefault("key")
+  valid_579703 = validateParameter(valid_579703, JString, required = false,
                                  default = nil)
-  if valid_589803 != nil:
-    section.add "fields", valid_589803
-  var valid_589804 = query.getOrDefault("quotaUser")
-  valid_589804 = validateParameter(valid_589804, JString, required = false,
-                                 default = nil)
-  if valid_589804 != nil:
-    section.add "quotaUser", valid_589804
-  var valid_589805 = query.getOrDefault("alt")
-  valid_589805 = validateParameter(valid_589805, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589805 != nil:
-    section.add "alt", valid_589805
-  var valid_589806 = query.getOrDefault("oauth_token")
-  valid_589806 = validateParameter(valid_589806, JString, required = false,
-                                 default = nil)
-  if valid_589806 != nil:
-    section.add "oauth_token", valid_589806
-  var valid_589807 = query.getOrDefault("userIp")
-  valid_589807 = validateParameter(valid_589807, JString, required = false,
-                                 default = nil)
-  if valid_589807 != nil:
-    section.add "userIp", valid_589807
-  var valid_589808 = query.getOrDefault("key")
-  valid_589808 = validateParameter(valid_589808, JString, required = false,
-                                 default = nil)
-  if valid_589808 != nil:
-    section.add "key", valid_589808
-  var valid_589809 = query.getOrDefault("prettyPrint")
-  valid_589809 = validateParameter(valid_589809, JBool, required = false,
+  if valid_579703 != nil:
+    section.add "key", valid_579703
+  var valid_579704 = query.getOrDefault("prettyPrint")
+  valid_579704 = validateParameter(valid_579704, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589809 != nil:
-    section.add "prettyPrint", valid_589809
+  if valid_579704 != nil:
+    section.add "prettyPrint", valid_579704
+  var valid_579705 = query.getOrDefault("oauth_token")
+  valid_579705 = validateParameter(valid_579705, JString, required = false,
+                                 default = nil)
+  if valid_579705 != nil:
+    section.add "oauth_token", valid_579705
+  var valid_579706 = query.getOrDefault("alt")
+  valid_579706 = validateParameter(valid_579706, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579706 != nil:
+    section.add "alt", valid_579706
+  var valid_579707 = query.getOrDefault("userIp")
+  valid_579707 = validateParameter(valid_579707, JString, required = false,
+                                 default = nil)
+  if valid_579707 != nil:
+    section.add "userIp", valid_579707
+  var valid_579708 = query.getOrDefault("quotaUser")
+  valid_579708 = validateParameter(valid_579708, JString, required = false,
+                                 default = nil)
+  if valid_579708 != nil:
+    section.add "quotaUser", valid_579708
+  var valid_579709 = query.getOrDefault("fields")
+  valid_579709 = validateParameter(valid_579709, JString, required = false,
+                                 default = nil)
+  if valid_579709 != nil:
+    section.add "fields", valid_579709
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8156,65 +8156,65 @@ proc validate_GmailUsersSettingsSendAsGet_589799(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_589810: Call_GmailUsersSettingsSendAsGet_589798; path: JsonNode;
+proc call*(call_579710: Call_GmailUsersSettingsSendAsGet_579698; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the specified send-as alias. Fails with an HTTP 404 error if the specified address is not a member of the collection.
   ## 
-  let valid = call_589810.validator(path, query, header, formData, body)
-  let scheme = call_589810.pickScheme
+  let valid = call_579710.validator(path, query, header, formData, body)
+  let scheme = call_579710.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589810.url(scheme.get, call_589810.host, call_589810.base,
-                         call_589810.route, valid.getOrDefault("path"),
+  let url = call_579710.url(scheme.get, call_579710.host, call_579710.base,
+                         call_579710.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589810, url, valid)
+  result = hook(call_579710, url, valid)
 
-proc call*(call_589811: Call_GmailUsersSettingsSendAsGet_589798;
-          sendAsEmail: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579711: Call_GmailUsersSettingsSendAsGet_579698;
+          sendAsEmail: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsSendAsGet
   ## Gets the specified send-as alias. Fails with an HTTP 404 error if the specified address is not a member of the collection.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   sendAsEmail: string (required)
-  ##              : The send-as alias to be retrieved.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589812 = newJObject()
-  var query_589813 = newJObject()
-  add(query_589813, "fields", newJString(fields))
-  add(query_589813, "quotaUser", newJString(quotaUser))
-  add(query_589813, "alt", newJString(alt))
-  add(path_589812, "sendAsEmail", newJString(sendAsEmail))
-  add(query_589813, "oauth_token", newJString(oauthToken))
-  add(query_589813, "userIp", newJString(userIp))
-  add(query_589813, "key", newJString(key))
-  add(query_589813, "prettyPrint", newJBool(prettyPrint))
-  add(path_589812, "userId", newJString(userId))
-  result = call_589811.call(path_589812, query_589813, nil, nil, nil)
+  ##   sendAsEmail: string (required)
+  ##              : The send-as alias to be retrieved.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579712 = newJObject()
+  var query_579713 = newJObject()
+  add(query_579713, "key", newJString(key))
+  add(query_579713, "prettyPrint", newJBool(prettyPrint))
+  add(query_579713, "oauth_token", newJString(oauthToken))
+  add(query_579713, "alt", newJString(alt))
+  add(query_579713, "userIp", newJString(userIp))
+  add(query_579713, "quotaUser", newJString(quotaUser))
+  add(path_579712, "userId", newJString(userId))
+  add(path_579712, "sendAsEmail", newJString(sendAsEmail))
+  add(query_579713, "fields", newJString(fields))
+  result = call_579711.call(path_579712, query_579713, nil, nil, nil)
 
-var gmailUsersSettingsSendAsGet* = Call_GmailUsersSettingsSendAsGet_589798(
+var gmailUsersSettingsSendAsGet* = Call_GmailUsersSettingsSendAsGet_579698(
     name: "gmailUsersSettingsSendAsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/settings/sendAs/{sendAsEmail}",
-    validator: validate_GmailUsersSettingsSendAsGet_589799,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsGet_589800,
+    validator: validate_GmailUsersSettingsSendAsGet_579699,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsGet_579700,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsSendAsPatch_589848 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsSendAsPatch_589850(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsSendAsPatch_579748 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsSendAsPatch_579750(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8232,7 +8232,7 @@ proc url_GmailUsersSettingsSendAsPatch_589850(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsSendAsPatch_589849(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersSettingsSendAsPatch_579749(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a send-as alias. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
   ## 
@@ -8241,75 +8241,74 @@ proc validate_GmailUsersSettingsSendAsPatch_589849(path: JsonNode; query: JsonNo
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   sendAsEmail: JString (required)
-  ##              : The send-as alias to be updated.
   ##   userId: JString (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
+  ##   sendAsEmail: JString (required)
+  ##              : The send-as alias to be updated.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `sendAsEmail` field"
-  var valid_589851 = path.getOrDefault("sendAsEmail")
-  valid_589851 = validateParameter(valid_589851, JString, required = true,
-                                 default = nil)
-  if valid_589851 != nil:
-    section.add "sendAsEmail", valid_589851
-  var valid_589852 = path.getOrDefault("userId")
-  valid_589852 = validateParameter(valid_589852, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `userId` field"
+  var valid_579751 = path.getOrDefault("userId")
+  valid_579751 = validateParameter(valid_579751, JString, required = true,
                                  default = newJString("me"))
-  if valid_589852 != nil:
-    section.add "userId", valid_589852
+  if valid_579751 != nil:
+    section.add "userId", valid_579751
+  var valid_579752 = path.getOrDefault("sendAsEmail")
+  valid_579752 = validateParameter(valid_579752, JString, required = true,
+                                 default = nil)
+  if valid_579752 != nil:
+    section.add "sendAsEmail", valid_579752
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589853 = query.getOrDefault("fields")
-  valid_589853 = validateParameter(valid_589853, JString, required = false,
+  var valid_579753 = query.getOrDefault("key")
+  valid_579753 = validateParameter(valid_579753, JString, required = false,
                                  default = nil)
-  if valid_589853 != nil:
-    section.add "fields", valid_589853
-  var valid_589854 = query.getOrDefault("quotaUser")
-  valid_589854 = validateParameter(valid_589854, JString, required = false,
-                                 default = nil)
-  if valid_589854 != nil:
-    section.add "quotaUser", valid_589854
-  var valid_589855 = query.getOrDefault("alt")
-  valid_589855 = validateParameter(valid_589855, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589855 != nil:
-    section.add "alt", valid_589855
-  var valid_589856 = query.getOrDefault("oauth_token")
-  valid_589856 = validateParameter(valid_589856, JString, required = false,
-                                 default = nil)
-  if valid_589856 != nil:
-    section.add "oauth_token", valid_589856
-  var valid_589857 = query.getOrDefault("userIp")
-  valid_589857 = validateParameter(valid_589857, JString, required = false,
-                                 default = nil)
-  if valid_589857 != nil:
-    section.add "userIp", valid_589857
-  var valid_589858 = query.getOrDefault("key")
-  valid_589858 = validateParameter(valid_589858, JString, required = false,
-                                 default = nil)
-  if valid_589858 != nil:
-    section.add "key", valid_589858
-  var valid_589859 = query.getOrDefault("prettyPrint")
-  valid_589859 = validateParameter(valid_589859, JBool, required = false,
+  if valid_579753 != nil:
+    section.add "key", valid_579753
+  var valid_579754 = query.getOrDefault("prettyPrint")
+  valid_579754 = validateParameter(valid_579754, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589859 != nil:
-    section.add "prettyPrint", valid_589859
+  if valid_579754 != nil:
+    section.add "prettyPrint", valid_579754
+  var valid_579755 = query.getOrDefault("oauth_token")
+  valid_579755 = validateParameter(valid_579755, JString, required = false,
+                                 default = nil)
+  if valid_579755 != nil:
+    section.add "oauth_token", valid_579755
+  var valid_579756 = query.getOrDefault("alt")
+  valid_579756 = validateParameter(valid_579756, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579756 != nil:
+    section.add "alt", valid_579756
+  var valid_579757 = query.getOrDefault("userIp")
+  valid_579757 = validateParameter(valid_579757, JString, required = false,
+                                 default = nil)
+  if valid_579757 != nil:
+    section.add "userIp", valid_579757
+  var valid_579758 = query.getOrDefault("quotaUser")
+  valid_579758 = validateParameter(valid_579758, JString, required = false,
+                                 default = nil)
+  if valid_579758 != nil:
+    section.add "quotaUser", valid_579758
+  var valid_579759 = query.getOrDefault("fields")
+  valid_579759 = validateParameter(valid_579759, JString, required = false,
+                                 default = nil)
+  if valid_579759 != nil:
+    section.add "fields", valid_579759
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8321,74 +8320,74 @@ proc validate_GmailUsersSettingsSendAsPatch_589849(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_589861: Call_GmailUsersSettingsSendAsPatch_589848; path: JsonNode;
+proc call*(call_579761: Call_GmailUsersSettingsSendAsPatch_579748; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a send-as alias. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
   ## 
   ## Addresses other than the primary address for the account can only be updated by service account clients that have been delegated domain-wide authority. This method supports patch semantics.
   ## 
-  let valid = call_589861.validator(path, query, header, formData, body)
-  let scheme = call_589861.pickScheme
+  let valid = call_579761.validator(path, query, header, formData, body)
+  let scheme = call_579761.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589861.url(scheme.get, call_589861.host, call_589861.base,
-                         call_589861.route, valid.getOrDefault("path"),
+  let url = call_579761.url(scheme.get, call_579761.host, call_579761.base,
+                         call_579761.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589861, url, valid)
+  result = hook(call_579761, url, valid)
 
-proc call*(call_589862: Call_GmailUsersSettingsSendAsPatch_589848;
-          sendAsEmail: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true;
-          userId: string = "me"): Recallable =
+proc call*(call_579762: Call_GmailUsersSettingsSendAsPatch_579748;
+          sendAsEmail: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## gmailUsersSettingsSendAsPatch
   ## Updates a send-as alias. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
   ## 
   ## Addresses other than the primary address for the account can only be updated by service account clients that have been delegated domain-wide authority. This method supports patch semantics.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   sendAsEmail: string (required)
-  ##              : The send-as alias to be updated.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589863 = newJObject()
-  var query_589864 = newJObject()
-  var body_589865 = newJObject()
-  add(query_589864, "fields", newJString(fields))
-  add(query_589864, "quotaUser", newJString(quotaUser))
-  add(query_589864, "alt", newJString(alt))
-  add(path_589863, "sendAsEmail", newJString(sendAsEmail))
-  add(query_589864, "oauth_token", newJString(oauthToken))
-  add(query_589864, "userIp", newJString(userIp))
-  add(query_589864, "key", newJString(key))
+  ##   sendAsEmail: string (required)
+  ##              : The send-as alias to be updated.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579763 = newJObject()
+  var query_579764 = newJObject()
+  var body_579765 = newJObject()
+  add(query_579764, "key", newJString(key))
+  add(query_579764, "prettyPrint", newJBool(prettyPrint))
+  add(query_579764, "oauth_token", newJString(oauthToken))
+  add(query_579764, "alt", newJString(alt))
+  add(query_579764, "userIp", newJString(userIp))
+  add(query_579764, "quotaUser", newJString(quotaUser))
+  add(path_579763, "userId", newJString(userId))
+  add(path_579763, "sendAsEmail", newJString(sendAsEmail))
   if body != nil:
-    body_589865 = body
-  add(query_589864, "prettyPrint", newJBool(prettyPrint))
-  add(path_589863, "userId", newJString(userId))
-  result = call_589862.call(path_589863, query_589864, nil, nil, body_589865)
+    body_579765 = body
+  add(query_579764, "fields", newJString(fields))
+  result = call_579762.call(path_579763, query_579764, nil, nil, body_579765)
 
-var gmailUsersSettingsSendAsPatch* = Call_GmailUsersSettingsSendAsPatch_589848(
+var gmailUsersSettingsSendAsPatch* = Call_GmailUsersSettingsSendAsPatch_579748(
     name: "gmailUsersSettingsSendAsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/{userId}/settings/sendAs/{sendAsEmail}",
-    validator: validate_GmailUsersSettingsSendAsPatch_589849,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsPatch_589850,
+    validator: validate_GmailUsersSettingsSendAsPatch_579749,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsPatch_579750,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsSendAsDelete_589832 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsSendAsDelete_589834(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsSendAsDelete_579732 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsSendAsDelete_579734(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8406,7 +8405,7 @@ proc url_GmailUsersSettingsSendAsDelete_589834(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsSendAsDelete_589833(path: JsonNode;
+proc validate_GmailUsersSettingsSendAsDelete_579733(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the specified send-as alias. Revokes any verification that may have been required for using it.
   ## 
@@ -8415,75 +8414,74 @@ proc validate_GmailUsersSettingsSendAsDelete_589833(path: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   sendAsEmail: JString (required)
-  ##              : The send-as alias to be deleted.
   ##   userId: JString (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
+  ##   sendAsEmail: JString (required)
+  ##              : The send-as alias to be deleted.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `sendAsEmail` field"
-  var valid_589835 = path.getOrDefault("sendAsEmail")
-  valid_589835 = validateParameter(valid_589835, JString, required = true,
-                                 default = nil)
-  if valid_589835 != nil:
-    section.add "sendAsEmail", valid_589835
-  var valid_589836 = path.getOrDefault("userId")
-  valid_589836 = validateParameter(valid_589836, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `userId` field"
+  var valid_579735 = path.getOrDefault("userId")
+  valid_579735 = validateParameter(valid_579735, JString, required = true,
                                  default = newJString("me"))
-  if valid_589836 != nil:
-    section.add "userId", valid_589836
+  if valid_579735 != nil:
+    section.add "userId", valid_579735
+  var valid_579736 = path.getOrDefault("sendAsEmail")
+  valid_579736 = validateParameter(valid_579736, JString, required = true,
+                                 default = nil)
+  if valid_579736 != nil:
+    section.add "sendAsEmail", valid_579736
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589837 = query.getOrDefault("fields")
-  valid_589837 = validateParameter(valid_589837, JString, required = false,
+  var valid_579737 = query.getOrDefault("key")
+  valid_579737 = validateParameter(valid_579737, JString, required = false,
                                  default = nil)
-  if valid_589837 != nil:
-    section.add "fields", valid_589837
-  var valid_589838 = query.getOrDefault("quotaUser")
-  valid_589838 = validateParameter(valid_589838, JString, required = false,
-                                 default = nil)
-  if valid_589838 != nil:
-    section.add "quotaUser", valid_589838
-  var valid_589839 = query.getOrDefault("alt")
-  valid_589839 = validateParameter(valid_589839, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589839 != nil:
-    section.add "alt", valid_589839
-  var valid_589840 = query.getOrDefault("oauth_token")
-  valid_589840 = validateParameter(valid_589840, JString, required = false,
-                                 default = nil)
-  if valid_589840 != nil:
-    section.add "oauth_token", valid_589840
-  var valid_589841 = query.getOrDefault("userIp")
-  valid_589841 = validateParameter(valid_589841, JString, required = false,
-                                 default = nil)
-  if valid_589841 != nil:
-    section.add "userIp", valid_589841
-  var valid_589842 = query.getOrDefault("key")
-  valid_589842 = validateParameter(valid_589842, JString, required = false,
-                                 default = nil)
-  if valid_589842 != nil:
-    section.add "key", valid_589842
-  var valid_589843 = query.getOrDefault("prettyPrint")
-  valid_589843 = validateParameter(valid_589843, JBool, required = false,
+  if valid_579737 != nil:
+    section.add "key", valid_579737
+  var valid_579738 = query.getOrDefault("prettyPrint")
+  valid_579738 = validateParameter(valid_579738, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589843 != nil:
-    section.add "prettyPrint", valid_589843
+  if valid_579738 != nil:
+    section.add "prettyPrint", valid_579738
+  var valid_579739 = query.getOrDefault("oauth_token")
+  valid_579739 = validateParameter(valid_579739, JString, required = false,
+                                 default = nil)
+  if valid_579739 != nil:
+    section.add "oauth_token", valid_579739
+  var valid_579740 = query.getOrDefault("alt")
+  valid_579740 = validateParameter(valid_579740, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579740 != nil:
+    section.add "alt", valid_579740
+  var valid_579741 = query.getOrDefault("userIp")
+  valid_579741 = validateParameter(valid_579741, JString, required = false,
+                                 default = nil)
+  if valid_579741 != nil:
+    section.add "userIp", valid_579741
+  var valid_579742 = query.getOrDefault("quotaUser")
+  valid_579742 = validateParameter(valid_579742, JString, required = false,
+                                 default = nil)
+  if valid_579742 != nil:
+    section.add "quotaUser", valid_579742
+  var valid_579743 = query.getOrDefault("fields")
+  valid_579743 = validateParameter(valid_579743, JString, required = false,
+                                 default = nil)
+  if valid_579743 != nil:
+    section.add "fields", valid_579743
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8492,69 +8490,69 @@ proc validate_GmailUsersSettingsSendAsDelete_589833(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589844: Call_GmailUsersSettingsSendAsDelete_589832; path: JsonNode;
+proc call*(call_579744: Call_GmailUsersSettingsSendAsDelete_579732; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes the specified send-as alias. Revokes any verification that may have been required for using it.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
   ## 
-  let valid = call_589844.validator(path, query, header, formData, body)
-  let scheme = call_589844.pickScheme
+  let valid = call_579744.validator(path, query, header, formData, body)
+  let scheme = call_579744.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589844.url(scheme.get, call_589844.host, call_589844.base,
-                         call_589844.route, valid.getOrDefault("path"),
+  let url = call_579744.url(scheme.get, call_579744.host, call_579744.base,
+                         call_579744.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589844, url, valid)
+  result = hook(call_579744, url, valid)
 
-proc call*(call_589845: Call_GmailUsersSettingsSendAsDelete_589832;
-          sendAsEmail: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579745: Call_GmailUsersSettingsSendAsDelete_579732;
+          sendAsEmail: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsSendAsDelete
   ## Deletes the specified send-as alias. Revokes any verification that may have been required for using it.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   sendAsEmail: string (required)
-  ##              : The send-as alias to be deleted.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589846 = newJObject()
-  var query_589847 = newJObject()
-  add(query_589847, "fields", newJString(fields))
-  add(query_589847, "quotaUser", newJString(quotaUser))
-  add(query_589847, "alt", newJString(alt))
-  add(path_589846, "sendAsEmail", newJString(sendAsEmail))
-  add(query_589847, "oauth_token", newJString(oauthToken))
-  add(query_589847, "userIp", newJString(userIp))
-  add(query_589847, "key", newJString(key))
-  add(query_589847, "prettyPrint", newJBool(prettyPrint))
-  add(path_589846, "userId", newJString(userId))
-  result = call_589845.call(path_589846, query_589847, nil, nil, nil)
+  ##   sendAsEmail: string (required)
+  ##              : The send-as alias to be deleted.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579746 = newJObject()
+  var query_579747 = newJObject()
+  add(query_579747, "key", newJString(key))
+  add(query_579747, "prettyPrint", newJBool(prettyPrint))
+  add(query_579747, "oauth_token", newJString(oauthToken))
+  add(query_579747, "alt", newJString(alt))
+  add(query_579747, "userIp", newJString(userIp))
+  add(query_579747, "quotaUser", newJString(quotaUser))
+  add(path_579746, "userId", newJString(userId))
+  add(path_579746, "sendAsEmail", newJString(sendAsEmail))
+  add(query_579747, "fields", newJString(fields))
+  result = call_579745.call(path_579746, query_579747, nil, nil, nil)
 
-var gmailUsersSettingsSendAsDelete* = Call_GmailUsersSettingsSendAsDelete_589832(
+var gmailUsersSettingsSendAsDelete* = Call_GmailUsersSettingsSendAsDelete_579732(
     name: "gmailUsersSettingsSendAsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{userId}/settings/sendAs/{sendAsEmail}",
-    validator: validate_GmailUsersSettingsSendAsDelete_589833,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsDelete_589834,
+    validator: validate_GmailUsersSettingsSendAsDelete_579733,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsDelete_579734,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsSendAsSmimeInfoInsert_589882 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsSendAsSmimeInfoInsert_589884(protocol: Scheme;
+  Call_GmailUsersSettingsSendAsSmimeInfoInsert_579782 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsSendAsSmimeInfoInsert_579784(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8573,82 +8571,81 @@ proc url_GmailUsersSettingsSendAsSmimeInfoInsert_589884(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsSendAsSmimeInfoInsert_589883(path: JsonNode;
+proc validate_GmailUsersSettingsSendAsSmimeInfoInsert_579783(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Insert (upload) the given S/MIME config for the specified send-as alias. Note that pkcs12 format is required for the key.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   sendAsEmail: JString (required)
-  ##              : The email address that appears in the "From:" header for mail sent using this alias.
   ##   userId: JString (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
+  ##   sendAsEmail: JString (required)
+  ##              : The email address that appears in the "From:" header for mail sent using this alias.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `sendAsEmail` field"
-  var valid_589885 = path.getOrDefault("sendAsEmail")
-  valid_589885 = validateParameter(valid_589885, JString, required = true,
-                                 default = nil)
-  if valid_589885 != nil:
-    section.add "sendAsEmail", valid_589885
-  var valid_589886 = path.getOrDefault("userId")
-  valid_589886 = validateParameter(valid_589886, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `userId` field"
+  var valid_579785 = path.getOrDefault("userId")
+  valid_579785 = validateParameter(valid_579785, JString, required = true,
                                  default = newJString("me"))
-  if valid_589886 != nil:
-    section.add "userId", valid_589886
+  if valid_579785 != nil:
+    section.add "userId", valid_579785
+  var valid_579786 = path.getOrDefault("sendAsEmail")
+  valid_579786 = validateParameter(valid_579786, JString, required = true,
+                                 default = nil)
+  if valid_579786 != nil:
+    section.add "sendAsEmail", valid_579786
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589887 = query.getOrDefault("fields")
-  valid_589887 = validateParameter(valid_589887, JString, required = false,
+  var valid_579787 = query.getOrDefault("key")
+  valid_579787 = validateParameter(valid_579787, JString, required = false,
                                  default = nil)
-  if valid_589887 != nil:
-    section.add "fields", valid_589887
-  var valid_589888 = query.getOrDefault("quotaUser")
-  valid_589888 = validateParameter(valid_589888, JString, required = false,
-                                 default = nil)
-  if valid_589888 != nil:
-    section.add "quotaUser", valid_589888
-  var valid_589889 = query.getOrDefault("alt")
-  valid_589889 = validateParameter(valid_589889, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589889 != nil:
-    section.add "alt", valid_589889
-  var valid_589890 = query.getOrDefault("oauth_token")
-  valid_589890 = validateParameter(valid_589890, JString, required = false,
-                                 default = nil)
-  if valid_589890 != nil:
-    section.add "oauth_token", valid_589890
-  var valid_589891 = query.getOrDefault("userIp")
-  valid_589891 = validateParameter(valid_589891, JString, required = false,
-                                 default = nil)
-  if valid_589891 != nil:
-    section.add "userIp", valid_589891
-  var valid_589892 = query.getOrDefault("key")
-  valid_589892 = validateParameter(valid_589892, JString, required = false,
-                                 default = nil)
-  if valid_589892 != nil:
-    section.add "key", valid_589892
-  var valid_589893 = query.getOrDefault("prettyPrint")
-  valid_589893 = validateParameter(valid_589893, JBool, required = false,
+  if valid_579787 != nil:
+    section.add "key", valid_579787
+  var valid_579788 = query.getOrDefault("prettyPrint")
+  valid_579788 = validateParameter(valid_579788, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589893 != nil:
-    section.add "prettyPrint", valid_589893
+  if valid_579788 != nil:
+    section.add "prettyPrint", valid_579788
+  var valid_579789 = query.getOrDefault("oauth_token")
+  valid_579789 = validateParameter(valid_579789, JString, required = false,
+                                 default = nil)
+  if valid_579789 != nil:
+    section.add "oauth_token", valid_579789
+  var valid_579790 = query.getOrDefault("alt")
+  valid_579790 = validateParameter(valid_579790, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579790 != nil:
+    section.add "alt", valid_579790
+  var valid_579791 = query.getOrDefault("userIp")
+  valid_579791 = validateParameter(valid_579791, JString, required = false,
+                                 default = nil)
+  if valid_579791 != nil:
+    section.add "userIp", valid_579791
+  var valid_579792 = query.getOrDefault("quotaUser")
+  valid_579792 = validateParameter(valid_579792, JString, required = false,
+                                 default = nil)
+  if valid_579792 != nil:
+    section.add "quotaUser", valid_579792
+  var valid_579793 = query.getOrDefault("fields")
+  valid_579793 = validateParameter(valid_579793, JString, required = false,
+                                 default = nil)
+  if valid_579793 != nil:
+    section.add "fields", valid_579793
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8660,72 +8657,72 @@ proc validate_GmailUsersSettingsSendAsSmimeInfoInsert_589883(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589895: Call_GmailUsersSettingsSendAsSmimeInfoInsert_589882;
+proc call*(call_579795: Call_GmailUsersSettingsSendAsSmimeInfoInsert_579782;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Insert (upload) the given S/MIME config for the specified send-as alias. Note that pkcs12 format is required for the key.
   ## 
-  let valid = call_589895.validator(path, query, header, formData, body)
-  let scheme = call_589895.pickScheme
+  let valid = call_579795.validator(path, query, header, formData, body)
+  let scheme = call_579795.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589895.url(scheme.get, call_589895.host, call_589895.base,
-                         call_589895.route, valid.getOrDefault("path"),
+  let url = call_579795.url(scheme.get, call_579795.host, call_579795.base,
+                         call_579795.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589895, url, valid)
+  result = hook(call_579795, url, valid)
 
-proc call*(call_589896: Call_GmailUsersSettingsSendAsSmimeInfoInsert_589882;
-          sendAsEmail: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true;
-          userId: string = "me"): Recallable =
+proc call*(call_579796: Call_GmailUsersSettingsSendAsSmimeInfoInsert_579782;
+          sendAsEmail: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## gmailUsersSettingsSendAsSmimeInfoInsert
   ## Insert (upload) the given S/MIME config for the specified send-as alias. Note that pkcs12 format is required for the key.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   sendAsEmail: string (required)
-  ##              : The email address that appears in the "From:" header for mail sent using this alias.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589897 = newJObject()
-  var query_589898 = newJObject()
-  var body_589899 = newJObject()
-  add(query_589898, "fields", newJString(fields))
-  add(query_589898, "quotaUser", newJString(quotaUser))
-  add(query_589898, "alt", newJString(alt))
-  add(path_589897, "sendAsEmail", newJString(sendAsEmail))
-  add(query_589898, "oauth_token", newJString(oauthToken))
-  add(query_589898, "userIp", newJString(userIp))
-  add(query_589898, "key", newJString(key))
+  ##   sendAsEmail: string (required)
+  ##              : The email address that appears in the "From:" header for mail sent using this alias.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579797 = newJObject()
+  var query_579798 = newJObject()
+  var body_579799 = newJObject()
+  add(query_579798, "key", newJString(key))
+  add(query_579798, "prettyPrint", newJBool(prettyPrint))
+  add(query_579798, "oauth_token", newJString(oauthToken))
+  add(query_579798, "alt", newJString(alt))
+  add(query_579798, "userIp", newJString(userIp))
+  add(query_579798, "quotaUser", newJString(quotaUser))
+  add(path_579797, "userId", newJString(userId))
+  add(path_579797, "sendAsEmail", newJString(sendAsEmail))
   if body != nil:
-    body_589899 = body
-  add(query_589898, "prettyPrint", newJBool(prettyPrint))
-  add(path_589897, "userId", newJString(userId))
-  result = call_589896.call(path_589897, query_589898, nil, nil, body_589899)
+    body_579799 = body
+  add(query_579798, "fields", newJString(fields))
+  result = call_579796.call(path_579797, query_579798, nil, nil, body_579799)
 
-var gmailUsersSettingsSendAsSmimeInfoInsert* = Call_GmailUsersSettingsSendAsSmimeInfoInsert_589882(
+var gmailUsersSettingsSendAsSmimeInfoInsert* = Call_GmailUsersSettingsSendAsSmimeInfoInsert_579782(
     name: "gmailUsersSettingsSendAsSmimeInfoInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo",
-    validator: validate_GmailUsersSettingsSendAsSmimeInfoInsert_589883,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsSmimeInfoInsert_589884,
+    validator: validate_GmailUsersSettingsSendAsSmimeInfoInsert_579783,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsSmimeInfoInsert_579784,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsSendAsSmimeInfoList_589866 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsSendAsSmimeInfoList_589868(protocol: Scheme;
+  Call_GmailUsersSettingsSendAsSmimeInfoList_579766 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsSendAsSmimeInfoList_579768(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8744,82 +8741,81 @@ proc url_GmailUsersSettingsSendAsSmimeInfoList_589868(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsSendAsSmimeInfoList_589867(path: JsonNode;
+proc validate_GmailUsersSettingsSendAsSmimeInfoList_579767(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists S/MIME configs for the specified send-as alias.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   sendAsEmail: JString (required)
-  ##              : The email address that appears in the "From:" header for mail sent using this alias.
   ##   userId: JString (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
+  ##   sendAsEmail: JString (required)
+  ##              : The email address that appears in the "From:" header for mail sent using this alias.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `sendAsEmail` field"
-  var valid_589869 = path.getOrDefault("sendAsEmail")
-  valid_589869 = validateParameter(valid_589869, JString, required = true,
-                                 default = nil)
-  if valid_589869 != nil:
-    section.add "sendAsEmail", valid_589869
-  var valid_589870 = path.getOrDefault("userId")
-  valid_589870 = validateParameter(valid_589870, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `userId` field"
+  var valid_579769 = path.getOrDefault("userId")
+  valid_579769 = validateParameter(valid_579769, JString, required = true,
                                  default = newJString("me"))
-  if valid_589870 != nil:
-    section.add "userId", valid_589870
+  if valid_579769 != nil:
+    section.add "userId", valid_579769
+  var valid_579770 = path.getOrDefault("sendAsEmail")
+  valid_579770 = validateParameter(valid_579770, JString, required = true,
+                                 default = nil)
+  if valid_579770 != nil:
+    section.add "sendAsEmail", valid_579770
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589871 = query.getOrDefault("fields")
-  valid_589871 = validateParameter(valid_589871, JString, required = false,
+  var valid_579771 = query.getOrDefault("key")
+  valid_579771 = validateParameter(valid_579771, JString, required = false,
                                  default = nil)
-  if valid_589871 != nil:
-    section.add "fields", valid_589871
-  var valid_589872 = query.getOrDefault("quotaUser")
-  valid_589872 = validateParameter(valid_589872, JString, required = false,
-                                 default = nil)
-  if valid_589872 != nil:
-    section.add "quotaUser", valid_589872
-  var valid_589873 = query.getOrDefault("alt")
-  valid_589873 = validateParameter(valid_589873, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589873 != nil:
-    section.add "alt", valid_589873
-  var valid_589874 = query.getOrDefault("oauth_token")
-  valid_589874 = validateParameter(valid_589874, JString, required = false,
-                                 default = nil)
-  if valid_589874 != nil:
-    section.add "oauth_token", valid_589874
-  var valid_589875 = query.getOrDefault("userIp")
-  valid_589875 = validateParameter(valid_589875, JString, required = false,
-                                 default = nil)
-  if valid_589875 != nil:
-    section.add "userIp", valid_589875
-  var valid_589876 = query.getOrDefault("key")
-  valid_589876 = validateParameter(valid_589876, JString, required = false,
-                                 default = nil)
-  if valid_589876 != nil:
-    section.add "key", valid_589876
-  var valid_589877 = query.getOrDefault("prettyPrint")
-  valid_589877 = validateParameter(valid_589877, JBool, required = false,
+  if valid_579771 != nil:
+    section.add "key", valid_579771
+  var valid_579772 = query.getOrDefault("prettyPrint")
+  valid_579772 = validateParameter(valid_579772, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589877 != nil:
-    section.add "prettyPrint", valid_589877
+  if valid_579772 != nil:
+    section.add "prettyPrint", valid_579772
+  var valid_579773 = query.getOrDefault("oauth_token")
+  valid_579773 = validateParameter(valid_579773, JString, required = false,
+                                 default = nil)
+  if valid_579773 != nil:
+    section.add "oauth_token", valid_579773
+  var valid_579774 = query.getOrDefault("alt")
+  valid_579774 = validateParameter(valid_579774, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579774 != nil:
+    section.add "alt", valid_579774
+  var valid_579775 = query.getOrDefault("userIp")
+  valid_579775 = validateParameter(valid_579775, JString, required = false,
+                                 default = nil)
+  if valid_579775 != nil:
+    section.add "userIp", valid_579775
+  var valid_579776 = query.getOrDefault("quotaUser")
+  valid_579776 = validateParameter(valid_579776, JString, required = false,
+                                 default = nil)
+  if valid_579776 != nil:
+    section.add "quotaUser", valid_579776
+  var valid_579777 = query.getOrDefault("fields")
+  valid_579777 = validateParameter(valid_579777, JString, required = false,
+                                 default = nil)
+  if valid_579777 != nil:
+    section.add "fields", valid_579777
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8828,67 +8824,67 @@ proc validate_GmailUsersSettingsSendAsSmimeInfoList_589867(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589878: Call_GmailUsersSettingsSendAsSmimeInfoList_589866;
+proc call*(call_579778: Call_GmailUsersSettingsSendAsSmimeInfoList_579766;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists S/MIME configs for the specified send-as alias.
   ## 
-  let valid = call_589878.validator(path, query, header, formData, body)
-  let scheme = call_589878.pickScheme
+  let valid = call_579778.validator(path, query, header, formData, body)
+  let scheme = call_579778.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589878.url(scheme.get, call_589878.host, call_589878.base,
-                         call_589878.route, valid.getOrDefault("path"),
+  let url = call_579778.url(scheme.get, call_579778.host, call_579778.base,
+                         call_579778.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589878, url, valid)
+  result = hook(call_579778, url, valid)
 
-proc call*(call_589879: Call_GmailUsersSettingsSendAsSmimeInfoList_589866;
-          sendAsEmail: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579779: Call_GmailUsersSettingsSendAsSmimeInfoList_579766;
+          sendAsEmail: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsSendAsSmimeInfoList
   ## Lists S/MIME configs for the specified send-as alias.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   sendAsEmail: string (required)
-  ##              : The email address that appears in the "From:" header for mail sent using this alias.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589880 = newJObject()
-  var query_589881 = newJObject()
-  add(query_589881, "fields", newJString(fields))
-  add(query_589881, "quotaUser", newJString(quotaUser))
-  add(query_589881, "alt", newJString(alt))
-  add(path_589880, "sendAsEmail", newJString(sendAsEmail))
-  add(query_589881, "oauth_token", newJString(oauthToken))
-  add(query_589881, "userIp", newJString(userIp))
-  add(query_589881, "key", newJString(key))
-  add(query_589881, "prettyPrint", newJBool(prettyPrint))
-  add(path_589880, "userId", newJString(userId))
-  result = call_589879.call(path_589880, query_589881, nil, nil, nil)
+  ##   sendAsEmail: string (required)
+  ##              : The email address that appears in the "From:" header for mail sent using this alias.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579780 = newJObject()
+  var query_579781 = newJObject()
+  add(query_579781, "key", newJString(key))
+  add(query_579781, "prettyPrint", newJBool(prettyPrint))
+  add(query_579781, "oauth_token", newJString(oauthToken))
+  add(query_579781, "alt", newJString(alt))
+  add(query_579781, "userIp", newJString(userIp))
+  add(query_579781, "quotaUser", newJString(quotaUser))
+  add(path_579780, "userId", newJString(userId))
+  add(path_579780, "sendAsEmail", newJString(sendAsEmail))
+  add(query_579781, "fields", newJString(fields))
+  result = call_579779.call(path_579780, query_579781, nil, nil, nil)
 
-var gmailUsersSettingsSendAsSmimeInfoList* = Call_GmailUsersSettingsSendAsSmimeInfoList_589866(
+var gmailUsersSettingsSendAsSmimeInfoList* = Call_GmailUsersSettingsSendAsSmimeInfoList_579766(
     name: "gmailUsersSettingsSendAsSmimeInfoList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo",
-    validator: validate_GmailUsersSettingsSendAsSmimeInfoList_589867,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsSmimeInfoList_589868,
+    validator: validate_GmailUsersSettingsSendAsSmimeInfoList_579767,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsSmimeInfoList_579768,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsSendAsSmimeInfoGet_589900 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsSendAsSmimeInfoGet_589902(protocol: Scheme;
+  Call_GmailUsersSettingsSendAsSmimeInfoGet_579800 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsSendAsSmimeInfoGet_579802(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8909,89 +8905,88 @@ proc url_GmailUsersSettingsSendAsSmimeInfoGet_589902(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsSendAsSmimeInfoGet_589901(path: JsonNode;
+proc validate_GmailUsersSettingsSendAsSmimeInfoGet_579801(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the specified S/MIME config for the specified send-as alias.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   sendAsEmail: JString (required)
-  ##              : The email address that appears in the "From:" header for mail sent using this alias.
   ##   id: JString (required)
   ##     : The immutable ID for the SmimeInfo.
   ##   userId: JString (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
+  ##   sendAsEmail: JString (required)
+  ##              : The email address that appears in the "From:" header for mail sent using this alias.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `sendAsEmail` field"
-  var valid_589903 = path.getOrDefault("sendAsEmail")
-  valid_589903 = validateParameter(valid_589903, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `id` field"
+  var valid_579803 = path.getOrDefault("id")
+  valid_579803 = validateParameter(valid_579803, JString, required = true,
                                  default = nil)
-  if valid_589903 != nil:
-    section.add "sendAsEmail", valid_589903
-  var valid_589904 = path.getOrDefault("id")
-  valid_589904 = validateParameter(valid_589904, JString, required = true,
-                                 default = nil)
-  if valid_589904 != nil:
-    section.add "id", valid_589904
-  var valid_589905 = path.getOrDefault("userId")
-  valid_589905 = validateParameter(valid_589905, JString, required = true,
+  if valid_579803 != nil:
+    section.add "id", valid_579803
+  var valid_579804 = path.getOrDefault("userId")
+  valid_579804 = validateParameter(valid_579804, JString, required = true,
                                  default = newJString("me"))
-  if valid_589905 != nil:
-    section.add "userId", valid_589905
+  if valid_579804 != nil:
+    section.add "userId", valid_579804
+  var valid_579805 = path.getOrDefault("sendAsEmail")
+  valid_579805 = validateParameter(valid_579805, JString, required = true,
+                                 default = nil)
+  if valid_579805 != nil:
+    section.add "sendAsEmail", valid_579805
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589906 = query.getOrDefault("fields")
-  valid_589906 = validateParameter(valid_589906, JString, required = false,
+  var valid_579806 = query.getOrDefault("key")
+  valid_579806 = validateParameter(valid_579806, JString, required = false,
                                  default = nil)
-  if valid_589906 != nil:
-    section.add "fields", valid_589906
-  var valid_589907 = query.getOrDefault("quotaUser")
-  valid_589907 = validateParameter(valid_589907, JString, required = false,
-                                 default = nil)
-  if valid_589907 != nil:
-    section.add "quotaUser", valid_589907
-  var valid_589908 = query.getOrDefault("alt")
-  valid_589908 = validateParameter(valid_589908, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589908 != nil:
-    section.add "alt", valid_589908
-  var valid_589909 = query.getOrDefault("oauth_token")
-  valid_589909 = validateParameter(valid_589909, JString, required = false,
-                                 default = nil)
-  if valid_589909 != nil:
-    section.add "oauth_token", valid_589909
-  var valid_589910 = query.getOrDefault("userIp")
-  valid_589910 = validateParameter(valid_589910, JString, required = false,
-                                 default = nil)
-  if valid_589910 != nil:
-    section.add "userIp", valid_589910
-  var valid_589911 = query.getOrDefault("key")
-  valid_589911 = validateParameter(valid_589911, JString, required = false,
-                                 default = nil)
-  if valid_589911 != nil:
-    section.add "key", valid_589911
-  var valid_589912 = query.getOrDefault("prettyPrint")
-  valid_589912 = validateParameter(valid_589912, JBool, required = false,
+  if valid_579806 != nil:
+    section.add "key", valid_579806
+  var valid_579807 = query.getOrDefault("prettyPrint")
+  valid_579807 = validateParameter(valid_579807, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589912 != nil:
-    section.add "prettyPrint", valid_589912
+  if valid_579807 != nil:
+    section.add "prettyPrint", valid_579807
+  var valid_579808 = query.getOrDefault("oauth_token")
+  valid_579808 = validateParameter(valid_579808, JString, required = false,
+                                 default = nil)
+  if valid_579808 != nil:
+    section.add "oauth_token", valid_579808
+  var valid_579809 = query.getOrDefault("alt")
+  valid_579809 = validateParameter(valid_579809, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579809 != nil:
+    section.add "alt", valid_579809
+  var valid_579810 = query.getOrDefault("userIp")
+  valid_579810 = validateParameter(valid_579810, JString, required = false,
+                                 default = nil)
+  if valid_579810 != nil:
+    section.add "userIp", valid_579810
+  var valid_579811 = query.getOrDefault("quotaUser")
+  valid_579811 = validateParameter(valid_579811, JString, required = false,
+                                 default = nil)
+  if valid_579811 != nil:
+    section.add "quotaUser", valid_579811
+  var valid_579812 = query.getOrDefault("fields")
+  valid_579812 = validateParameter(valid_579812, JString, required = false,
+                                 default = nil)
+  if valid_579812 != nil:
+    section.add "fields", valid_579812
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9000,70 +8995,70 @@ proc validate_GmailUsersSettingsSendAsSmimeInfoGet_589901(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589913: Call_GmailUsersSettingsSendAsSmimeInfoGet_589900;
+proc call*(call_579813: Call_GmailUsersSettingsSendAsSmimeInfoGet_579800;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets the specified S/MIME config for the specified send-as alias.
   ## 
-  let valid = call_589913.validator(path, query, header, formData, body)
-  let scheme = call_589913.pickScheme
+  let valid = call_579813.validator(path, query, header, formData, body)
+  let scheme = call_579813.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589913.url(scheme.get, call_589913.host, call_589913.base,
-                         call_589913.route, valid.getOrDefault("path"),
+  let url = call_579813.url(scheme.get, call_579813.host, call_579813.base,
+                         call_579813.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589913, url, valid)
+  result = hook(call_579813, url, valid)
 
-proc call*(call_589914: Call_GmailUsersSettingsSendAsSmimeInfoGet_589900;
-          sendAsEmail: string; id: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579814: Call_GmailUsersSettingsSendAsSmimeInfoGet_579800;
+          id: string; sendAsEmail: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsSendAsSmimeInfoGet
   ## Gets the specified S/MIME config for the specified send-as alias.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   sendAsEmail: string (required)
-  ##              : The email address that appears in the "From:" header for mail sent using this alias.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The immutable ID for the SmimeInfo.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The immutable ID for the SmimeInfo.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589915 = newJObject()
-  var query_589916 = newJObject()
-  add(query_589916, "fields", newJString(fields))
-  add(query_589916, "quotaUser", newJString(quotaUser))
-  add(query_589916, "alt", newJString(alt))
-  add(path_589915, "sendAsEmail", newJString(sendAsEmail))
-  add(query_589916, "oauth_token", newJString(oauthToken))
-  add(query_589916, "userIp", newJString(userIp))
-  add(path_589915, "id", newJString(id))
-  add(query_589916, "key", newJString(key))
-  add(query_589916, "prettyPrint", newJBool(prettyPrint))
-  add(path_589915, "userId", newJString(userId))
-  result = call_589914.call(path_589915, query_589916, nil, nil, nil)
+  ##   sendAsEmail: string (required)
+  ##              : The email address that appears in the "From:" header for mail sent using this alias.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579815 = newJObject()
+  var query_579816 = newJObject()
+  add(query_579816, "key", newJString(key))
+  add(query_579816, "prettyPrint", newJBool(prettyPrint))
+  add(query_579816, "oauth_token", newJString(oauthToken))
+  add(path_579815, "id", newJString(id))
+  add(query_579816, "alt", newJString(alt))
+  add(query_579816, "userIp", newJString(userIp))
+  add(query_579816, "quotaUser", newJString(quotaUser))
+  add(path_579815, "userId", newJString(userId))
+  add(path_579815, "sendAsEmail", newJString(sendAsEmail))
+  add(query_579816, "fields", newJString(fields))
+  result = call_579814.call(path_579815, query_579816, nil, nil, nil)
 
-var gmailUsersSettingsSendAsSmimeInfoGet* = Call_GmailUsersSettingsSendAsSmimeInfoGet_589900(
+var gmailUsersSettingsSendAsSmimeInfoGet* = Call_GmailUsersSettingsSendAsSmimeInfoGet_579800(
     name: "gmailUsersSettingsSendAsSmimeInfoGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}",
-    validator: validate_GmailUsersSettingsSendAsSmimeInfoGet_589901,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsSmimeInfoGet_589902,
+    validator: validate_GmailUsersSettingsSendAsSmimeInfoGet_579801,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsSmimeInfoGet_579802,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsSendAsSmimeInfoDelete_589917 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsSendAsSmimeInfoDelete_589919(protocol: Scheme;
+  Call_GmailUsersSettingsSendAsSmimeInfoDelete_579817 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsSendAsSmimeInfoDelete_579819(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9084,89 +9079,88 @@ proc url_GmailUsersSettingsSendAsSmimeInfoDelete_589919(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsSendAsSmimeInfoDelete_589918(path: JsonNode;
+proc validate_GmailUsersSettingsSendAsSmimeInfoDelete_579818(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the specified S/MIME config for the specified send-as alias.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   sendAsEmail: JString (required)
-  ##              : The email address that appears in the "From:" header for mail sent using this alias.
   ##   id: JString (required)
   ##     : The immutable ID for the SmimeInfo.
   ##   userId: JString (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
+  ##   sendAsEmail: JString (required)
+  ##              : The email address that appears in the "From:" header for mail sent using this alias.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `sendAsEmail` field"
-  var valid_589920 = path.getOrDefault("sendAsEmail")
-  valid_589920 = validateParameter(valid_589920, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `id` field"
+  var valid_579820 = path.getOrDefault("id")
+  valid_579820 = validateParameter(valid_579820, JString, required = true,
                                  default = nil)
-  if valid_589920 != nil:
-    section.add "sendAsEmail", valid_589920
-  var valid_589921 = path.getOrDefault("id")
-  valid_589921 = validateParameter(valid_589921, JString, required = true,
-                                 default = nil)
-  if valid_589921 != nil:
-    section.add "id", valid_589921
-  var valid_589922 = path.getOrDefault("userId")
-  valid_589922 = validateParameter(valid_589922, JString, required = true,
+  if valid_579820 != nil:
+    section.add "id", valid_579820
+  var valid_579821 = path.getOrDefault("userId")
+  valid_579821 = validateParameter(valid_579821, JString, required = true,
                                  default = newJString("me"))
-  if valid_589922 != nil:
-    section.add "userId", valid_589922
+  if valid_579821 != nil:
+    section.add "userId", valid_579821
+  var valid_579822 = path.getOrDefault("sendAsEmail")
+  valid_579822 = validateParameter(valid_579822, JString, required = true,
+                                 default = nil)
+  if valid_579822 != nil:
+    section.add "sendAsEmail", valid_579822
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589923 = query.getOrDefault("fields")
-  valid_589923 = validateParameter(valid_589923, JString, required = false,
+  var valid_579823 = query.getOrDefault("key")
+  valid_579823 = validateParameter(valid_579823, JString, required = false,
                                  default = nil)
-  if valid_589923 != nil:
-    section.add "fields", valid_589923
-  var valid_589924 = query.getOrDefault("quotaUser")
-  valid_589924 = validateParameter(valid_589924, JString, required = false,
-                                 default = nil)
-  if valid_589924 != nil:
-    section.add "quotaUser", valid_589924
-  var valid_589925 = query.getOrDefault("alt")
-  valid_589925 = validateParameter(valid_589925, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589925 != nil:
-    section.add "alt", valid_589925
-  var valid_589926 = query.getOrDefault("oauth_token")
-  valid_589926 = validateParameter(valid_589926, JString, required = false,
-                                 default = nil)
-  if valid_589926 != nil:
-    section.add "oauth_token", valid_589926
-  var valid_589927 = query.getOrDefault("userIp")
-  valid_589927 = validateParameter(valid_589927, JString, required = false,
-                                 default = nil)
-  if valid_589927 != nil:
-    section.add "userIp", valid_589927
-  var valid_589928 = query.getOrDefault("key")
-  valid_589928 = validateParameter(valid_589928, JString, required = false,
-                                 default = nil)
-  if valid_589928 != nil:
-    section.add "key", valid_589928
-  var valid_589929 = query.getOrDefault("prettyPrint")
-  valid_589929 = validateParameter(valid_589929, JBool, required = false,
+  if valid_579823 != nil:
+    section.add "key", valid_579823
+  var valid_579824 = query.getOrDefault("prettyPrint")
+  valid_579824 = validateParameter(valid_579824, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589929 != nil:
-    section.add "prettyPrint", valid_589929
+  if valid_579824 != nil:
+    section.add "prettyPrint", valid_579824
+  var valid_579825 = query.getOrDefault("oauth_token")
+  valid_579825 = validateParameter(valid_579825, JString, required = false,
+                                 default = nil)
+  if valid_579825 != nil:
+    section.add "oauth_token", valid_579825
+  var valid_579826 = query.getOrDefault("alt")
+  valid_579826 = validateParameter(valid_579826, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579826 != nil:
+    section.add "alt", valid_579826
+  var valid_579827 = query.getOrDefault("userIp")
+  valid_579827 = validateParameter(valid_579827, JString, required = false,
+                                 default = nil)
+  if valid_579827 != nil:
+    section.add "userIp", valid_579827
+  var valid_579828 = query.getOrDefault("quotaUser")
+  valid_579828 = validateParameter(valid_579828, JString, required = false,
+                                 default = nil)
+  if valid_579828 != nil:
+    section.add "quotaUser", valid_579828
+  var valid_579829 = query.getOrDefault("fields")
+  valid_579829 = validateParameter(valid_579829, JString, required = false,
+                                 default = nil)
+  if valid_579829 != nil:
+    section.add "fields", valid_579829
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9175,70 +9169,70 @@ proc validate_GmailUsersSettingsSendAsSmimeInfoDelete_589918(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589930: Call_GmailUsersSettingsSendAsSmimeInfoDelete_589917;
+proc call*(call_579830: Call_GmailUsersSettingsSendAsSmimeInfoDelete_579817;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes the specified S/MIME config for the specified send-as alias.
   ## 
-  let valid = call_589930.validator(path, query, header, formData, body)
-  let scheme = call_589930.pickScheme
+  let valid = call_579830.validator(path, query, header, formData, body)
+  let scheme = call_579830.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589930.url(scheme.get, call_589930.host, call_589930.base,
-                         call_589930.route, valid.getOrDefault("path"),
+  let url = call_579830.url(scheme.get, call_579830.host, call_579830.base,
+                         call_579830.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589930, url, valid)
+  result = hook(call_579830, url, valid)
 
-proc call*(call_589931: Call_GmailUsersSettingsSendAsSmimeInfoDelete_589917;
-          sendAsEmail: string; id: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579831: Call_GmailUsersSettingsSendAsSmimeInfoDelete_579817;
+          id: string; sendAsEmail: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsSendAsSmimeInfoDelete
   ## Deletes the specified S/MIME config for the specified send-as alias.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   sendAsEmail: string (required)
-  ##              : The email address that appears in the "From:" header for mail sent using this alias.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The immutable ID for the SmimeInfo.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The immutable ID for the SmimeInfo.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589932 = newJObject()
-  var query_589933 = newJObject()
-  add(query_589933, "fields", newJString(fields))
-  add(query_589933, "quotaUser", newJString(quotaUser))
-  add(query_589933, "alt", newJString(alt))
-  add(path_589932, "sendAsEmail", newJString(sendAsEmail))
-  add(query_589933, "oauth_token", newJString(oauthToken))
-  add(query_589933, "userIp", newJString(userIp))
-  add(path_589932, "id", newJString(id))
-  add(query_589933, "key", newJString(key))
-  add(query_589933, "prettyPrint", newJBool(prettyPrint))
-  add(path_589932, "userId", newJString(userId))
-  result = call_589931.call(path_589932, query_589933, nil, nil, nil)
+  ##   sendAsEmail: string (required)
+  ##              : The email address that appears in the "From:" header for mail sent using this alias.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579832 = newJObject()
+  var query_579833 = newJObject()
+  add(query_579833, "key", newJString(key))
+  add(query_579833, "prettyPrint", newJBool(prettyPrint))
+  add(query_579833, "oauth_token", newJString(oauthToken))
+  add(path_579832, "id", newJString(id))
+  add(query_579833, "alt", newJString(alt))
+  add(query_579833, "userIp", newJString(userIp))
+  add(query_579833, "quotaUser", newJString(quotaUser))
+  add(path_579832, "userId", newJString(userId))
+  add(path_579832, "sendAsEmail", newJString(sendAsEmail))
+  add(query_579833, "fields", newJString(fields))
+  result = call_579831.call(path_579832, query_579833, nil, nil, nil)
 
-var gmailUsersSettingsSendAsSmimeInfoDelete* = Call_GmailUsersSettingsSendAsSmimeInfoDelete_589917(
+var gmailUsersSettingsSendAsSmimeInfoDelete* = Call_GmailUsersSettingsSendAsSmimeInfoDelete_579817(
     name: "gmailUsersSettingsSendAsSmimeInfoDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}",
-    validator: validate_GmailUsersSettingsSendAsSmimeInfoDelete_589918,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsSmimeInfoDelete_589919,
+    validator: validate_GmailUsersSettingsSendAsSmimeInfoDelete_579818,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsSmimeInfoDelete_579819,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsSendAsSmimeInfoSetDefault_589934 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsSendAsSmimeInfoSetDefault_589936(protocol: Scheme;
+  Call_GmailUsersSettingsSendAsSmimeInfoSetDefault_579834 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsSendAsSmimeInfoSetDefault_579836(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9260,89 +9254,88 @@ proc url_GmailUsersSettingsSendAsSmimeInfoSetDefault_589936(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsSendAsSmimeInfoSetDefault_589935(path: JsonNode;
+proc validate_GmailUsersSettingsSendAsSmimeInfoSetDefault_579835(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets the default S/MIME config for the specified send-as alias.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   sendAsEmail: JString (required)
-  ##              : The email address that appears in the "From:" header for mail sent using this alias.
   ##   id: JString (required)
   ##     : The immutable ID for the SmimeInfo.
   ##   userId: JString (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
+  ##   sendAsEmail: JString (required)
+  ##              : The email address that appears in the "From:" header for mail sent using this alias.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `sendAsEmail` field"
-  var valid_589937 = path.getOrDefault("sendAsEmail")
-  valid_589937 = validateParameter(valid_589937, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `id` field"
+  var valid_579837 = path.getOrDefault("id")
+  valid_579837 = validateParameter(valid_579837, JString, required = true,
                                  default = nil)
-  if valid_589937 != nil:
-    section.add "sendAsEmail", valid_589937
-  var valid_589938 = path.getOrDefault("id")
-  valid_589938 = validateParameter(valid_589938, JString, required = true,
-                                 default = nil)
-  if valid_589938 != nil:
-    section.add "id", valid_589938
-  var valid_589939 = path.getOrDefault("userId")
-  valid_589939 = validateParameter(valid_589939, JString, required = true,
+  if valid_579837 != nil:
+    section.add "id", valid_579837
+  var valid_579838 = path.getOrDefault("userId")
+  valid_579838 = validateParameter(valid_579838, JString, required = true,
                                  default = newJString("me"))
-  if valid_589939 != nil:
-    section.add "userId", valid_589939
+  if valid_579838 != nil:
+    section.add "userId", valid_579838
+  var valid_579839 = path.getOrDefault("sendAsEmail")
+  valid_579839 = validateParameter(valid_579839, JString, required = true,
+                                 default = nil)
+  if valid_579839 != nil:
+    section.add "sendAsEmail", valid_579839
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589940 = query.getOrDefault("fields")
-  valid_589940 = validateParameter(valid_589940, JString, required = false,
+  var valid_579840 = query.getOrDefault("key")
+  valid_579840 = validateParameter(valid_579840, JString, required = false,
                                  default = nil)
-  if valid_589940 != nil:
-    section.add "fields", valid_589940
-  var valid_589941 = query.getOrDefault("quotaUser")
-  valid_589941 = validateParameter(valid_589941, JString, required = false,
-                                 default = nil)
-  if valid_589941 != nil:
-    section.add "quotaUser", valid_589941
-  var valid_589942 = query.getOrDefault("alt")
-  valid_589942 = validateParameter(valid_589942, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589942 != nil:
-    section.add "alt", valid_589942
-  var valid_589943 = query.getOrDefault("oauth_token")
-  valid_589943 = validateParameter(valid_589943, JString, required = false,
-                                 default = nil)
-  if valid_589943 != nil:
-    section.add "oauth_token", valid_589943
-  var valid_589944 = query.getOrDefault("userIp")
-  valid_589944 = validateParameter(valid_589944, JString, required = false,
-                                 default = nil)
-  if valid_589944 != nil:
-    section.add "userIp", valid_589944
-  var valid_589945 = query.getOrDefault("key")
-  valid_589945 = validateParameter(valid_589945, JString, required = false,
-                                 default = nil)
-  if valid_589945 != nil:
-    section.add "key", valid_589945
-  var valid_589946 = query.getOrDefault("prettyPrint")
-  valid_589946 = validateParameter(valid_589946, JBool, required = false,
+  if valid_579840 != nil:
+    section.add "key", valid_579840
+  var valid_579841 = query.getOrDefault("prettyPrint")
+  valid_579841 = validateParameter(valid_579841, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589946 != nil:
-    section.add "prettyPrint", valid_589946
+  if valid_579841 != nil:
+    section.add "prettyPrint", valid_579841
+  var valid_579842 = query.getOrDefault("oauth_token")
+  valid_579842 = validateParameter(valid_579842, JString, required = false,
+                                 default = nil)
+  if valid_579842 != nil:
+    section.add "oauth_token", valid_579842
+  var valid_579843 = query.getOrDefault("alt")
+  valid_579843 = validateParameter(valid_579843, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579843 != nil:
+    section.add "alt", valid_579843
+  var valid_579844 = query.getOrDefault("userIp")
+  valid_579844 = validateParameter(valid_579844, JString, required = false,
+                                 default = nil)
+  if valid_579844 != nil:
+    section.add "userIp", valid_579844
+  var valid_579845 = query.getOrDefault("quotaUser")
+  valid_579845 = validateParameter(valid_579845, JString, required = false,
+                                 default = nil)
+  if valid_579845 != nil:
+    section.add "quotaUser", valid_579845
+  var valid_579846 = query.getOrDefault("fields")
+  valid_579846 = validateParameter(valid_579846, JString, required = false,
+                                 default = nil)
+  if valid_579846 != nil:
+    section.add "fields", valid_579846
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9351,70 +9344,70 @@ proc validate_GmailUsersSettingsSendAsSmimeInfoSetDefault_589935(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589947: Call_GmailUsersSettingsSendAsSmimeInfoSetDefault_589934;
+proc call*(call_579847: Call_GmailUsersSettingsSendAsSmimeInfoSetDefault_579834;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the default S/MIME config for the specified send-as alias.
   ## 
-  let valid = call_589947.validator(path, query, header, formData, body)
-  let scheme = call_589947.pickScheme
+  let valid = call_579847.validator(path, query, header, formData, body)
+  let scheme = call_579847.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589947.url(scheme.get, call_589947.host, call_589947.base,
-                         call_589947.route, valid.getOrDefault("path"),
+  let url = call_579847.url(scheme.get, call_579847.host, call_579847.base,
+                         call_579847.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589947, url, valid)
+  result = hook(call_579847, url, valid)
 
-proc call*(call_589948: Call_GmailUsersSettingsSendAsSmimeInfoSetDefault_589934;
-          sendAsEmail: string; id: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579848: Call_GmailUsersSettingsSendAsSmimeInfoSetDefault_579834;
+          id: string; sendAsEmail: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsSendAsSmimeInfoSetDefault
   ## Sets the default S/MIME config for the specified send-as alias.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   sendAsEmail: string (required)
-  ##              : The email address that appears in the "From:" header for mail sent using this alias.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The immutable ID for the SmimeInfo.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The immutable ID for the SmimeInfo.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_589949 = newJObject()
-  var query_589950 = newJObject()
-  add(query_589950, "fields", newJString(fields))
-  add(query_589950, "quotaUser", newJString(quotaUser))
-  add(query_589950, "alt", newJString(alt))
-  add(path_589949, "sendAsEmail", newJString(sendAsEmail))
-  add(query_589950, "oauth_token", newJString(oauthToken))
-  add(query_589950, "userIp", newJString(userIp))
-  add(path_589949, "id", newJString(id))
-  add(query_589950, "key", newJString(key))
-  add(query_589950, "prettyPrint", newJBool(prettyPrint))
-  add(path_589949, "userId", newJString(userId))
-  result = call_589948.call(path_589949, query_589950, nil, nil, nil)
+  ##   sendAsEmail: string (required)
+  ##              : The email address that appears in the "From:" header for mail sent using this alias.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579849 = newJObject()
+  var query_579850 = newJObject()
+  add(query_579850, "key", newJString(key))
+  add(query_579850, "prettyPrint", newJBool(prettyPrint))
+  add(query_579850, "oauth_token", newJString(oauthToken))
+  add(path_579849, "id", newJString(id))
+  add(query_579850, "alt", newJString(alt))
+  add(query_579850, "userIp", newJString(userIp))
+  add(query_579850, "quotaUser", newJString(quotaUser))
+  add(path_579849, "userId", newJString(userId))
+  add(path_579849, "sendAsEmail", newJString(sendAsEmail))
+  add(query_579850, "fields", newJString(fields))
+  result = call_579848.call(path_579849, query_579850, nil, nil, nil)
 
-var gmailUsersSettingsSendAsSmimeInfoSetDefault* = Call_GmailUsersSettingsSendAsSmimeInfoSetDefault_589934(
+var gmailUsersSettingsSendAsSmimeInfoSetDefault* = Call_GmailUsersSettingsSendAsSmimeInfoSetDefault_579834(
     name: "gmailUsersSettingsSendAsSmimeInfoSetDefault",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}/setDefault",
-    validator: validate_GmailUsersSettingsSendAsSmimeInfoSetDefault_589935,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsSmimeInfoSetDefault_589936,
+    validator: validate_GmailUsersSettingsSendAsSmimeInfoSetDefault_579835,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsSmimeInfoSetDefault_579836,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsSendAsVerify_589951 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsSendAsVerify_589953(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsSendAsVerify_579851 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsSendAsVerify_579853(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9433,7 +9426,7 @@ proc url_GmailUsersSettingsSendAsVerify_589953(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsSendAsVerify_589952(path: JsonNode;
+proc validate_GmailUsersSettingsSendAsVerify_579852(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sends a verification email to the specified send-as alias address. The verification status must be pending.
   ## 
@@ -9442,75 +9435,74 @@ proc validate_GmailUsersSettingsSendAsVerify_589952(path: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   sendAsEmail: JString (required)
-  ##              : The send-as alias to be verified.
   ##   userId: JString (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
+  ##   sendAsEmail: JString (required)
+  ##              : The send-as alias to be verified.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `sendAsEmail` field"
-  var valid_589954 = path.getOrDefault("sendAsEmail")
-  valid_589954 = validateParameter(valid_589954, JString, required = true,
-                                 default = nil)
-  if valid_589954 != nil:
-    section.add "sendAsEmail", valid_589954
-  var valid_589955 = path.getOrDefault("userId")
-  valid_589955 = validateParameter(valid_589955, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `userId` field"
+  var valid_579854 = path.getOrDefault("userId")
+  valid_579854 = validateParameter(valid_579854, JString, required = true,
                                  default = newJString("me"))
-  if valid_589955 != nil:
-    section.add "userId", valid_589955
+  if valid_579854 != nil:
+    section.add "userId", valid_579854
+  var valid_579855 = path.getOrDefault("sendAsEmail")
+  valid_579855 = validateParameter(valid_579855, JString, required = true,
+                                 default = nil)
+  if valid_579855 != nil:
+    section.add "sendAsEmail", valid_579855
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589956 = query.getOrDefault("fields")
-  valid_589956 = validateParameter(valid_589956, JString, required = false,
+  var valid_579856 = query.getOrDefault("key")
+  valid_579856 = validateParameter(valid_579856, JString, required = false,
                                  default = nil)
-  if valid_589956 != nil:
-    section.add "fields", valid_589956
-  var valid_589957 = query.getOrDefault("quotaUser")
-  valid_589957 = validateParameter(valid_589957, JString, required = false,
-                                 default = nil)
-  if valid_589957 != nil:
-    section.add "quotaUser", valid_589957
-  var valid_589958 = query.getOrDefault("alt")
-  valid_589958 = validateParameter(valid_589958, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589958 != nil:
-    section.add "alt", valid_589958
-  var valid_589959 = query.getOrDefault("oauth_token")
-  valid_589959 = validateParameter(valid_589959, JString, required = false,
-                                 default = nil)
-  if valid_589959 != nil:
-    section.add "oauth_token", valid_589959
-  var valid_589960 = query.getOrDefault("userIp")
-  valid_589960 = validateParameter(valid_589960, JString, required = false,
-                                 default = nil)
-  if valid_589960 != nil:
-    section.add "userIp", valid_589960
-  var valid_589961 = query.getOrDefault("key")
-  valid_589961 = validateParameter(valid_589961, JString, required = false,
-                                 default = nil)
-  if valid_589961 != nil:
-    section.add "key", valid_589961
-  var valid_589962 = query.getOrDefault("prettyPrint")
-  valid_589962 = validateParameter(valid_589962, JBool, required = false,
+  if valid_579856 != nil:
+    section.add "key", valid_579856
+  var valid_579857 = query.getOrDefault("prettyPrint")
+  valid_579857 = validateParameter(valid_579857, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589962 != nil:
-    section.add "prettyPrint", valid_589962
+  if valid_579857 != nil:
+    section.add "prettyPrint", valid_579857
+  var valid_579858 = query.getOrDefault("oauth_token")
+  valid_579858 = validateParameter(valid_579858, JString, required = false,
+                                 default = nil)
+  if valid_579858 != nil:
+    section.add "oauth_token", valid_579858
+  var valid_579859 = query.getOrDefault("alt")
+  valid_579859 = validateParameter(valid_579859, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579859 != nil:
+    section.add "alt", valid_579859
+  var valid_579860 = query.getOrDefault("userIp")
+  valid_579860 = validateParameter(valid_579860, JString, required = false,
+                                 default = nil)
+  if valid_579860 != nil:
+    section.add "userIp", valid_579860
+  var valid_579861 = query.getOrDefault("quotaUser")
+  valid_579861 = validateParameter(valid_579861, JString, required = false,
+                                 default = nil)
+  if valid_579861 != nil:
+    section.add "quotaUser", valid_579861
+  var valid_579862 = query.getOrDefault("fields")
+  valid_579862 = validateParameter(valid_579862, JString, required = false,
+                                 default = nil)
+  if valid_579862 != nil:
+    section.add "fields", valid_579862
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9519,70 +9511,70 @@ proc validate_GmailUsersSettingsSendAsVerify_589952(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589963: Call_GmailUsersSettingsSendAsVerify_589951; path: JsonNode;
+proc call*(call_579863: Call_GmailUsersSettingsSendAsVerify_579851; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Sends a verification email to the specified send-as alias address. The verification status must be pending.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
   ## 
-  let valid = call_589963.validator(path, query, header, formData, body)
-  let scheme = call_589963.pickScheme
+  let valid = call_579863.validator(path, query, header, formData, body)
+  let scheme = call_579863.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589963.url(scheme.get, call_589963.host, call_589963.base,
-                         call_589963.route, valid.getOrDefault("path"),
+  let url = call_579863.url(scheme.get, call_579863.host, call_579863.base,
+                         call_579863.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589963, url, valid)
+  result = hook(call_579863, url, valid)
 
-proc call*(call_589964: Call_GmailUsersSettingsSendAsVerify_589951;
-          sendAsEmail: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579864: Call_GmailUsersSettingsSendAsVerify_579851;
+          sendAsEmail: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsSendAsVerify
   ## Sends a verification email to the specified send-as alias address. The verification status must be pending.
   ## 
   ## This method is only available to service account clients that have been delegated domain-wide authority.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   sendAsEmail: string (required)
-  ##              : The send-as alias to be verified.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589965 = newJObject()
-  var query_589966 = newJObject()
-  add(query_589966, "fields", newJString(fields))
-  add(query_589966, "quotaUser", newJString(quotaUser))
-  add(query_589966, "alt", newJString(alt))
-  add(path_589965, "sendAsEmail", newJString(sendAsEmail))
-  add(query_589966, "oauth_token", newJString(oauthToken))
-  add(query_589966, "userIp", newJString(userIp))
-  add(query_589966, "key", newJString(key))
-  add(query_589966, "prettyPrint", newJBool(prettyPrint))
-  add(path_589965, "userId", newJString(userId))
-  result = call_589964.call(path_589965, query_589966, nil, nil, nil)
+  ##   sendAsEmail: string (required)
+  ##              : The send-as alias to be verified.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579865 = newJObject()
+  var query_579866 = newJObject()
+  add(query_579866, "key", newJString(key))
+  add(query_579866, "prettyPrint", newJBool(prettyPrint))
+  add(query_579866, "oauth_token", newJString(oauthToken))
+  add(query_579866, "alt", newJString(alt))
+  add(query_579866, "userIp", newJString(userIp))
+  add(query_579866, "quotaUser", newJString(quotaUser))
+  add(path_579865, "userId", newJString(userId))
+  add(path_579865, "sendAsEmail", newJString(sendAsEmail))
+  add(query_579866, "fields", newJString(fields))
+  result = call_579864.call(path_579865, query_579866, nil, nil, nil)
 
-var gmailUsersSettingsSendAsVerify* = Call_GmailUsersSettingsSendAsVerify_589951(
+var gmailUsersSettingsSendAsVerify* = Call_GmailUsersSettingsSendAsVerify_579851(
     name: "gmailUsersSettingsSendAsVerify", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{userId}/settings/sendAs/{sendAsEmail}/verify",
-    validator: validate_GmailUsersSettingsSendAsVerify_589952,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsVerify_589953,
+    validator: validate_GmailUsersSettingsSendAsVerify_579852,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsSendAsVerify_579853,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsUpdateVacation_589982 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsUpdateVacation_589984(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsUpdateVacation_579882 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsUpdateVacation_579884(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9598,7 +9590,7 @@ proc url_GmailUsersSettingsUpdateVacation_589984(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsUpdateVacation_589983(path: JsonNode;
+proc validate_GmailUsersSettingsUpdateVacation_579883(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates vacation responder settings.
   ## 
@@ -9609,63 +9601,63 @@ proc validate_GmailUsersSettingsUpdateVacation_589983(path: JsonNode;
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589985 = path.getOrDefault("userId")
-  valid_589985 = validateParameter(valid_589985, JString, required = true,
+  var valid_579885 = path.getOrDefault("userId")
+  valid_579885 = validateParameter(valid_579885, JString, required = true,
                                  default = newJString("me"))
-  if valid_589985 != nil:
-    section.add "userId", valid_589985
+  if valid_579885 != nil:
+    section.add "userId", valid_579885
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589986 = query.getOrDefault("fields")
-  valid_589986 = validateParameter(valid_589986, JString, required = false,
+  var valid_579886 = query.getOrDefault("key")
+  valid_579886 = validateParameter(valid_579886, JString, required = false,
                                  default = nil)
-  if valid_589986 != nil:
-    section.add "fields", valid_589986
-  var valid_589987 = query.getOrDefault("quotaUser")
-  valid_589987 = validateParameter(valid_589987, JString, required = false,
-                                 default = nil)
-  if valid_589987 != nil:
-    section.add "quotaUser", valid_589987
-  var valid_589988 = query.getOrDefault("alt")
-  valid_589988 = validateParameter(valid_589988, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589988 != nil:
-    section.add "alt", valid_589988
-  var valid_589989 = query.getOrDefault("oauth_token")
-  valid_589989 = validateParameter(valid_589989, JString, required = false,
-                                 default = nil)
-  if valid_589989 != nil:
-    section.add "oauth_token", valid_589989
-  var valid_589990 = query.getOrDefault("userIp")
-  valid_589990 = validateParameter(valid_589990, JString, required = false,
-                                 default = nil)
-  if valid_589990 != nil:
-    section.add "userIp", valid_589990
-  var valid_589991 = query.getOrDefault("key")
-  valid_589991 = validateParameter(valid_589991, JString, required = false,
-                                 default = nil)
-  if valid_589991 != nil:
-    section.add "key", valid_589991
-  var valid_589992 = query.getOrDefault("prettyPrint")
-  valid_589992 = validateParameter(valid_589992, JBool, required = false,
+  if valid_579886 != nil:
+    section.add "key", valid_579886
+  var valid_579887 = query.getOrDefault("prettyPrint")
+  valid_579887 = validateParameter(valid_579887, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589992 != nil:
-    section.add "prettyPrint", valid_589992
+  if valid_579887 != nil:
+    section.add "prettyPrint", valid_579887
+  var valid_579888 = query.getOrDefault("oauth_token")
+  valid_579888 = validateParameter(valid_579888, JString, required = false,
+                                 default = nil)
+  if valid_579888 != nil:
+    section.add "oauth_token", valid_579888
+  var valid_579889 = query.getOrDefault("alt")
+  valid_579889 = validateParameter(valid_579889, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579889 != nil:
+    section.add "alt", valid_579889
+  var valid_579890 = query.getOrDefault("userIp")
+  valid_579890 = validateParameter(valid_579890, JString, required = false,
+                                 default = nil)
+  if valid_579890 != nil:
+    section.add "userIp", valid_579890
+  var valid_579891 = query.getOrDefault("quotaUser")
+  valid_579891 = validateParameter(valid_579891, JString, required = false,
+                                 default = nil)
+  if valid_579891 != nil:
+    section.add "quotaUser", valid_579891
+  var valid_579892 = query.getOrDefault("fields")
+  valid_579892 = validateParameter(valid_579892, JString, required = false,
+                                 default = nil)
+  if valid_579892 != nil:
+    section.add "fields", valid_579892
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9677,67 +9669,67 @@ proc validate_GmailUsersSettingsUpdateVacation_589983(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589994: Call_GmailUsersSettingsUpdateVacation_589982;
+proc call*(call_579894: Call_GmailUsersSettingsUpdateVacation_579882;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates vacation responder settings.
   ## 
-  let valid = call_589994.validator(path, query, header, formData, body)
-  let scheme = call_589994.pickScheme
+  let valid = call_579894.validator(path, query, header, formData, body)
+  let scheme = call_579894.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589994.url(scheme.get, call_589994.host, call_589994.base,
-                         call_589994.route, valid.getOrDefault("path"),
+  let url = call_579894.url(scheme.get, call_579894.host, call_579894.base,
+                         call_579894.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589994, url, valid)
+  result = hook(call_579894, url, valid)
 
-proc call*(call_589995: Call_GmailUsersSettingsUpdateVacation_589982;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579895: Call_GmailUsersSettingsUpdateVacation_579882;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersSettingsUpdateVacation
   ## Updates vacation responder settings.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589996 = newJObject()
-  var query_589997 = newJObject()
-  var body_589998 = newJObject()
-  add(query_589997, "fields", newJString(fields))
-  add(query_589997, "quotaUser", newJString(quotaUser))
-  add(query_589997, "alt", newJString(alt))
-  add(query_589997, "oauth_token", newJString(oauthToken))
-  add(query_589997, "userIp", newJString(userIp))
-  add(query_589997, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579896 = newJObject()
+  var query_579897 = newJObject()
+  var body_579898 = newJObject()
+  add(query_579897, "key", newJString(key))
+  add(query_579897, "prettyPrint", newJBool(prettyPrint))
+  add(query_579897, "oauth_token", newJString(oauthToken))
+  add(query_579897, "alt", newJString(alt))
+  add(query_579897, "userIp", newJString(userIp))
+  add(query_579897, "quotaUser", newJString(quotaUser))
+  add(path_579896, "userId", newJString(userId))
   if body != nil:
-    body_589998 = body
-  add(query_589997, "prettyPrint", newJBool(prettyPrint))
-  add(path_589996, "userId", newJString(userId))
-  result = call_589995.call(path_589996, query_589997, nil, nil, body_589998)
+    body_579898 = body
+  add(query_579897, "fields", newJString(fields))
+  result = call_579895.call(path_579896, query_579897, nil, nil, body_579898)
 
-var gmailUsersSettingsUpdateVacation* = Call_GmailUsersSettingsUpdateVacation_589982(
+var gmailUsersSettingsUpdateVacation* = Call_GmailUsersSettingsUpdateVacation_579882(
     name: "gmailUsersSettingsUpdateVacation", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{userId}/settings/vacation",
-    validator: validate_GmailUsersSettingsUpdateVacation_589983,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsUpdateVacation_589984,
+    validator: validate_GmailUsersSettingsUpdateVacation_579883,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsUpdateVacation_579884,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersSettingsGetVacation_589967 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersSettingsGetVacation_589969(protocol: Scheme; host: string;
+  Call_GmailUsersSettingsGetVacation_579867 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersSettingsGetVacation_579869(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9753,7 +9745,7 @@ proc url_GmailUsersSettingsGetVacation_589969(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersSettingsGetVacation_589968(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersSettingsGetVacation_579868(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets vacation responder settings.
   ## 
@@ -9764,63 +9756,63 @@ proc validate_GmailUsersSettingsGetVacation_589968(path: JsonNode; query: JsonNo
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_589970 = path.getOrDefault("userId")
-  valid_589970 = validateParameter(valid_589970, JString, required = true,
+  var valid_579870 = path.getOrDefault("userId")
+  valid_579870 = validateParameter(valid_579870, JString, required = true,
                                  default = newJString("me"))
-  if valid_589970 != nil:
-    section.add "userId", valid_589970
+  if valid_579870 != nil:
+    section.add "userId", valid_579870
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589971 = query.getOrDefault("fields")
-  valid_589971 = validateParameter(valid_589971, JString, required = false,
+  var valid_579871 = query.getOrDefault("key")
+  valid_579871 = validateParameter(valid_579871, JString, required = false,
                                  default = nil)
-  if valid_589971 != nil:
-    section.add "fields", valid_589971
-  var valid_589972 = query.getOrDefault("quotaUser")
-  valid_589972 = validateParameter(valid_589972, JString, required = false,
-                                 default = nil)
-  if valid_589972 != nil:
-    section.add "quotaUser", valid_589972
-  var valid_589973 = query.getOrDefault("alt")
-  valid_589973 = validateParameter(valid_589973, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589973 != nil:
-    section.add "alt", valid_589973
-  var valid_589974 = query.getOrDefault("oauth_token")
-  valid_589974 = validateParameter(valid_589974, JString, required = false,
-                                 default = nil)
-  if valid_589974 != nil:
-    section.add "oauth_token", valid_589974
-  var valid_589975 = query.getOrDefault("userIp")
-  valid_589975 = validateParameter(valid_589975, JString, required = false,
-                                 default = nil)
-  if valid_589975 != nil:
-    section.add "userIp", valid_589975
-  var valid_589976 = query.getOrDefault("key")
-  valid_589976 = validateParameter(valid_589976, JString, required = false,
-                                 default = nil)
-  if valid_589976 != nil:
-    section.add "key", valid_589976
-  var valid_589977 = query.getOrDefault("prettyPrint")
-  valid_589977 = validateParameter(valid_589977, JBool, required = false,
+  if valid_579871 != nil:
+    section.add "key", valid_579871
+  var valid_579872 = query.getOrDefault("prettyPrint")
+  valid_579872 = validateParameter(valid_579872, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589977 != nil:
-    section.add "prettyPrint", valid_589977
+  if valid_579872 != nil:
+    section.add "prettyPrint", valid_579872
+  var valid_579873 = query.getOrDefault("oauth_token")
+  valid_579873 = validateParameter(valid_579873, JString, required = false,
+                                 default = nil)
+  if valid_579873 != nil:
+    section.add "oauth_token", valid_579873
+  var valid_579874 = query.getOrDefault("alt")
+  valid_579874 = validateParameter(valid_579874, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579874 != nil:
+    section.add "alt", valid_579874
+  var valid_579875 = query.getOrDefault("userIp")
+  valid_579875 = validateParameter(valid_579875, JString, required = false,
+                                 default = nil)
+  if valid_579875 != nil:
+    section.add "userIp", valid_579875
+  var valid_579876 = query.getOrDefault("quotaUser")
+  valid_579876 = validateParameter(valid_579876, JString, required = false,
+                                 default = nil)
+  if valid_579876 != nil:
+    section.add "quotaUser", valid_579876
+  var valid_579877 = query.getOrDefault("fields")
+  valid_579877 = validateParameter(valid_579877, JString, required = false,
+                                 default = nil)
+  if valid_579877 != nil:
+    section.add "fields", valid_579877
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9829,62 +9821,62 @@ proc validate_GmailUsersSettingsGetVacation_589968(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_589978: Call_GmailUsersSettingsGetVacation_589967; path: JsonNode;
+proc call*(call_579878: Call_GmailUsersSettingsGetVacation_579867; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets vacation responder settings.
   ## 
-  let valid = call_589978.validator(path, query, header, formData, body)
-  let scheme = call_589978.pickScheme
+  let valid = call_579878.validator(path, query, header, formData, body)
+  let scheme = call_579878.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589978.url(scheme.get, call_589978.host, call_589978.base,
-                         call_589978.route, valid.getOrDefault("path"),
+  let url = call_579878.url(scheme.get, call_579878.host, call_579878.base,
+                         call_579878.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589978, url, valid)
+  result = hook(call_579878, url, valid)
 
-proc call*(call_589979: Call_GmailUsersSettingsGetVacation_589967;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579879: Call_GmailUsersSettingsGetVacation_579867;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersSettingsGetVacation
   ## Gets vacation responder settings.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : User's email address. The special value "me" can be used to indicate the authenticated user.
-  var path_589980 = newJObject()
-  var query_589981 = newJObject()
-  add(query_589981, "fields", newJString(fields))
-  add(query_589981, "quotaUser", newJString(quotaUser))
-  add(query_589981, "alt", newJString(alt))
-  add(query_589981, "oauth_token", newJString(oauthToken))
-  add(query_589981, "userIp", newJString(userIp))
-  add(query_589981, "key", newJString(key))
-  add(query_589981, "prettyPrint", newJBool(prettyPrint))
-  add(path_589980, "userId", newJString(userId))
-  result = call_589979.call(path_589980, query_589981, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579880 = newJObject()
+  var query_579881 = newJObject()
+  add(query_579881, "key", newJString(key))
+  add(query_579881, "prettyPrint", newJBool(prettyPrint))
+  add(query_579881, "oauth_token", newJString(oauthToken))
+  add(query_579881, "alt", newJString(alt))
+  add(query_579881, "userIp", newJString(userIp))
+  add(query_579881, "quotaUser", newJString(quotaUser))
+  add(path_579880, "userId", newJString(userId))
+  add(query_579881, "fields", newJString(fields))
+  result = call_579879.call(path_579880, query_579881, nil, nil, nil)
 
-var gmailUsersSettingsGetVacation* = Call_GmailUsersSettingsGetVacation_589967(
+var gmailUsersSettingsGetVacation* = Call_GmailUsersSettingsGetVacation_579867(
     name: "gmailUsersSettingsGetVacation", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/settings/vacation",
-    validator: validate_GmailUsersSettingsGetVacation_589968,
-    base: "/gmail/v1/users", url: url_GmailUsersSettingsGetVacation_589969,
+    validator: validate_GmailUsersSettingsGetVacation_579868,
+    base: "/gmail/v1/users", url: url_GmailUsersSettingsGetVacation_579869,
     schemes: {Scheme.Https})
 type
-  Call_GmailUsersStop_589999 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersStop_590001(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersStop_579899 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersStop_579901(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9900,7 +9892,7 @@ proc url_GmailUsersStop_590001(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersStop_590000(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersStop_579900(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Stop receiving push notifications for the given user mailbox.
@@ -9912,63 +9904,63 @@ proc validate_GmailUsersStop_590000(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_590002 = path.getOrDefault("userId")
-  valid_590002 = validateParameter(valid_590002, JString, required = true,
+  var valid_579902 = path.getOrDefault("userId")
+  valid_579902 = validateParameter(valid_579902, JString, required = true,
                                  default = newJString("me"))
-  if valid_590002 != nil:
-    section.add "userId", valid_590002
+  if valid_579902 != nil:
+    section.add "userId", valid_579902
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_590003 = query.getOrDefault("fields")
-  valid_590003 = validateParameter(valid_590003, JString, required = false,
+  var valid_579903 = query.getOrDefault("key")
+  valid_579903 = validateParameter(valid_579903, JString, required = false,
                                  default = nil)
-  if valid_590003 != nil:
-    section.add "fields", valid_590003
-  var valid_590004 = query.getOrDefault("quotaUser")
-  valid_590004 = validateParameter(valid_590004, JString, required = false,
-                                 default = nil)
-  if valid_590004 != nil:
-    section.add "quotaUser", valid_590004
-  var valid_590005 = query.getOrDefault("alt")
-  valid_590005 = validateParameter(valid_590005, JString, required = false,
-                                 default = newJString("json"))
-  if valid_590005 != nil:
-    section.add "alt", valid_590005
-  var valid_590006 = query.getOrDefault("oauth_token")
-  valid_590006 = validateParameter(valid_590006, JString, required = false,
-                                 default = nil)
-  if valid_590006 != nil:
-    section.add "oauth_token", valid_590006
-  var valid_590007 = query.getOrDefault("userIp")
-  valid_590007 = validateParameter(valid_590007, JString, required = false,
-                                 default = nil)
-  if valid_590007 != nil:
-    section.add "userIp", valid_590007
-  var valid_590008 = query.getOrDefault("key")
-  valid_590008 = validateParameter(valid_590008, JString, required = false,
-                                 default = nil)
-  if valid_590008 != nil:
-    section.add "key", valid_590008
-  var valid_590009 = query.getOrDefault("prettyPrint")
-  valid_590009 = validateParameter(valid_590009, JBool, required = false,
+  if valid_579903 != nil:
+    section.add "key", valid_579903
+  var valid_579904 = query.getOrDefault("prettyPrint")
+  valid_579904 = validateParameter(valid_579904, JBool, required = false,
                                  default = newJBool(true))
-  if valid_590009 != nil:
-    section.add "prettyPrint", valid_590009
+  if valid_579904 != nil:
+    section.add "prettyPrint", valid_579904
+  var valid_579905 = query.getOrDefault("oauth_token")
+  valid_579905 = validateParameter(valid_579905, JString, required = false,
+                                 default = nil)
+  if valid_579905 != nil:
+    section.add "oauth_token", valid_579905
+  var valid_579906 = query.getOrDefault("alt")
+  valid_579906 = validateParameter(valid_579906, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579906 != nil:
+    section.add "alt", valid_579906
+  var valid_579907 = query.getOrDefault("userIp")
+  valid_579907 = validateParameter(valid_579907, JString, required = false,
+                                 default = nil)
+  if valid_579907 != nil:
+    section.add "userIp", valid_579907
+  var valid_579908 = query.getOrDefault("quotaUser")
+  valid_579908 = validateParameter(valid_579908, JString, required = false,
+                                 default = nil)
+  if valid_579908 != nil:
+    section.add "quotaUser", valid_579908
+  var valid_579909 = query.getOrDefault("fields")
+  valid_579909 = validateParameter(valid_579909, JString, required = false,
+                                 default = nil)
+  if valid_579909 != nil:
+    section.add "fields", valid_579909
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9977,60 +9969,60 @@ proc validate_GmailUsersStop_590000(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_590010: Call_GmailUsersStop_589999; path: JsonNode; query: JsonNode;
+proc call*(call_579910: Call_GmailUsersStop_579899; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Stop receiving push notifications for the given user mailbox.
   ## 
-  let valid = call_590010.validator(path, query, header, formData, body)
-  let scheme = call_590010.pickScheme
+  let valid = call_579910.validator(path, query, header, formData, body)
+  let scheme = call_579910.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_590010.url(scheme.get, call_590010.host, call_590010.base,
-                         call_590010.route, valid.getOrDefault("path"),
+  let url = call_579910.url(scheme.get, call_579910.host, call_579910.base,
+                         call_579910.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_590010, url, valid)
+  result = hook(call_579910, url, valid)
 
-proc call*(call_590011: Call_GmailUsersStop_589999; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true;
-          userId: string = "me"): Recallable =
+proc call*(call_579911: Call_GmailUsersStop_579899; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; userId: string = "me";
+          fields: string = ""): Recallable =
   ## gmailUsersStop
   ## Stop receiving push notifications for the given user mailbox.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_590012 = newJObject()
-  var query_590013 = newJObject()
-  add(query_590013, "fields", newJString(fields))
-  add(query_590013, "quotaUser", newJString(quotaUser))
-  add(query_590013, "alt", newJString(alt))
-  add(query_590013, "oauth_token", newJString(oauthToken))
-  add(query_590013, "userIp", newJString(userIp))
-  add(query_590013, "key", newJString(key))
-  add(query_590013, "prettyPrint", newJBool(prettyPrint))
-  add(path_590012, "userId", newJString(userId))
-  result = call_590011.call(path_590012, query_590013, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579912 = newJObject()
+  var query_579913 = newJObject()
+  add(query_579913, "key", newJString(key))
+  add(query_579913, "prettyPrint", newJBool(prettyPrint))
+  add(query_579913, "oauth_token", newJString(oauthToken))
+  add(query_579913, "alt", newJString(alt))
+  add(query_579913, "userIp", newJString(userIp))
+  add(query_579913, "quotaUser", newJString(quotaUser))
+  add(path_579912, "userId", newJString(userId))
+  add(query_579913, "fields", newJString(fields))
+  result = call_579911.call(path_579912, query_579913, nil, nil, nil)
 
-var gmailUsersStop* = Call_GmailUsersStop_589999(name: "gmailUsersStop",
+var gmailUsersStop* = Call_GmailUsersStop_579899(name: "gmailUsersStop",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/{userId}/stop",
-    validator: validate_GmailUsersStop_590000, base: "/gmail/v1/users",
-    url: url_GmailUsersStop_590001, schemes: {Scheme.Https})
+    validator: validate_GmailUsersStop_579900, base: "/gmail/v1/users",
+    url: url_GmailUsersStop_579901, schemes: {Scheme.Https})
 type
-  Call_GmailUsersThreadsList_590014 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersThreadsList_590016(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersThreadsList_579914 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersThreadsList_579916(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -10046,7 +10038,7 @@ proc url_GmailUsersThreadsList_590016(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersThreadsList_590015(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersThreadsList_579915(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the threads in the user's mailbox.
   ## 
@@ -10057,98 +10049,98 @@ proc validate_GmailUsersThreadsList_590015(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_590017 = path.getOrDefault("userId")
-  valid_590017 = validateParameter(valid_590017, JString, required = true,
+  var valid_579917 = path.getOrDefault("userId")
+  valid_579917 = validateParameter(valid_579917, JString, required = true,
                                  default = newJString("me"))
-  if valid_590017 != nil:
-    section.add "userId", valid_590017
+  if valid_579917 != nil:
+    section.add "userId", valid_579917
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Page token to retrieve a specific page of results in the list.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : Maximum number of threads to return.
-  ##   includeSpamTrash: JBool
-  ##                   : Include threads from SPAM and TRASH in the results.
-  ##   q: JString
-  ##    : Only return threads matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". Parameter cannot be used when accessing the api using the gmail.metadata scope.
-  ##   labelIds: JArray
-  ##           : Only return threads with labels that match all of the specified label IDs.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   labelIds: JArray
+  ##           : Only return threads with labels that match all of the specified label IDs.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   q: JString
+  ##    : Only return threads matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". Parameter cannot be used when accessing the api using the gmail.metadata scope.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   includeSpamTrash: JBool
+  ##                   : Include threads from SPAM and TRASH in the results.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : Page token to retrieve a specific page of results in the list.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : Maximum number of threads to return.
   section = newJObject()
-  var valid_590018 = query.getOrDefault("fields")
-  valid_590018 = validateParameter(valid_590018, JString, required = false,
+  var valid_579918 = query.getOrDefault("key")
+  valid_579918 = validateParameter(valid_579918, JString, required = false,
                                  default = nil)
-  if valid_590018 != nil:
-    section.add "fields", valid_590018
-  var valid_590019 = query.getOrDefault("pageToken")
-  valid_590019 = validateParameter(valid_590019, JString, required = false,
+  if valid_579918 != nil:
+    section.add "key", valid_579918
+  var valid_579919 = query.getOrDefault("labelIds")
+  valid_579919 = validateParameter(valid_579919, JArray, required = false,
                                  default = nil)
-  if valid_590019 != nil:
-    section.add "pageToken", valid_590019
-  var valid_590020 = query.getOrDefault("quotaUser")
-  valid_590020 = validateParameter(valid_590020, JString, required = false,
-                                 default = nil)
-  if valid_590020 != nil:
-    section.add "quotaUser", valid_590020
-  var valid_590021 = query.getOrDefault("alt")
-  valid_590021 = validateParameter(valid_590021, JString, required = false,
-                                 default = newJString("json"))
-  if valid_590021 != nil:
-    section.add "alt", valid_590021
-  var valid_590022 = query.getOrDefault("oauth_token")
-  valid_590022 = validateParameter(valid_590022, JString, required = false,
-                                 default = nil)
-  if valid_590022 != nil:
-    section.add "oauth_token", valid_590022
-  var valid_590023 = query.getOrDefault("userIp")
-  valid_590023 = validateParameter(valid_590023, JString, required = false,
-                                 default = nil)
-  if valid_590023 != nil:
-    section.add "userIp", valid_590023
-  var valid_590024 = query.getOrDefault("maxResults")
-  valid_590024 = validateParameter(valid_590024, JInt, required = false,
-                                 default = newJInt(100))
-  if valid_590024 != nil:
-    section.add "maxResults", valid_590024
-  var valid_590025 = query.getOrDefault("includeSpamTrash")
-  valid_590025 = validateParameter(valid_590025, JBool, required = false,
-                                 default = newJBool(false))
-  if valid_590025 != nil:
-    section.add "includeSpamTrash", valid_590025
-  var valid_590026 = query.getOrDefault("q")
-  valid_590026 = validateParameter(valid_590026, JString, required = false,
-                                 default = nil)
-  if valid_590026 != nil:
-    section.add "q", valid_590026
-  var valid_590027 = query.getOrDefault("labelIds")
-  valid_590027 = validateParameter(valid_590027, JArray, required = false,
-                                 default = nil)
-  if valid_590027 != nil:
-    section.add "labelIds", valid_590027
-  var valid_590028 = query.getOrDefault("key")
-  valid_590028 = validateParameter(valid_590028, JString, required = false,
-                                 default = nil)
-  if valid_590028 != nil:
-    section.add "key", valid_590028
-  var valid_590029 = query.getOrDefault("prettyPrint")
-  valid_590029 = validateParameter(valid_590029, JBool, required = false,
+  if valid_579919 != nil:
+    section.add "labelIds", valid_579919
+  var valid_579920 = query.getOrDefault("prettyPrint")
+  valid_579920 = validateParameter(valid_579920, JBool, required = false,
                                  default = newJBool(true))
-  if valid_590029 != nil:
-    section.add "prettyPrint", valid_590029
+  if valid_579920 != nil:
+    section.add "prettyPrint", valid_579920
+  var valid_579921 = query.getOrDefault("oauth_token")
+  valid_579921 = validateParameter(valid_579921, JString, required = false,
+                                 default = nil)
+  if valid_579921 != nil:
+    section.add "oauth_token", valid_579921
+  var valid_579922 = query.getOrDefault("q")
+  valid_579922 = validateParameter(valid_579922, JString, required = false,
+                                 default = nil)
+  if valid_579922 != nil:
+    section.add "q", valid_579922
+  var valid_579923 = query.getOrDefault("alt")
+  valid_579923 = validateParameter(valid_579923, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579923 != nil:
+    section.add "alt", valid_579923
+  var valid_579924 = query.getOrDefault("userIp")
+  valid_579924 = validateParameter(valid_579924, JString, required = false,
+                                 default = nil)
+  if valid_579924 != nil:
+    section.add "userIp", valid_579924
+  var valid_579925 = query.getOrDefault("includeSpamTrash")
+  valid_579925 = validateParameter(valid_579925, JBool, required = false,
+                                 default = newJBool(false))
+  if valid_579925 != nil:
+    section.add "includeSpamTrash", valid_579925
+  var valid_579926 = query.getOrDefault("quotaUser")
+  valid_579926 = validateParameter(valid_579926, JString, required = false,
+                                 default = nil)
+  if valid_579926 != nil:
+    section.add "quotaUser", valid_579926
+  var valid_579927 = query.getOrDefault("pageToken")
+  valid_579927 = validateParameter(valid_579927, JString, required = false,
+                                 default = nil)
+  if valid_579927 != nil:
+    section.add "pageToken", valid_579927
+  var valid_579928 = query.getOrDefault("fields")
+  valid_579928 = validateParameter(valid_579928, JString, required = false,
+                                 default = nil)
+  if valid_579928 != nil:
+    section.add "fields", valid_579928
+  var valid_579929 = query.getOrDefault("maxResults")
+  valid_579929 = validateParameter(valid_579929, JInt, required = false,
+                                 default = newJInt(100))
+  if valid_579929 != nil:
+    section.add "maxResults", valid_579929
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10157,78 +10149,79 @@ proc validate_GmailUsersThreadsList_590015(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_590030: Call_GmailUsersThreadsList_590014; path: JsonNode;
+proc call*(call_579930: Call_GmailUsersThreadsList_579914; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the threads in the user's mailbox.
   ## 
-  let valid = call_590030.validator(path, query, header, formData, body)
-  let scheme = call_590030.pickScheme
+  let valid = call_579930.validator(path, query, header, formData, body)
+  let scheme = call_579930.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_590030.url(scheme.get, call_590030.host, call_590030.base,
-                         call_590030.route, valid.getOrDefault("path"),
+  let url = call_579930.url(scheme.get, call_579930.host, call_579930.base,
+                         call_579930.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_590030, url, valid)
+  result = hook(call_579930, url, valid)
 
-proc call*(call_590031: Call_GmailUsersThreadsList_590014; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; maxResults: int = 100;
-          includeSpamTrash: bool = false; q: string = ""; labelIds: JsonNode = nil;
-          key: string = ""; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579931: Call_GmailUsersThreadsList_579914; key: string = "";
+          labelIds: JsonNode = nil; prettyPrint: bool = true; oauthToken: string = "";
+          q: string = ""; alt: string = "json"; userIp: string = "";
+          includeSpamTrash: bool = false; quotaUser: string = "";
+          pageToken: string = ""; userId: string = "me"; fields: string = "";
+          maxResults: int = 100): Recallable =
   ## gmailUsersThreadsList
   ## Lists the threads in the user's mailbox.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Page token to retrieve a specific page of results in the list.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : Maximum number of threads to return.
-  ##   includeSpamTrash: bool
-  ##                   : Include threads from SPAM and TRASH in the results.
-  ##   q: string
-  ##    : Only return threads matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". Parameter cannot be used when accessing the api using the gmail.metadata scope.
-  ##   labelIds: JArray
-  ##           : Only return threads with labels that match all of the specified label IDs.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   labelIds: JArray
+  ##           : Only return threads with labels that match all of the specified label IDs.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   q: string
+  ##    : Only return threads matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". Parameter cannot be used when accessing the api using the gmail.metadata scope.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   includeSpamTrash: bool
+  ##                   : Include threads from SPAM and TRASH in the results.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : Page token to retrieve a specific page of results in the list.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_590032 = newJObject()
-  var query_590033 = newJObject()
-  add(query_590033, "fields", newJString(fields))
-  add(query_590033, "pageToken", newJString(pageToken))
-  add(query_590033, "quotaUser", newJString(quotaUser))
-  add(query_590033, "alt", newJString(alt))
-  add(query_590033, "oauth_token", newJString(oauthToken))
-  add(query_590033, "userIp", newJString(userIp))
-  add(query_590033, "maxResults", newJInt(maxResults))
-  add(query_590033, "includeSpamTrash", newJBool(includeSpamTrash))
-  add(query_590033, "q", newJString(q))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: int
+  ##             : Maximum number of threads to return.
+  var path_579932 = newJObject()
+  var query_579933 = newJObject()
+  add(query_579933, "key", newJString(key))
   if labelIds != nil:
-    query_590033.add "labelIds", labelIds
-  add(query_590033, "key", newJString(key))
-  add(query_590033, "prettyPrint", newJBool(prettyPrint))
-  add(path_590032, "userId", newJString(userId))
-  result = call_590031.call(path_590032, query_590033, nil, nil, nil)
+    query_579933.add "labelIds", labelIds
+  add(query_579933, "prettyPrint", newJBool(prettyPrint))
+  add(query_579933, "oauth_token", newJString(oauthToken))
+  add(query_579933, "q", newJString(q))
+  add(query_579933, "alt", newJString(alt))
+  add(query_579933, "userIp", newJString(userIp))
+  add(query_579933, "includeSpamTrash", newJBool(includeSpamTrash))
+  add(query_579933, "quotaUser", newJString(quotaUser))
+  add(query_579933, "pageToken", newJString(pageToken))
+  add(path_579932, "userId", newJString(userId))
+  add(query_579933, "fields", newJString(fields))
+  add(query_579933, "maxResults", newJInt(maxResults))
+  result = call_579931.call(path_579932, query_579933, nil, nil, nil)
 
-var gmailUsersThreadsList* = Call_GmailUsersThreadsList_590014(
+var gmailUsersThreadsList* = Call_GmailUsersThreadsList_579914(
     name: "gmailUsersThreadsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/threads",
-    validator: validate_GmailUsersThreadsList_590015, base: "/gmail/v1/users",
-    url: url_GmailUsersThreadsList_590016, schemes: {Scheme.Https})
+    validator: validate_GmailUsersThreadsList_579915, base: "/gmail/v1/users",
+    url: url_GmailUsersThreadsList_579916, schemes: {Scheme.Https})
 type
-  Call_GmailUsersThreadsGet_590034 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersThreadsGet_590036(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersThreadsGet_579934 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersThreadsGet_579936(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -10246,7 +10239,7 @@ proc url_GmailUsersThreadsGet_590036(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersThreadsGet_590035(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersThreadsGet_579935(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the specified thread.
   ## 
@@ -10259,82 +10252,82 @@ proc validate_GmailUsersThreadsGet_590035(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_590037 = path.getOrDefault("id")
-  valid_590037 = validateParameter(valid_590037, JString, required = true,
+  var valid_579937 = path.getOrDefault("id")
+  valid_579937 = validateParameter(valid_579937, JString, required = true,
                                  default = nil)
-  if valid_590037 != nil:
-    section.add "id", valid_590037
-  var valid_590038 = path.getOrDefault("userId")
-  valid_590038 = validateParameter(valid_590038, JString, required = true,
+  if valid_579937 != nil:
+    section.add "id", valid_579937
+  var valid_579938 = path.getOrDefault("userId")
+  valid_579938 = validateParameter(valid_579938, JString, required = true,
                                  default = newJString("me"))
-  if valid_590038 != nil:
-    section.add "userId", valid_590038
+  if valid_579938 != nil:
+    section.add "userId", valid_579938
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   metadataHeaders: JArray
-  ##                  : When given and format is METADATA, only include headers specified.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   metadataHeaders: JArray
+  ##                  : When given and format is METADATA, only include headers specified.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   ##   format: JString
   ##         : The format to return the messages in.
   section = newJObject()
-  var valid_590039 = query.getOrDefault("fields")
-  valid_590039 = validateParameter(valid_590039, JString, required = false,
+  var valid_579939 = query.getOrDefault("key")
+  valid_579939 = validateParameter(valid_579939, JString, required = false,
                                  default = nil)
-  if valid_590039 != nil:
-    section.add "fields", valid_590039
-  var valid_590040 = query.getOrDefault("quotaUser")
-  valid_590040 = validateParameter(valid_590040, JString, required = false,
-                                 default = nil)
-  if valid_590040 != nil:
-    section.add "quotaUser", valid_590040
-  var valid_590041 = query.getOrDefault("alt")
-  valid_590041 = validateParameter(valid_590041, JString, required = false,
-                                 default = newJString("json"))
-  if valid_590041 != nil:
-    section.add "alt", valid_590041
-  var valid_590042 = query.getOrDefault("oauth_token")
-  valid_590042 = validateParameter(valid_590042, JString, required = false,
-                                 default = nil)
-  if valid_590042 != nil:
-    section.add "oauth_token", valid_590042
-  var valid_590043 = query.getOrDefault("userIp")
-  valid_590043 = validateParameter(valid_590043, JString, required = false,
-                                 default = nil)
-  if valid_590043 != nil:
-    section.add "userIp", valid_590043
-  var valid_590044 = query.getOrDefault("metadataHeaders")
-  valid_590044 = validateParameter(valid_590044, JArray, required = false,
-                                 default = nil)
-  if valid_590044 != nil:
-    section.add "metadataHeaders", valid_590044
-  var valid_590045 = query.getOrDefault("key")
-  valid_590045 = validateParameter(valid_590045, JString, required = false,
-                                 default = nil)
-  if valid_590045 != nil:
-    section.add "key", valid_590045
-  var valid_590046 = query.getOrDefault("prettyPrint")
-  valid_590046 = validateParameter(valid_590046, JBool, required = false,
+  if valid_579939 != nil:
+    section.add "key", valid_579939
+  var valid_579940 = query.getOrDefault("prettyPrint")
+  valid_579940 = validateParameter(valid_579940, JBool, required = false,
                                  default = newJBool(true))
-  if valid_590046 != nil:
-    section.add "prettyPrint", valid_590046
-  var valid_590047 = query.getOrDefault("format")
-  valid_590047 = validateParameter(valid_590047, JString, required = false,
+  if valid_579940 != nil:
+    section.add "prettyPrint", valid_579940
+  var valid_579941 = query.getOrDefault("oauth_token")
+  valid_579941 = validateParameter(valid_579941, JString, required = false,
+                                 default = nil)
+  if valid_579941 != nil:
+    section.add "oauth_token", valid_579941
+  var valid_579942 = query.getOrDefault("metadataHeaders")
+  valid_579942 = validateParameter(valid_579942, JArray, required = false,
+                                 default = nil)
+  if valid_579942 != nil:
+    section.add "metadataHeaders", valid_579942
+  var valid_579943 = query.getOrDefault("alt")
+  valid_579943 = validateParameter(valid_579943, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579943 != nil:
+    section.add "alt", valid_579943
+  var valid_579944 = query.getOrDefault("userIp")
+  valid_579944 = validateParameter(valid_579944, JString, required = false,
+                                 default = nil)
+  if valid_579944 != nil:
+    section.add "userIp", valid_579944
+  var valid_579945 = query.getOrDefault("quotaUser")
+  valid_579945 = validateParameter(valid_579945, JString, required = false,
+                                 default = nil)
+  if valid_579945 != nil:
+    section.add "quotaUser", valid_579945
+  var valid_579946 = query.getOrDefault("fields")
+  valid_579946 = validateParameter(valid_579946, JString, required = false,
+                                 default = nil)
+  if valid_579946 != nil:
+    section.add "fields", valid_579946
+  var valid_579947 = query.getOrDefault("format")
+  valid_579947 = validateParameter(valid_579947, JString, required = false,
                                  default = newJString("full"))
-  if valid_590047 != nil:
-    section.add "format", valid_590047
+  if valid_579947 != nil:
+    section.add "format", valid_579947
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10343,72 +10336,72 @@ proc validate_GmailUsersThreadsGet_590035(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_590048: Call_GmailUsersThreadsGet_590034; path: JsonNode;
+proc call*(call_579948: Call_GmailUsersThreadsGet_579934; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the specified thread.
   ## 
-  let valid = call_590048.validator(path, query, header, formData, body)
-  let scheme = call_590048.pickScheme
+  let valid = call_579948.validator(path, query, header, formData, body)
+  let scheme = call_579948.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_590048.url(scheme.get, call_590048.host, call_590048.base,
-                         call_590048.route, valid.getOrDefault("path"),
+  let url = call_579948.url(scheme.get, call_579948.host, call_579948.base,
+                         call_579948.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_590048, url, valid)
+  result = hook(call_579948, url, valid)
 
-proc call*(call_590049: Call_GmailUsersThreadsGet_590034; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; metadataHeaders: JsonNode = nil;
-          key: string = ""; prettyPrint: bool = true; format: string = "full";
-          userId: string = "me"): Recallable =
+proc call*(call_579949: Call_GmailUsersThreadsGet_579934; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          metadataHeaders: JsonNode = nil; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; userId: string = "me"; fields: string = "";
+          format: string = "full"): Recallable =
   ## gmailUsersThreadsGet
   ## Gets the specified thread.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   metadataHeaders: JArray
-  ##                  : When given and format is METADATA, only include headers specified.
-  ##   id: string (required)
-  ##     : The ID of the thread to retrieve.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  ##   format: string
-  ##         : The format to return the messages in.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   metadataHeaders: JArray
+  ##                  : When given and format is METADATA, only include headers specified.
+  ##   id: string (required)
+  ##     : The ID of the thread to retrieve.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_590050 = newJObject()
-  var query_590051 = newJObject()
-  add(query_590051, "fields", newJString(fields))
-  add(query_590051, "quotaUser", newJString(quotaUser))
-  add(query_590051, "alt", newJString(alt))
-  add(query_590051, "oauth_token", newJString(oauthToken))
-  add(query_590051, "userIp", newJString(userIp))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   format: string
+  ##         : The format to return the messages in.
+  var path_579950 = newJObject()
+  var query_579951 = newJObject()
+  add(query_579951, "key", newJString(key))
+  add(query_579951, "prettyPrint", newJBool(prettyPrint))
+  add(query_579951, "oauth_token", newJString(oauthToken))
   if metadataHeaders != nil:
-    query_590051.add "metadataHeaders", metadataHeaders
-  add(path_590050, "id", newJString(id))
-  add(query_590051, "key", newJString(key))
-  add(query_590051, "prettyPrint", newJBool(prettyPrint))
-  add(query_590051, "format", newJString(format))
-  add(path_590050, "userId", newJString(userId))
-  result = call_590049.call(path_590050, query_590051, nil, nil, nil)
+    query_579951.add "metadataHeaders", metadataHeaders
+  add(path_579950, "id", newJString(id))
+  add(query_579951, "alt", newJString(alt))
+  add(query_579951, "userIp", newJString(userIp))
+  add(query_579951, "quotaUser", newJString(quotaUser))
+  add(path_579950, "userId", newJString(userId))
+  add(query_579951, "fields", newJString(fields))
+  add(query_579951, "format", newJString(format))
+  result = call_579949.call(path_579950, query_579951, nil, nil, nil)
 
-var gmailUsersThreadsGet* = Call_GmailUsersThreadsGet_590034(
+var gmailUsersThreadsGet* = Call_GmailUsersThreadsGet_579934(
     name: "gmailUsersThreadsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{userId}/threads/{id}",
-    validator: validate_GmailUsersThreadsGet_590035, base: "/gmail/v1/users",
-    url: url_GmailUsersThreadsGet_590036, schemes: {Scheme.Https})
+    validator: validate_GmailUsersThreadsGet_579935, base: "/gmail/v1/users",
+    url: url_GmailUsersThreadsGet_579936, schemes: {Scheme.Https})
 type
-  Call_GmailUsersThreadsDelete_590052 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersThreadsDelete_590054(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersThreadsDelete_579952 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersThreadsDelete_579954(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -10427,7 +10420,7 @@ proc url_GmailUsersThreadsDelete_590054(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersThreadsDelete_590053(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersThreadsDelete_579953(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Immediately and permanently deletes the specified thread. This operation cannot be undone. Prefer threads.trash instead.
   ## 
@@ -10440,68 +10433,68 @@ proc validate_GmailUsersThreadsDelete_590053(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_590055 = path.getOrDefault("id")
-  valid_590055 = validateParameter(valid_590055, JString, required = true,
+  var valid_579955 = path.getOrDefault("id")
+  valid_579955 = validateParameter(valid_579955, JString, required = true,
                                  default = nil)
-  if valid_590055 != nil:
-    section.add "id", valid_590055
-  var valid_590056 = path.getOrDefault("userId")
-  valid_590056 = validateParameter(valid_590056, JString, required = true,
+  if valid_579955 != nil:
+    section.add "id", valid_579955
+  var valid_579956 = path.getOrDefault("userId")
+  valid_579956 = validateParameter(valid_579956, JString, required = true,
                                  default = newJString("me"))
-  if valid_590056 != nil:
-    section.add "userId", valid_590056
+  if valid_579956 != nil:
+    section.add "userId", valid_579956
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_590057 = query.getOrDefault("fields")
-  valid_590057 = validateParameter(valid_590057, JString, required = false,
+  var valid_579957 = query.getOrDefault("key")
+  valid_579957 = validateParameter(valid_579957, JString, required = false,
                                  default = nil)
-  if valid_590057 != nil:
-    section.add "fields", valid_590057
-  var valid_590058 = query.getOrDefault("quotaUser")
-  valid_590058 = validateParameter(valid_590058, JString, required = false,
-                                 default = nil)
-  if valid_590058 != nil:
-    section.add "quotaUser", valid_590058
-  var valid_590059 = query.getOrDefault("alt")
-  valid_590059 = validateParameter(valid_590059, JString, required = false,
-                                 default = newJString("json"))
-  if valid_590059 != nil:
-    section.add "alt", valid_590059
-  var valid_590060 = query.getOrDefault("oauth_token")
-  valid_590060 = validateParameter(valid_590060, JString, required = false,
-                                 default = nil)
-  if valid_590060 != nil:
-    section.add "oauth_token", valid_590060
-  var valid_590061 = query.getOrDefault("userIp")
-  valid_590061 = validateParameter(valid_590061, JString, required = false,
-                                 default = nil)
-  if valid_590061 != nil:
-    section.add "userIp", valid_590061
-  var valid_590062 = query.getOrDefault("key")
-  valid_590062 = validateParameter(valid_590062, JString, required = false,
-                                 default = nil)
-  if valid_590062 != nil:
-    section.add "key", valid_590062
-  var valid_590063 = query.getOrDefault("prettyPrint")
-  valid_590063 = validateParameter(valid_590063, JBool, required = false,
+  if valid_579957 != nil:
+    section.add "key", valid_579957
+  var valid_579958 = query.getOrDefault("prettyPrint")
+  valid_579958 = validateParameter(valid_579958, JBool, required = false,
                                  default = newJBool(true))
-  if valid_590063 != nil:
-    section.add "prettyPrint", valid_590063
+  if valid_579958 != nil:
+    section.add "prettyPrint", valid_579958
+  var valid_579959 = query.getOrDefault("oauth_token")
+  valid_579959 = validateParameter(valid_579959, JString, required = false,
+                                 default = nil)
+  if valid_579959 != nil:
+    section.add "oauth_token", valid_579959
+  var valid_579960 = query.getOrDefault("alt")
+  valid_579960 = validateParameter(valid_579960, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579960 != nil:
+    section.add "alt", valid_579960
+  var valid_579961 = query.getOrDefault("userIp")
+  valid_579961 = validateParameter(valid_579961, JString, required = false,
+                                 default = nil)
+  if valid_579961 != nil:
+    section.add "userIp", valid_579961
+  var valid_579962 = query.getOrDefault("quotaUser")
+  valid_579962 = validateParameter(valid_579962, JString, required = false,
+                                 default = nil)
+  if valid_579962 != nil:
+    section.add "quotaUser", valid_579962
+  var valid_579963 = query.getOrDefault("fields")
+  valid_579963 = validateParameter(valid_579963, JString, required = false,
+                                 default = nil)
+  if valid_579963 != nil:
+    section.add "fields", valid_579963
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10510,64 +10503,64 @@ proc validate_GmailUsersThreadsDelete_590053(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_590064: Call_GmailUsersThreadsDelete_590052; path: JsonNode;
+proc call*(call_579964: Call_GmailUsersThreadsDelete_579952; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Immediately and permanently deletes the specified thread. This operation cannot be undone. Prefer threads.trash instead.
   ## 
-  let valid = call_590064.validator(path, query, header, formData, body)
-  let scheme = call_590064.pickScheme
+  let valid = call_579964.validator(path, query, header, formData, body)
+  let scheme = call_579964.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_590064.url(scheme.get, call_590064.host, call_590064.base,
-                         call_590064.route, valid.getOrDefault("path"),
+  let url = call_579964.url(scheme.get, call_579964.host, call_579964.base,
+                         call_579964.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_590064, url, valid)
+  result = hook(call_579964, url, valid)
 
-proc call*(call_590065: Call_GmailUsersThreadsDelete_590052; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579965: Call_GmailUsersThreadsDelete_579952; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersThreadsDelete
   ## Immediately and permanently deletes the specified thread. This operation cannot be undone. Prefer threads.trash instead.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : ID of the Thread to delete.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : ID of the Thread to delete.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_590066 = newJObject()
-  var query_590067 = newJObject()
-  add(query_590067, "fields", newJString(fields))
-  add(query_590067, "quotaUser", newJString(quotaUser))
-  add(query_590067, "alt", newJString(alt))
-  add(query_590067, "oauth_token", newJString(oauthToken))
-  add(query_590067, "userIp", newJString(userIp))
-  add(path_590066, "id", newJString(id))
-  add(query_590067, "key", newJString(key))
-  add(query_590067, "prettyPrint", newJBool(prettyPrint))
-  add(path_590066, "userId", newJString(userId))
-  result = call_590065.call(path_590066, query_590067, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579966 = newJObject()
+  var query_579967 = newJObject()
+  add(query_579967, "key", newJString(key))
+  add(query_579967, "prettyPrint", newJBool(prettyPrint))
+  add(query_579967, "oauth_token", newJString(oauthToken))
+  add(path_579966, "id", newJString(id))
+  add(query_579967, "alt", newJString(alt))
+  add(query_579967, "userIp", newJString(userIp))
+  add(query_579967, "quotaUser", newJString(quotaUser))
+  add(path_579966, "userId", newJString(userId))
+  add(query_579967, "fields", newJString(fields))
+  result = call_579965.call(path_579966, query_579967, nil, nil, nil)
 
-var gmailUsersThreadsDelete* = Call_GmailUsersThreadsDelete_590052(
+var gmailUsersThreadsDelete* = Call_GmailUsersThreadsDelete_579952(
     name: "gmailUsersThreadsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{userId}/threads/{id}",
-    validator: validate_GmailUsersThreadsDelete_590053, base: "/gmail/v1/users",
-    url: url_GmailUsersThreadsDelete_590054, schemes: {Scheme.Https})
+    validator: validate_GmailUsersThreadsDelete_579953, base: "/gmail/v1/users",
+    url: url_GmailUsersThreadsDelete_579954, schemes: {Scheme.Https})
 type
-  Call_GmailUsersThreadsModify_590068 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersThreadsModify_590070(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersThreadsModify_579968 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersThreadsModify_579970(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -10587,7 +10580,7 @@ proc url_GmailUsersThreadsModify_590070(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersThreadsModify_590069(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersThreadsModify_579969(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Modifies the labels applied to the thread. This applies to all messages in the thread.
   ## 
@@ -10600,68 +10593,68 @@ proc validate_GmailUsersThreadsModify_590069(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_590071 = path.getOrDefault("id")
-  valid_590071 = validateParameter(valid_590071, JString, required = true,
+  var valid_579971 = path.getOrDefault("id")
+  valid_579971 = validateParameter(valid_579971, JString, required = true,
                                  default = nil)
-  if valid_590071 != nil:
-    section.add "id", valid_590071
-  var valid_590072 = path.getOrDefault("userId")
-  valid_590072 = validateParameter(valid_590072, JString, required = true,
+  if valid_579971 != nil:
+    section.add "id", valid_579971
+  var valid_579972 = path.getOrDefault("userId")
+  valid_579972 = validateParameter(valid_579972, JString, required = true,
                                  default = newJString("me"))
-  if valid_590072 != nil:
-    section.add "userId", valid_590072
+  if valid_579972 != nil:
+    section.add "userId", valid_579972
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_590073 = query.getOrDefault("fields")
-  valid_590073 = validateParameter(valid_590073, JString, required = false,
+  var valid_579973 = query.getOrDefault("key")
+  valid_579973 = validateParameter(valid_579973, JString, required = false,
                                  default = nil)
-  if valid_590073 != nil:
-    section.add "fields", valid_590073
-  var valid_590074 = query.getOrDefault("quotaUser")
-  valid_590074 = validateParameter(valid_590074, JString, required = false,
-                                 default = nil)
-  if valid_590074 != nil:
-    section.add "quotaUser", valid_590074
-  var valid_590075 = query.getOrDefault("alt")
-  valid_590075 = validateParameter(valid_590075, JString, required = false,
-                                 default = newJString("json"))
-  if valid_590075 != nil:
-    section.add "alt", valid_590075
-  var valid_590076 = query.getOrDefault("oauth_token")
-  valid_590076 = validateParameter(valid_590076, JString, required = false,
-                                 default = nil)
-  if valid_590076 != nil:
-    section.add "oauth_token", valid_590076
-  var valid_590077 = query.getOrDefault("userIp")
-  valid_590077 = validateParameter(valid_590077, JString, required = false,
-                                 default = nil)
-  if valid_590077 != nil:
-    section.add "userIp", valid_590077
-  var valid_590078 = query.getOrDefault("key")
-  valid_590078 = validateParameter(valid_590078, JString, required = false,
-                                 default = nil)
-  if valid_590078 != nil:
-    section.add "key", valid_590078
-  var valid_590079 = query.getOrDefault("prettyPrint")
-  valid_590079 = validateParameter(valid_590079, JBool, required = false,
+  if valid_579973 != nil:
+    section.add "key", valid_579973
+  var valid_579974 = query.getOrDefault("prettyPrint")
+  valid_579974 = validateParameter(valid_579974, JBool, required = false,
                                  default = newJBool(true))
-  if valid_590079 != nil:
-    section.add "prettyPrint", valid_590079
+  if valid_579974 != nil:
+    section.add "prettyPrint", valid_579974
+  var valid_579975 = query.getOrDefault("oauth_token")
+  valid_579975 = validateParameter(valid_579975, JString, required = false,
+                                 default = nil)
+  if valid_579975 != nil:
+    section.add "oauth_token", valid_579975
+  var valid_579976 = query.getOrDefault("alt")
+  valid_579976 = validateParameter(valid_579976, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579976 != nil:
+    section.add "alt", valid_579976
+  var valid_579977 = query.getOrDefault("userIp")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
+                                 default = nil)
+  if valid_579977 != nil:
+    section.add "userIp", valid_579977
+  var valid_579978 = query.getOrDefault("quotaUser")
+  valid_579978 = validateParameter(valid_579978, JString, required = false,
+                                 default = nil)
+  if valid_579978 != nil:
+    section.add "quotaUser", valid_579978
+  var valid_579979 = query.getOrDefault("fields")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
+                                 default = nil)
+  if valid_579979 != nil:
+    section.add "fields", valid_579979
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10673,68 +10666,68 @@ proc validate_GmailUsersThreadsModify_590069(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_590081: Call_GmailUsersThreadsModify_590068; path: JsonNode;
+proc call*(call_579981: Call_GmailUsersThreadsModify_579968; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Modifies the labels applied to the thread. This applies to all messages in the thread.
   ## 
-  let valid = call_590081.validator(path, query, header, formData, body)
-  let scheme = call_590081.pickScheme
+  let valid = call_579981.validator(path, query, header, formData, body)
+  let scheme = call_579981.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_590081.url(scheme.get, call_590081.host, call_590081.base,
-                         call_590081.route, valid.getOrDefault("path"),
+  let url = call_579981.url(scheme.get, call_579981.host, call_579981.base,
+                         call_579981.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_590081, url, valid)
+  result = hook(call_579981, url, valid)
 
-proc call*(call_590082: Call_GmailUsersThreadsModify_590068; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579982: Call_GmailUsersThreadsModify_579968; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersThreadsModify
   ## Modifies the labels applied to the thread. This applies to all messages in the thread.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the thread to modify.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the thread to modify.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_590083 = newJObject()
-  var query_590084 = newJObject()
-  var body_590085 = newJObject()
-  add(query_590084, "fields", newJString(fields))
-  add(query_590084, "quotaUser", newJString(quotaUser))
-  add(query_590084, "alt", newJString(alt))
-  add(query_590084, "oauth_token", newJString(oauthToken))
-  add(query_590084, "userIp", newJString(userIp))
-  add(path_590083, "id", newJString(id))
-  add(query_590084, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579983 = newJObject()
+  var query_579984 = newJObject()
+  var body_579985 = newJObject()
+  add(query_579984, "key", newJString(key))
+  add(query_579984, "prettyPrint", newJBool(prettyPrint))
+  add(query_579984, "oauth_token", newJString(oauthToken))
+  add(path_579983, "id", newJString(id))
+  add(query_579984, "alt", newJString(alt))
+  add(query_579984, "userIp", newJString(userIp))
+  add(query_579984, "quotaUser", newJString(quotaUser))
+  add(path_579983, "userId", newJString(userId))
   if body != nil:
-    body_590085 = body
-  add(query_590084, "prettyPrint", newJBool(prettyPrint))
-  add(path_590083, "userId", newJString(userId))
-  result = call_590082.call(path_590083, query_590084, nil, nil, body_590085)
+    body_579985 = body
+  add(query_579984, "fields", newJString(fields))
+  result = call_579982.call(path_579983, query_579984, nil, nil, body_579985)
 
-var gmailUsersThreadsModify* = Call_GmailUsersThreadsModify_590068(
+var gmailUsersThreadsModify* = Call_GmailUsersThreadsModify_579968(
     name: "gmailUsersThreadsModify", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/threads/{id}/modify",
-    validator: validate_GmailUsersThreadsModify_590069, base: "/gmail/v1/users",
-    url: url_GmailUsersThreadsModify_590070, schemes: {Scheme.Https})
+    validator: validate_GmailUsersThreadsModify_579969, base: "/gmail/v1/users",
+    url: url_GmailUsersThreadsModify_579970, schemes: {Scheme.Https})
 type
-  Call_GmailUsersThreadsTrash_590086 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersThreadsTrash_590088(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersThreadsTrash_579986 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersThreadsTrash_579988(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -10753,7 +10746,7 @@ proc url_GmailUsersThreadsTrash_590088(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersThreadsTrash_590087(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersThreadsTrash_579987(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Moves the specified thread to the trash.
   ## 
@@ -10766,68 +10759,68 @@ proc validate_GmailUsersThreadsTrash_590087(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_590089 = path.getOrDefault("id")
-  valid_590089 = validateParameter(valid_590089, JString, required = true,
+  var valid_579989 = path.getOrDefault("id")
+  valid_579989 = validateParameter(valid_579989, JString, required = true,
                                  default = nil)
-  if valid_590089 != nil:
-    section.add "id", valid_590089
-  var valid_590090 = path.getOrDefault("userId")
-  valid_590090 = validateParameter(valid_590090, JString, required = true,
+  if valid_579989 != nil:
+    section.add "id", valid_579989
+  var valid_579990 = path.getOrDefault("userId")
+  valid_579990 = validateParameter(valid_579990, JString, required = true,
                                  default = newJString("me"))
-  if valid_590090 != nil:
-    section.add "userId", valid_590090
+  if valid_579990 != nil:
+    section.add "userId", valid_579990
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_590091 = query.getOrDefault("fields")
-  valid_590091 = validateParameter(valid_590091, JString, required = false,
+  var valid_579991 = query.getOrDefault("key")
+  valid_579991 = validateParameter(valid_579991, JString, required = false,
                                  default = nil)
-  if valid_590091 != nil:
-    section.add "fields", valid_590091
-  var valid_590092 = query.getOrDefault("quotaUser")
-  valid_590092 = validateParameter(valid_590092, JString, required = false,
-                                 default = nil)
-  if valid_590092 != nil:
-    section.add "quotaUser", valid_590092
-  var valid_590093 = query.getOrDefault("alt")
-  valid_590093 = validateParameter(valid_590093, JString, required = false,
-                                 default = newJString("json"))
-  if valid_590093 != nil:
-    section.add "alt", valid_590093
-  var valid_590094 = query.getOrDefault("oauth_token")
-  valid_590094 = validateParameter(valid_590094, JString, required = false,
-                                 default = nil)
-  if valid_590094 != nil:
-    section.add "oauth_token", valid_590094
-  var valid_590095 = query.getOrDefault("userIp")
-  valid_590095 = validateParameter(valid_590095, JString, required = false,
-                                 default = nil)
-  if valid_590095 != nil:
-    section.add "userIp", valid_590095
-  var valid_590096 = query.getOrDefault("key")
-  valid_590096 = validateParameter(valid_590096, JString, required = false,
-                                 default = nil)
-  if valid_590096 != nil:
-    section.add "key", valid_590096
-  var valid_590097 = query.getOrDefault("prettyPrint")
-  valid_590097 = validateParameter(valid_590097, JBool, required = false,
+  if valid_579991 != nil:
+    section.add "key", valid_579991
+  var valid_579992 = query.getOrDefault("prettyPrint")
+  valid_579992 = validateParameter(valid_579992, JBool, required = false,
                                  default = newJBool(true))
-  if valid_590097 != nil:
-    section.add "prettyPrint", valid_590097
+  if valid_579992 != nil:
+    section.add "prettyPrint", valid_579992
+  var valid_579993 = query.getOrDefault("oauth_token")
+  valid_579993 = validateParameter(valid_579993, JString, required = false,
+                                 default = nil)
+  if valid_579993 != nil:
+    section.add "oauth_token", valid_579993
+  var valid_579994 = query.getOrDefault("alt")
+  valid_579994 = validateParameter(valid_579994, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579994 != nil:
+    section.add "alt", valid_579994
+  var valid_579995 = query.getOrDefault("userIp")
+  valid_579995 = validateParameter(valid_579995, JString, required = false,
+                                 default = nil)
+  if valid_579995 != nil:
+    section.add "userIp", valid_579995
+  var valid_579996 = query.getOrDefault("quotaUser")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
+                                 default = nil)
+  if valid_579996 != nil:
+    section.add "quotaUser", valid_579996
+  var valid_579997 = query.getOrDefault("fields")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
+                                 default = nil)
+  if valid_579997 != nil:
+    section.add "fields", valid_579997
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10836,64 +10829,64 @@ proc validate_GmailUsersThreadsTrash_590087(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_590098: Call_GmailUsersThreadsTrash_590086; path: JsonNode;
+proc call*(call_579998: Call_GmailUsersThreadsTrash_579986; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Moves the specified thread to the trash.
   ## 
-  let valid = call_590098.validator(path, query, header, formData, body)
-  let scheme = call_590098.pickScheme
+  let valid = call_579998.validator(path, query, header, formData, body)
+  let scheme = call_579998.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_590098.url(scheme.get, call_590098.host, call_590098.base,
-                         call_590098.route, valid.getOrDefault("path"),
+  let url = call_579998.url(scheme.get, call_579998.host, call_579998.base,
+                         call_579998.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_590098, url, valid)
+  result = hook(call_579998, url, valid)
 
-proc call*(call_590099: Call_GmailUsersThreadsTrash_590086; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_579999: Call_GmailUsersThreadsTrash_579986; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersThreadsTrash
   ## Moves the specified thread to the trash.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the thread to Trash.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the thread to Trash.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_590100 = newJObject()
-  var query_590101 = newJObject()
-  add(query_590101, "fields", newJString(fields))
-  add(query_590101, "quotaUser", newJString(quotaUser))
-  add(query_590101, "alt", newJString(alt))
-  add(query_590101, "oauth_token", newJString(oauthToken))
-  add(query_590101, "userIp", newJString(userIp))
-  add(path_590100, "id", newJString(id))
-  add(query_590101, "key", newJString(key))
-  add(query_590101, "prettyPrint", newJBool(prettyPrint))
-  add(path_590100, "userId", newJString(userId))
-  result = call_590099.call(path_590100, query_590101, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_580000 = newJObject()
+  var query_580001 = newJObject()
+  add(query_580001, "key", newJString(key))
+  add(query_580001, "prettyPrint", newJBool(prettyPrint))
+  add(query_580001, "oauth_token", newJString(oauthToken))
+  add(path_580000, "id", newJString(id))
+  add(query_580001, "alt", newJString(alt))
+  add(query_580001, "userIp", newJString(userIp))
+  add(query_580001, "quotaUser", newJString(quotaUser))
+  add(path_580000, "userId", newJString(userId))
+  add(query_580001, "fields", newJString(fields))
+  result = call_579999.call(path_580000, query_580001, nil, nil, nil)
 
-var gmailUsersThreadsTrash* = Call_GmailUsersThreadsTrash_590086(
+var gmailUsersThreadsTrash* = Call_GmailUsersThreadsTrash_579986(
     name: "gmailUsersThreadsTrash", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/threads/{id}/trash",
-    validator: validate_GmailUsersThreadsTrash_590087, base: "/gmail/v1/users",
-    url: url_GmailUsersThreadsTrash_590088, schemes: {Scheme.Https})
+    validator: validate_GmailUsersThreadsTrash_579987, base: "/gmail/v1/users",
+    url: url_GmailUsersThreadsTrash_579988, schemes: {Scheme.Https})
 type
-  Call_GmailUsersThreadsUntrash_590102 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersThreadsUntrash_590104(protocol: Scheme; host: string;
+  Call_GmailUsersThreadsUntrash_580002 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersThreadsUntrash_580004(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -10913,7 +10906,7 @@ proc url_GmailUsersThreadsUntrash_590104(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersThreadsUntrash_590103(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersThreadsUntrash_580003(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes the specified thread from the trash.
   ## 
@@ -10926,68 +10919,68 @@ proc validate_GmailUsersThreadsUntrash_590103(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_590105 = path.getOrDefault("id")
-  valid_590105 = validateParameter(valid_590105, JString, required = true,
+  var valid_580005 = path.getOrDefault("id")
+  valid_580005 = validateParameter(valid_580005, JString, required = true,
                                  default = nil)
-  if valid_590105 != nil:
-    section.add "id", valid_590105
-  var valid_590106 = path.getOrDefault("userId")
-  valid_590106 = validateParameter(valid_590106, JString, required = true,
+  if valid_580005 != nil:
+    section.add "id", valid_580005
+  var valid_580006 = path.getOrDefault("userId")
+  valid_580006 = validateParameter(valid_580006, JString, required = true,
                                  default = newJString("me"))
-  if valid_590106 != nil:
-    section.add "userId", valid_590106
+  if valid_580006 != nil:
+    section.add "userId", valid_580006
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_590107 = query.getOrDefault("fields")
-  valid_590107 = validateParameter(valid_590107, JString, required = false,
+  var valid_580007 = query.getOrDefault("key")
+  valid_580007 = validateParameter(valid_580007, JString, required = false,
                                  default = nil)
-  if valid_590107 != nil:
-    section.add "fields", valid_590107
-  var valid_590108 = query.getOrDefault("quotaUser")
-  valid_590108 = validateParameter(valid_590108, JString, required = false,
-                                 default = nil)
-  if valid_590108 != nil:
-    section.add "quotaUser", valid_590108
-  var valid_590109 = query.getOrDefault("alt")
-  valid_590109 = validateParameter(valid_590109, JString, required = false,
-                                 default = newJString("json"))
-  if valid_590109 != nil:
-    section.add "alt", valid_590109
-  var valid_590110 = query.getOrDefault("oauth_token")
-  valid_590110 = validateParameter(valid_590110, JString, required = false,
-                                 default = nil)
-  if valid_590110 != nil:
-    section.add "oauth_token", valid_590110
-  var valid_590111 = query.getOrDefault("userIp")
-  valid_590111 = validateParameter(valid_590111, JString, required = false,
-                                 default = nil)
-  if valid_590111 != nil:
-    section.add "userIp", valid_590111
-  var valid_590112 = query.getOrDefault("key")
-  valid_590112 = validateParameter(valid_590112, JString, required = false,
-                                 default = nil)
-  if valid_590112 != nil:
-    section.add "key", valid_590112
-  var valid_590113 = query.getOrDefault("prettyPrint")
-  valid_590113 = validateParameter(valid_590113, JBool, required = false,
+  if valid_580007 != nil:
+    section.add "key", valid_580007
+  var valid_580008 = query.getOrDefault("prettyPrint")
+  valid_580008 = validateParameter(valid_580008, JBool, required = false,
                                  default = newJBool(true))
-  if valid_590113 != nil:
-    section.add "prettyPrint", valid_590113
+  if valid_580008 != nil:
+    section.add "prettyPrint", valid_580008
+  var valid_580009 = query.getOrDefault("oauth_token")
+  valid_580009 = validateParameter(valid_580009, JString, required = false,
+                                 default = nil)
+  if valid_580009 != nil:
+    section.add "oauth_token", valid_580009
+  var valid_580010 = query.getOrDefault("alt")
+  valid_580010 = validateParameter(valid_580010, JString, required = false,
+                                 default = newJString("json"))
+  if valid_580010 != nil:
+    section.add "alt", valid_580010
+  var valid_580011 = query.getOrDefault("userIp")
+  valid_580011 = validateParameter(valid_580011, JString, required = false,
+                                 default = nil)
+  if valid_580011 != nil:
+    section.add "userIp", valid_580011
+  var valid_580012 = query.getOrDefault("quotaUser")
+  valid_580012 = validateParameter(valid_580012, JString, required = false,
+                                 default = nil)
+  if valid_580012 != nil:
+    section.add "quotaUser", valid_580012
+  var valid_580013 = query.getOrDefault("fields")
+  valid_580013 = validateParameter(valid_580013, JString, required = false,
+                                 default = nil)
+  if valid_580013 != nil:
+    section.add "fields", valid_580013
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10996,64 +10989,64 @@ proc validate_GmailUsersThreadsUntrash_590103(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_590114: Call_GmailUsersThreadsUntrash_590102; path: JsonNode;
+proc call*(call_580014: Call_GmailUsersThreadsUntrash_580002; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Removes the specified thread from the trash.
   ## 
-  let valid = call_590114.validator(path, query, header, formData, body)
-  let scheme = call_590114.pickScheme
+  let valid = call_580014.validator(path, query, header, formData, body)
+  let scheme = call_580014.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_590114.url(scheme.get, call_590114.host, call_590114.base,
-                         call_590114.route, valid.getOrDefault("path"),
+  let url = call_580014.url(scheme.get, call_580014.host, call_580014.base,
+                         call_580014.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_590114, url, valid)
+  result = hook(call_580014, url, valid)
 
-proc call*(call_590115: Call_GmailUsersThreadsUntrash_590102; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_580015: Call_GmailUsersThreadsUntrash_580002; id: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          userId: string = "me"; fields: string = ""): Recallable =
   ## gmailUsersThreadsUntrash
   ## Removes the specified thread from the trash.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The ID of the thread to remove from Trash.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The ID of the thread to remove from Trash.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_590116 = newJObject()
-  var query_590117 = newJObject()
-  add(query_590117, "fields", newJString(fields))
-  add(query_590117, "quotaUser", newJString(quotaUser))
-  add(query_590117, "alt", newJString(alt))
-  add(query_590117, "oauth_token", newJString(oauthToken))
-  add(query_590117, "userIp", newJString(userIp))
-  add(path_590116, "id", newJString(id))
-  add(query_590117, "key", newJString(key))
-  add(query_590117, "prettyPrint", newJBool(prettyPrint))
-  add(path_590116, "userId", newJString(userId))
-  result = call_590115.call(path_590116, query_590117, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_580016 = newJObject()
+  var query_580017 = newJObject()
+  add(query_580017, "key", newJString(key))
+  add(query_580017, "prettyPrint", newJBool(prettyPrint))
+  add(query_580017, "oauth_token", newJString(oauthToken))
+  add(path_580016, "id", newJString(id))
+  add(query_580017, "alt", newJString(alt))
+  add(query_580017, "userIp", newJString(userIp))
+  add(query_580017, "quotaUser", newJString(quotaUser))
+  add(path_580016, "userId", newJString(userId))
+  add(query_580017, "fields", newJString(fields))
+  result = call_580015.call(path_580016, query_580017, nil, nil, nil)
 
-var gmailUsersThreadsUntrash* = Call_GmailUsersThreadsUntrash_590102(
+var gmailUsersThreadsUntrash* = Call_GmailUsersThreadsUntrash_580002(
     name: "gmailUsersThreadsUntrash", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{userId}/threads/{id}/untrash",
-    validator: validate_GmailUsersThreadsUntrash_590103, base: "/gmail/v1/users",
-    url: url_GmailUsersThreadsUntrash_590104, schemes: {Scheme.Https})
+    validator: validate_GmailUsersThreadsUntrash_580003, base: "/gmail/v1/users",
+    url: url_GmailUsersThreadsUntrash_580004, schemes: {Scheme.Https})
 type
-  Call_GmailUsersWatch_590118 = ref object of OpenApiRestCall_588457
-proc url_GmailUsersWatch_590120(protocol: Scheme; host: string; base: string;
+  Call_GmailUsersWatch_580018 = ref object of OpenApiRestCall_578355
+proc url_GmailUsersWatch_580020(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -11069,7 +11062,7 @@ proc url_GmailUsersWatch_590120(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GmailUsersWatch_590119(path: JsonNode; query: JsonNode;
+proc validate_GmailUsersWatch_580019(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Set up or update a push notification watch on the given user mailbox.
@@ -11081,63 +11074,63 @@ proc validate_GmailUsersWatch_590119(path: JsonNode; query: JsonNode;
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `userId` field"
-  var valid_590121 = path.getOrDefault("userId")
-  valid_590121 = validateParameter(valid_590121, JString, required = true,
+  var valid_580021 = path.getOrDefault("userId")
+  valid_580021 = validateParameter(valid_580021, JString, required = true,
                                  default = newJString("me"))
-  if valid_590121 != nil:
-    section.add "userId", valid_590121
+  if valid_580021 != nil:
+    section.add "userId", valid_580021
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_590122 = query.getOrDefault("fields")
-  valid_590122 = validateParameter(valid_590122, JString, required = false,
+  var valid_580022 = query.getOrDefault("key")
+  valid_580022 = validateParameter(valid_580022, JString, required = false,
                                  default = nil)
-  if valid_590122 != nil:
-    section.add "fields", valid_590122
-  var valid_590123 = query.getOrDefault("quotaUser")
-  valid_590123 = validateParameter(valid_590123, JString, required = false,
-                                 default = nil)
-  if valid_590123 != nil:
-    section.add "quotaUser", valid_590123
-  var valid_590124 = query.getOrDefault("alt")
-  valid_590124 = validateParameter(valid_590124, JString, required = false,
-                                 default = newJString("json"))
-  if valid_590124 != nil:
-    section.add "alt", valid_590124
-  var valid_590125 = query.getOrDefault("oauth_token")
-  valid_590125 = validateParameter(valid_590125, JString, required = false,
-                                 default = nil)
-  if valid_590125 != nil:
-    section.add "oauth_token", valid_590125
-  var valid_590126 = query.getOrDefault("userIp")
-  valid_590126 = validateParameter(valid_590126, JString, required = false,
-                                 default = nil)
-  if valid_590126 != nil:
-    section.add "userIp", valid_590126
-  var valid_590127 = query.getOrDefault("key")
-  valid_590127 = validateParameter(valid_590127, JString, required = false,
-                                 default = nil)
-  if valid_590127 != nil:
-    section.add "key", valid_590127
-  var valid_590128 = query.getOrDefault("prettyPrint")
-  valid_590128 = validateParameter(valid_590128, JBool, required = false,
+  if valid_580022 != nil:
+    section.add "key", valid_580022
+  var valid_580023 = query.getOrDefault("prettyPrint")
+  valid_580023 = validateParameter(valid_580023, JBool, required = false,
                                  default = newJBool(true))
-  if valid_590128 != nil:
-    section.add "prettyPrint", valid_590128
+  if valid_580023 != nil:
+    section.add "prettyPrint", valid_580023
+  var valid_580024 = query.getOrDefault("oauth_token")
+  valid_580024 = validateParameter(valid_580024, JString, required = false,
+                                 default = nil)
+  if valid_580024 != nil:
+    section.add "oauth_token", valid_580024
+  var valid_580025 = query.getOrDefault("alt")
+  valid_580025 = validateParameter(valid_580025, JString, required = false,
+                                 default = newJString("json"))
+  if valid_580025 != nil:
+    section.add "alt", valid_580025
+  var valid_580026 = query.getOrDefault("userIp")
+  valid_580026 = validateParameter(valid_580026, JString, required = false,
+                                 default = nil)
+  if valid_580026 != nil:
+    section.add "userIp", valid_580026
+  var valid_580027 = query.getOrDefault("quotaUser")
+  valid_580027 = validateParameter(valid_580027, JString, required = false,
+                                 default = nil)
+  if valid_580027 != nil:
+    section.add "quotaUser", valid_580027
+  var valid_580028 = query.getOrDefault("fields")
+  valid_580028 = validateParameter(valid_580028, JString, required = false,
+                                 default = nil)
+  if valid_580028 != nil:
+    section.add "fields", valid_580028
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -11149,61 +11142,61 @@ proc validate_GmailUsersWatch_590119(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_590130: Call_GmailUsersWatch_590118; path: JsonNode; query: JsonNode;
+proc call*(call_580030: Call_GmailUsersWatch_580018; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Set up or update a push notification watch on the given user mailbox.
   ## 
-  let valid = call_590130.validator(path, query, header, formData, body)
-  let scheme = call_590130.pickScheme
+  let valid = call_580030.validator(path, query, header, formData, body)
+  let scheme = call_580030.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_590130.url(scheme.get, call_590130.host, call_590130.base,
-                         call_590130.route, valid.getOrDefault("path"),
+  let url = call_580030.url(scheme.get, call_580030.host, call_580030.base,
+                         call_580030.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_590130, url, valid)
+  result = hook(call_580030, url, valid)
 
-proc call*(call_590131: Call_GmailUsersWatch_590118; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true; userId: string = "me"): Recallable =
+proc call*(call_580031: Call_GmailUsersWatch_580018; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; userId: string = "me";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## gmailUsersWatch
   ## Set up or update a push notification watch on the given user mailbox.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : The user's email address. The special value me can be used to indicate the authenticated user.
-  var path_590132 = newJObject()
-  var query_590133 = newJObject()
-  var body_590134 = newJObject()
-  add(query_590133, "fields", newJString(fields))
-  add(query_590133, "quotaUser", newJString(quotaUser))
-  add(query_590133, "alt", newJString(alt))
-  add(query_590133, "oauth_token", newJString(oauthToken))
-  add(query_590133, "userIp", newJString(userIp))
-  add(query_590133, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_580032 = newJObject()
+  var query_580033 = newJObject()
+  var body_580034 = newJObject()
+  add(query_580033, "key", newJString(key))
+  add(query_580033, "prettyPrint", newJBool(prettyPrint))
+  add(query_580033, "oauth_token", newJString(oauthToken))
+  add(query_580033, "alt", newJString(alt))
+  add(query_580033, "userIp", newJString(userIp))
+  add(query_580033, "quotaUser", newJString(quotaUser))
+  add(path_580032, "userId", newJString(userId))
   if body != nil:
-    body_590134 = body
-  add(query_590133, "prettyPrint", newJBool(prettyPrint))
-  add(path_590132, "userId", newJString(userId))
-  result = call_590131.call(path_590132, query_590133, nil, nil, body_590134)
+    body_580034 = body
+  add(query_580033, "fields", newJString(fields))
+  result = call_580031.call(path_580032, query_580033, nil, nil, body_580034)
 
-var gmailUsersWatch* = Call_GmailUsersWatch_590118(name: "gmailUsersWatch",
+var gmailUsersWatch* = Call_GmailUsersWatch_580018(name: "gmailUsersWatch",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/{userId}/watch",
-    validator: validate_GmailUsersWatch_590119, base: "/gmail/v1/users",
-    url: url_GmailUsersWatch_590120, schemes: {Scheme.Https})
+    validator: validate_GmailUsersWatch_580019, base: "/gmail/v1/users",
+    url: url_GmailUsersWatch_580020, schemes: {Scheme.Https})
 export
   rest
 

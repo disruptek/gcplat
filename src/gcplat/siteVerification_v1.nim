@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588441 = ref object of OpenApiRestCall
+  OpenApiRestCall_578339 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,15 +112,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_SiteVerificationWebResourceGetToken_588709 = ref object of OpenApiRestCall_588441
-proc url_SiteVerificationWebResourceGetToken_588711(protocol: Scheme; host: string;
+  Call_SiteVerificationWebResourceGetToken_578609 = ref object of OpenApiRestCall_578339
+proc url_SiteVerificationWebResourceGetToken_578611(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_SiteVerificationWebResourceGetToken_588710(path: JsonNode;
+proc validate_SiteVerificationWebResourceGetToken_578610(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get a verification token for placing on a website or domain.
   ## 
@@ -125,56 +129,56 @@ proc validate_SiteVerificationWebResourceGetToken_588710(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588823 = query.getOrDefault("fields")
-  valid_588823 = validateParameter(valid_588823, JString, required = false,
+  var valid_578723 = query.getOrDefault("key")
+  valid_578723 = validateParameter(valid_578723, JString, required = false,
                                  default = nil)
-  if valid_588823 != nil:
-    section.add "fields", valid_588823
-  var valid_588824 = query.getOrDefault("quotaUser")
-  valid_588824 = validateParameter(valid_588824, JString, required = false,
-                                 default = nil)
-  if valid_588824 != nil:
-    section.add "quotaUser", valid_588824
-  var valid_588838 = query.getOrDefault("alt")
-  valid_588838 = validateParameter(valid_588838, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588838 != nil:
-    section.add "alt", valid_588838
-  var valid_588839 = query.getOrDefault("oauth_token")
-  valid_588839 = validateParameter(valid_588839, JString, required = false,
-                                 default = nil)
-  if valid_588839 != nil:
-    section.add "oauth_token", valid_588839
-  var valid_588840 = query.getOrDefault("userIp")
-  valid_588840 = validateParameter(valid_588840, JString, required = false,
-                                 default = nil)
-  if valid_588840 != nil:
-    section.add "userIp", valid_588840
-  var valid_588841 = query.getOrDefault("key")
-  valid_588841 = validateParameter(valid_588841, JString, required = false,
-                                 default = nil)
-  if valid_588841 != nil:
-    section.add "key", valid_588841
-  var valid_588842 = query.getOrDefault("prettyPrint")
-  valid_588842 = validateParameter(valid_588842, JBool, required = false,
+  if valid_578723 != nil:
+    section.add "key", valid_578723
+  var valid_578737 = query.getOrDefault("prettyPrint")
+  valid_578737 = validateParameter(valid_578737, JBool, required = false,
                                  default = newJBool(false))
-  if valid_588842 != nil:
-    section.add "prettyPrint", valid_588842
+  if valid_578737 != nil:
+    section.add "prettyPrint", valid_578737
+  var valid_578738 = query.getOrDefault("oauth_token")
+  valid_578738 = validateParameter(valid_578738, JString, required = false,
+                                 default = nil)
+  if valid_578738 != nil:
+    section.add "oauth_token", valid_578738
+  var valid_578739 = query.getOrDefault("alt")
+  valid_578739 = validateParameter(valid_578739, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578739 != nil:
+    section.add "alt", valid_578739
+  var valid_578740 = query.getOrDefault("userIp")
+  valid_578740 = validateParameter(valid_578740, JString, required = false,
+                                 default = nil)
+  if valid_578740 != nil:
+    section.add "userIp", valid_578740
+  var valid_578741 = query.getOrDefault("quotaUser")
+  valid_578741 = validateParameter(valid_578741, JString, required = false,
+                                 default = nil)
+  if valid_578741 != nil:
+    section.add "quotaUser", valid_578741
+  var valid_578742 = query.getOrDefault("fields")
+  valid_578742 = validateParameter(valid_578742, JString, required = false,
+                                 default = nil)
+  if valid_578742 != nil:
+    section.add "fields", valid_578742
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -186,70 +190,70 @@ proc validate_SiteVerificationWebResourceGetToken_588710(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588866: Call_SiteVerificationWebResourceGetToken_588709;
+proc call*(call_578766: Call_SiteVerificationWebResourceGetToken_578609;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Get a verification token for placing on a website or domain.
   ## 
-  let valid = call_588866.validator(path, query, header, formData, body)
-  let scheme = call_588866.pickScheme
+  let valid = call_578766.validator(path, query, header, formData, body)
+  let scheme = call_578766.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588866.url(scheme.get, call_588866.host, call_588866.base,
-                         call_588866.route, valid.getOrDefault("path"),
+  let url = call_578766.url(scheme.get, call_578766.host, call_578766.base,
+                         call_578766.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588866, url, valid)
+  result = hook(call_578766, url, valid)
 
-proc call*(call_588937: Call_SiteVerificationWebResourceGetToken_588709;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = false): Recallable =
+proc call*(call_578837: Call_SiteVerificationWebResourceGetToken_578609;
+          key: string = ""; prettyPrint: bool = false; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## siteVerificationWebResourceGetToken
   ## Get a verification token for placing on a website or domain.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_588938 = newJObject()
-  var body_588940 = newJObject()
-  add(query_588938, "fields", newJString(fields))
-  add(query_588938, "quotaUser", newJString(quotaUser))
-  add(query_588938, "alt", newJString(alt))
-  add(query_588938, "oauth_token", newJString(oauthToken))
-  add(query_588938, "userIp", newJString(userIp))
-  add(query_588938, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_578838 = newJObject()
+  var body_578840 = newJObject()
+  add(query_578838, "key", newJString(key))
+  add(query_578838, "prettyPrint", newJBool(prettyPrint))
+  add(query_578838, "oauth_token", newJString(oauthToken))
+  add(query_578838, "alt", newJString(alt))
+  add(query_578838, "userIp", newJString(userIp))
+  add(query_578838, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_588940 = body
-  add(query_588938, "prettyPrint", newJBool(prettyPrint))
-  result = call_588937.call(nil, query_588938, nil, nil, body_588940)
+    body_578840 = body
+  add(query_578838, "fields", newJString(fields))
+  result = call_578837.call(nil, query_578838, nil, nil, body_578840)
 
-var siteVerificationWebResourceGetToken* = Call_SiteVerificationWebResourceGetToken_588709(
+var siteVerificationWebResourceGetToken* = Call_SiteVerificationWebResourceGetToken_578609(
     name: "siteVerificationWebResourceGetToken", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/token",
-    validator: validate_SiteVerificationWebResourceGetToken_588710,
-    base: "/siteVerification/v1", url: url_SiteVerificationWebResourceGetToken_588711,
+    validator: validate_SiteVerificationWebResourceGetToken_578610,
+    base: "/siteVerification/v1", url: url_SiteVerificationWebResourceGetToken_578611,
     schemes: {Scheme.Https})
 type
-  Call_SiteVerificationWebResourceInsert_588992 = ref object of OpenApiRestCall_588441
-proc url_SiteVerificationWebResourceInsert_588994(protocol: Scheme; host: string;
+  Call_SiteVerificationWebResourceInsert_578892 = ref object of OpenApiRestCall_578339
+proc url_SiteVerificationWebResourceInsert_578894(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_SiteVerificationWebResourceInsert_588993(path: JsonNode;
+proc validate_SiteVerificationWebResourceInsert_578893(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Attempt verification of a website or domain.
   ## 
@@ -258,64 +262,64 @@ proc validate_SiteVerificationWebResourceInsert_588993(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   verificationMethod: JString (required)
-  ##                     : The method to use for verifying a site or domain.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   verificationMethod: JString (required)
+  ##                     : The method to use for verifying a site or domain.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588995 = query.getOrDefault("fields")
-  valid_588995 = validateParameter(valid_588995, JString, required = false,
+  var valid_578895 = query.getOrDefault("key")
+  valid_578895 = validateParameter(valid_578895, JString, required = false,
                                  default = nil)
-  if valid_588995 != nil:
-    section.add "fields", valid_588995
-  var valid_588996 = query.getOrDefault("quotaUser")
-  valid_588996 = validateParameter(valid_588996, JString, required = false,
-                                 default = nil)
-  if valid_588996 != nil:
-    section.add "quotaUser", valid_588996
-  var valid_588997 = query.getOrDefault("alt")
-  valid_588997 = validateParameter(valid_588997, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588997 != nil:
-    section.add "alt", valid_588997
-  var valid_588998 = query.getOrDefault("oauth_token")
-  valid_588998 = validateParameter(valid_588998, JString, required = false,
-                                 default = nil)
-  if valid_588998 != nil:
-    section.add "oauth_token", valid_588998
-  var valid_588999 = query.getOrDefault("userIp")
-  valid_588999 = validateParameter(valid_588999, JString, required = false,
-                                 default = nil)
-  if valid_588999 != nil:
-    section.add "userIp", valid_588999
-  var valid_589000 = query.getOrDefault("key")
-  valid_589000 = validateParameter(valid_589000, JString, required = false,
-                                 default = nil)
-  if valid_589000 != nil:
-    section.add "key", valid_589000
-  assert query != nil, "query argument is necessary due to required `verificationMethod` field"
-  var valid_589001 = query.getOrDefault("verificationMethod")
-  valid_589001 = validateParameter(valid_589001, JString, required = true,
-                                 default = nil)
-  if valid_589001 != nil:
-    section.add "verificationMethod", valid_589001
-  var valid_589002 = query.getOrDefault("prettyPrint")
-  valid_589002 = validateParameter(valid_589002, JBool, required = false,
+  if valid_578895 != nil:
+    section.add "key", valid_578895
+  var valid_578896 = query.getOrDefault("prettyPrint")
+  valid_578896 = validateParameter(valid_578896, JBool, required = false,
                                  default = newJBool(false))
-  if valid_589002 != nil:
-    section.add "prettyPrint", valid_589002
+  if valid_578896 != nil:
+    section.add "prettyPrint", valid_578896
+  var valid_578897 = query.getOrDefault("oauth_token")
+  valid_578897 = validateParameter(valid_578897, JString, required = false,
+                                 default = nil)
+  if valid_578897 != nil:
+    section.add "oauth_token", valid_578897
+  var valid_578898 = query.getOrDefault("alt")
+  valid_578898 = validateParameter(valid_578898, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578898 != nil:
+    section.add "alt", valid_578898
+  var valid_578899 = query.getOrDefault("userIp")
+  valid_578899 = validateParameter(valid_578899, JString, required = false,
+                                 default = nil)
+  if valid_578899 != nil:
+    section.add "userIp", valid_578899
+  var valid_578900 = query.getOrDefault("quotaUser")
+  valid_578900 = validateParameter(valid_578900, JString, required = false,
+                                 default = nil)
+  if valid_578900 != nil:
+    section.add "quotaUser", valid_578900
+  assert query != nil, "query argument is necessary due to required `verificationMethod` field"
+  var valid_578901 = query.getOrDefault("verificationMethod")
+  valid_578901 = validateParameter(valid_578901, JString, required = true,
+                                 default = nil)
+  if valid_578901 != nil:
+    section.add "verificationMethod", valid_578901
+  var valid_578902 = query.getOrDefault("fields")
+  valid_578902 = validateParameter(valid_578902, JString, required = false,
+                                 default = nil)
+  if valid_578902 != nil:
+    section.add "fields", valid_578902
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -327,73 +331,73 @@ proc validate_SiteVerificationWebResourceInsert_588993(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589004: Call_SiteVerificationWebResourceInsert_588992;
+proc call*(call_578904: Call_SiteVerificationWebResourceInsert_578892;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Attempt verification of a website or domain.
   ## 
-  let valid = call_589004.validator(path, query, header, formData, body)
-  let scheme = call_589004.pickScheme
+  let valid = call_578904.validator(path, query, header, formData, body)
+  let scheme = call_578904.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589004.url(scheme.get, call_589004.host, call_589004.base,
-                         call_589004.route, valid.getOrDefault("path"),
+  let url = call_578904.url(scheme.get, call_578904.host, call_578904.base,
+                         call_578904.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589004, url, valid)
+  result = hook(call_578904, url, valid)
 
-proc call*(call_589005: Call_SiteVerificationWebResourceInsert_588992;
-          verificationMethod: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = false): Recallable =
+proc call*(call_578905: Call_SiteVerificationWebResourceInsert_578892;
+          verificationMethod: string; key: string = ""; prettyPrint: bool = false;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## siteVerificationWebResourceInsert
   ## Attempt verification of a website or domain.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   verificationMethod: string (required)
   ##                     : The method to use for verifying a site or domain.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var query_589006 = newJObject()
-  var body_589007 = newJObject()
-  add(query_589006, "fields", newJString(fields))
-  add(query_589006, "quotaUser", newJString(quotaUser))
-  add(query_589006, "alt", newJString(alt))
-  add(query_589006, "oauth_token", newJString(oauthToken))
-  add(query_589006, "userIp", newJString(userIp))
-  add(query_589006, "key", newJString(key))
-  add(query_589006, "verificationMethod", newJString(verificationMethod))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_578906 = newJObject()
+  var body_578907 = newJObject()
+  add(query_578906, "key", newJString(key))
+  add(query_578906, "prettyPrint", newJBool(prettyPrint))
+  add(query_578906, "oauth_token", newJString(oauthToken))
+  add(query_578906, "alt", newJString(alt))
+  add(query_578906, "userIp", newJString(userIp))
+  add(query_578906, "quotaUser", newJString(quotaUser))
+  add(query_578906, "verificationMethod", newJString(verificationMethod))
   if body != nil:
-    body_589007 = body
-  add(query_589006, "prettyPrint", newJBool(prettyPrint))
-  result = call_589005.call(nil, query_589006, nil, nil, body_589007)
+    body_578907 = body
+  add(query_578906, "fields", newJString(fields))
+  result = call_578905.call(nil, query_578906, nil, nil, body_578907)
 
-var siteVerificationWebResourceInsert* = Call_SiteVerificationWebResourceInsert_588992(
+var siteVerificationWebResourceInsert* = Call_SiteVerificationWebResourceInsert_578892(
     name: "siteVerificationWebResourceInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/webResource",
-    validator: validate_SiteVerificationWebResourceInsert_588993,
-    base: "/siteVerification/v1", url: url_SiteVerificationWebResourceInsert_588994,
+    validator: validate_SiteVerificationWebResourceInsert_578893,
+    base: "/siteVerification/v1", url: url_SiteVerificationWebResourceInsert_578894,
     schemes: {Scheme.Https})
 type
-  Call_SiteVerificationWebResourceList_588979 = ref object of OpenApiRestCall_588441
-proc url_SiteVerificationWebResourceList_588981(protocol: Scheme; host: string;
+  Call_SiteVerificationWebResourceList_578879 = ref object of OpenApiRestCall_578339
+proc url_SiteVerificationWebResourceList_578881(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_SiteVerificationWebResourceList_588980(path: JsonNode;
+proc validate_SiteVerificationWebResourceList_578880(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get the list of your verified websites and domains.
   ## 
@@ -402,56 +406,56 @@ proc validate_SiteVerificationWebResourceList_588980(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588982 = query.getOrDefault("fields")
-  valid_588982 = validateParameter(valid_588982, JString, required = false,
+  var valid_578882 = query.getOrDefault("key")
+  valid_578882 = validateParameter(valid_578882, JString, required = false,
                                  default = nil)
-  if valid_588982 != nil:
-    section.add "fields", valid_588982
-  var valid_588983 = query.getOrDefault("quotaUser")
-  valid_588983 = validateParameter(valid_588983, JString, required = false,
-                                 default = nil)
-  if valid_588983 != nil:
-    section.add "quotaUser", valid_588983
-  var valid_588984 = query.getOrDefault("alt")
-  valid_588984 = validateParameter(valid_588984, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588984 != nil:
-    section.add "alt", valid_588984
-  var valid_588985 = query.getOrDefault("oauth_token")
-  valid_588985 = validateParameter(valid_588985, JString, required = false,
-                                 default = nil)
-  if valid_588985 != nil:
-    section.add "oauth_token", valid_588985
-  var valid_588986 = query.getOrDefault("userIp")
-  valid_588986 = validateParameter(valid_588986, JString, required = false,
-                                 default = nil)
-  if valid_588986 != nil:
-    section.add "userIp", valid_588986
-  var valid_588987 = query.getOrDefault("key")
-  valid_588987 = validateParameter(valid_588987, JString, required = false,
-                                 default = nil)
-  if valid_588987 != nil:
-    section.add "key", valid_588987
-  var valid_588988 = query.getOrDefault("prettyPrint")
-  valid_588988 = validateParameter(valid_588988, JBool, required = false,
+  if valid_578882 != nil:
+    section.add "key", valid_578882
+  var valid_578883 = query.getOrDefault("prettyPrint")
+  valid_578883 = validateParameter(valid_578883, JBool, required = false,
                                  default = newJBool(false))
-  if valid_588988 != nil:
-    section.add "prettyPrint", valid_588988
+  if valid_578883 != nil:
+    section.add "prettyPrint", valid_578883
+  var valid_578884 = query.getOrDefault("oauth_token")
+  valid_578884 = validateParameter(valid_578884, JString, required = false,
+                                 default = nil)
+  if valid_578884 != nil:
+    section.add "oauth_token", valid_578884
+  var valid_578885 = query.getOrDefault("alt")
+  valid_578885 = validateParameter(valid_578885, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578885 != nil:
+    section.add "alt", valid_578885
+  var valid_578886 = query.getOrDefault("userIp")
+  valid_578886 = validateParameter(valid_578886, JString, required = false,
+                                 default = nil)
+  if valid_578886 != nil:
+    section.add "userIp", valid_578886
+  var valid_578887 = query.getOrDefault("quotaUser")
+  valid_578887 = validateParameter(valid_578887, JString, required = false,
+                                 default = nil)
+  if valid_578887 != nil:
+    section.add "quotaUser", valid_578887
+  var valid_578888 = query.getOrDefault("fields")
+  valid_578888 = validateParameter(valid_578888, JString, required = false,
+                                 default = nil)
+  if valid_578888 != nil:
+    section.add "fields", valid_578888
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -460,59 +464,59 @@ proc validate_SiteVerificationWebResourceList_588980(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588989: Call_SiteVerificationWebResourceList_588979;
+proc call*(call_578889: Call_SiteVerificationWebResourceList_578879;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Get the list of your verified websites and domains.
   ## 
-  let valid = call_588989.validator(path, query, header, formData, body)
-  let scheme = call_588989.pickScheme
+  let valid = call_578889.validator(path, query, header, formData, body)
+  let scheme = call_578889.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588989.url(scheme.get, call_588989.host, call_588989.base,
-                         call_588989.route, valid.getOrDefault("path"),
+  let url = call_578889.url(scheme.get, call_578889.host, call_578889.base,
+                         call_578889.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588989, url, valid)
+  result = hook(call_578889, url, valid)
 
-proc call*(call_588990: Call_SiteVerificationWebResourceList_588979;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = false): Recallable =
+proc call*(call_578890: Call_SiteVerificationWebResourceList_578879;
+          key: string = ""; prettyPrint: bool = false; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## siteVerificationWebResourceList
   ## Get the list of your verified websites and domains.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_588991 = newJObject()
-  add(query_588991, "fields", newJString(fields))
-  add(query_588991, "quotaUser", newJString(quotaUser))
-  add(query_588991, "alt", newJString(alt))
-  add(query_588991, "oauth_token", newJString(oauthToken))
-  add(query_588991, "userIp", newJString(userIp))
-  add(query_588991, "key", newJString(key))
-  add(query_588991, "prettyPrint", newJBool(prettyPrint))
-  result = call_588990.call(nil, query_588991, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_578891 = newJObject()
+  add(query_578891, "key", newJString(key))
+  add(query_578891, "prettyPrint", newJBool(prettyPrint))
+  add(query_578891, "oauth_token", newJString(oauthToken))
+  add(query_578891, "alt", newJString(alt))
+  add(query_578891, "userIp", newJString(userIp))
+  add(query_578891, "quotaUser", newJString(quotaUser))
+  add(query_578891, "fields", newJString(fields))
+  result = call_578890.call(nil, query_578891, nil, nil, nil)
 
-var siteVerificationWebResourceList* = Call_SiteVerificationWebResourceList_588979(
+var siteVerificationWebResourceList* = Call_SiteVerificationWebResourceList_578879(
     name: "siteVerificationWebResourceList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/webResource",
-    validator: validate_SiteVerificationWebResourceList_588980,
-    base: "/siteVerification/v1", url: url_SiteVerificationWebResourceList_588981,
+    validator: validate_SiteVerificationWebResourceList_578880,
+    base: "/siteVerification/v1", url: url_SiteVerificationWebResourceList_578881,
     schemes: {Scheme.Https})
 type
-  Call_SiteVerificationWebResourceUpdate_589037 = ref object of OpenApiRestCall_588441
-proc url_SiteVerificationWebResourceUpdate_589039(protocol: Scheme; host: string;
+  Call_SiteVerificationWebResourceUpdate_578937 = ref object of OpenApiRestCall_578339
+proc url_SiteVerificationWebResourceUpdate_578939(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -527,7 +531,7 @@ proc url_SiteVerificationWebResourceUpdate_589039(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_SiteVerificationWebResourceUpdate_589038(path: JsonNode;
+proc validate_SiteVerificationWebResourceUpdate_578938(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Modify the list of owners for your website or domain.
   ## 
@@ -538,63 +542,63 @@ proc validate_SiteVerificationWebResourceUpdate_589038(path: JsonNode;
   ##     : The id of a verified site or domain.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589040 = path.getOrDefault("id")
-  valid_589040 = validateParameter(valid_589040, JString, required = true,
+  var valid_578940 = path.getOrDefault("id")
+  valid_578940 = validateParameter(valid_578940, JString, required = true,
                                  default = nil)
-  if valid_589040 != nil:
-    section.add "id", valid_589040
+  if valid_578940 != nil:
+    section.add "id", valid_578940
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589041 = query.getOrDefault("fields")
-  valid_589041 = validateParameter(valid_589041, JString, required = false,
+  var valid_578941 = query.getOrDefault("key")
+  valid_578941 = validateParameter(valid_578941, JString, required = false,
                                  default = nil)
-  if valid_589041 != nil:
-    section.add "fields", valid_589041
-  var valid_589042 = query.getOrDefault("quotaUser")
-  valid_589042 = validateParameter(valid_589042, JString, required = false,
-                                 default = nil)
-  if valid_589042 != nil:
-    section.add "quotaUser", valid_589042
-  var valid_589043 = query.getOrDefault("alt")
-  valid_589043 = validateParameter(valid_589043, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589043 != nil:
-    section.add "alt", valid_589043
-  var valid_589044 = query.getOrDefault("oauth_token")
-  valid_589044 = validateParameter(valid_589044, JString, required = false,
-                                 default = nil)
-  if valid_589044 != nil:
-    section.add "oauth_token", valid_589044
-  var valid_589045 = query.getOrDefault("userIp")
-  valid_589045 = validateParameter(valid_589045, JString, required = false,
-                                 default = nil)
-  if valid_589045 != nil:
-    section.add "userIp", valid_589045
-  var valid_589046 = query.getOrDefault("key")
-  valid_589046 = validateParameter(valid_589046, JString, required = false,
-                                 default = nil)
-  if valid_589046 != nil:
-    section.add "key", valid_589046
-  var valid_589047 = query.getOrDefault("prettyPrint")
-  valid_589047 = validateParameter(valid_589047, JBool, required = false,
+  if valid_578941 != nil:
+    section.add "key", valid_578941
+  var valid_578942 = query.getOrDefault("prettyPrint")
+  valid_578942 = validateParameter(valid_578942, JBool, required = false,
                                  default = newJBool(false))
-  if valid_589047 != nil:
-    section.add "prettyPrint", valid_589047
+  if valid_578942 != nil:
+    section.add "prettyPrint", valid_578942
+  var valid_578943 = query.getOrDefault("oauth_token")
+  valid_578943 = validateParameter(valid_578943, JString, required = false,
+                                 default = nil)
+  if valid_578943 != nil:
+    section.add "oauth_token", valid_578943
+  var valid_578944 = query.getOrDefault("alt")
+  valid_578944 = validateParameter(valid_578944, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578944 != nil:
+    section.add "alt", valid_578944
+  var valid_578945 = query.getOrDefault("userIp")
+  valid_578945 = validateParameter(valid_578945, JString, required = false,
+                                 default = nil)
+  if valid_578945 != nil:
+    section.add "userIp", valid_578945
+  var valid_578946 = query.getOrDefault("quotaUser")
+  valid_578946 = validateParameter(valid_578946, JString, required = false,
+                                 default = nil)
+  if valid_578946 != nil:
+    section.add "quotaUser", valid_578946
+  var valid_578947 = query.getOrDefault("fields")
+  valid_578947 = validateParameter(valid_578947, JString, required = false,
+                                 default = nil)
+  if valid_578947 != nil:
+    section.add "fields", valid_578947
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -606,67 +610,67 @@ proc validate_SiteVerificationWebResourceUpdate_589038(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589049: Call_SiteVerificationWebResourceUpdate_589037;
+proc call*(call_578949: Call_SiteVerificationWebResourceUpdate_578937;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Modify the list of owners for your website or domain.
   ## 
-  let valid = call_589049.validator(path, query, header, formData, body)
-  let scheme = call_589049.pickScheme
+  let valid = call_578949.validator(path, query, header, formData, body)
+  let scheme = call_578949.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589049.url(scheme.get, call_589049.host, call_589049.base,
-                         call_589049.route, valid.getOrDefault("path"),
+  let url = call_578949.url(scheme.get, call_578949.host, call_578949.base,
+                         call_578949.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589049, url, valid)
+  result = hook(call_578949, url, valid)
 
-proc call*(call_589050: Call_SiteVerificationWebResourceUpdate_589037; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = false): Recallable =
+proc call*(call_578950: Call_SiteVerificationWebResourceUpdate_578937; id: string;
+          key: string = ""; prettyPrint: bool = false; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## siteVerificationWebResourceUpdate
   ## Modify the list of owners for your website or domain.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The id of a verified site or domain.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589051 = newJObject()
-  var query_589052 = newJObject()
-  var body_589053 = newJObject()
-  add(query_589052, "fields", newJString(fields))
-  add(query_589052, "quotaUser", newJString(quotaUser))
-  add(query_589052, "alt", newJString(alt))
-  add(query_589052, "oauth_token", newJString(oauthToken))
-  add(query_589052, "userIp", newJString(userIp))
-  add(path_589051, "id", newJString(id))
-  add(query_589052, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The id of a verified site or domain.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578951 = newJObject()
+  var query_578952 = newJObject()
+  var body_578953 = newJObject()
+  add(query_578952, "key", newJString(key))
+  add(query_578952, "prettyPrint", newJBool(prettyPrint))
+  add(query_578952, "oauth_token", newJString(oauthToken))
+  add(path_578951, "id", newJString(id))
+  add(query_578952, "alt", newJString(alt))
+  add(query_578952, "userIp", newJString(userIp))
+  add(query_578952, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589053 = body
-  add(query_589052, "prettyPrint", newJBool(prettyPrint))
-  result = call_589050.call(path_589051, query_589052, nil, nil, body_589053)
+    body_578953 = body
+  add(query_578952, "fields", newJString(fields))
+  result = call_578950.call(path_578951, query_578952, nil, nil, body_578953)
 
-var siteVerificationWebResourceUpdate* = Call_SiteVerificationWebResourceUpdate_589037(
+var siteVerificationWebResourceUpdate* = Call_SiteVerificationWebResourceUpdate_578937(
     name: "siteVerificationWebResourceUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/webResource/{id}",
-    validator: validate_SiteVerificationWebResourceUpdate_589038,
-    base: "/siteVerification/v1", url: url_SiteVerificationWebResourceUpdate_589039,
+    validator: validate_SiteVerificationWebResourceUpdate_578938,
+    base: "/siteVerification/v1", url: url_SiteVerificationWebResourceUpdate_578939,
     schemes: {Scheme.Https})
 type
-  Call_SiteVerificationWebResourceGet_589008 = ref object of OpenApiRestCall_588441
-proc url_SiteVerificationWebResourceGet_589010(protocol: Scheme; host: string;
+  Call_SiteVerificationWebResourceGet_578908 = ref object of OpenApiRestCall_578339
+proc url_SiteVerificationWebResourceGet_578910(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -681,7 +685,7 @@ proc url_SiteVerificationWebResourceGet_589010(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_SiteVerificationWebResourceGet_589009(path: JsonNode;
+proc validate_SiteVerificationWebResourceGet_578909(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get the most current data for a website or domain.
   ## 
@@ -692,63 +696,63 @@ proc validate_SiteVerificationWebResourceGet_589009(path: JsonNode;
   ##     : The id of a verified site or domain.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589025 = path.getOrDefault("id")
-  valid_589025 = validateParameter(valid_589025, JString, required = true,
+  var valid_578925 = path.getOrDefault("id")
+  valid_578925 = validateParameter(valid_578925, JString, required = true,
                                  default = nil)
-  if valid_589025 != nil:
-    section.add "id", valid_589025
+  if valid_578925 != nil:
+    section.add "id", valid_578925
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589026 = query.getOrDefault("fields")
-  valid_589026 = validateParameter(valid_589026, JString, required = false,
+  var valid_578926 = query.getOrDefault("key")
+  valid_578926 = validateParameter(valid_578926, JString, required = false,
                                  default = nil)
-  if valid_589026 != nil:
-    section.add "fields", valid_589026
-  var valid_589027 = query.getOrDefault("quotaUser")
-  valid_589027 = validateParameter(valid_589027, JString, required = false,
-                                 default = nil)
-  if valid_589027 != nil:
-    section.add "quotaUser", valid_589027
-  var valid_589028 = query.getOrDefault("alt")
-  valid_589028 = validateParameter(valid_589028, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589028 != nil:
-    section.add "alt", valid_589028
-  var valid_589029 = query.getOrDefault("oauth_token")
-  valid_589029 = validateParameter(valid_589029, JString, required = false,
-                                 default = nil)
-  if valid_589029 != nil:
-    section.add "oauth_token", valid_589029
-  var valid_589030 = query.getOrDefault("userIp")
-  valid_589030 = validateParameter(valid_589030, JString, required = false,
-                                 default = nil)
-  if valid_589030 != nil:
-    section.add "userIp", valid_589030
-  var valid_589031 = query.getOrDefault("key")
-  valid_589031 = validateParameter(valid_589031, JString, required = false,
-                                 default = nil)
-  if valid_589031 != nil:
-    section.add "key", valid_589031
-  var valid_589032 = query.getOrDefault("prettyPrint")
-  valid_589032 = validateParameter(valid_589032, JBool, required = false,
+  if valid_578926 != nil:
+    section.add "key", valid_578926
+  var valid_578927 = query.getOrDefault("prettyPrint")
+  valid_578927 = validateParameter(valid_578927, JBool, required = false,
                                  default = newJBool(false))
-  if valid_589032 != nil:
-    section.add "prettyPrint", valid_589032
+  if valid_578927 != nil:
+    section.add "prettyPrint", valid_578927
+  var valid_578928 = query.getOrDefault("oauth_token")
+  valid_578928 = validateParameter(valid_578928, JString, required = false,
+                                 default = nil)
+  if valid_578928 != nil:
+    section.add "oauth_token", valid_578928
+  var valid_578929 = query.getOrDefault("alt")
+  valid_578929 = validateParameter(valid_578929, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578929 != nil:
+    section.add "alt", valid_578929
+  var valid_578930 = query.getOrDefault("userIp")
+  valid_578930 = validateParameter(valid_578930, JString, required = false,
+                                 default = nil)
+  if valid_578930 != nil:
+    section.add "userIp", valid_578930
+  var valid_578931 = query.getOrDefault("quotaUser")
+  valid_578931 = validateParameter(valid_578931, JString, required = false,
+                                 default = nil)
+  if valid_578931 != nil:
+    section.add "quotaUser", valid_578931
+  var valid_578932 = query.getOrDefault("fields")
+  valid_578932 = validateParameter(valid_578932, JString, required = false,
+                                 default = nil)
+  if valid_578932 != nil:
+    section.add "fields", valid_578932
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -757,62 +761,62 @@ proc validate_SiteVerificationWebResourceGet_589009(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589033: Call_SiteVerificationWebResourceGet_589008; path: JsonNode;
+proc call*(call_578933: Call_SiteVerificationWebResourceGet_578908; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get the most current data for a website or domain.
   ## 
-  let valid = call_589033.validator(path, query, header, formData, body)
-  let scheme = call_589033.pickScheme
+  let valid = call_578933.validator(path, query, header, formData, body)
+  let scheme = call_578933.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589033.url(scheme.get, call_589033.host, call_589033.base,
-                         call_589033.route, valid.getOrDefault("path"),
+  let url = call_578933.url(scheme.get, call_578933.host, call_578933.base,
+                         call_578933.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589033, url, valid)
+  result = hook(call_578933, url, valid)
 
-proc call*(call_589034: Call_SiteVerificationWebResourceGet_589008; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = false): Recallable =
+proc call*(call_578934: Call_SiteVerificationWebResourceGet_578908; id: string;
+          key: string = ""; prettyPrint: bool = false; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## siteVerificationWebResourceGet
   ## Get the most current data for a website or domain.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The id of a verified site or domain.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589035 = newJObject()
-  var query_589036 = newJObject()
-  add(query_589036, "fields", newJString(fields))
-  add(query_589036, "quotaUser", newJString(quotaUser))
-  add(query_589036, "alt", newJString(alt))
-  add(query_589036, "oauth_token", newJString(oauthToken))
-  add(query_589036, "userIp", newJString(userIp))
-  add(path_589035, "id", newJString(id))
-  add(query_589036, "key", newJString(key))
-  add(query_589036, "prettyPrint", newJBool(prettyPrint))
-  result = call_589034.call(path_589035, query_589036, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The id of a verified site or domain.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578935 = newJObject()
+  var query_578936 = newJObject()
+  add(query_578936, "key", newJString(key))
+  add(query_578936, "prettyPrint", newJBool(prettyPrint))
+  add(query_578936, "oauth_token", newJString(oauthToken))
+  add(path_578935, "id", newJString(id))
+  add(query_578936, "alt", newJString(alt))
+  add(query_578936, "userIp", newJString(userIp))
+  add(query_578936, "quotaUser", newJString(quotaUser))
+  add(query_578936, "fields", newJString(fields))
+  result = call_578934.call(path_578935, query_578936, nil, nil, nil)
 
-var siteVerificationWebResourceGet* = Call_SiteVerificationWebResourceGet_589008(
+var siteVerificationWebResourceGet* = Call_SiteVerificationWebResourceGet_578908(
     name: "siteVerificationWebResourceGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/webResource/{id}",
-    validator: validate_SiteVerificationWebResourceGet_589009,
-    base: "/siteVerification/v1", url: url_SiteVerificationWebResourceGet_589010,
+    validator: validate_SiteVerificationWebResourceGet_578909,
+    base: "/siteVerification/v1", url: url_SiteVerificationWebResourceGet_578910,
     schemes: {Scheme.Https})
 type
-  Call_SiteVerificationWebResourcePatch_589069 = ref object of OpenApiRestCall_588441
-proc url_SiteVerificationWebResourcePatch_589071(protocol: Scheme; host: string;
+  Call_SiteVerificationWebResourcePatch_578969 = ref object of OpenApiRestCall_578339
+proc url_SiteVerificationWebResourcePatch_578971(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -827,7 +831,7 @@ proc url_SiteVerificationWebResourcePatch_589071(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_SiteVerificationWebResourcePatch_589070(path: JsonNode;
+proc validate_SiteVerificationWebResourcePatch_578970(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Modify the list of owners for your website or domain. This method supports patch semantics.
   ## 
@@ -838,63 +842,63 @@ proc validate_SiteVerificationWebResourcePatch_589070(path: JsonNode;
   ##     : The id of a verified site or domain.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589072 = path.getOrDefault("id")
-  valid_589072 = validateParameter(valid_589072, JString, required = true,
+  var valid_578972 = path.getOrDefault("id")
+  valid_578972 = validateParameter(valid_578972, JString, required = true,
                                  default = nil)
-  if valid_589072 != nil:
-    section.add "id", valid_589072
+  if valid_578972 != nil:
+    section.add "id", valid_578972
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589073 = query.getOrDefault("fields")
-  valid_589073 = validateParameter(valid_589073, JString, required = false,
+  var valid_578973 = query.getOrDefault("key")
+  valid_578973 = validateParameter(valid_578973, JString, required = false,
                                  default = nil)
-  if valid_589073 != nil:
-    section.add "fields", valid_589073
-  var valid_589074 = query.getOrDefault("quotaUser")
-  valid_589074 = validateParameter(valid_589074, JString, required = false,
-                                 default = nil)
-  if valid_589074 != nil:
-    section.add "quotaUser", valid_589074
-  var valid_589075 = query.getOrDefault("alt")
-  valid_589075 = validateParameter(valid_589075, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589075 != nil:
-    section.add "alt", valid_589075
-  var valid_589076 = query.getOrDefault("oauth_token")
-  valid_589076 = validateParameter(valid_589076, JString, required = false,
-                                 default = nil)
-  if valid_589076 != nil:
-    section.add "oauth_token", valid_589076
-  var valid_589077 = query.getOrDefault("userIp")
-  valid_589077 = validateParameter(valid_589077, JString, required = false,
-                                 default = nil)
-  if valid_589077 != nil:
-    section.add "userIp", valid_589077
-  var valid_589078 = query.getOrDefault("key")
-  valid_589078 = validateParameter(valid_589078, JString, required = false,
-                                 default = nil)
-  if valid_589078 != nil:
-    section.add "key", valid_589078
-  var valid_589079 = query.getOrDefault("prettyPrint")
-  valid_589079 = validateParameter(valid_589079, JBool, required = false,
+  if valid_578973 != nil:
+    section.add "key", valid_578973
+  var valid_578974 = query.getOrDefault("prettyPrint")
+  valid_578974 = validateParameter(valid_578974, JBool, required = false,
                                  default = newJBool(false))
-  if valid_589079 != nil:
-    section.add "prettyPrint", valid_589079
+  if valid_578974 != nil:
+    section.add "prettyPrint", valid_578974
+  var valid_578975 = query.getOrDefault("oauth_token")
+  valid_578975 = validateParameter(valid_578975, JString, required = false,
+                                 default = nil)
+  if valid_578975 != nil:
+    section.add "oauth_token", valid_578975
+  var valid_578976 = query.getOrDefault("alt")
+  valid_578976 = validateParameter(valid_578976, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578976 != nil:
+    section.add "alt", valid_578976
+  var valid_578977 = query.getOrDefault("userIp")
+  valid_578977 = validateParameter(valid_578977, JString, required = false,
+                                 default = nil)
+  if valid_578977 != nil:
+    section.add "userIp", valid_578977
+  var valid_578978 = query.getOrDefault("quotaUser")
+  valid_578978 = validateParameter(valid_578978, JString, required = false,
+                                 default = nil)
+  if valid_578978 != nil:
+    section.add "quotaUser", valid_578978
+  var valid_578979 = query.getOrDefault("fields")
+  valid_578979 = validateParameter(valid_578979, JString, required = false,
+                                 default = nil)
+  if valid_578979 != nil:
+    section.add "fields", valid_578979
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -906,67 +910,67 @@ proc validate_SiteVerificationWebResourcePatch_589070(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589081: Call_SiteVerificationWebResourcePatch_589069;
+proc call*(call_578981: Call_SiteVerificationWebResourcePatch_578969;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Modify the list of owners for your website or domain. This method supports patch semantics.
   ## 
-  let valid = call_589081.validator(path, query, header, formData, body)
-  let scheme = call_589081.pickScheme
+  let valid = call_578981.validator(path, query, header, formData, body)
+  let scheme = call_578981.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589081.url(scheme.get, call_589081.host, call_589081.base,
-                         call_589081.route, valid.getOrDefault("path"),
+  let url = call_578981.url(scheme.get, call_578981.host, call_578981.base,
+                         call_578981.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589081, url, valid)
+  result = hook(call_578981, url, valid)
 
-proc call*(call_589082: Call_SiteVerificationWebResourcePatch_589069; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = false): Recallable =
+proc call*(call_578982: Call_SiteVerificationWebResourcePatch_578969; id: string;
+          key: string = ""; prettyPrint: bool = false; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## siteVerificationWebResourcePatch
   ## Modify the list of owners for your website or domain. This method supports patch semantics.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The id of a verified site or domain.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589083 = newJObject()
-  var query_589084 = newJObject()
-  var body_589085 = newJObject()
-  add(query_589084, "fields", newJString(fields))
-  add(query_589084, "quotaUser", newJString(quotaUser))
-  add(query_589084, "alt", newJString(alt))
-  add(query_589084, "oauth_token", newJString(oauthToken))
-  add(query_589084, "userIp", newJString(userIp))
-  add(path_589083, "id", newJString(id))
-  add(query_589084, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The id of a verified site or domain.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578983 = newJObject()
+  var query_578984 = newJObject()
+  var body_578985 = newJObject()
+  add(query_578984, "key", newJString(key))
+  add(query_578984, "prettyPrint", newJBool(prettyPrint))
+  add(query_578984, "oauth_token", newJString(oauthToken))
+  add(path_578983, "id", newJString(id))
+  add(query_578984, "alt", newJString(alt))
+  add(query_578984, "userIp", newJString(userIp))
+  add(query_578984, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589085 = body
-  add(query_589084, "prettyPrint", newJBool(prettyPrint))
-  result = call_589082.call(path_589083, query_589084, nil, nil, body_589085)
+    body_578985 = body
+  add(query_578984, "fields", newJString(fields))
+  result = call_578982.call(path_578983, query_578984, nil, nil, body_578985)
 
-var siteVerificationWebResourcePatch* = Call_SiteVerificationWebResourcePatch_589069(
+var siteVerificationWebResourcePatch* = Call_SiteVerificationWebResourcePatch_578969(
     name: "siteVerificationWebResourcePatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/webResource/{id}",
-    validator: validate_SiteVerificationWebResourcePatch_589070,
-    base: "/siteVerification/v1", url: url_SiteVerificationWebResourcePatch_589071,
+    validator: validate_SiteVerificationWebResourcePatch_578970,
+    base: "/siteVerification/v1", url: url_SiteVerificationWebResourcePatch_578971,
     schemes: {Scheme.Https})
 type
-  Call_SiteVerificationWebResourceDelete_589054 = ref object of OpenApiRestCall_588441
-proc url_SiteVerificationWebResourceDelete_589056(protocol: Scheme; host: string;
+  Call_SiteVerificationWebResourceDelete_578954 = ref object of OpenApiRestCall_578339
+proc url_SiteVerificationWebResourceDelete_578956(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -981,7 +985,7 @@ proc url_SiteVerificationWebResourceDelete_589056(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_SiteVerificationWebResourceDelete_589055(path: JsonNode;
+proc validate_SiteVerificationWebResourceDelete_578955(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Relinquish ownership of a website or domain.
   ## 
@@ -992,63 +996,63 @@ proc validate_SiteVerificationWebResourceDelete_589055(path: JsonNode;
   ##     : The id of a verified site or domain.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `id` field"
-  var valid_589057 = path.getOrDefault("id")
-  valid_589057 = validateParameter(valid_589057, JString, required = true,
+  var valid_578957 = path.getOrDefault("id")
+  valid_578957 = validateParameter(valid_578957, JString, required = true,
                                  default = nil)
-  if valid_589057 != nil:
-    section.add "id", valid_589057
+  if valid_578957 != nil:
+    section.add "id", valid_578957
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589058 = query.getOrDefault("fields")
-  valid_589058 = validateParameter(valid_589058, JString, required = false,
+  var valid_578958 = query.getOrDefault("key")
+  valid_578958 = validateParameter(valid_578958, JString, required = false,
                                  default = nil)
-  if valid_589058 != nil:
-    section.add "fields", valid_589058
-  var valid_589059 = query.getOrDefault("quotaUser")
-  valid_589059 = validateParameter(valid_589059, JString, required = false,
-                                 default = nil)
-  if valid_589059 != nil:
-    section.add "quotaUser", valid_589059
-  var valid_589060 = query.getOrDefault("alt")
-  valid_589060 = validateParameter(valid_589060, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589060 != nil:
-    section.add "alt", valid_589060
-  var valid_589061 = query.getOrDefault("oauth_token")
-  valid_589061 = validateParameter(valid_589061, JString, required = false,
-                                 default = nil)
-  if valid_589061 != nil:
-    section.add "oauth_token", valid_589061
-  var valid_589062 = query.getOrDefault("userIp")
-  valid_589062 = validateParameter(valid_589062, JString, required = false,
-                                 default = nil)
-  if valid_589062 != nil:
-    section.add "userIp", valid_589062
-  var valid_589063 = query.getOrDefault("key")
-  valid_589063 = validateParameter(valid_589063, JString, required = false,
-                                 default = nil)
-  if valid_589063 != nil:
-    section.add "key", valid_589063
-  var valid_589064 = query.getOrDefault("prettyPrint")
-  valid_589064 = validateParameter(valid_589064, JBool, required = false,
+  if valid_578958 != nil:
+    section.add "key", valid_578958
+  var valid_578959 = query.getOrDefault("prettyPrint")
+  valid_578959 = validateParameter(valid_578959, JBool, required = false,
                                  default = newJBool(false))
-  if valid_589064 != nil:
-    section.add "prettyPrint", valid_589064
+  if valid_578959 != nil:
+    section.add "prettyPrint", valid_578959
+  var valid_578960 = query.getOrDefault("oauth_token")
+  valid_578960 = validateParameter(valid_578960, JString, required = false,
+                                 default = nil)
+  if valid_578960 != nil:
+    section.add "oauth_token", valid_578960
+  var valid_578961 = query.getOrDefault("alt")
+  valid_578961 = validateParameter(valid_578961, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578961 != nil:
+    section.add "alt", valid_578961
+  var valid_578962 = query.getOrDefault("userIp")
+  valid_578962 = validateParameter(valid_578962, JString, required = false,
+                                 default = nil)
+  if valid_578962 != nil:
+    section.add "userIp", valid_578962
+  var valid_578963 = query.getOrDefault("quotaUser")
+  valid_578963 = validateParameter(valid_578963, JString, required = false,
+                                 default = nil)
+  if valid_578963 != nil:
+    section.add "quotaUser", valid_578963
+  var valid_578964 = query.getOrDefault("fields")
+  valid_578964 = validateParameter(valid_578964, JString, required = false,
+                                 default = nil)
+  if valid_578964 != nil:
+    section.add "fields", valid_578964
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1057,59 +1061,59 @@ proc validate_SiteVerificationWebResourceDelete_589055(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589065: Call_SiteVerificationWebResourceDelete_589054;
+proc call*(call_578965: Call_SiteVerificationWebResourceDelete_578954;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Relinquish ownership of a website or domain.
   ## 
-  let valid = call_589065.validator(path, query, header, formData, body)
-  let scheme = call_589065.pickScheme
+  let valid = call_578965.validator(path, query, header, formData, body)
+  let scheme = call_578965.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589065.url(scheme.get, call_589065.host, call_589065.base,
-                         call_589065.route, valid.getOrDefault("path"),
+  let url = call_578965.url(scheme.get, call_578965.host, call_578965.base,
+                         call_578965.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589065, url, valid)
+  result = hook(call_578965, url, valid)
 
-proc call*(call_589066: Call_SiteVerificationWebResourceDelete_589054; id: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = false): Recallable =
+proc call*(call_578966: Call_SiteVerificationWebResourceDelete_578954; id: string;
+          key: string = ""; prettyPrint: bool = false; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## siteVerificationWebResourceDelete
   ## Relinquish ownership of a website or domain.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   id: string (required)
-  ##     : The id of a verified site or domain.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589067 = newJObject()
-  var query_589068 = newJObject()
-  add(query_589068, "fields", newJString(fields))
-  add(query_589068, "quotaUser", newJString(quotaUser))
-  add(query_589068, "alt", newJString(alt))
-  add(query_589068, "oauth_token", newJString(oauthToken))
-  add(query_589068, "userIp", newJString(userIp))
-  add(path_589067, "id", newJString(id))
-  add(query_589068, "key", newJString(key))
-  add(query_589068, "prettyPrint", newJBool(prettyPrint))
-  result = call_589066.call(path_589067, query_589068, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   id: string (required)
+  ##     : The id of a verified site or domain.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578967 = newJObject()
+  var query_578968 = newJObject()
+  add(query_578968, "key", newJString(key))
+  add(query_578968, "prettyPrint", newJBool(prettyPrint))
+  add(query_578968, "oauth_token", newJString(oauthToken))
+  add(path_578967, "id", newJString(id))
+  add(query_578968, "alt", newJString(alt))
+  add(query_578968, "userIp", newJString(userIp))
+  add(query_578968, "quotaUser", newJString(quotaUser))
+  add(query_578968, "fields", newJString(fields))
+  result = call_578966.call(path_578967, query_578968, nil, nil, nil)
 
-var siteVerificationWebResourceDelete* = Call_SiteVerificationWebResourceDelete_589054(
+var siteVerificationWebResourceDelete* = Call_SiteVerificationWebResourceDelete_578954(
     name: "siteVerificationWebResourceDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/webResource/{id}",
-    validator: validate_SiteVerificationWebResourceDelete_589055,
-    base: "/siteVerification/v1", url: url_SiteVerificationWebResourceDelete_589056,
+    validator: validate_SiteVerificationWebResourceDelete_578955,
+    base: "/siteVerification/v1", url: url_SiteVerificationWebResourceDelete_578956,
     schemes: {Scheme.Https})
 export
   rest

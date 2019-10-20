@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588441 = ref object of OpenApiRestCall
+  OpenApiRestCall_578339 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,8 +112,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_TasksTasksClear_588709 = ref object of OpenApiRestCall_588441
-proc url_TasksTasksClear_588711(protocol: Scheme; host: string; base: string;
+  Call_TasksTasksClear_578609 = ref object of OpenApiRestCall_578339
+proc url_TasksTasksClear_578611(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -125,7 +129,7 @@ proc url_TasksTasksClear_588711(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TasksTasksClear_588710(path: JsonNode; query: JsonNode;
+proc validate_TasksTasksClear_578610(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Clears all completed tasks from the specified task list. The affected tasks will be marked as 'hidden' and no longer be returned by default when retrieving all tasks for a task list.
@@ -137,63 +141,63 @@ proc validate_TasksTasksClear_588710(path: JsonNode; query: JsonNode;
   ##           : Task list identifier.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tasklist` field"
-  var valid_588837 = path.getOrDefault("tasklist")
-  valid_588837 = validateParameter(valid_588837, JString, required = true,
+  var valid_578737 = path.getOrDefault("tasklist")
+  valid_578737 = validateParameter(valid_578737, JString, required = true,
                                  default = nil)
-  if valid_588837 != nil:
-    section.add "tasklist", valid_588837
+  if valid_578737 != nil:
+    section.add "tasklist", valid_578737
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588838 = query.getOrDefault("fields")
-  valid_588838 = validateParameter(valid_588838, JString, required = false,
+  var valid_578738 = query.getOrDefault("key")
+  valid_578738 = validateParameter(valid_578738, JString, required = false,
                                  default = nil)
-  if valid_588838 != nil:
-    section.add "fields", valid_588838
-  var valid_588839 = query.getOrDefault("quotaUser")
-  valid_588839 = validateParameter(valid_588839, JString, required = false,
-                                 default = nil)
-  if valid_588839 != nil:
-    section.add "quotaUser", valid_588839
-  var valid_588853 = query.getOrDefault("alt")
-  valid_588853 = validateParameter(valid_588853, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588853 != nil:
-    section.add "alt", valid_588853
-  var valid_588854 = query.getOrDefault("oauth_token")
-  valid_588854 = validateParameter(valid_588854, JString, required = false,
-                                 default = nil)
-  if valid_588854 != nil:
-    section.add "oauth_token", valid_588854
-  var valid_588855 = query.getOrDefault("userIp")
-  valid_588855 = validateParameter(valid_588855, JString, required = false,
-                                 default = nil)
-  if valid_588855 != nil:
-    section.add "userIp", valid_588855
-  var valid_588856 = query.getOrDefault("key")
-  valid_588856 = validateParameter(valid_588856, JString, required = false,
-                                 default = nil)
-  if valid_588856 != nil:
-    section.add "key", valid_588856
-  var valid_588857 = query.getOrDefault("prettyPrint")
-  valid_588857 = validateParameter(valid_588857, JBool, required = false,
+  if valid_578738 != nil:
+    section.add "key", valid_578738
+  var valid_578752 = query.getOrDefault("prettyPrint")
+  valid_578752 = validateParameter(valid_578752, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588857 != nil:
-    section.add "prettyPrint", valid_588857
+  if valid_578752 != nil:
+    section.add "prettyPrint", valid_578752
+  var valid_578753 = query.getOrDefault("oauth_token")
+  valid_578753 = validateParameter(valid_578753, JString, required = false,
+                                 default = nil)
+  if valid_578753 != nil:
+    section.add "oauth_token", valid_578753
+  var valid_578754 = query.getOrDefault("alt")
+  valid_578754 = validateParameter(valid_578754, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578754 != nil:
+    section.add "alt", valid_578754
+  var valid_578755 = query.getOrDefault("userIp")
+  valid_578755 = validateParameter(valid_578755, JString, required = false,
+                                 default = nil)
+  if valid_578755 != nil:
+    section.add "userIp", valid_578755
+  var valid_578756 = query.getOrDefault("quotaUser")
+  valid_578756 = validateParameter(valid_578756, JString, required = false,
+                                 default = nil)
+  if valid_578756 != nil:
+    section.add "quotaUser", valid_578756
+  var valid_578757 = query.getOrDefault("fields")
+  valid_578757 = validateParameter(valid_578757, JString, required = false,
+                                 default = nil)
+  if valid_578757 != nil:
+    section.add "fields", valid_578757
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -202,60 +206,60 @@ proc validate_TasksTasksClear_588710(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588880: Call_TasksTasksClear_588709; path: JsonNode; query: JsonNode;
+proc call*(call_578780: Call_TasksTasksClear_578609; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Clears all completed tasks from the specified task list. The affected tasks will be marked as 'hidden' and no longer be returned by default when retrieving all tasks for a task list.
   ## 
-  let valid = call_588880.validator(path, query, header, formData, body)
-  let scheme = call_588880.pickScheme
+  let valid = call_578780.validator(path, query, header, formData, body)
+  let scheme = call_578780.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588880.url(scheme.get, call_588880.host, call_588880.base,
-                         call_588880.route, valid.getOrDefault("path"),
+  let url = call_578780.url(scheme.get, call_578780.host, call_578780.base,
+                         call_578780.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588880, url, valid)
+  result = hook(call_578780, url, valid)
 
-proc call*(call_588951: Call_TasksTasksClear_588709; tasklist: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578851: Call_TasksTasksClear_578609; tasklist: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## tasksTasksClear
   ## Clears all completed tasks from the specified task list. The affected tasks will be marked as 'hidden' and no longer be returned by default when retrieving all tasks for a task list.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   tasklist: string (required)
-  ##           : Task list identifier.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_588952 = newJObject()
-  var query_588954 = newJObject()
-  add(query_588954, "fields", newJString(fields))
-  add(query_588954, "quotaUser", newJString(quotaUser))
-  add(query_588954, "alt", newJString(alt))
-  add(path_588952, "tasklist", newJString(tasklist))
-  add(query_588954, "oauth_token", newJString(oauthToken))
-  add(query_588954, "userIp", newJString(userIp))
-  add(query_588954, "key", newJString(key))
-  add(query_588954, "prettyPrint", newJBool(prettyPrint))
-  result = call_588951.call(path_588952, query_588954, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   tasklist: string (required)
+  ##           : Task list identifier.
+  var path_578852 = newJObject()
+  var query_578854 = newJObject()
+  add(query_578854, "key", newJString(key))
+  add(query_578854, "prettyPrint", newJBool(prettyPrint))
+  add(query_578854, "oauth_token", newJString(oauthToken))
+  add(query_578854, "alt", newJString(alt))
+  add(query_578854, "userIp", newJString(userIp))
+  add(query_578854, "quotaUser", newJString(quotaUser))
+  add(query_578854, "fields", newJString(fields))
+  add(path_578852, "tasklist", newJString(tasklist))
+  result = call_578851.call(path_578852, query_578854, nil, nil, nil)
 
-var tasksTasksClear* = Call_TasksTasksClear_588709(name: "tasksTasksClear",
+var tasksTasksClear* = Call_TasksTasksClear_578609(name: "tasksTasksClear",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/lists/{tasklist}/clear", validator: validate_TasksTasksClear_588710,
-    base: "/tasks/v1", url: url_TasksTasksClear_588711, schemes: {Scheme.Https})
+    route: "/lists/{tasklist}/clear", validator: validate_TasksTasksClear_578610,
+    base: "/tasks/v1", url: url_TasksTasksClear_578611, schemes: {Scheme.Https})
 type
-  Call_TasksTasksInsert_589018 = ref object of OpenApiRestCall_588441
-proc url_TasksTasksInsert_589020(protocol: Scheme; host: string; base: string;
+  Call_TasksTasksInsert_578918 = ref object of OpenApiRestCall_578339
+proc url_TasksTasksInsert_578920(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -271,7 +275,7 @@ proc url_TasksTasksInsert_589020(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TasksTasksInsert_589019(path: JsonNode; query: JsonNode;
+proc validate_TasksTasksInsert_578919(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Creates a new task on the specified task list.
@@ -283,77 +287,77 @@ proc validate_TasksTasksInsert_589019(path: JsonNode; query: JsonNode;
   ##           : Task list identifier.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tasklist` field"
-  var valid_589021 = path.getOrDefault("tasklist")
-  valid_589021 = validateParameter(valid_589021, JString, required = true,
+  var valid_578921 = path.getOrDefault("tasklist")
+  valid_578921 = validateParameter(valid_578921, JString, required = true,
                                  default = nil)
-  if valid_589021 != nil:
-    section.add "tasklist", valid_589021
+  if valid_578921 != nil:
+    section.add "tasklist", valid_578921
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   parent: JString
-  ##         : Parent task identifier. If the task is created at the top level, this parameter is omitted. Optional.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   parent: JString
+  ##         : Parent task identifier. If the task is created at the top level, this parameter is omitted. Optional.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   previous: JString
   ##           : Previous sibling task identifier. If the task is created at the first position among its siblings, this parameter is omitted. Optional.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589022 = query.getOrDefault("fields")
-  valid_589022 = validateParameter(valid_589022, JString, required = false,
+  var valid_578922 = query.getOrDefault("key")
+  valid_578922 = validateParameter(valid_578922, JString, required = false,
                                  default = nil)
-  if valid_589022 != nil:
-    section.add "fields", valid_589022
-  var valid_589023 = query.getOrDefault("quotaUser")
-  valid_589023 = validateParameter(valid_589023, JString, required = false,
-                                 default = nil)
-  if valid_589023 != nil:
-    section.add "quotaUser", valid_589023
-  var valid_589024 = query.getOrDefault("alt")
-  valid_589024 = validateParameter(valid_589024, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589024 != nil:
-    section.add "alt", valid_589024
-  var valid_589025 = query.getOrDefault("oauth_token")
-  valid_589025 = validateParameter(valid_589025, JString, required = false,
-                                 default = nil)
-  if valid_589025 != nil:
-    section.add "oauth_token", valid_589025
-  var valid_589026 = query.getOrDefault("userIp")
-  valid_589026 = validateParameter(valid_589026, JString, required = false,
-                                 default = nil)
-  if valid_589026 != nil:
-    section.add "userIp", valid_589026
-  var valid_589027 = query.getOrDefault("parent")
-  valid_589027 = validateParameter(valid_589027, JString, required = false,
-                                 default = nil)
-  if valid_589027 != nil:
-    section.add "parent", valid_589027
-  var valid_589028 = query.getOrDefault("key")
-  valid_589028 = validateParameter(valid_589028, JString, required = false,
-                                 default = nil)
-  if valid_589028 != nil:
-    section.add "key", valid_589028
-  var valid_589029 = query.getOrDefault("prettyPrint")
-  valid_589029 = validateParameter(valid_589029, JBool, required = false,
+  if valid_578922 != nil:
+    section.add "key", valid_578922
+  var valid_578923 = query.getOrDefault("prettyPrint")
+  valid_578923 = validateParameter(valid_578923, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589029 != nil:
-    section.add "prettyPrint", valid_589029
-  var valid_589030 = query.getOrDefault("previous")
-  valid_589030 = validateParameter(valid_589030, JString, required = false,
+  if valid_578923 != nil:
+    section.add "prettyPrint", valid_578923
+  var valid_578924 = query.getOrDefault("oauth_token")
+  valid_578924 = validateParameter(valid_578924, JString, required = false,
                                  default = nil)
-  if valid_589030 != nil:
-    section.add "previous", valid_589030
+  if valid_578924 != nil:
+    section.add "oauth_token", valid_578924
+  var valid_578925 = query.getOrDefault("alt")
+  valid_578925 = validateParameter(valid_578925, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578925 != nil:
+    section.add "alt", valid_578925
+  var valid_578926 = query.getOrDefault("userIp")
+  valid_578926 = validateParameter(valid_578926, JString, required = false,
+                                 default = nil)
+  if valid_578926 != nil:
+    section.add "userIp", valid_578926
+  var valid_578927 = query.getOrDefault("parent")
+  valid_578927 = validateParameter(valid_578927, JString, required = false,
+                                 default = nil)
+  if valid_578927 != nil:
+    section.add "parent", valid_578927
+  var valid_578928 = query.getOrDefault("quotaUser")
+  valid_578928 = validateParameter(valid_578928, JString, required = false,
+                                 default = nil)
+  if valid_578928 != nil:
+    section.add "quotaUser", valid_578928
+  var valid_578929 = query.getOrDefault("previous")
+  valid_578929 = validateParameter(valid_578929, JString, required = false,
+                                 default = nil)
+  if valid_578929 != nil:
+    section.add "previous", valid_578929
+  var valid_578930 = query.getOrDefault("fields")
+  valid_578930 = validateParameter(valid_578930, JString, required = false,
+                                 default = nil)
+  if valid_578930 != nil:
+    section.add "fields", valid_578930
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -365,71 +369,71 @@ proc validate_TasksTasksInsert_589019(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589032: Call_TasksTasksInsert_589018; path: JsonNode;
+proc call*(call_578932: Call_TasksTasksInsert_578918; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new task on the specified task list.
   ## 
-  let valid = call_589032.validator(path, query, header, formData, body)
-  let scheme = call_589032.pickScheme
+  let valid = call_578932.validator(path, query, header, formData, body)
+  let scheme = call_578932.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589032.url(scheme.get, call_589032.host, call_589032.base,
-                         call_589032.route, valid.getOrDefault("path"),
+  let url = call_578932.url(scheme.get, call_578932.host, call_578932.base,
+                         call_578932.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589032, url, valid)
+  result = hook(call_578932, url, valid)
 
-proc call*(call_589033: Call_TasksTasksInsert_589018; tasklist: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; parent: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true;
-          previous: string = ""): Recallable =
+proc call*(call_578933: Call_TasksTasksInsert_578918; tasklist: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; parent: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; previous: string = "";
+          fields: string = ""): Recallable =
   ## tasksTasksInsert
   ## Creates a new task on the specified task list.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   tasklist: string (required)
-  ##           : Task list identifier.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
   ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
   ##   userIp: string
   ##         : Deprecated. Please use quotaUser instead.
   ##   parent: string
   ##         : Parent task identifier. If the task is created at the top level, this parameter is omitted. Optional.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
   ##   previous: string
   ##           : Previous sibling task identifier. If the task is created at the first position among its siblings, this parameter is omitted. Optional.
-  var path_589034 = newJObject()
-  var query_589035 = newJObject()
-  var body_589036 = newJObject()
-  add(query_589035, "fields", newJString(fields))
-  add(query_589035, "quotaUser", newJString(quotaUser))
-  add(query_589035, "alt", newJString(alt))
-  add(path_589034, "tasklist", newJString(tasklist))
-  add(query_589035, "oauth_token", newJString(oauthToken))
-  add(query_589035, "userIp", newJString(userIp))
-  add(query_589035, "parent", newJString(parent))
-  add(query_589035, "key", newJString(key))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   tasklist: string (required)
+  ##           : Task list identifier.
+  var path_578934 = newJObject()
+  var query_578935 = newJObject()
+  var body_578936 = newJObject()
+  add(query_578935, "key", newJString(key))
+  add(query_578935, "prettyPrint", newJBool(prettyPrint))
+  add(query_578935, "oauth_token", newJString(oauthToken))
+  add(query_578935, "alt", newJString(alt))
+  add(query_578935, "userIp", newJString(userIp))
+  add(query_578935, "parent", newJString(parent))
+  add(query_578935, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589036 = body
-  add(query_589035, "prettyPrint", newJBool(prettyPrint))
-  add(query_589035, "previous", newJString(previous))
-  result = call_589033.call(path_589034, query_589035, nil, nil, body_589036)
+    body_578936 = body
+  add(query_578935, "previous", newJString(previous))
+  add(query_578935, "fields", newJString(fields))
+  add(path_578934, "tasklist", newJString(tasklist))
+  result = call_578933.call(path_578934, query_578935, nil, nil, body_578936)
 
-var tasksTasksInsert* = Call_TasksTasksInsert_589018(name: "tasksTasksInsert",
+var tasksTasksInsert* = Call_TasksTasksInsert_578918(name: "tasksTasksInsert",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/lists/{tasklist}/tasks", validator: validate_TasksTasksInsert_589019,
-    base: "/tasks/v1", url: url_TasksTasksInsert_589020, schemes: {Scheme.Https})
+    route: "/lists/{tasklist}/tasks", validator: validate_TasksTasksInsert_578919,
+    base: "/tasks/v1", url: url_TasksTasksInsert_578920, schemes: {Scheme.Https})
 type
-  Call_TasksTasksList_588993 = ref object of OpenApiRestCall_588441
-proc url_TasksTasksList_588995(protocol: Scheme; host: string; base: string;
+  Call_TasksTasksList_578893 = ref object of OpenApiRestCall_578339
+proc url_TasksTasksList_578895(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -445,7 +449,7 @@ proc url_TasksTasksList_588995(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TasksTasksList_588994(path: JsonNode; query: JsonNode;
+proc validate_TasksTasksList_578894(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Returns all tasks in the specified task list.
@@ -457,130 +461,130 @@ proc validate_TasksTasksList_588994(path: JsonNode; query: JsonNode;
   ##           : Task list identifier.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tasklist` field"
-  var valid_588996 = path.getOrDefault("tasklist")
-  valid_588996 = validateParameter(valid_588996, JString, required = true,
+  var valid_578896 = path.getOrDefault("tasklist")
+  valid_578896 = validateParameter(valid_578896, JString, required = true,
                                  default = nil)
-  if valid_588996 != nil:
-    section.add "tasklist", valid_588996
+  if valid_578896 != nil:
+    section.add "tasklist", valid_578896
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Token specifying the result page to return. Optional.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   dueMax: JString
-  ##         : Upper bound for a task's due date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by due date.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   completedMax: JString
-  ##               : Upper bound for a task's completion date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by completion date.
-  ##   completedMin: JString
-  ##               : Lower bound for a task's completion date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by completion date.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JString
-  ##             : Maximum number of task lists returned on one page. Optional. The default is 20 (max allowed: 100).
-  ##   showHidden: JBool
-  ##             : Flag indicating whether hidden tasks are returned in the result. Optional. The default is False.
-  ##   showDeleted: JBool
-  ##              : Flag indicating whether deleted tasks are returned in the result. Optional. The default is False.
-  ##   updatedMin: JString
-  ##             : Lower bound for a task's last modification time (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by last modification time.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   dueMin: JString
-  ##         : Lower bound for a task's due date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by due date.
-  ##   showCompleted: JBool
-  ##                : Flag indicating whether completed tasks are returned in the result. Optional. The default is True.
+  ##   completedMin: JString
+  ##               : Lower bound for a task's completion date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by completion date.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   completedMax: JString
+  ##               : Upper bound for a task's completion date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by completion date.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   showCompleted: JBool
+  ##                : Flag indicating whether completed tasks are returned in the result. Optional. The default is True.
+  ##   pageToken: JString
+  ##            : Token specifying the result page to return. Optional.
+  ##   showHidden: JBool
+  ##             : Flag indicating whether hidden tasks are returned in the result. Optional. The default is False.
+  ##   dueMax: JString
+  ##         : Upper bound for a task's due date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by due date.
+  ##   updatedMin: JString
+  ##             : Lower bound for a task's last modification time (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by last modification time.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   dueMin: JString
+  ##         : Lower bound for a task's due date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by due date.
+  ##   showDeleted: JBool
+  ##              : Flag indicating whether deleted tasks are returned in the result. Optional. The default is False.
+  ##   maxResults: JString
+  ##             : Maximum number of task lists returned on one page. Optional. The default is 20 (max allowed: 100).
   section = newJObject()
-  var valid_588997 = query.getOrDefault("fields")
-  valid_588997 = validateParameter(valid_588997, JString, required = false,
+  var valid_578897 = query.getOrDefault("key")
+  valid_578897 = validateParameter(valid_578897, JString, required = false,
                                  default = nil)
-  if valid_588997 != nil:
-    section.add "fields", valid_588997
-  var valid_588998 = query.getOrDefault("pageToken")
-  valid_588998 = validateParameter(valid_588998, JString, required = false,
+  if valid_578897 != nil:
+    section.add "key", valid_578897
+  var valid_578898 = query.getOrDefault("completedMin")
+  valid_578898 = validateParameter(valid_578898, JString, required = false,
                                  default = nil)
-  if valid_588998 != nil:
-    section.add "pageToken", valid_588998
-  var valid_588999 = query.getOrDefault("quotaUser")
-  valid_588999 = validateParameter(valid_588999, JString, required = false,
-                                 default = nil)
-  if valid_588999 != nil:
-    section.add "quotaUser", valid_588999
-  var valid_589000 = query.getOrDefault("dueMax")
-  valid_589000 = validateParameter(valid_589000, JString, required = false,
-                                 default = nil)
-  if valid_589000 != nil:
-    section.add "dueMax", valid_589000
-  var valid_589001 = query.getOrDefault("alt")
-  valid_589001 = validateParameter(valid_589001, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589001 != nil:
-    section.add "alt", valid_589001
-  var valid_589002 = query.getOrDefault("completedMax")
-  valid_589002 = validateParameter(valid_589002, JString, required = false,
-                                 default = nil)
-  if valid_589002 != nil:
-    section.add "completedMax", valid_589002
-  var valid_589003 = query.getOrDefault("completedMin")
-  valid_589003 = validateParameter(valid_589003, JString, required = false,
-                                 default = nil)
-  if valid_589003 != nil:
-    section.add "completedMin", valid_589003
-  var valid_589004 = query.getOrDefault("oauth_token")
-  valid_589004 = validateParameter(valid_589004, JString, required = false,
-                                 default = nil)
-  if valid_589004 != nil:
-    section.add "oauth_token", valid_589004
-  var valid_589005 = query.getOrDefault("userIp")
-  valid_589005 = validateParameter(valid_589005, JString, required = false,
-                                 default = nil)
-  if valid_589005 != nil:
-    section.add "userIp", valid_589005
-  var valid_589006 = query.getOrDefault("maxResults")
-  valid_589006 = validateParameter(valid_589006, JString, required = false,
-                                 default = nil)
-  if valid_589006 != nil:
-    section.add "maxResults", valid_589006
-  var valid_589007 = query.getOrDefault("showHidden")
-  valid_589007 = validateParameter(valid_589007, JBool, required = false, default = nil)
-  if valid_589007 != nil:
-    section.add "showHidden", valid_589007
-  var valid_589008 = query.getOrDefault("showDeleted")
-  valid_589008 = validateParameter(valid_589008, JBool, required = false, default = nil)
-  if valid_589008 != nil:
-    section.add "showDeleted", valid_589008
-  var valid_589009 = query.getOrDefault("updatedMin")
-  valid_589009 = validateParameter(valid_589009, JString, required = false,
-                                 default = nil)
-  if valid_589009 != nil:
-    section.add "updatedMin", valid_589009
-  var valid_589010 = query.getOrDefault("key")
-  valid_589010 = validateParameter(valid_589010, JString, required = false,
-                                 default = nil)
-  if valid_589010 != nil:
-    section.add "key", valid_589010
-  var valid_589011 = query.getOrDefault("dueMin")
-  valid_589011 = validateParameter(valid_589011, JString, required = false,
-                                 default = nil)
-  if valid_589011 != nil:
-    section.add "dueMin", valid_589011
-  var valid_589012 = query.getOrDefault("showCompleted")
-  valid_589012 = validateParameter(valid_589012, JBool, required = false, default = nil)
-  if valid_589012 != nil:
-    section.add "showCompleted", valid_589012
-  var valid_589013 = query.getOrDefault("prettyPrint")
-  valid_589013 = validateParameter(valid_589013, JBool, required = false,
+  if valid_578898 != nil:
+    section.add "completedMin", valid_578898
+  var valid_578899 = query.getOrDefault("prettyPrint")
+  valid_578899 = validateParameter(valid_578899, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589013 != nil:
-    section.add "prettyPrint", valid_589013
+  if valid_578899 != nil:
+    section.add "prettyPrint", valid_578899
+  var valid_578900 = query.getOrDefault("oauth_token")
+  valid_578900 = validateParameter(valid_578900, JString, required = false,
+                                 default = nil)
+  if valid_578900 != nil:
+    section.add "oauth_token", valid_578900
+  var valid_578901 = query.getOrDefault("completedMax")
+  valid_578901 = validateParameter(valid_578901, JString, required = false,
+                                 default = nil)
+  if valid_578901 != nil:
+    section.add "completedMax", valid_578901
+  var valid_578902 = query.getOrDefault("alt")
+  valid_578902 = validateParameter(valid_578902, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578902 != nil:
+    section.add "alt", valid_578902
+  var valid_578903 = query.getOrDefault("userIp")
+  valid_578903 = validateParameter(valid_578903, JString, required = false,
+                                 default = nil)
+  if valid_578903 != nil:
+    section.add "userIp", valid_578903
+  var valid_578904 = query.getOrDefault("quotaUser")
+  valid_578904 = validateParameter(valid_578904, JString, required = false,
+                                 default = nil)
+  if valid_578904 != nil:
+    section.add "quotaUser", valid_578904
+  var valid_578905 = query.getOrDefault("showCompleted")
+  valid_578905 = validateParameter(valid_578905, JBool, required = false, default = nil)
+  if valid_578905 != nil:
+    section.add "showCompleted", valid_578905
+  var valid_578906 = query.getOrDefault("pageToken")
+  valid_578906 = validateParameter(valid_578906, JString, required = false,
+                                 default = nil)
+  if valid_578906 != nil:
+    section.add "pageToken", valid_578906
+  var valid_578907 = query.getOrDefault("showHidden")
+  valid_578907 = validateParameter(valid_578907, JBool, required = false, default = nil)
+  if valid_578907 != nil:
+    section.add "showHidden", valid_578907
+  var valid_578908 = query.getOrDefault("dueMax")
+  valid_578908 = validateParameter(valid_578908, JString, required = false,
+                                 default = nil)
+  if valid_578908 != nil:
+    section.add "dueMax", valid_578908
+  var valid_578909 = query.getOrDefault("updatedMin")
+  valid_578909 = validateParameter(valid_578909, JString, required = false,
+                                 default = nil)
+  if valid_578909 != nil:
+    section.add "updatedMin", valid_578909
+  var valid_578910 = query.getOrDefault("fields")
+  valid_578910 = validateParameter(valid_578910, JString, required = false,
+                                 default = nil)
+  if valid_578910 != nil:
+    section.add "fields", valid_578910
+  var valid_578911 = query.getOrDefault("dueMin")
+  valid_578911 = validateParameter(valid_578911, JString, required = false,
+                                 default = nil)
+  if valid_578911 != nil:
+    section.add "dueMin", valid_578911
+  var valid_578912 = query.getOrDefault("showDeleted")
+  valid_578912 = validateParameter(valid_578912, JBool, required = false, default = nil)
+  if valid_578912 != nil:
+    section.add "showDeleted", valid_578912
+  var valid_578913 = query.getOrDefault("maxResults")
+  valid_578913 = validateParameter(valid_578913, JString, required = false,
+                                 default = nil)
+  if valid_578913 != nil:
+    section.add "maxResults", valid_578913
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -589,93 +593,93 @@ proc validate_TasksTasksList_588994(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589014: Call_TasksTasksList_588993; path: JsonNode; query: JsonNode;
+proc call*(call_578914: Call_TasksTasksList_578893; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns all tasks in the specified task list.
   ## 
-  let valid = call_589014.validator(path, query, header, formData, body)
-  let scheme = call_589014.pickScheme
+  let valid = call_578914.validator(path, query, header, formData, body)
+  let scheme = call_578914.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589014.url(scheme.get, call_589014.host, call_589014.base,
-                         call_589014.route, valid.getOrDefault("path"),
+  let url = call_578914.url(scheme.get, call_578914.host, call_578914.base,
+                         call_578914.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589014, url, valid)
+  result = hook(call_578914, url, valid)
 
-proc call*(call_589015: Call_TasksTasksList_588993; tasklist: string;
-          fields: string = ""; pageToken: string = ""; quotaUser: string = "";
-          dueMax: string = ""; alt: string = "json"; completedMax: string = "";
-          completedMin: string = ""; oauthToken: string = ""; userIp: string = "";
-          maxResults: string = ""; showHidden: bool = false; showDeleted: bool = false;
-          updatedMin: string = ""; key: string = ""; dueMin: string = "";
-          showCompleted: bool = false; prettyPrint: bool = true): Recallable =
+proc call*(call_578915: Call_TasksTasksList_578893; tasklist: string;
+          key: string = ""; completedMin: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; completedMax: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; showCompleted: bool = false;
+          pageToken: string = ""; showHidden: bool = false; dueMax: string = "";
+          updatedMin: string = ""; fields: string = ""; dueMin: string = "";
+          showDeleted: bool = false; maxResults: string = ""): Recallable =
   ## tasksTasksList
   ## Returns all tasks in the specified task list.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Token specifying the result page to return. Optional.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   dueMax: string
-  ##         : Upper bound for a task's due date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by due date.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   tasklist: string (required)
-  ##           : Task list identifier.
-  ##   completedMax: string
-  ##               : Upper bound for a task's completion date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by completion date.
-  ##   completedMin: string
-  ##               : Lower bound for a task's completion date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by completion date.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: string
-  ##             : Maximum number of task lists returned on one page. Optional. The default is 20 (max allowed: 100).
-  ##   showHidden: bool
-  ##             : Flag indicating whether hidden tasks are returned in the result. Optional. The default is False.
-  ##   showDeleted: bool
-  ##              : Flag indicating whether deleted tasks are returned in the result. Optional. The default is False.
-  ##   updatedMin: string
-  ##             : Lower bound for a task's last modification time (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by last modification time.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   dueMin: string
-  ##         : Lower bound for a task's due date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by due date.
-  ##   showCompleted: bool
-  ##                : Flag indicating whether completed tasks are returned in the result. Optional. The default is True.
+  ##   completedMin: string
+  ##               : Lower bound for a task's completion date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by completion date.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589016 = newJObject()
-  var query_589017 = newJObject()
-  add(query_589017, "fields", newJString(fields))
-  add(query_589017, "pageToken", newJString(pageToken))
-  add(query_589017, "quotaUser", newJString(quotaUser))
-  add(query_589017, "dueMax", newJString(dueMax))
-  add(query_589017, "alt", newJString(alt))
-  add(path_589016, "tasklist", newJString(tasklist))
-  add(query_589017, "completedMax", newJString(completedMax))
-  add(query_589017, "completedMin", newJString(completedMin))
-  add(query_589017, "oauth_token", newJString(oauthToken))
-  add(query_589017, "userIp", newJString(userIp))
-  add(query_589017, "maxResults", newJString(maxResults))
-  add(query_589017, "showHidden", newJBool(showHidden))
-  add(query_589017, "showDeleted", newJBool(showDeleted))
-  add(query_589017, "updatedMin", newJString(updatedMin))
-  add(query_589017, "key", newJString(key))
-  add(query_589017, "dueMin", newJString(dueMin))
-  add(query_589017, "showCompleted", newJBool(showCompleted))
-  add(query_589017, "prettyPrint", newJBool(prettyPrint))
-  result = call_589015.call(path_589016, query_589017, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   completedMax: string
+  ##               : Upper bound for a task's completion date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by completion date.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   showCompleted: bool
+  ##                : Flag indicating whether completed tasks are returned in the result. Optional. The default is True.
+  ##   pageToken: string
+  ##            : Token specifying the result page to return. Optional.
+  ##   showHidden: bool
+  ##             : Flag indicating whether hidden tasks are returned in the result. Optional. The default is False.
+  ##   dueMax: string
+  ##         : Upper bound for a task's due date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by due date.
+  ##   updatedMin: string
+  ##             : Lower bound for a task's last modification time (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by last modification time.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   dueMin: string
+  ##         : Lower bound for a task's due date (as a RFC 3339 timestamp) to filter by. Optional. The default is not to filter by due date.
+  ##   showDeleted: bool
+  ##              : Flag indicating whether deleted tasks are returned in the result. Optional. The default is False.
+  ##   tasklist: string (required)
+  ##           : Task list identifier.
+  ##   maxResults: string
+  ##             : Maximum number of task lists returned on one page. Optional. The default is 20 (max allowed: 100).
+  var path_578916 = newJObject()
+  var query_578917 = newJObject()
+  add(query_578917, "key", newJString(key))
+  add(query_578917, "completedMin", newJString(completedMin))
+  add(query_578917, "prettyPrint", newJBool(prettyPrint))
+  add(query_578917, "oauth_token", newJString(oauthToken))
+  add(query_578917, "completedMax", newJString(completedMax))
+  add(query_578917, "alt", newJString(alt))
+  add(query_578917, "userIp", newJString(userIp))
+  add(query_578917, "quotaUser", newJString(quotaUser))
+  add(query_578917, "showCompleted", newJBool(showCompleted))
+  add(query_578917, "pageToken", newJString(pageToken))
+  add(query_578917, "showHidden", newJBool(showHidden))
+  add(query_578917, "dueMax", newJString(dueMax))
+  add(query_578917, "updatedMin", newJString(updatedMin))
+  add(query_578917, "fields", newJString(fields))
+  add(query_578917, "dueMin", newJString(dueMin))
+  add(query_578917, "showDeleted", newJBool(showDeleted))
+  add(path_578916, "tasklist", newJString(tasklist))
+  add(query_578917, "maxResults", newJString(maxResults))
+  result = call_578915.call(path_578916, query_578917, nil, nil, nil)
 
-var tasksTasksList* = Call_TasksTasksList_588993(name: "tasksTasksList",
+var tasksTasksList* = Call_TasksTasksList_578893(name: "tasksTasksList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/lists/{tasklist}/tasks", validator: validate_TasksTasksList_588994,
-    base: "/tasks/v1", url: url_TasksTasksList_588995, schemes: {Scheme.Https})
+    route: "/lists/{tasklist}/tasks", validator: validate_TasksTasksList_578894,
+    base: "/tasks/v1", url: url_TasksTasksList_578895, schemes: {Scheme.Https})
 type
-  Call_TasksTasksUpdate_589053 = ref object of OpenApiRestCall_588441
-proc url_TasksTasksUpdate_589055(protocol: Scheme; host: string; base: string;
+  Call_TasksTasksUpdate_578953 = ref object of OpenApiRestCall_578339
+proc url_TasksTasksUpdate_578955(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -693,7 +697,7 @@ proc url_TasksTasksUpdate_589055(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TasksTasksUpdate_589054(path: JsonNode; query: JsonNode;
+proc validate_TasksTasksUpdate_578954(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Updates the specified task.
@@ -707,68 +711,68 @@ proc validate_TasksTasksUpdate_589054(path: JsonNode; query: JsonNode;
   ##           : Task list identifier.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `task` field"
-  var valid_589056 = path.getOrDefault("task")
-  valid_589056 = validateParameter(valid_589056, JString, required = true,
+  var valid_578956 = path.getOrDefault("task")
+  valid_578956 = validateParameter(valid_578956, JString, required = true,
                                  default = nil)
-  if valid_589056 != nil:
-    section.add "task", valid_589056
-  var valid_589057 = path.getOrDefault("tasklist")
-  valid_589057 = validateParameter(valid_589057, JString, required = true,
+  if valid_578956 != nil:
+    section.add "task", valid_578956
+  var valid_578957 = path.getOrDefault("tasklist")
+  valid_578957 = validateParameter(valid_578957, JString, required = true,
                                  default = nil)
-  if valid_589057 != nil:
-    section.add "tasklist", valid_589057
+  if valid_578957 != nil:
+    section.add "tasklist", valid_578957
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589058 = query.getOrDefault("fields")
-  valid_589058 = validateParameter(valid_589058, JString, required = false,
+  var valid_578958 = query.getOrDefault("key")
+  valid_578958 = validateParameter(valid_578958, JString, required = false,
                                  default = nil)
-  if valid_589058 != nil:
-    section.add "fields", valid_589058
-  var valid_589059 = query.getOrDefault("quotaUser")
-  valid_589059 = validateParameter(valid_589059, JString, required = false,
-                                 default = nil)
-  if valid_589059 != nil:
-    section.add "quotaUser", valid_589059
-  var valid_589060 = query.getOrDefault("alt")
-  valid_589060 = validateParameter(valid_589060, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589060 != nil:
-    section.add "alt", valid_589060
-  var valid_589061 = query.getOrDefault("oauth_token")
-  valid_589061 = validateParameter(valid_589061, JString, required = false,
-                                 default = nil)
-  if valid_589061 != nil:
-    section.add "oauth_token", valid_589061
-  var valid_589062 = query.getOrDefault("userIp")
-  valid_589062 = validateParameter(valid_589062, JString, required = false,
-                                 default = nil)
-  if valid_589062 != nil:
-    section.add "userIp", valid_589062
-  var valid_589063 = query.getOrDefault("key")
-  valid_589063 = validateParameter(valid_589063, JString, required = false,
-                                 default = nil)
-  if valid_589063 != nil:
-    section.add "key", valid_589063
-  var valid_589064 = query.getOrDefault("prettyPrint")
-  valid_589064 = validateParameter(valid_589064, JBool, required = false,
+  if valid_578958 != nil:
+    section.add "key", valid_578958
+  var valid_578959 = query.getOrDefault("prettyPrint")
+  valid_578959 = validateParameter(valid_578959, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589064 != nil:
-    section.add "prettyPrint", valid_589064
+  if valid_578959 != nil:
+    section.add "prettyPrint", valid_578959
+  var valid_578960 = query.getOrDefault("oauth_token")
+  valid_578960 = validateParameter(valid_578960, JString, required = false,
+                                 default = nil)
+  if valid_578960 != nil:
+    section.add "oauth_token", valid_578960
+  var valid_578961 = query.getOrDefault("alt")
+  valid_578961 = validateParameter(valid_578961, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578961 != nil:
+    section.add "alt", valid_578961
+  var valid_578962 = query.getOrDefault("userIp")
+  valid_578962 = validateParameter(valid_578962, JString, required = false,
+                                 default = nil)
+  if valid_578962 != nil:
+    section.add "userIp", valid_578962
+  var valid_578963 = query.getOrDefault("quotaUser")
+  valid_578963 = validateParameter(valid_578963, JString, required = false,
+                                 default = nil)
+  if valid_578963 != nil:
+    section.add "quotaUser", valid_578963
+  var valid_578964 = query.getOrDefault("fields")
+  valid_578964 = validateParameter(valid_578964, JString, required = false,
+                                 default = nil)
+  if valid_578964 != nil:
+    section.add "fields", valid_578964
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -780,67 +784,67 @@ proc validate_TasksTasksUpdate_589054(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589066: Call_TasksTasksUpdate_589053; path: JsonNode;
+proc call*(call_578966: Call_TasksTasksUpdate_578953; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the specified task.
   ## 
-  let valid = call_589066.validator(path, query, header, formData, body)
-  let scheme = call_589066.pickScheme
+  let valid = call_578966.validator(path, query, header, formData, body)
+  let scheme = call_578966.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589066.url(scheme.get, call_589066.host, call_589066.base,
-                         call_589066.route, valid.getOrDefault("path"),
+  let url = call_578966.url(scheme.get, call_578966.host, call_578966.base,
+                         call_578966.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589066, url, valid)
+  result = hook(call_578966, url, valid)
 
-proc call*(call_589067: Call_TasksTasksUpdate_589053; task: string; tasklist: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578967: Call_TasksTasksUpdate_578953; task: string; tasklist: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## tasksTasksUpdate
   ## Updates the specified task.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   alt: string
   ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   task: string (required)
   ##       : Task identifier.
   ##   tasklist: string (required)
   ##           : Task list identifier.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589068 = newJObject()
-  var query_589069 = newJObject()
-  var body_589070 = newJObject()
-  add(query_589069, "fields", newJString(fields))
-  add(query_589069, "quotaUser", newJString(quotaUser))
-  add(query_589069, "alt", newJString(alt))
-  add(path_589068, "task", newJString(task))
-  add(path_589068, "tasklist", newJString(tasklist))
-  add(query_589069, "oauth_token", newJString(oauthToken))
-  add(query_589069, "userIp", newJString(userIp))
-  add(query_589069, "key", newJString(key))
+  var path_578968 = newJObject()
+  var query_578969 = newJObject()
+  var body_578970 = newJObject()
+  add(query_578969, "key", newJString(key))
+  add(query_578969, "prettyPrint", newJBool(prettyPrint))
+  add(query_578969, "oauth_token", newJString(oauthToken))
+  add(query_578969, "alt", newJString(alt))
+  add(query_578969, "userIp", newJString(userIp))
+  add(query_578969, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589070 = body
-  add(query_589069, "prettyPrint", newJBool(prettyPrint))
-  result = call_589067.call(path_589068, query_589069, nil, nil, body_589070)
+    body_578970 = body
+  add(query_578969, "fields", newJString(fields))
+  add(path_578968, "task", newJString(task))
+  add(path_578968, "tasklist", newJString(tasklist))
+  result = call_578967.call(path_578968, query_578969, nil, nil, body_578970)
 
-var tasksTasksUpdate* = Call_TasksTasksUpdate_589053(name: "tasksTasksUpdate",
+var tasksTasksUpdate* = Call_TasksTasksUpdate_578953(name: "tasksTasksUpdate",
     meth: HttpMethod.HttpPut, host: "www.googleapis.com",
-    route: "/lists/{tasklist}/tasks/{task}", validator: validate_TasksTasksUpdate_589054,
-    base: "/tasks/v1", url: url_TasksTasksUpdate_589055, schemes: {Scheme.Https})
+    route: "/lists/{tasklist}/tasks/{task}", validator: validate_TasksTasksUpdate_578954,
+    base: "/tasks/v1", url: url_TasksTasksUpdate_578955, schemes: {Scheme.Https})
 type
-  Call_TasksTasksGet_589037 = ref object of OpenApiRestCall_588441
-proc url_TasksTasksGet_589039(protocol: Scheme; host: string; base: string;
+  Call_TasksTasksGet_578937 = ref object of OpenApiRestCall_578339
+proc url_TasksTasksGet_578939(protocol: Scheme; host: string; base: string;
                              route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -858,7 +862,7 @@ proc url_TasksTasksGet_589039(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TasksTasksGet_589038(path: JsonNode; query: JsonNode; header: JsonNode;
+proc validate_TasksTasksGet_578938(path: JsonNode; query: JsonNode; header: JsonNode;
                                   formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the specified task.
   ## 
@@ -871,68 +875,68 @@ proc validate_TasksTasksGet_589038(path: JsonNode; query: JsonNode; header: Json
   ##           : Task list identifier.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `task` field"
-  var valid_589040 = path.getOrDefault("task")
-  valid_589040 = validateParameter(valid_589040, JString, required = true,
+  var valid_578940 = path.getOrDefault("task")
+  valid_578940 = validateParameter(valid_578940, JString, required = true,
                                  default = nil)
-  if valid_589040 != nil:
-    section.add "task", valid_589040
-  var valid_589041 = path.getOrDefault("tasklist")
-  valid_589041 = validateParameter(valid_589041, JString, required = true,
+  if valid_578940 != nil:
+    section.add "task", valid_578940
+  var valid_578941 = path.getOrDefault("tasklist")
+  valid_578941 = validateParameter(valid_578941, JString, required = true,
                                  default = nil)
-  if valid_589041 != nil:
-    section.add "tasklist", valid_589041
+  if valid_578941 != nil:
+    section.add "tasklist", valid_578941
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589042 = query.getOrDefault("fields")
-  valid_589042 = validateParameter(valid_589042, JString, required = false,
+  var valid_578942 = query.getOrDefault("key")
+  valid_578942 = validateParameter(valid_578942, JString, required = false,
                                  default = nil)
-  if valid_589042 != nil:
-    section.add "fields", valid_589042
-  var valid_589043 = query.getOrDefault("quotaUser")
-  valid_589043 = validateParameter(valid_589043, JString, required = false,
-                                 default = nil)
-  if valid_589043 != nil:
-    section.add "quotaUser", valid_589043
-  var valid_589044 = query.getOrDefault("alt")
-  valid_589044 = validateParameter(valid_589044, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589044 != nil:
-    section.add "alt", valid_589044
-  var valid_589045 = query.getOrDefault("oauth_token")
-  valid_589045 = validateParameter(valid_589045, JString, required = false,
-                                 default = nil)
-  if valid_589045 != nil:
-    section.add "oauth_token", valid_589045
-  var valid_589046 = query.getOrDefault("userIp")
-  valid_589046 = validateParameter(valid_589046, JString, required = false,
-                                 default = nil)
-  if valid_589046 != nil:
-    section.add "userIp", valid_589046
-  var valid_589047 = query.getOrDefault("key")
-  valid_589047 = validateParameter(valid_589047, JString, required = false,
-                                 default = nil)
-  if valid_589047 != nil:
-    section.add "key", valid_589047
-  var valid_589048 = query.getOrDefault("prettyPrint")
-  valid_589048 = validateParameter(valid_589048, JBool, required = false,
+  if valid_578942 != nil:
+    section.add "key", valid_578942
+  var valid_578943 = query.getOrDefault("prettyPrint")
+  valid_578943 = validateParameter(valid_578943, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589048 != nil:
-    section.add "prettyPrint", valid_589048
+  if valid_578943 != nil:
+    section.add "prettyPrint", valid_578943
+  var valid_578944 = query.getOrDefault("oauth_token")
+  valid_578944 = validateParameter(valid_578944, JString, required = false,
+                                 default = nil)
+  if valid_578944 != nil:
+    section.add "oauth_token", valid_578944
+  var valid_578945 = query.getOrDefault("alt")
+  valid_578945 = validateParameter(valid_578945, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578945 != nil:
+    section.add "alt", valid_578945
+  var valid_578946 = query.getOrDefault("userIp")
+  valid_578946 = validateParameter(valid_578946, JString, required = false,
+                                 default = nil)
+  if valid_578946 != nil:
+    section.add "userIp", valid_578946
+  var valid_578947 = query.getOrDefault("quotaUser")
+  valid_578947 = validateParameter(valid_578947, JString, required = false,
+                                 default = nil)
+  if valid_578947 != nil:
+    section.add "quotaUser", valid_578947
+  var valid_578948 = query.getOrDefault("fields")
+  valid_578948 = validateParameter(valid_578948, JString, required = false,
+                                 default = nil)
+  if valid_578948 != nil:
+    section.add "fields", valid_578948
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -941,63 +945,63 @@ proc validate_TasksTasksGet_589038(path: JsonNode; query: JsonNode; header: Json
   if body != nil:
     result.add "body", body
 
-proc call*(call_589049: Call_TasksTasksGet_589037; path: JsonNode; query: JsonNode;
+proc call*(call_578949: Call_TasksTasksGet_578937; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns the specified task.
   ## 
-  let valid = call_589049.validator(path, query, header, formData, body)
-  let scheme = call_589049.pickScheme
+  let valid = call_578949.validator(path, query, header, formData, body)
+  let scheme = call_578949.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589049.url(scheme.get, call_589049.host, call_589049.base,
-                         call_589049.route, valid.getOrDefault("path"),
+  let url = call_578949.url(scheme.get, call_578949.host, call_578949.base,
+                         call_578949.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589049, url, valid)
+  result = hook(call_578949, url, valid)
 
-proc call*(call_589050: Call_TasksTasksGet_589037; task: string; tasklist: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578950: Call_TasksTasksGet_578937; task: string; tasklist: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## tasksTasksGet
   ## Returns the specified task.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   task: string (required)
-  ##       : Task identifier.
-  ##   tasklist: string (required)
-  ##           : Task list identifier.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589051 = newJObject()
-  var query_589052 = newJObject()
-  add(query_589052, "fields", newJString(fields))
-  add(query_589052, "quotaUser", newJString(quotaUser))
-  add(query_589052, "alt", newJString(alt))
-  add(path_589051, "task", newJString(task))
-  add(path_589051, "tasklist", newJString(tasklist))
-  add(query_589052, "oauth_token", newJString(oauthToken))
-  add(query_589052, "userIp", newJString(userIp))
-  add(query_589052, "key", newJString(key))
-  add(query_589052, "prettyPrint", newJBool(prettyPrint))
-  result = call_589050.call(path_589051, query_589052, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   task: string (required)
+  ##       : Task identifier.
+  ##   tasklist: string (required)
+  ##           : Task list identifier.
+  var path_578951 = newJObject()
+  var query_578952 = newJObject()
+  add(query_578952, "key", newJString(key))
+  add(query_578952, "prettyPrint", newJBool(prettyPrint))
+  add(query_578952, "oauth_token", newJString(oauthToken))
+  add(query_578952, "alt", newJString(alt))
+  add(query_578952, "userIp", newJString(userIp))
+  add(query_578952, "quotaUser", newJString(quotaUser))
+  add(query_578952, "fields", newJString(fields))
+  add(path_578951, "task", newJString(task))
+  add(path_578951, "tasklist", newJString(tasklist))
+  result = call_578950.call(path_578951, query_578952, nil, nil, nil)
 
-var tasksTasksGet* = Call_TasksTasksGet_589037(name: "tasksTasksGet",
+var tasksTasksGet* = Call_TasksTasksGet_578937(name: "tasksTasksGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/lists/{tasklist}/tasks/{task}", validator: validate_TasksTasksGet_589038,
-    base: "/tasks/v1", url: url_TasksTasksGet_589039, schemes: {Scheme.Https})
+    route: "/lists/{tasklist}/tasks/{task}", validator: validate_TasksTasksGet_578938,
+    base: "/tasks/v1", url: url_TasksTasksGet_578939, schemes: {Scheme.Https})
 type
-  Call_TasksTasksPatch_589087 = ref object of OpenApiRestCall_588441
-proc url_TasksTasksPatch_589089(protocol: Scheme; host: string; base: string;
+  Call_TasksTasksPatch_578987 = ref object of OpenApiRestCall_578339
+proc url_TasksTasksPatch_578989(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1015,7 +1019,7 @@ proc url_TasksTasksPatch_589089(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TasksTasksPatch_589088(path: JsonNode; query: JsonNode;
+proc validate_TasksTasksPatch_578988(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Updates the specified task. This method supports patch semantics.
@@ -1029,68 +1033,68 @@ proc validate_TasksTasksPatch_589088(path: JsonNode; query: JsonNode;
   ##           : Task list identifier.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `task` field"
-  var valid_589090 = path.getOrDefault("task")
-  valid_589090 = validateParameter(valid_589090, JString, required = true,
+  var valid_578990 = path.getOrDefault("task")
+  valid_578990 = validateParameter(valid_578990, JString, required = true,
                                  default = nil)
-  if valid_589090 != nil:
-    section.add "task", valid_589090
-  var valid_589091 = path.getOrDefault("tasklist")
-  valid_589091 = validateParameter(valid_589091, JString, required = true,
+  if valid_578990 != nil:
+    section.add "task", valid_578990
+  var valid_578991 = path.getOrDefault("tasklist")
+  valid_578991 = validateParameter(valid_578991, JString, required = true,
                                  default = nil)
-  if valid_589091 != nil:
-    section.add "tasklist", valid_589091
+  if valid_578991 != nil:
+    section.add "tasklist", valid_578991
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589092 = query.getOrDefault("fields")
-  valid_589092 = validateParameter(valid_589092, JString, required = false,
+  var valid_578992 = query.getOrDefault("key")
+  valid_578992 = validateParameter(valid_578992, JString, required = false,
                                  default = nil)
-  if valid_589092 != nil:
-    section.add "fields", valid_589092
-  var valid_589093 = query.getOrDefault("quotaUser")
-  valid_589093 = validateParameter(valid_589093, JString, required = false,
-                                 default = nil)
-  if valid_589093 != nil:
-    section.add "quotaUser", valid_589093
-  var valid_589094 = query.getOrDefault("alt")
-  valid_589094 = validateParameter(valid_589094, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589094 != nil:
-    section.add "alt", valid_589094
-  var valid_589095 = query.getOrDefault("oauth_token")
-  valid_589095 = validateParameter(valid_589095, JString, required = false,
-                                 default = nil)
-  if valid_589095 != nil:
-    section.add "oauth_token", valid_589095
-  var valid_589096 = query.getOrDefault("userIp")
-  valid_589096 = validateParameter(valid_589096, JString, required = false,
-                                 default = nil)
-  if valid_589096 != nil:
-    section.add "userIp", valid_589096
-  var valid_589097 = query.getOrDefault("key")
-  valid_589097 = validateParameter(valid_589097, JString, required = false,
-                                 default = nil)
-  if valid_589097 != nil:
-    section.add "key", valid_589097
-  var valid_589098 = query.getOrDefault("prettyPrint")
-  valid_589098 = validateParameter(valid_589098, JBool, required = false,
+  if valid_578992 != nil:
+    section.add "key", valid_578992
+  var valid_578993 = query.getOrDefault("prettyPrint")
+  valid_578993 = validateParameter(valid_578993, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589098 != nil:
-    section.add "prettyPrint", valid_589098
+  if valid_578993 != nil:
+    section.add "prettyPrint", valid_578993
+  var valid_578994 = query.getOrDefault("oauth_token")
+  valid_578994 = validateParameter(valid_578994, JString, required = false,
+                                 default = nil)
+  if valid_578994 != nil:
+    section.add "oauth_token", valid_578994
+  var valid_578995 = query.getOrDefault("alt")
+  valid_578995 = validateParameter(valid_578995, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578995 != nil:
+    section.add "alt", valid_578995
+  var valid_578996 = query.getOrDefault("userIp")
+  valid_578996 = validateParameter(valid_578996, JString, required = false,
+                                 default = nil)
+  if valid_578996 != nil:
+    section.add "userIp", valid_578996
+  var valid_578997 = query.getOrDefault("quotaUser")
+  valid_578997 = validateParameter(valid_578997, JString, required = false,
+                                 default = nil)
+  if valid_578997 != nil:
+    section.add "quotaUser", valid_578997
+  var valid_578998 = query.getOrDefault("fields")
+  valid_578998 = validateParameter(valid_578998, JString, required = false,
+                                 default = nil)
+  if valid_578998 != nil:
+    section.add "fields", valid_578998
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1102,67 +1106,67 @@ proc validate_TasksTasksPatch_589088(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589100: Call_TasksTasksPatch_589087; path: JsonNode; query: JsonNode;
+proc call*(call_579000: Call_TasksTasksPatch_578987; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the specified task. This method supports patch semantics.
   ## 
-  let valid = call_589100.validator(path, query, header, formData, body)
-  let scheme = call_589100.pickScheme
+  let valid = call_579000.validator(path, query, header, formData, body)
+  let scheme = call_579000.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589100.url(scheme.get, call_589100.host, call_589100.base,
-                         call_589100.route, valid.getOrDefault("path"),
+  let url = call_579000.url(scheme.get, call_579000.host, call_579000.base,
+                         call_579000.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589100, url, valid)
+  result = hook(call_579000, url, valid)
 
-proc call*(call_589101: Call_TasksTasksPatch_589087; task: string; tasklist: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579001: Call_TasksTasksPatch_578987; task: string; tasklist: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## tasksTasksPatch
   ## Updates the specified task. This method supports patch semantics.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   alt: string
   ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   task: string (required)
   ##       : Task identifier.
   ##   tasklist: string (required)
   ##           : Task list identifier.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589102 = newJObject()
-  var query_589103 = newJObject()
-  var body_589104 = newJObject()
-  add(query_589103, "fields", newJString(fields))
-  add(query_589103, "quotaUser", newJString(quotaUser))
-  add(query_589103, "alt", newJString(alt))
-  add(path_589102, "task", newJString(task))
-  add(path_589102, "tasklist", newJString(tasklist))
-  add(query_589103, "oauth_token", newJString(oauthToken))
-  add(query_589103, "userIp", newJString(userIp))
-  add(query_589103, "key", newJString(key))
+  var path_579002 = newJObject()
+  var query_579003 = newJObject()
+  var body_579004 = newJObject()
+  add(query_579003, "key", newJString(key))
+  add(query_579003, "prettyPrint", newJBool(prettyPrint))
+  add(query_579003, "oauth_token", newJString(oauthToken))
+  add(query_579003, "alt", newJString(alt))
+  add(query_579003, "userIp", newJString(userIp))
+  add(query_579003, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589104 = body
-  add(query_589103, "prettyPrint", newJBool(prettyPrint))
-  result = call_589101.call(path_589102, query_589103, nil, nil, body_589104)
+    body_579004 = body
+  add(query_579003, "fields", newJString(fields))
+  add(path_579002, "task", newJString(task))
+  add(path_579002, "tasklist", newJString(tasklist))
+  result = call_579001.call(path_579002, query_579003, nil, nil, body_579004)
 
-var tasksTasksPatch* = Call_TasksTasksPatch_589087(name: "tasksTasksPatch",
+var tasksTasksPatch* = Call_TasksTasksPatch_578987(name: "tasksTasksPatch",
     meth: HttpMethod.HttpPatch, host: "www.googleapis.com",
-    route: "/lists/{tasklist}/tasks/{task}", validator: validate_TasksTasksPatch_589088,
-    base: "/tasks/v1", url: url_TasksTasksPatch_589089, schemes: {Scheme.Https})
+    route: "/lists/{tasklist}/tasks/{task}", validator: validate_TasksTasksPatch_578988,
+    base: "/tasks/v1", url: url_TasksTasksPatch_578989, schemes: {Scheme.Https})
 type
-  Call_TasksTasksDelete_589071 = ref object of OpenApiRestCall_588441
-proc url_TasksTasksDelete_589073(protocol: Scheme; host: string; base: string;
+  Call_TasksTasksDelete_578971 = ref object of OpenApiRestCall_578339
+proc url_TasksTasksDelete_578973(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1180,7 +1184,7 @@ proc url_TasksTasksDelete_589073(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TasksTasksDelete_589072(path: JsonNode; query: JsonNode;
+proc validate_TasksTasksDelete_578972(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Deletes the specified task from the task list.
@@ -1194,68 +1198,68 @@ proc validate_TasksTasksDelete_589072(path: JsonNode; query: JsonNode;
   ##           : Task list identifier.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `task` field"
-  var valid_589074 = path.getOrDefault("task")
-  valid_589074 = validateParameter(valid_589074, JString, required = true,
+  var valid_578974 = path.getOrDefault("task")
+  valid_578974 = validateParameter(valid_578974, JString, required = true,
                                  default = nil)
-  if valid_589074 != nil:
-    section.add "task", valid_589074
-  var valid_589075 = path.getOrDefault("tasklist")
-  valid_589075 = validateParameter(valid_589075, JString, required = true,
+  if valid_578974 != nil:
+    section.add "task", valid_578974
+  var valid_578975 = path.getOrDefault("tasklist")
+  valid_578975 = validateParameter(valid_578975, JString, required = true,
                                  default = nil)
-  if valid_589075 != nil:
-    section.add "tasklist", valid_589075
+  if valid_578975 != nil:
+    section.add "tasklist", valid_578975
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589076 = query.getOrDefault("fields")
-  valid_589076 = validateParameter(valid_589076, JString, required = false,
+  var valid_578976 = query.getOrDefault("key")
+  valid_578976 = validateParameter(valid_578976, JString, required = false,
                                  default = nil)
-  if valid_589076 != nil:
-    section.add "fields", valid_589076
-  var valid_589077 = query.getOrDefault("quotaUser")
-  valid_589077 = validateParameter(valid_589077, JString, required = false,
-                                 default = nil)
-  if valid_589077 != nil:
-    section.add "quotaUser", valid_589077
-  var valid_589078 = query.getOrDefault("alt")
-  valid_589078 = validateParameter(valid_589078, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589078 != nil:
-    section.add "alt", valid_589078
-  var valid_589079 = query.getOrDefault("oauth_token")
-  valid_589079 = validateParameter(valid_589079, JString, required = false,
-                                 default = nil)
-  if valid_589079 != nil:
-    section.add "oauth_token", valid_589079
-  var valid_589080 = query.getOrDefault("userIp")
-  valid_589080 = validateParameter(valid_589080, JString, required = false,
-                                 default = nil)
-  if valid_589080 != nil:
-    section.add "userIp", valid_589080
-  var valid_589081 = query.getOrDefault("key")
-  valid_589081 = validateParameter(valid_589081, JString, required = false,
-                                 default = nil)
-  if valid_589081 != nil:
-    section.add "key", valid_589081
-  var valid_589082 = query.getOrDefault("prettyPrint")
-  valid_589082 = validateParameter(valid_589082, JBool, required = false,
+  if valid_578976 != nil:
+    section.add "key", valid_578976
+  var valid_578977 = query.getOrDefault("prettyPrint")
+  valid_578977 = validateParameter(valid_578977, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589082 != nil:
-    section.add "prettyPrint", valid_589082
+  if valid_578977 != nil:
+    section.add "prettyPrint", valid_578977
+  var valid_578978 = query.getOrDefault("oauth_token")
+  valid_578978 = validateParameter(valid_578978, JString, required = false,
+                                 default = nil)
+  if valid_578978 != nil:
+    section.add "oauth_token", valid_578978
+  var valid_578979 = query.getOrDefault("alt")
+  valid_578979 = validateParameter(valid_578979, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578979 != nil:
+    section.add "alt", valid_578979
+  var valid_578980 = query.getOrDefault("userIp")
+  valid_578980 = validateParameter(valid_578980, JString, required = false,
+                                 default = nil)
+  if valid_578980 != nil:
+    section.add "userIp", valid_578980
+  var valid_578981 = query.getOrDefault("quotaUser")
+  valid_578981 = validateParameter(valid_578981, JString, required = false,
+                                 default = nil)
+  if valid_578981 != nil:
+    section.add "quotaUser", valid_578981
+  var valid_578982 = query.getOrDefault("fields")
+  valid_578982 = validateParameter(valid_578982, JString, required = false,
+                                 default = nil)
+  if valid_578982 != nil:
+    section.add "fields", valid_578982
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1264,63 +1268,63 @@ proc validate_TasksTasksDelete_589072(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589083: Call_TasksTasksDelete_589071; path: JsonNode;
+proc call*(call_578983: Call_TasksTasksDelete_578971; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes the specified task from the task list.
   ## 
-  let valid = call_589083.validator(path, query, header, formData, body)
-  let scheme = call_589083.pickScheme
+  let valid = call_578983.validator(path, query, header, formData, body)
+  let scheme = call_578983.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589083.url(scheme.get, call_589083.host, call_589083.base,
-                         call_589083.route, valid.getOrDefault("path"),
+  let url = call_578983.url(scheme.get, call_578983.host, call_578983.base,
+                         call_578983.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589083, url, valid)
+  result = hook(call_578983, url, valid)
 
-proc call*(call_589084: Call_TasksTasksDelete_589071; task: string; tasklist: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578984: Call_TasksTasksDelete_578971; task: string; tasklist: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## tasksTasksDelete
   ## Deletes the specified task from the task list.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   task: string (required)
-  ##       : Task identifier.
-  ##   tasklist: string (required)
-  ##           : Task list identifier.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589085 = newJObject()
-  var query_589086 = newJObject()
-  add(query_589086, "fields", newJString(fields))
-  add(query_589086, "quotaUser", newJString(quotaUser))
-  add(query_589086, "alt", newJString(alt))
-  add(path_589085, "task", newJString(task))
-  add(path_589085, "tasklist", newJString(tasklist))
-  add(query_589086, "oauth_token", newJString(oauthToken))
-  add(query_589086, "userIp", newJString(userIp))
-  add(query_589086, "key", newJString(key))
-  add(query_589086, "prettyPrint", newJBool(prettyPrint))
-  result = call_589084.call(path_589085, query_589086, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   task: string (required)
+  ##       : Task identifier.
+  ##   tasklist: string (required)
+  ##           : Task list identifier.
+  var path_578985 = newJObject()
+  var query_578986 = newJObject()
+  add(query_578986, "key", newJString(key))
+  add(query_578986, "prettyPrint", newJBool(prettyPrint))
+  add(query_578986, "oauth_token", newJString(oauthToken))
+  add(query_578986, "alt", newJString(alt))
+  add(query_578986, "userIp", newJString(userIp))
+  add(query_578986, "quotaUser", newJString(quotaUser))
+  add(query_578986, "fields", newJString(fields))
+  add(path_578985, "task", newJString(task))
+  add(path_578985, "tasklist", newJString(tasklist))
+  result = call_578984.call(path_578985, query_578986, nil, nil, nil)
 
-var tasksTasksDelete* = Call_TasksTasksDelete_589071(name: "tasksTasksDelete",
+var tasksTasksDelete* = Call_TasksTasksDelete_578971(name: "tasksTasksDelete",
     meth: HttpMethod.HttpDelete, host: "www.googleapis.com",
-    route: "/lists/{tasklist}/tasks/{task}", validator: validate_TasksTasksDelete_589072,
-    base: "/tasks/v1", url: url_TasksTasksDelete_589073, schemes: {Scheme.Https})
+    route: "/lists/{tasklist}/tasks/{task}", validator: validate_TasksTasksDelete_578972,
+    base: "/tasks/v1", url: url_TasksTasksDelete_578973, schemes: {Scheme.Https})
 type
-  Call_TasksTasksMove_589105 = ref object of OpenApiRestCall_588441
-proc url_TasksTasksMove_589107(protocol: Scheme; host: string; base: string;
+  Call_TasksTasksMove_579005 = ref object of OpenApiRestCall_578339
+proc url_TasksTasksMove_579007(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1339,7 +1343,7 @@ proc url_TasksTasksMove_589107(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TasksTasksMove_589106(path: JsonNode; query: JsonNode;
+proc validate_TasksTasksMove_579006(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Moves the specified task to another position in the task list. This can include putting it as a child task under a new parent and/or move it to a different position among its sibling tasks.
@@ -1353,82 +1357,82 @@ proc validate_TasksTasksMove_589106(path: JsonNode; query: JsonNode;
   ##           : Task list identifier.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `task` field"
-  var valid_589108 = path.getOrDefault("task")
-  valid_589108 = validateParameter(valid_589108, JString, required = true,
+  var valid_579008 = path.getOrDefault("task")
+  valid_579008 = validateParameter(valid_579008, JString, required = true,
                                  default = nil)
-  if valid_589108 != nil:
-    section.add "task", valid_589108
-  var valid_589109 = path.getOrDefault("tasklist")
-  valid_589109 = validateParameter(valid_589109, JString, required = true,
+  if valid_579008 != nil:
+    section.add "task", valid_579008
+  var valid_579009 = path.getOrDefault("tasklist")
+  valid_579009 = validateParameter(valid_579009, JString, required = true,
                                  default = nil)
-  if valid_589109 != nil:
-    section.add "tasklist", valid_589109
+  if valid_579009 != nil:
+    section.add "tasklist", valid_579009
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   parent: JString
-  ##         : New parent task identifier. If the task is moved to the top level, this parameter is omitted. Optional.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   parent: JString
+  ##         : New parent task identifier. If the task is moved to the top level, this parameter is omitted. Optional.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   previous: JString
   ##           : New previous sibling task identifier. If the task is moved to the first position among its siblings, this parameter is omitted. Optional.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589110 = query.getOrDefault("fields")
-  valid_589110 = validateParameter(valid_589110, JString, required = false,
+  var valid_579010 = query.getOrDefault("key")
+  valid_579010 = validateParameter(valid_579010, JString, required = false,
                                  default = nil)
-  if valid_589110 != nil:
-    section.add "fields", valid_589110
-  var valid_589111 = query.getOrDefault("quotaUser")
-  valid_589111 = validateParameter(valid_589111, JString, required = false,
-                                 default = nil)
-  if valid_589111 != nil:
-    section.add "quotaUser", valid_589111
-  var valid_589112 = query.getOrDefault("alt")
-  valid_589112 = validateParameter(valid_589112, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589112 != nil:
-    section.add "alt", valid_589112
-  var valid_589113 = query.getOrDefault("oauth_token")
-  valid_589113 = validateParameter(valid_589113, JString, required = false,
-                                 default = nil)
-  if valid_589113 != nil:
-    section.add "oauth_token", valid_589113
-  var valid_589114 = query.getOrDefault("userIp")
-  valid_589114 = validateParameter(valid_589114, JString, required = false,
-                                 default = nil)
-  if valid_589114 != nil:
-    section.add "userIp", valid_589114
-  var valid_589115 = query.getOrDefault("parent")
-  valid_589115 = validateParameter(valid_589115, JString, required = false,
-                                 default = nil)
-  if valid_589115 != nil:
-    section.add "parent", valid_589115
-  var valid_589116 = query.getOrDefault("key")
-  valid_589116 = validateParameter(valid_589116, JString, required = false,
-                                 default = nil)
-  if valid_589116 != nil:
-    section.add "key", valid_589116
-  var valid_589117 = query.getOrDefault("prettyPrint")
-  valid_589117 = validateParameter(valid_589117, JBool, required = false,
+  if valid_579010 != nil:
+    section.add "key", valid_579010
+  var valid_579011 = query.getOrDefault("prettyPrint")
+  valid_579011 = validateParameter(valid_579011, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589117 != nil:
-    section.add "prettyPrint", valid_589117
-  var valid_589118 = query.getOrDefault("previous")
-  valid_589118 = validateParameter(valid_589118, JString, required = false,
+  if valid_579011 != nil:
+    section.add "prettyPrint", valid_579011
+  var valid_579012 = query.getOrDefault("oauth_token")
+  valid_579012 = validateParameter(valid_579012, JString, required = false,
                                  default = nil)
-  if valid_589118 != nil:
-    section.add "previous", valid_589118
+  if valid_579012 != nil:
+    section.add "oauth_token", valid_579012
+  var valid_579013 = query.getOrDefault("alt")
+  valid_579013 = validateParameter(valid_579013, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579013 != nil:
+    section.add "alt", valid_579013
+  var valid_579014 = query.getOrDefault("userIp")
+  valid_579014 = validateParameter(valid_579014, JString, required = false,
+                                 default = nil)
+  if valid_579014 != nil:
+    section.add "userIp", valid_579014
+  var valid_579015 = query.getOrDefault("parent")
+  valid_579015 = validateParameter(valid_579015, JString, required = false,
+                                 default = nil)
+  if valid_579015 != nil:
+    section.add "parent", valid_579015
+  var valid_579016 = query.getOrDefault("quotaUser")
+  valid_579016 = validateParameter(valid_579016, JString, required = false,
+                                 default = nil)
+  if valid_579016 != nil:
+    section.add "quotaUser", valid_579016
+  var valid_579017 = query.getOrDefault("previous")
+  valid_579017 = validateParameter(valid_579017, JString, required = false,
+                                 default = nil)
+  if valid_579017 != nil:
+    section.add "previous", valid_579017
+  var valid_579018 = query.getOrDefault("fields")
+  valid_579018 = validateParameter(valid_579018, JString, required = false,
+                                 default = nil)
+  if valid_579018 != nil:
+    section.add "fields", valid_579018
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1437,77 +1441,77 @@ proc validate_TasksTasksMove_589106(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589119: Call_TasksTasksMove_589105; path: JsonNode; query: JsonNode;
+proc call*(call_579019: Call_TasksTasksMove_579005; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Moves the specified task to another position in the task list. This can include putting it as a child task under a new parent and/or move it to a different position among its sibling tasks.
   ## 
-  let valid = call_589119.validator(path, query, header, formData, body)
-  let scheme = call_589119.pickScheme
+  let valid = call_579019.validator(path, query, header, formData, body)
+  let scheme = call_579019.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589119.url(scheme.get, call_589119.host, call_589119.base,
-                         call_589119.route, valid.getOrDefault("path"),
+  let url = call_579019.url(scheme.get, call_579019.host, call_579019.base,
+                         call_579019.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589119, url, valid)
+  result = hook(call_579019, url, valid)
 
-proc call*(call_589120: Call_TasksTasksMove_589105; task: string; tasklist: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; parent: string = "";
-          key: string = ""; prettyPrint: bool = true; previous: string = ""): Recallable =
+proc call*(call_579020: Call_TasksTasksMove_579005; task: string; tasklist: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; parent: string = "";
+          quotaUser: string = ""; previous: string = ""; fields: string = ""): Recallable =
   ## tasksTasksMove
   ## Moves the specified task to another position in the task list. This can include putting it as a child task under a new parent and/or move it to a different position among its sibling tasks.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   task: string (required)
-  ##       : Task identifier.
-  ##   tasklist: string (required)
-  ##           : Task list identifier.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   parent: string
-  ##         : New parent task identifier. If the task is moved to the top level, this parameter is omitted. Optional.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   parent: string
+  ##         : New parent task identifier. If the task is moved to the top level, this parameter is omitted. Optional.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   previous: string
   ##           : New previous sibling task identifier. If the task is moved to the first position among its siblings, this parameter is omitted. Optional.
-  var path_589121 = newJObject()
-  var query_589122 = newJObject()
-  add(query_589122, "fields", newJString(fields))
-  add(query_589122, "quotaUser", newJString(quotaUser))
-  add(query_589122, "alt", newJString(alt))
-  add(path_589121, "task", newJString(task))
-  add(path_589121, "tasklist", newJString(tasklist))
-  add(query_589122, "oauth_token", newJString(oauthToken))
-  add(query_589122, "userIp", newJString(userIp))
-  add(query_589122, "parent", newJString(parent))
-  add(query_589122, "key", newJString(key))
-  add(query_589122, "prettyPrint", newJBool(prettyPrint))
-  add(query_589122, "previous", newJString(previous))
-  result = call_589120.call(path_589121, query_589122, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   task: string (required)
+  ##       : Task identifier.
+  ##   tasklist: string (required)
+  ##           : Task list identifier.
+  var path_579021 = newJObject()
+  var query_579022 = newJObject()
+  add(query_579022, "key", newJString(key))
+  add(query_579022, "prettyPrint", newJBool(prettyPrint))
+  add(query_579022, "oauth_token", newJString(oauthToken))
+  add(query_579022, "alt", newJString(alt))
+  add(query_579022, "userIp", newJString(userIp))
+  add(query_579022, "parent", newJString(parent))
+  add(query_579022, "quotaUser", newJString(quotaUser))
+  add(query_579022, "previous", newJString(previous))
+  add(query_579022, "fields", newJString(fields))
+  add(path_579021, "task", newJString(task))
+  add(path_579021, "tasklist", newJString(tasklist))
+  result = call_579020.call(path_579021, query_579022, nil, nil, nil)
 
-var tasksTasksMove* = Call_TasksTasksMove_589105(name: "tasksTasksMove",
+var tasksTasksMove* = Call_TasksTasksMove_579005(name: "tasksTasksMove",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/lists/{tasklist}/tasks/{task}/move",
-    validator: validate_TasksTasksMove_589106, base: "/tasks/v1",
-    url: url_TasksTasksMove_589107, schemes: {Scheme.Https})
+    validator: validate_TasksTasksMove_579006, base: "/tasks/v1",
+    url: url_TasksTasksMove_579007, schemes: {Scheme.Https})
 type
-  Call_TasksTasklistsInsert_589138 = ref object of OpenApiRestCall_588441
-proc url_TasksTasklistsInsert_589140(protocol: Scheme; host: string; base: string;
+  Call_TasksTasklistsInsert_579038 = ref object of OpenApiRestCall_578339
+proc url_TasksTasklistsInsert_579040(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_TasksTasklistsInsert_589139(path: JsonNode; query: JsonNode;
+proc validate_TasksTasklistsInsert_579039(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new task list and adds it to the authenticated user's task lists.
   ## 
@@ -1516,56 +1520,56 @@ proc validate_TasksTasklistsInsert_589139(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589141 = query.getOrDefault("fields")
-  valid_589141 = validateParameter(valid_589141, JString, required = false,
+  var valid_579041 = query.getOrDefault("key")
+  valid_579041 = validateParameter(valid_579041, JString, required = false,
                                  default = nil)
-  if valid_589141 != nil:
-    section.add "fields", valid_589141
-  var valid_589142 = query.getOrDefault("quotaUser")
-  valid_589142 = validateParameter(valid_589142, JString, required = false,
-                                 default = nil)
-  if valid_589142 != nil:
-    section.add "quotaUser", valid_589142
-  var valid_589143 = query.getOrDefault("alt")
-  valid_589143 = validateParameter(valid_589143, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589143 != nil:
-    section.add "alt", valid_589143
-  var valid_589144 = query.getOrDefault("oauth_token")
-  valid_589144 = validateParameter(valid_589144, JString, required = false,
-                                 default = nil)
-  if valid_589144 != nil:
-    section.add "oauth_token", valid_589144
-  var valid_589145 = query.getOrDefault("userIp")
-  valid_589145 = validateParameter(valid_589145, JString, required = false,
-                                 default = nil)
-  if valid_589145 != nil:
-    section.add "userIp", valid_589145
-  var valid_589146 = query.getOrDefault("key")
-  valid_589146 = validateParameter(valid_589146, JString, required = false,
-                                 default = nil)
-  if valid_589146 != nil:
-    section.add "key", valid_589146
-  var valid_589147 = query.getOrDefault("prettyPrint")
-  valid_589147 = validateParameter(valid_589147, JBool, required = false,
+  if valid_579041 != nil:
+    section.add "key", valid_579041
+  var valid_579042 = query.getOrDefault("prettyPrint")
+  valid_579042 = validateParameter(valid_579042, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589147 != nil:
-    section.add "prettyPrint", valid_589147
+  if valid_579042 != nil:
+    section.add "prettyPrint", valid_579042
+  var valid_579043 = query.getOrDefault("oauth_token")
+  valid_579043 = validateParameter(valid_579043, JString, required = false,
+                                 default = nil)
+  if valid_579043 != nil:
+    section.add "oauth_token", valid_579043
+  var valid_579044 = query.getOrDefault("alt")
+  valid_579044 = validateParameter(valid_579044, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579044 != nil:
+    section.add "alt", valid_579044
+  var valid_579045 = query.getOrDefault("userIp")
+  valid_579045 = validateParameter(valid_579045, JString, required = false,
+                                 default = nil)
+  if valid_579045 != nil:
+    section.add "userIp", valid_579045
+  var valid_579046 = query.getOrDefault("quotaUser")
+  valid_579046 = validateParameter(valid_579046, JString, required = false,
+                                 default = nil)
+  if valid_579046 != nil:
+    section.add "quotaUser", valid_579046
+  var valid_579047 = query.getOrDefault("fields")
+  valid_579047 = validateParameter(valid_579047, JString, required = false,
+                                 default = nil)
+  if valid_579047 != nil:
+    section.add "fields", valid_579047
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1577,68 +1581,68 @@ proc validate_TasksTasklistsInsert_589139(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589149: Call_TasksTasklistsInsert_589138; path: JsonNode;
+proc call*(call_579049: Call_TasksTasklistsInsert_579038; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new task list and adds it to the authenticated user's task lists.
   ## 
-  let valid = call_589149.validator(path, query, header, formData, body)
-  let scheme = call_589149.pickScheme
+  let valid = call_579049.validator(path, query, header, formData, body)
+  let scheme = call_579049.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589149.url(scheme.get, call_589149.host, call_589149.base,
-                         call_589149.route, valid.getOrDefault("path"),
+  let url = call_579049.url(scheme.get, call_579049.host, call_579049.base,
+                         call_579049.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589149, url, valid)
+  result = hook(call_579049, url, valid)
 
-proc call*(call_589150: Call_TasksTasklistsInsert_589138; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579050: Call_TasksTasklistsInsert_579038; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## tasksTasklistsInsert
   ## Creates a new task list and adds it to the authenticated user's task lists.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589151 = newJObject()
-  var body_589152 = newJObject()
-  add(query_589151, "fields", newJString(fields))
-  add(query_589151, "quotaUser", newJString(quotaUser))
-  add(query_589151, "alt", newJString(alt))
-  add(query_589151, "oauth_token", newJString(oauthToken))
-  add(query_589151, "userIp", newJString(userIp))
-  add(query_589151, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_579051 = newJObject()
+  var body_579052 = newJObject()
+  add(query_579051, "key", newJString(key))
+  add(query_579051, "prettyPrint", newJBool(prettyPrint))
+  add(query_579051, "oauth_token", newJString(oauthToken))
+  add(query_579051, "alt", newJString(alt))
+  add(query_579051, "userIp", newJString(userIp))
+  add(query_579051, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589152 = body
-  add(query_589151, "prettyPrint", newJBool(prettyPrint))
-  result = call_589150.call(nil, query_589151, nil, nil, body_589152)
+    body_579052 = body
+  add(query_579051, "fields", newJString(fields))
+  result = call_579050.call(nil, query_579051, nil, nil, body_579052)
 
-var tasksTasklistsInsert* = Call_TasksTasklistsInsert_589138(
+var tasksTasklistsInsert* = Call_TasksTasklistsInsert_579038(
     name: "tasksTasklistsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/users/@me/lists",
-    validator: validate_TasksTasklistsInsert_589139, base: "/tasks/v1",
-    url: url_TasksTasklistsInsert_589140, schemes: {Scheme.Https})
+    validator: validate_TasksTasklistsInsert_579039, base: "/tasks/v1",
+    url: url_TasksTasklistsInsert_579040, schemes: {Scheme.Https})
 type
-  Call_TasksTasklistsList_589123 = ref object of OpenApiRestCall_588441
-proc url_TasksTasklistsList_589125(protocol: Scheme; host: string; base: string;
+  Call_TasksTasklistsList_579023 = ref object of OpenApiRestCall_578339
+proc url_TasksTasklistsList_579025(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_TasksTasklistsList_589124(path: JsonNode; query: JsonNode;
+proc validate_TasksTasklistsList_579024(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Returns all the authenticated user's task lists.
@@ -1648,70 +1652,70 @@ proc validate_TasksTasklistsList_589124(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Token specifying the result page to return. Optional.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JString
-  ##             : Maximum number of task lists returned on one page. Optional. The default is 20 (max allowed: 100).
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : Token specifying the result page to return. Optional.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JString
+  ##             : Maximum number of task lists returned on one page. Optional. The default is 20 (max allowed: 100).
   section = newJObject()
-  var valid_589126 = query.getOrDefault("fields")
-  valid_589126 = validateParameter(valid_589126, JString, required = false,
+  var valid_579026 = query.getOrDefault("key")
+  valid_579026 = validateParameter(valid_579026, JString, required = false,
                                  default = nil)
-  if valid_589126 != nil:
-    section.add "fields", valid_589126
-  var valid_589127 = query.getOrDefault("pageToken")
-  valid_589127 = validateParameter(valid_589127, JString, required = false,
-                                 default = nil)
-  if valid_589127 != nil:
-    section.add "pageToken", valid_589127
-  var valid_589128 = query.getOrDefault("quotaUser")
-  valid_589128 = validateParameter(valid_589128, JString, required = false,
-                                 default = nil)
-  if valid_589128 != nil:
-    section.add "quotaUser", valid_589128
-  var valid_589129 = query.getOrDefault("alt")
-  valid_589129 = validateParameter(valid_589129, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589129 != nil:
-    section.add "alt", valid_589129
-  var valid_589130 = query.getOrDefault("oauth_token")
-  valid_589130 = validateParameter(valid_589130, JString, required = false,
-                                 default = nil)
-  if valid_589130 != nil:
-    section.add "oauth_token", valid_589130
-  var valid_589131 = query.getOrDefault("userIp")
-  valid_589131 = validateParameter(valid_589131, JString, required = false,
-                                 default = nil)
-  if valid_589131 != nil:
-    section.add "userIp", valid_589131
-  var valid_589132 = query.getOrDefault("maxResults")
-  valid_589132 = validateParameter(valid_589132, JString, required = false,
-                                 default = nil)
-  if valid_589132 != nil:
-    section.add "maxResults", valid_589132
-  var valid_589133 = query.getOrDefault("key")
-  valid_589133 = validateParameter(valid_589133, JString, required = false,
-                                 default = nil)
-  if valid_589133 != nil:
-    section.add "key", valid_589133
-  var valid_589134 = query.getOrDefault("prettyPrint")
-  valid_589134 = validateParameter(valid_589134, JBool, required = false,
+  if valid_579026 != nil:
+    section.add "key", valid_579026
+  var valid_579027 = query.getOrDefault("prettyPrint")
+  valid_579027 = validateParameter(valid_579027, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589134 != nil:
-    section.add "prettyPrint", valid_589134
+  if valid_579027 != nil:
+    section.add "prettyPrint", valid_579027
+  var valid_579028 = query.getOrDefault("oauth_token")
+  valid_579028 = validateParameter(valid_579028, JString, required = false,
+                                 default = nil)
+  if valid_579028 != nil:
+    section.add "oauth_token", valid_579028
+  var valid_579029 = query.getOrDefault("alt")
+  valid_579029 = validateParameter(valid_579029, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579029 != nil:
+    section.add "alt", valid_579029
+  var valid_579030 = query.getOrDefault("userIp")
+  valid_579030 = validateParameter(valid_579030, JString, required = false,
+                                 default = nil)
+  if valid_579030 != nil:
+    section.add "userIp", valid_579030
+  var valid_579031 = query.getOrDefault("quotaUser")
+  valid_579031 = validateParameter(valid_579031, JString, required = false,
+                                 default = nil)
+  if valid_579031 != nil:
+    section.add "quotaUser", valid_579031
+  var valid_579032 = query.getOrDefault("pageToken")
+  valid_579032 = validateParameter(valid_579032, JString, required = false,
+                                 default = nil)
+  if valid_579032 != nil:
+    section.add "pageToken", valid_579032
+  var valid_579033 = query.getOrDefault("fields")
+  valid_579033 = validateParameter(valid_579033, JString, required = false,
+                                 default = nil)
+  if valid_579033 != nil:
+    section.add "fields", valid_579033
+  var valid_579034 = query.getOrDefault("maxResults")
+  valid_579034 = validateParameter(valid_579034, JString, required = false,
+                                 default = nil)
+  if valid_579034 != nil:
+    section.add "maxResults", valid_579034
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1720,63 +1724,63 @@ proc validate_TasksTasklistsList_589124(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589135: Call_TasksTasklistsList_589123; path: JsonNode;
+proc call*(call_579035: Call_TasksTasklistsList_579023; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns all the authenticated user's task lists.
   ## 
-  let valid = call_589135.validator(path, query, header, formData, body)
-  let scheme = call_589135.pickScheme
+  let valid = call_579035.validator(path, query, header, formData, body)
+  let scheme = call_579035.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589135.url(scheme.get, call_589135.host, call_589135.base,
-                         call_589135.route, valid.getOrDefault("path"),
+  let url = call_579035.url(scheme.get, call_579035.host, call_579035.base,
+                         call_579035.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589135, url, valid)
+  result = hook(call_579035, url, valid)
 
-proc call*(call_589136: Call_TasksTasklistsList_589123; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; maxResults: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579036: Call_TasksTasklistsList_579023; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
+          fields: string = ""; maxResults: string = ""): Recallable =
   ## tasksTasklistsList
   ## Returns all the authenticated user's task lists.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Token specifying the result page to return. Optional.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: string
-  ##             : Maximum number of task lists returned on one page. Optional. The default is 20 (max allowed: 100).
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589137 = newJObject()
-  add(query_589137, "fields", newJString(fields))
-  add(query_589137, "pageToken", newJString(pageToken))
-  add(query_589137, "quotaUser", newJString(quotaUser))
-  add(query_589137, "alt", newJString(alt))
-  add(query_589137, "oauth_token", newJString(oauthToken))
-  add(query_589137, "userIp", newJString(userIp))
-  add(query_589137, "maxResults", newJString(maxResults))
-  add(query_589137, "key", newJString(key))
-  add(query_589137, "prettyPrint", newJBool(prettyPrint))
-  result = call_589136.call(nil, query_589137, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : Token specifying the result page to return. Optional.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: string
+  ##             : Maximum number of task lists returned on one page. Optional. The default is 20 (max allowed: 100).
+  var query_579037 = newJObject()
+  add(query_579037, "key", newJString(key))
+  add(query_579037, "prettyPrint", newJBool(prettyPrint))
+  add(query_579037, "oauth_token", newJString(oauthToken))
+  add(query_579037, "alt", newJString(alt))
+  add(query_579037, "userIp", newJString(userIp))
+  add(query_579037, "quotaUser", newJString(quotaUser))
+  add(query_579037, "pageToken", newJString(pageToken))
+  add(query_579037, "fields", newJString(fields))
+  add(query_579037, "maxResults", newJString(maxResults))
+  result = call_579036.call(nil, query_579037, nil, nil, nil)
 
-var tasksTasklistsList* = Call_TasksTasklistsList_589123(
+var tasksTasklistsList* = Call_TasksTasklistsList_579023(
     name: "tasksTasklistsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/users/@me/lists",
-    validator: validate_TasksTasklistsList_589124, base: "/tasks/v1",
-    url: url_TasksTasklistsList_589125, schemes: {Scheme.Https})
+    validator: validate_TasksTasklistsList_579024, base: "/tasks/v1",
+    url: url_TasksTasklistsList_579025, schemes: {Scheme.Https})
 type
-  Call_TasksTasklistsUpdate_589168 = ref object of OpenApiRestCall_588441
-proc url_TasksTasklistsUpdate_589170(protocol: Scheme; host: string; base: string;
+  Call_TasksTasklistsUpdate_579068 = ref object of OpenApiRestCall_578339
+proc url_TasksTasklistsUpdate_579070(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1791,7 +1795,7 @@ proc url_TasksTasklistsUpdate_589170(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TasksTasklistsUpdate_589169(path: JsonNode; query: JsonNode;
+proc validate_TasksTasklistsUpdate_579069(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the authenticated user's specified task list.
   ## 
@@ -1802,63 +1806,63 @@ proc validate_TasksTasklistsUpdate_589169(path: JsonNode; query: JsonNode;
   ##           : Task list identifier.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tasklist` field"
-  var valid_589171 = path.getOrDefault("tasklist")
-  valid_589171 = validateParameter(valid_589171, JString, required = true,
+  var valid_579071 = path.getOrDefault("tasklist")
+  valid_579071 = validateParameter(valid_579071, JString, required = true,
                                  default = nil)
-  if valid_589171 != nil:
-    section.add "tasklist", valid_589171
+  if valid_579071 != nil:
+    section.add "tasklist", valid_579071
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589172 = query.getOrDefault("fields")
-  valid_589172 = validateParameter(valid_589172, JString, required = false,
+  var valid_579072 = query.getOrDefault("key")
+  valid_579072 = validateParameter(valid_579072, JString, required = false,
                                  default = nil)
-  if valid_589172 != nil:
-    section.add "fields", valid_589172
-  var valid_589173 = query.getOrDefault("quotaUser")
-  valid_589173 = validateParameter(valid_589173, JString, required = false,
-                                 default = nil)
-  if valid_589173 != nil:
-    section.add "quotaUser", valid_589173
-  var valid_589174 = query.getOrDefault("alt")
-  valid_589174 = validateParameter(valid_589174, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589174 != nil:
-    section.add "alt", valid_589174
-  var valid_589175 = query.getOrDefault("oauth_token")
-  valid_589175 = validateParameter(valid_589175, JString, required = false,
-                                 default = nil)
-  if valid_589175 != nil:
-    section.add "oauth_token", valid_589175
-  var valid_589176 = query.getOrDefault("userIp")
-  valid_589176 = validateParameter(valid_589176, JString, required = false,
-                                 default = nil)
-  if valid_589176 != nil:
-    section.add "userIp", valid_589176
-  var valid_589177 = query.getOrDefault("key")
-  valid_589177 = validateParameter(valid_589177, JString, required = false,
-                                 default = nil)
-  if valid_589177 != nil:
-    section.add "key", valid_589177
-  var valid_589178 = query.getOrDefault("prettyPrint")
-  valid_589178 = validateParameter(valid_589178, JBool, required = false,
+  if valid_579072 != nil:
+    section.add "key", valid_579072
+  var valid_579073 = query.getOrDefault("prettyPrint")
+  valid_579073 = validateParameter(valid_579073, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589178 != nil:
-    section.add "prettyPrint", valid_589178
+  if valid_579073 != nil:
+    section.add "prettyPrint", valid_579073
+  var valid_579074 = query.getOrDefault("oauth_token")
+  valid_579074 = validateParameter(valid_579074, JString, required = false,
+                                 default = nil)
+  if valid_579074 != nil:
+    section.add "oauth_token", valid_579074
+  var valid_579075 = query.getOrDefault("alt")
+  valid_579075 = validateParameter(valid_579075, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579075 != nil:
+    section.add "alt", valid_579075
+  var valid_579076 = query.getOrDefault("userIp")
+  valid_579076 = validateParameter(valid_579076, JString, required = false,
+                                 default = nil)
+  if valid_579076 != nil:
+    section.add "userIp", valid_579076
+  var valid_579077 = query.getOrDefault("quotaUser")
+  valid_579077 = validateParameter(valid_579077, JString, required = false,
+                                 default = nil)
+  if valid_579077 != nil:
+    section.add "quotaUser", valid_579077
+  var valid_579078 = query.getOrDefault("fields")
+  valid_579078 = validateParameter(valid_579078, JString, required = false,
+                                 default = nil)
+  if valid_579078 != nil:
+    section.add "fields", valid_579078
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1870,65 +1874,65 @@ proc validate_TasksTasklistsUpdate_589169(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589180: Call_TasksTasklistsUpdate_589168; path: JsonNode;
+proc call*(call_579080: Call_TasksTasklistsUpdate_579068; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the authenticated user's specified task list.
   ## 
-  let valid = call_589180.validator(path, query, header, formData, body)
-  let scheme = call_589180.pickScheme
+  let valid = call_579080.validator(path, query, header, formData, body)
+  let scheme = call_579080.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589180.url(scheme.get, call_589180.host, call_589180.base,
-                         call_589180.route, valid.getOrDefault("path"),
+  let url = call_579080.url(scheme.get, call_579080.host, call_579080.base,
+                         call_579080.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589180, url, valid)
+  result = hook(call_579080, url, valid)
 
-proc call*(call_589181: Call_TasksTasklistsUpdate_589168; tasklist: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579081: Call_TasksTasklistsUpdate_579068; tasklist: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## tasksTasklistsUpdate
   ## Updates the authenticated user's specified task list.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   tasklist: string (required)
-  ##           : Task list identifier.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589182 = newJObject()
-  var query_589183 = newJObject()
-  var body_589184 = newJObject()
-  add(query_589183, "fields", newJString(fields))
-  add(query_589183, "quotaUser", newJString(quotaUser))
-  add(query_589183, "alt", newJString(alt))
-  add(path_589182, "tasklist", newJString(tasklist))
-  add(query_589183, "oauth_token", newJString(oauthToken))
-  add(query_589183, "userIp", newJString(userIp))
-  add(query_589183, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   tasklist: string (required)
+  ##           : Task list identifier.
+  var path_579082 = newJObject()
+  var query_579083 = newJObject()
+  var body_579084 = newJObject()
+  add(query_579083, "key", newJString(key))
+  add(query_579083, "prettyPrint", newJBool(prettyPrint))
+  add(query_579083, "oauth_token", newJString(oauthToken))
+  add(query_579083, "alt", newJString(alt))
+  add(query_579083, "userIp", newJString(userIp))
+  add(query_579083, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589184 = body
-  add(query_589183, "prettyPrint", newJBool(prettyPrint))
-  result = call_589181.call(path_589182, query_589183, nil, nil, body_589184)
+    body_579084 = body
+  add(query_579083, "fields", newJString(fields))
+  add(path_579082, "tasklist", newJString(tasklist))
+  result = call_579081.call(path_579082, query_579083, nil, nil, body_579084)
 
-var tasksTasklistsUpdate* = Call_TasksTasklistsUpdate_589168(
+var tasksTasklistsUpdate* = Call_TasksTasklistsUpdate_579068(
     name: "tasksTasklistsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/users/@me/lists/{tasklist}",
-    validator: validate_TasksTasklistsUpdate_589169, base: "/tasks/v1",
-    url: url_TasksTasklistsUpdate_589170, schemes: {Scheme.Https})
+    validator: validate_TasksTasklistsUpdate_579069, base: "/tasks/v1",
+    url: url_TasksTasklistsUpdate_579070, schemes: {Scheme.Https})
 type
-  Call_TasksTasklistsGet_589153 = ref object of OpenApiRestCall_588441
-proc url_TasksTasklistsGet_589155(protocol: Scheme; host: string; base: string;
+  Call_TasksTasklistsGet_579053 = ref object of OpenApiRestCall_578339
+proc url_TasksTasklistsGet_579055(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1943,7 +1947,7 @@ proc url_TasksTasklistsGet_589155(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TasksTasklistsGet_589154(path: JsonNode; query: JsonNode;
+proc validate_TasksTasklistsGet_579054(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Returns the authenticated user's specified task list.
@@ -1955,63 +1959,63 @@ proc validate_TasksTasklistsGet_589154(path: JsonNode; query: JsonNode;
   ##           : Task list identifier.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tasklist` field"
-  var valid_589156 = path.getOrDefault("tasklist")
-  valid_589156 = validateParameter(valid_589156, JString, required = true,
+  var valid_579056 = path.getOrDefault("tasklist")
+  valid_579056 = validateParameter(valid_579056, JString, required = true,
                                  default = nil)
-  if valid_589156 != nil:
-    section.add "tasklist", valid_589156
+  if valid_579056 != nil:
+    section.add "tasklist", valid_579056
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589157 = query.getOrDefault("fields")
-  valid_589157 = validateParameter(valid_589157, JString, required = false,
+  var valid_579057 = query.getOrDefault("key")
+  valid_579057 = validateParameter(valid_579057, JString, required = false,
                                  default = nil)
-  if valid_589157 != nil:
-    section.add "fields", valid_589157
-  var valid_589158 = query.getOrDefault("quotaUser")
-  valid_589158 = validateParameter(valid_589158, JString, required = false,
-                                 default = nil)
-  if valid_589158 != nil:
-    section.add "quotaUser", valid_589158
-  var valid_589159 = query.getOrDefault("alt")
-  valid_589159 = validateParameter(valid_589159, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589159 != nil:
-    section.add "alt", valid_589159
-  var valid_589160 = query.getOrDefault("oauth_token")
-  valid_589160 = validateParameter(valid_589160, JString, required = false,
-                                 default = nil)
-  if valid_589160 != nil:
-    section.add "oauth_token", valid_589160
-  var valid_589161 = query.getOrDefault("userIp")
-  valid_589161 = validateParameter(valid_589161, JString, required = false,
-                                 default = nil)
-  if valid_589161 != nil:
-    section.add "userIp", valid_589161
-  var valid_589162 = query.getOrDefault("key")
-  valid_589162 = validateParameter(valid_589162, JString, required = false,
-                                 default = nil)
-  if valid_589162 != nil:
-    section.add "key", valid_589162
-  var valid_589163 = query.getOrDefault("prettyPrint")
-  valid_589163 = validateParameter(valid_589163, JBool, required = false,
+  if valid_579057 != nil:
+    section.add "key", valid_579057
+  var valid_579058 = query.getOrDefault("prettyPrint")
+  valid_579058 = validateParameter(valid_579058, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589163 != nil:
-    section.add "prettyPrint", valid_589163
+  if valid_579058 != nil:
+    section.add "prettyPrint", valid_579058
+  var valid_579059 = query.getOrDefault("oauth_token")
+  valid_579059 = validateParameter(valid_579059, JString, required = false,
+                                 default = nil)
+  if valid_579059 != nil:
+    section.add "oauth_token", valid_579059
+  var valid_579060 = query.getOrDefault("alt")
+  valid_579060 = validateParameter(valid_579060, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579060 != nil:
+    section.add "alt", valid_579060
+  var valid_579061 = query.getOrDefault("userIp")
+  valid_579061 = validateParameter(valid_579061, JString, required = false,
+                                 default = nil)
+  if valid_579061 != nil:
+    section.add "userIp", valid_579061
+  var valid_579062 = query.getOrDefault("quotaUser")
+  valid_579062 = validateParameter(valid_579062, JString, required = false,
+                                 default = nil)
+  if valid_579062 != nil:
+    section.add "quotaUser", valid_579062
+  var valid_579063 = query.getOrDefault("fields")
+  valid_579063 = validateParameter(valid_579063, JString, required = false,
+                                 default = nil)
+  if valid_579063 != nil:
+    section.add "fields", valid_579063
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2020,60 +2024,60 @@ proc validate_TasksTasklistsGet_589154(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589164: Call_TasksTasklistsGet_589153; path: JsonNode;
+proc call*(call_579064: Call_TasksTasklistsGet_579053; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns the authenticated user's specified task list.
   ## 
-  let valid = call_589164.validator(path, query, header, formData, body)
-  let scheme = call_589164.pickScheme
+  let valid = call_579064.validator(path, query, header, formData, body)
+  let scheme = call_579064.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589164.url(scheme.get, call_589164.host, call_589164.base,
-                         call_589164.route, valid.getOrDefault("path"),
+  let url = call_579064.url(scheme.get, call_579064.host, call_579064.base,
+                         call_579064.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589164, url, valid)
+  result = hook(call_579064, url, valid)
 
-proc call*(call_589165: Call_TasksTasklistsGet_589153; tasklist: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579065: Call_TasksTasklistsGet_579053; tasklist: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## tasksTasklistsGet
   ## Returns the authenticated user's specified task list.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   tasklist: string (required)
-  ##           : Task list identifier.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589166 = newJObject()
-  var query_589167 = newJObject()
-  add(query_589167, "fields", newJString(fields))
-  add(query_589167, "quotaUser", newJString(quotaUser))
-  add(query_589167, "alt", newJString(alt))
-  add(path_589166, "tasklist", newJString(tasklist))
-  add(query_589167, "oauth_token", newJString(oauthToken))
-  add(query_589167, "userIp", newJString(userIp))
-  add(query_589167, "key", newJString(key))
-  add(query_589167, "prettyPrint", newJBool(prettyPrint))
-  result = call_589165.call(path_589166, query_589167, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   tasklist: string (required)
+  ##           : Task list identifier.
+  var path_579066 = newJObject()
+  var query_579067 = newJObject()
+  add(query_579067, "key", newJString(key))
+  add(query_579067, "prettyPrint", newJBool(prettyPrint))
+  add(query_579067, "oauth_token", newJString(oauthToken))
+  add(query_579067, "alt", newJString(alt))
+  add(query_579067, "userIp", newJString(userIp))
+  add(query_579067, "quotaUser", newJString(quotaUser))
+  add(query_579067, "fields", newJString(fields))
+  add(path_579066, "tasklist", newJString(tasklist))
+  result = call_579065.call(path_579066, query_579067, nil, nil, nil)
 
-var tasksTasklistsGet* = Call_TasksTasklistsGet_589153(name: "tasksTasklistsGet",
+var tasksTasklistsGet* = Call_TasksTasklistsGet_579053(name: "tasksTasklistsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/users/@me/lists/{tasklist}", validator: validate_TasksTasklistsGet_589154,
-    base: "/tasks/v1", url: url_TasksTasklistsGet_589155, schemes: {Scheme.Https})
+    route: "/users/@me/lists/{tasklist}", validator: validate_TasksTasklistsGet_579054,
+    base: "/tasks/v1", url: url_TasksTasklistsGet_579055, schemes: {Scheme.Https})
 type
-  Call_TasksTasklistsPatch_589200 = ref object of OpenApiRestCall_588441
-proc url_TasksTasklistsPatch_589202(protocol: Scheme; host: string; base: string;
+  Call_TasksTasklistsPatch_579100 = ref object of OpenApiRestCall_578339
+proc url_TasksTasklistsPatch_579102(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2088,7 +2092,7 @@ proc url_TasksTasklistsPatch_589202(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TasksTasklistsPatch_589201(path: JsonNode; query: JsonNode;
+proc validate_TasksTasklistsPatch_579101(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Updates the authenticated user's specified task list. This method supports patch semantics.
@@ -2100,63 +2104,63 @@ proc validate_TasksTasklistsPatch_589201(path: JsonNode; query: JsonNode;
   ##           : Task list identifier.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tasklist` field"
-  var valid_589203 = path.getOrDefault("tasklist")
-  valid_589203 = validateParameter(valid_589203, JString, required = true,
+  var valid_579103 = path.getOrDefault("tasklist")
+  valid_579103 = validateParameter(valid_579103, JString, required = true,
                                  default = nil)
-  if valid_589203 != nil:
-    section.add "tasklist", valid_589203
+  if valid_579103 != nil:
+    section.add "tasklist", valid_579103
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589204 = query.getOrDefault("fields")
-  valid_589204 = validateParameter(valid_589204, JString, required = false,
+  var valid_579104 = query.getOrDefault("key")
+  valid_579104 = validateParameter(valid_579104, JString, required = false,
                                  default = nil)
-  if valid_589204 != nil:
-    section.add "fields", valid_589204
-  var valid_589205 = query.getOrDefault("quotaUser")
-  valid_589205 = validateParameter(valid_589205, JString, required = false,
-                                 default = nil)
-  if valid_589205 != nil:
-    section.add "quotaUser", valid_589205
-  var valid_589206 = query.getOrDefault("alt")
-  valid_589206 = validateParameter(valid_589206, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589206 != nil:
-    section.add "alt", valid_589206
-  var valid_589207 = query.getOrDefault("oauth_token")
-  valid_589207 = validateParameter(valid_589207, JString, required = false,
-                                 default = nil)
-  if valid_589207 != nil:
-    section.add "oauth_token", valid_589207
-  var valid_589208 = query.getOrDefault("userIp")
-  valid_589208 = validateParameter(valid_589208, JString, required = false,
-                                 default = nil)
-  if valid_589208 != nil:
-    section.add "userIp", valid_589208
-  var valid_589209 = query.getOrDefault("key")
-  valid_589209 = validateParameter(valid_589209, JString, required = false,
-                                 default = nil)
-  if valid_589209 != nil:
-    section.add "key", valid_589209
-  var valid_589210 = query.getOrDefault("prettyPrint")
-  valid_589210 = validateParameter(valid_589210, JBool, required = false,
+  if valid_579104 != nil:
+    section.add "key", valid_579104
+  var valid_579105 = query.getOrDefault("prettyPrint")
+  valid_579105 = validateParameter(valid_579105, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589210 != nil:
-    section.add "prettyPrint", valid_589210
+  if valid_579105 != nil:
+    section.add "prettyPrint", valid_579105
+  var valid_579106 = query.getOrDefault("oauth_token")
+  valid_579106 = validateParameter(valid_579106, JString, required = false,
+                                 default = nil)
+  if valid_579106 != nil:
+    section.add "oauth_token", valid_579106
+  var valid_579107 = query.getOrDefault("alt")
+  valid_579107 = validateParameter(valid_579107, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579107 != nil:
+    section.add "alt", valid_579107
+  var valid_579108 = query.getOrDefault("userIp")
+  valid_579108 = validateParameter(valid_579108, JString, required = false,
+                                 default = nil)
+  if valid_579108 != nil:
+    section.add "userIp", valid_579108
+  var valid_579109 = query.getOrDefault("quotaUser")
+  valid_579109 = validateParameter(valid_579109, JString, required = false,
+                                 default = nil)
+  if valid_579109 != nil:
+    section.add "quotaUser", valid_579109
+  var valid_579110 = query.getOrDefault("fields")
+  valid_579110 = validateParameter(valid_579110, JString, required = false,
+                                 default = nil)
+  if valid_579110 != nil:
+    section.add "fields", valid_579110
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2168,65 +2172,65 @@ proc validate_TasksTasklistsPatch_589201(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589212: Call_TasksTasklistsPatch_589200; path: JsonNode;
+proc call*(call_579112: Call_TasksTasklistsPatch_579100; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the authenticated user's specified task list. This method supports patch semantics.
   ## 
-  let valid = call_589212.validator(path, query, header, formData, body)
-  let scheme = call_589212.pickScheme
+  let valid = call_579112.validator(path, query, header, formData, body)
+  let scheme = call_579112.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589212.url(scheme.get, call_589212.host, call_589212.base,
-                         call_589212.route, valid.getOrDefault("path"),
+  let url = call_579112.url(scheme.get, call_579112.host, call_579112.base,
+                         call_579112.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589212, url, valid)
+  result = hook(call_579112, url, valid)
 
-proc call*(call_589213: Call_TasksTasklistsPatch_589200; tasklist: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579113: Call_TasksTasklistsPatch_579100; tasklist: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""): Recallable =
   ## tasksTasklistsPatch
   ## Updates the authenticated user's specified task list. This method supports patch semantics.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   tasklist: string (required)
-  ##           : Task list identifier.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589214 = newJObject()
-  var query_589215 = newJObject()
-  var body_589216 = newJObject()
-  add(query_589215, "fields", newJString(fields))
-  add(query_589215, "quotaUser", newJString(quotaUser))
-  add(query_589215, "alt", newJString(alt))
-  add(path_589214, "tasklist", newJString(tasklist))
-  add(query_589215, "oauth_token", newJString(oauthToken))
-  add(query_589215, "userIp", newJString(userIp))
-  add(query_589215, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   tasklist: string (required)
+  ##           : Task list identifier.
+  var path_579114 = newJObject()
+  var query_579115 = newJObject()
+  var body_579116 = newJObject()
+  add(query_579115, "key", newJString(key))
+  add(query_579115, "prettyPrint", newJBool(prettyPrint))
+  add(query_579115, "oauth_token", newJString(oauthToken))
+  add(query_579115, "alt", newJString(alt))
+  add(query_579115, "userIp", newJString(userIp))
+  add(query_579115, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589216 = body
-  add(query_589215, "prettyPrint", newJBool(prettyPrint))
-  result = call_589213.call(path_589214, query_589215, nil, nil, body_589216)
+    body_579116 = body
+  add(query_579115, "fields", newJString(fields))
+  add(path_579114, "tasklist", newJString(tasklist))
+  result = call_579113.call(path_579114, query_579115, nil, nil, body_579116)
 
-var tasksTasklistsPatch* = Call_TasksTasklistsPatch_589200(
+var tasksTasklistsPatch* = Call_TasksTasklistsPatch_579100(
     name: "tasksTasklistsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/users/@me/lists/{tasklist}",
-    validator: validate_TasksTasklistsPatch_589201, base: "/tasks/v1",
-    url: url_TasksTasklistsPatch_589202, schemes: {Scheme.Https})
+    validator: validate_TasksTasklistsPatch_579101, base: "/tasks/v1",
+    url: url_TasksTasklistsPatch_579102, schemes: {Scheme.Https})
 type
-  Call_TasksTasklistsDelete_589185 = ref object of OpenApiRestCall_588441
-proc url_TasksTasklistsDelete_589187(protocol: Scheme; host: string; base: string;
+  Call_TasksTasklistsDelete_579085 = ref object of OpenApiRestCall_578339
+proc url_TasksTasklistsDelete_579087(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2241,7 +2245,7 @@ proc url_TasksTasklistsDelete_589187(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TasksTasklistsDelete_589186(path: JsonNode; query: JsonNode;
+proc validate_TasksTasklistsDelete_579086(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes the authenticated user's specified task list.
   ## 
@@ -2252,63 +2256,63 @@ proc validate_TasksTasklistsDelete_589186(path: JsonNode; query: JsonNode;
   ##           : Task list identifier.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `tasklist` field"
-  var valid_589188 = path.getOrDefault("tasklist")
-  valid_589188 = validateParameter(valid_589188, JString, required = true,
+  var valid_579088 = path.getOrDefault("tasklist")
+  valid_579088 = validateParameter(valid_579088, JString, required = true,
                                  default = nil)
-  if valid_589188 != nil:
-    section.add "tasklist", valid_589188
+  if valid_579088 != nil:
+    section.add "tasklist", valid_579088
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589189 = query.getOrDefault("fields")
-  valid_589189 = validateParameter(valid_589189, JString, required = false,
+  var valid_579089 = query.getOrDefault("key")
+  valid_579089 = validateParameter(valid_579089, JString, required = false,
                                  default = nil)
-  if valid_589189 != nil:
-    section.add "fields", valid_589189
-  var valid_589190 = query.getOrDefault("quotaUser")
-  valid_589190 = validateParameter(valid_589190, JString, required = false,
-                                 default = nil)
-  if valid_589190 != nil:
-    section.add "quotaUser", valid_589190
-  var valid_589191 = query.getOrDefault("alt")
-  valid_589191 = validateParameter(valid_589191, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589191 != nil:
-    section.add "alt", valid_589191
-  var valid_589192 = query.getOrDefault("oauth_token")
-  valid_589192 = validateParameter(valid_589192, JString, required = false,
-                                 default = nil)
-  if valid_589192 != nil:
-    section.add "oauth_token", valid_589192
-  var valid_589193 = query.getOrDefault("userIp")
-  valid_589193 = validateParameter(valid_589193, JString, required = false,
-                                 default = nil)
-  if valid_589193 != nil:
-    section.add "userIp", valid_589193
-  var valid_589194 = query.getOrDefault("key")
-  valid_589194 = validateParameter(valid_589194, JString, required = false,
-                                 default = nil)
-  if valid_589194 != nil:
-    section.add "key", valid_589194
-  var valid_589195 = query.getOrDefault("prettyPrint")
-  valid_589195 = validateParameter(valid_589195, JBool, required = false,
+  if valid_579089 != nil:
+    section.add "key", valid_579089
+  var valid_579090 = query.getOrDefault("prettyPrint")
+  valid_579090 = validateParameter(valid_579090, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589195 != nil:
-    section.add "prettyPrint", valid_589195
+  if valid_579090 != nil:
+    section.add "prettyPrint", valid_579090
+  var valid_579091 = query.getOrDefault("oauth_token")
+  valid_579091 = validateParameter(valid_579091, JString, required = false,
+                                 default = nil)
+  if valid_579091 != nil:
+    section.add "oauth_token", valid_579091
+  var valid_579092 = query.getOrDefault("alt")
+  valid_579092 = validateParameter(valid_579092, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579092 != nil:
+    section.add "alt", valid_579092
+  var valid_579093 = query.getOrDefault("userIp")
+  valid_579093 = validateParameter(valid_579093, JString, required = false,
+                                 default = nil)
+  if valid_579093 != nil:
+    section.add "userIp", valid_579093
+  var valid_579094 = query.getOrDefault("quotaUser")
+  valid_579094 = validateParameter(valid_579094, JString, required = false,
+                                 default = nil)
+  if valid_579094 != nil:
+    section.add "quotaUser", valid_579094
+  var valid_579095 = query.getOrDefault("fields")
+  valid_579095 = validateParameter(valid_579095, JString, required = false,
+                                 default = nil)
+  if valid_579095 != nil:
+    section.add "fields", valid_579095
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2317,58 +2321,58 @@ proc validate_TasksTasklistsDelete_589186(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589196: Call_TasksTasklistsDelete_589185; path: JsonNode;
+proc call*(call_579096: Call_TasksTasklistsDelete_579085; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes the authenticated user's specified task list.
   ## 
-  let valid = call_589196.validator(path, query, header, formData, body)
-  let scheme = call_589196.pickScheme
+  let valid = call_579096.validator(path, query, header, formData, body)
+  let scheme = call_579096.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589196.url(scheme.get, call_589196.host, call_589196.base,
-                         call_589196.route, valid.getOrDefault("path"),
+  let url = call_579096.url(scheme.get, call_579096.host, call_579096.base,
+                         call_579096.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589196, url, valid)
+  result = hook(call_579096, url, valid)
 
-proc call*(call_589197: Call_TasksTasklistsDelete_589185; tasklist: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579097: Call_TasksTasklistsDelete_579085; tasklist: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## tasksTasklistsDelete
   ## Deletes the authenticated user's specified task list.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   tasklist: string (required)
-  ##           : Task list identifier.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589198 = newJObject()
-  var query_589199 = newJObject()
-  add(query_589199, "fields", newJString(fields))
-  add(query_589199, "quotaUser", newJString(quotaUser))
-  add(query_589199, "alt", newJString(alt))
-  add(path_589198, "tasklist", newJString(tasklist))
-  add(query_589199, "oauth_token", newJString(oauthToken))
-  add(query_589199, "userIp", newJString(userIp))
-  add(query_589199, "key", newJString(key))
-  add(query_589199, "prettyPrint", newJBool(prettyPrint))
-  result = call_589197.call(path_589198, query_589199, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   tasklist: string (required)
+  ##           : Task list identifier.
+  var path_579098 = newJObject()
+  var query_579099 = newJObject()
+  add(query_579099, "key", newJString(key))
+  add(query_579099, "prettyPrint", newJBool(prettyPrint))
+  add(query_579099, "oauth_token", newJString(oauthToken))
+  add(query_579099, "alt", newJString(alt))
+  add(query_579099, "userIp", newJString(userIp))
+  add(query_579099, "quotaUser", newJString(quotaUser))
+  add(query_579099, "fields", newJString(fields))
+  add(path_579098, "tasklist", newJString(tasklist))
+  result = call_579097.call(path_579098, query_579099, nil, nil, nil)
 
-var tasksTasklistsDelete* = Call_TasksTasklistsDelete_589185(
+var tasksTasklistsDelete* = Call_TasksTasklistsDelete_579085(
     name: "tasksTasklistsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/users/@me/lists/{tasklist}",
-    validator: validate_TasksTasklistsDelete_589186, base: "/tasks/v1",
-    url: url_TasksTasklistsDelete_589187, schemes: {Scheme.Https})
+    validator: validate_TasksTasklistsDelete_579086, base: "/tasks/v1",
+    url: url_TasksTasklistsDelete_579087, schemes: {Scheme.Https})
 export
   rest
 

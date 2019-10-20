@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588441 = ref object of OpenApiRestCall
+  OpenApiRestCall_578339 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,8 +112,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_CloudprivatecatalogProjectsCatalogsSearch_588710 = ref object of OpenApiRestCall_588441
-proc url_CloudprivatecatalogProjectsCatalogsSearch_588712(protocol: Scheme;
+  Call_CloudprivatecatalogProjectsCatalogsSearch_578610 = ref object of OpenApiRestCall_578339
+proc url_CloudprivatecatalogProjectsCatalogsSearch_578612(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -125,7 +129,7 @@ proc url_CloudprivatecatalogProjectsCatalogsSearch_588712(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudprivatecatalogProjectsCatalogsSearch_588711(path: JsonNode;
+proc validate_CloudprivatecatalogProjectsCatalogsSearch_578611(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Search Catalog resources that consumers have access to, within the
   ## scope of the consumer cloud resource hierarchy context.
@@ -141,115 +145,115 @@ proc validate_CloudprivatecatalogProjectsCatalogsSearch_588711(path: JsonNode;
   ## * `organizations/{organization_id}`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_588838 = path.getOrDefault("resource")
-  valid_588838 = validateParameter(valid_588838, JString, required = true,
+  var valid_578738 = path.getOrDefault("resource")
+  valid_578738 = validateParameter(valid_578738, JString, required = true,
                                  default = nil)
-  if valid_588838 != nil:
-    section.add "resource", valid_588838
+  if valid_578738 != nil:
+    section.add "resource", valid_578738
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : A pagination token returned from a previous call to SearchCatalogs that
-  ## indicates where this listing should continue from.
-  ## This field is optional.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   query: JString
-  ##        : The query to filter the catalogs. The supported queries are:
-  ## 
-  ## * Get a single catalog: `name=catalogs/{catalog_id}`
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
   ##   $.xgafv: JString
   ##          : V1 error format.
   ##   pageSize: JInt
   ##           : The maximum number of entries that are requested.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : A pagination token returned from a previous call to SearchCatalogs that
+  ## indicates where this listing should continue from.
+  ## This field is optional.
+  ##   query: JString
+  ##        : The query to filter the catalogs. The supported queries are:
+  ## 
+  ## * Get a single catalog: `name=catalogs/{catalog_id}`
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_588839 = query.getOrDefault("upload_protocol")
-  valid_588839 = validateParameter(valid_588839, JString, required = false,
+  var valid_578739 = query.getOrDefault("key")
+  valid_578739 = validateParameter(valid_578739, JString, required = false,
                                  default = nil)
-  if valid_588839 != nil:
-    section.add "upload_protocol", valid_588839
-  var valid_588840 = query.getOrDefault("fields")
-  valid_588840 = validateParameter(valid_588840, JString, required = false,
-                                 default = nil)
-  if valid_588840 != nil:
-    section.add "fields", valid_588840
-  var valid_588841 = query.getOrDefault("pageToken")
-  valid_588841 = validateParameter(valid_588841, JString, required = false,
-                                 default = nil)
-  if valid_588841 != nil:
-    section.add "pageToken", valid_588841
-  var valid_588842 = query.getOrDefault("quotaUser")
-  valid_588842 = validateParameter(valid_588842, JString, required = false,
-                                 default = nil)
-  if valid_588842 != nil:
-    section.add "quotaUser", valid_588842
-  var valid_588856 = query.getOrDefault("alt")
-  valid_588856 = validateParameter(valid_588856, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588856 != nil:
-    section.add "alt", valid_588856
-  var valid_588857 = query.getOrDefault("query")
-  valid_588857 = validateParameter(valid_588857, JString, required = false,
-                                 default = nil)
-  if valid_588857 != nil:
-    section.add "query", valid_588857
-  var valid_588858 = query.getOrDefault("oauth_token")
-  valid_588858 = validateParameter(valid_588858, JString, required = false,
-                                 default = nil)
-  if valid_588858 != nil:
-    section.add "oauth_token", valid_588858
-  var valid_588859 = query.getOrDefault("callback")
-  valid_588859 = validateParameter(valid_588859, JString, required = false,
-                                 default = nil)
-  if valid_588859 != nil:
-    section.add "callback", valid_588859
-  var valid_588860 = query.getOrDefault("access_token")
-  valid_588860 = validateParameter(valid_588860, JString, required = false,
-                                 default = nil)
-  if valid_588860 != nil:
-    section.add "access_token", valid_588860
-  var valid_588861 = query.getOrDefault("uploadType")
-  valid_588861 = validateParameter(valid_588861, JString, required = false,
-                                 default = nil)
-  if valid_588861 != nil:
-    section.add "uploadType", valid_588861
-  var valid_588862 = query.getOrDefault("key")
-  valid_588862 = validateParameter(valid_588862, JString, required = false,
-                                 default = nil)
-  if valid_588862 != nil:
-    section.add "key", valid_588862
-  var valid_588863 = query.getOrDefault("$.xgafv")
-  valid_588863 = validateParameter(valid_588863, JString, required = false,
-                                 default = newJString("1"))
-  if valid_588863 != nil:
-    section.add "$.xgafv", valid_588863
-  var valid_588864 = query.getOrDefault("pageSize")
-  valid_588864 = validateParameter(valid_588864, JInt, required = false, default = nil)
-  if valid_588864 != nil:
-    section.add "pageSize", valid_588864
-  var valid_588865 = query.getOrDefault("prettyPrint")
-  valid_588865 = validateParameter(valid_588865, JBool, required = false,
+  if valid_578739 != nil:
+    section.add "key", valid_578739
+  var valid_578753 = query.getOrDefault("prettyPrint")
+  valid_578753 = validateParameter(valid_578753, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588865 != nil:
-    section.add "prettyPrint", valid_588865
+  if valid_578753 != nil:
+    section.add "prettyPrint", valid_578753
+  var valid_578754 = query.getOrDefault("oauth_token")
+  valid_578754 = validateParameter(valid_578754, JString, required = false,
+                                 default = nil)
+  if valid_578754 != nil:
+    section.add "oauth_token", valid_578754
+  var valid_578755 = query.getOrDefault("$.xgafv")
+  valid_578755 = validateParameter(valid_578755, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578755 != nil:
+    section.add "$.xgafv", valid_578755
+  var valid_578756 = query.getOrDefault("pageSize")
+  valid_578756 = validateParameter(valid_578756, JInt, required = false, default = nil)
+  if valid_578756 != nil:
+    section.add "pageSize", valid_578756
+  var valid_578757 = query.getOrDefault("alt")
+  valid_578757 = validateParameter(valid_578757, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578757 != nil:
+    section.add "alt", valid_578757
+  var valid_578758 = query.getOrDefault("uploadType")
+  valid_578758 = validateParameter(valid_578758, JString, required = false,
+                                 default = nil)
+  if valid_578758 != nil:
+    section.add "uploadType", valid_578758
+  var valid_578759 = query.getOrDefault("quotaUser")
+  valid_578759 = validateParameter(valid_578759, JString, required = false,
+                                 default = nil)
+  if valid_578759 != nil:
+    section.add "quotaUser", valid_578759
+  var valid_578760 = query.getOrDefault("pageToken")
+  valid_578760 = validateParameter(valid_578760, JString, required = false,
+                                 default = nil)
+  if valid_578760 != nil:
+    section.add "pageToken", valid_578760
+  var valid_578761 = query.getOrDefault("query")
+  valid_578761 = validateParameter(valid_578761, JString, required = false,
+                                 default = nil)
+  if valid_578761 != nil:
+    section.add "query", valid_578761
+  var valid_578762 = query.getOrDefault("callback")
+  valid_578762 = validateParameter(valid_578762, JString, required = false,
+                                 default = nil)
+  if valid_578762 != nil:
+    section.add "callback", valid_578762
+  var valid_578763 = query.getOrDefault("fields")
+  valid_578763 = validateParameter(valid_578763, JString, required = false,
+                                 default = nil)
+  if valid_578763 != nil:
+    section.add "fields", valid_578763
+  var valid_578764 = query.getOrDefault("access_token")
+  valid_578764 = validateParameter(valid_578764, JString, required = false,
+                                 default = nil)
+  if valid_578764 != nil:
+    section.add "access_token", valid_578764
+  var valid_578765 = query.getOrDefault("upload_protocol")
+  valid_578765 = validateParameter(valid_578765, JString, required = false,
+                                 default = nil)
+  if valid_578765 != nil:
+    section.add "upload_protocol", valid_578765
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -258,97 +262,97 @@ proc validate_CloudprivatecatalogProjectsCatalogsSearch_588711(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588888: Call_CloudprivatecatalogProjectsCatalogsSearch_588710;
+proc call*(call_578788: Call_CloudprivatecatalogProjectsCatalogsSearch_578610;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Search Catalog resources that consumers have access to, within the
   ## scope of the consumer cloud resource hierarchy context.
   ## 
-  let valid = call_588888.validator(path, query, header, formData, body)
-  let scheme = call_588888.pickScheme
+  let valid = call_578788.validator(path, query, header, formData, body)
+  let scheme = call_578788.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588888.url(scheme.get, call_588888.host, call_588888.base,
-                         call_588888.route, valid.getOrDefault("path"),
+  let url = call_578788.url(scheme.get, call_578788.host, call_578788.base,
+                         call_578788.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588888, url, valid)
+  result = hook(call_578788, url, valid)
 
-proc call*(call_588959: Call_CloudprivatecatalogProjectsCatalogsSearch_588710;
-          resource: string; uploadProtocol: string = ""; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          query: string = ""; oauthToken: string = ""; callback: string = "";
-          accessToken: string = ""; uploadType: string = ""; key: string = "";
-          Xgafv: string = "1"; pageSize: int = 0; prettyPrint: bool = true): Recallable =
+proc call*(call_578859: Call_CloudprivatecatalogProjectsCatalogsSearch_578610;
+          resource: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; pageSize: int = 0;
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          pageToken: string = ""; query: string = ""; callback: string = "";
+          fields: string = ""; accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## cloudprivatecatalogProjectsCatalogsSearch
   ## Search Catalog resources that consumers have access to, within the
   ## scope of the consumer cloud resource hierarchy context.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : A pagination token returned from a previous call to SearchCatalogs that
-  ## indicates where this listing should continue from.
-  ## This field is optional.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   query: string
-  ##        : The query to filter the catalogs. The supported queries are:
-  ## 
-  ## * Get a single catalog: `name=catalogs/{catalog_id}`
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   Xgafv: string
   ##        : V1 error format.
+  ##   pageSize: int
+  ##           : The maximum number of entries that are requested.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   resource: string (required)
   ##           : Required. The name of the resource context. It can be in following formats:
   ## 
   ## * `projects/{project_id}`
   ## * `folders/{folder_id}`
   ## * `organizations/{organization_id}`
-  ##   pageSize: int
-  ##           : The maximum number of entries that are requested.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_588960 = newJObject()
-  var query_588962 = newJObject()
-  add(query_588962, "upload_protocol", newJString(uploadProtocol))
-  add(query_588962, "fields", newJString(fields))
-  add(query_588962, "pageToken", newJString(pageToken))
-  add(query_588962, "quotaUser", newJString(quotaUser))
-  add(query_588962, "alt", newJString(alt))
-  add(query_588962, "query", newJString(query))
-  add(query_588962, "oauth_token", newJString(oauthToken))
-  add(query_588962, "callback", newJString(callback))
-  add(query_588962, "access_token", newJString(accessToken))
-  add(query_588962, "uploadType", newJString(uploadType))
-  add(query_588962, "key", newJString(key))
-  add(query_588962, "$.xgafv", newJString(Xgafv))
-  add(path_588960, "resource", newJString(resource))
-  add(query_588962, "pageSize", newJInt(pageSize))
-  add(query_588962, "prettyPrint", newJBool(prettyPrint))
-  result = call_588959.call(path_588960, query_588962, nil, nil, nil)
+  ##   pageToken: string
+  ##            : A pagination token returned from a previous call to SearchCatalogs that
+  ## indicates where this listing should continue from.
+  ## This field is optional.
+  ##   query: string
+  ##        : The query to filter the catalogs. The supported queries are:
+  ## 
+  ## * Get a single catalog: `name=catalogs/{catalog_id}`
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_578860 = newJObject()
+  var query_578862 = newJObject()
+  add(query_578862, "key", newJString(key))
+  add(query_578862, "prettyPrint", newJBool(prettyPrint))
+  add(query_578862, "oauth_token", newJString(oauthToken))
+  add(query_578862, "$.xgafv", newJString(Xgafv))
+  add(query_578862, "pageSize", newJInt(pageSize))
+  add(query_578862, "alt", newJString(alt))
+  add(query_578862, "uploadType", newJString(uploadType))
+  add(query_578862, "quotaUser", newJString(quotaUser))
+  add(path_578860, "resource", newJString(resource))
+  add(query_578862, "pageToken", newJString(pageToken))
+  add(query_578862, "query", newJString(query))
+  add(query_578862, "callback", newJString(callback))
+  add(query_578862, "fields", newJString(fields))
+  add(query_578862, "access_token", newJString(accessToken))
+  add(query_578862, "upload_protocol", newJString(uploadProtocol))
+  result = call_578859.call(path_578860, query_578862, nil, nil, nil)
 
-var cloudprivatecatalogProjectsCatalogsSearch* = Call_CloudprivatecatalogProjectsCatalogsSearch_588710(
+var cloudprivatecatalogProjectsCatalogsSearch* = Call_CloudprivatecatalogProjectsCatalogsSearch_578610(
     name: "cloudprivatecatalogProjectsCatalogsSearch", meth: HttpMethod.HttpGet,
     host: "cloudprivatecatalog.googleapis.com",
     route: "/v1beta1/{resource}/catalogs:search",
-    validator: validate_CloudprivatecatalogProjectsCatalogsSearch_588711,
-    base: "/", url: url_CloudprivatecatalogProjectsCatalogsSearch_588712,
+    validator: validate_CloudprivatecatalogProjectsCatalogsSearch_578611,
+    base: "/", url: url_CloudprivatecatalogProjectsCatalogsSearch_578612,
     schemes: {Scheme.Https})
 type
-  Call_CloudprivatecatalogProjectsProductsSearch_589001 = ref object of OpenApiRestCall_588441
-proc url_CloudprivatecatalogProjectsProductsSearch_589003(protocol: Scheme;
+  Call_CloudprivatecatalogProjectsProductsSearch_578901 = ref object of OpenApiRestCall_578339
+proc url_CloudprivatecatalogProjectsProductsSearch_578903(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -364,7 +368,7 @@ proc url_CloudprivatecatalogProjectsProductsSearch_589003(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudprivatecatalogProjectsProductsSearch_589002(path: JsonNode;
+proc validate_CloudprivatecatalogProjectsProductsSearch_578902(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Search Product resources that consumers have access to, within the
   ## scope of the consumer cloud resource hierarchy context.
@@ -377,25 +381,33 @@ proc validate_CloudprivatecatalogProjectsProductsSearch_589002(path: JsonNode;
   ## SearchCatalogsRequest.resource for details.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_589004 = path.getOrDefault("resource")
-  valid_589004 = validateParameter(valid_589004, JString, required = true,
+  var valid_578904 = path.getOrDefault("resource")
+  valid_578904 = validateParameter(valid_578904, JString, required = true,
                                  default = nil)
-  if valid_589004 != nil:
-    section.add "resource", valid_589004
+  if valid_578904 != nil:
+    section.add "resource", valid_578904
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   pageSize: JInt
+  ##           : The maximum number of entries that are requested.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   pageToken: JString
   ##            : A pagination token returned from a previous call to SearchProducts that
   ## indicates where this listing should continue from.
   ## This field is optional.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
   ##   query: JString
   ##        : The query to filter the products.
   ## 
@@ -404,92 +416,84 @@ proc validate_CloudprivatecatalogProjectsProductsSearch_589002(path: JsonNode;
   ## * List products under a catalog: `parent=catalogs/{catalog_id}`
   ## * Get a product by name:
   ## `name=catalogs/{catalog_id}/products/{product_id}`
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
   ##   callback: JString
   ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   ##   access_token: JString
   ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   pageSize: JInt
-  ##           : The maximum number of entries that are requested.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589005 = query.getOrDefault("upload_protocol")
-  valid_589005 = validateParameter(valid_589005, JString, required = false,
+  var valid_578905 = query.getOrDefault("key")
+  valid_578905 = validateParameter(valid_578905, JString, required = false,
                                  default = nil)
-  if valid_589005 != nil:
-    section.add "upload_protocol", valid_589005
-  var valid_589006 = query.getOrDefault("fields")
-  valid_589006 = validateParameter(valid_589006, JString, required = false,
-                                 default = nil)
-  if valid_589006 != nil:
-    section.add "fields", valid_589006
-  var valid_589007 = query.getOrDefault("pageToken")
-  valid_589007 = validateParameter(valid_589007, JString, required = false,
-                                 default = nil)
-  if valid_589007 != nil:
-    section.add "pageToken", valid_589007
-  var valid_589008 = query.getOrDefault("quotaUser")
-  valid_589008 = validateParameter(valid_589008, JString, required = false,
-                                 default = nil)
-  if valid_589008 != nil:
-    section.add "quotaUser", valid_589008
-  var valid_589009 = query.getOrDefault("alt")
-  valid_589009 = validateParameter(valid_589009, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589009 != nil:
-    section.add "alt", valid_589009
-  var valid_589010 = query.getOrDefault("query")
-  valid_589010 = validateParameter(valid_589010, JString, required = false,
-                                 default = nil)
-  if valid_589010 != nil:
-    section.add "query", valid_589010
-  var valid_589011 = query.getOrDefault("oauth_token")
-  valid_589011 = validateParameter(valid_589011, JString, required = false,
-                                 default = nil)
-  if valid_589011 != nil:
-    section.add "oauth_token", valid_589011
-  var valid_589012 = query.getOrDefault("callback")
-  valid_589012 = validateParameter(valid_589012, JString, required = false,
-                                 default = nil)
-  if valid_589012 != nil:
-    section.add "callback", valid_589012
-  var valid_589013 = query.getOrDefault("access_token")
-  valid_589013 = validateParameter(valid_589013, JString, required = false,
-                                 default = nil)
-  if valid_589013 != nil:
-    section.add "access_token", valid_589013
-  var valid_589014 = query.getOrDefault("uploadType")
-  valid_589014 = validateParameter(valid_589014, JString, required = false,
-                                 default = nil)
-  if valid_589014 != nil:
-    section.add "uploadType", valid_589014
-  var valid_589015 = query.getOrDefault("key")
-  valid_589015 = validateParameter(valid_589015, JString, required = false,
-                                 default = nil)
-  if valid_589015 != nil:
-    section.add "key", valid_589015
-  var valid_589016 = query.getOrDefault("$.xgafv")
-  valid_589016 = validateParameter(valid_589016, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589016 != nil:
-    section.add "$.xgafv", valid_589016
-  var valid_589017 = query.getOrDefault("pageSize")
-  valid_589017 = validateParameter(valid_589017, JInt, required = false, default = nil)
-  if valid_589017 != nil:
-    section.add "pageSize", valid_589017
-  var valid_589018 = query.getOrDefault("prettyPrint")
-  valid_589018 = validateParameter(valid_589018, JBool, required = false,
+  if valid_578905 != nil:
+    section.add "key", valid_578905
+  var valid_578906 = query.getOrDefault("prettyPrint")
+  valid_578906 = validateParameter(valid_578906, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589018 != nil:
-    section.add "prettyPrint", valid_589018
+  if valid_578906 != nil:
+    section.add "prettyPrint", valid_578906
+  var valid_578907 = query.getOrDefault("oauth_token")
+  valid_578907 = validateParameter(valid_578907, JString, required = false,
+                                 default = nil)
+  if valid_578907 != nil:
+    section.add "oauth_token", valid_578907
+  var valid_578908 = query.getOrDefault("$.xgafv")
+  valid_578908 = validateParameter(valid_578908, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578908 != nil:
+    section.add "$.xgafv", valid_578908
+  var valid_578909 = query.getOrDefault("pageSize")
+  valid_578909 = validateParameter(valid_578909, JInt, required = false, default = nil)
+  if valid_578909 != nil:
+    section.add "pageSize", valid_578909
+  var valid_578910 = query.getOrDefault("alt")
+  valid_578910 = validateParameter(valid_578910, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578910 != nil:
+    section.add "alt", valid_578910
+  var valid_578911 = query.getOrDefault("uploadType")
+  valid_578911 = validateParameter(valid_578911, JString, required = false,
+                                 default = nil)
+  if valid_578911 != nil:
+    section.add "uploadType", valid_578911
+  var valid_578912 = query.getOrDefault("quotaUser")
+  valid_578912 = validateParameter(valid_578912, JString, required = false,
+                                 default = nil)
+  if valid_578912 != nil:
+    section.add "quotaUser", valid_578912
+  var valid_578913 = query.getOrDefault("pageToken")
+  valid_578913 = validateParameter(valid_578913, JString, required = false,
+                                 default = nil)
+  if valid_578913 != nil:
+    section.add "pageToken", valid_578913
+  var valid_578914 = query.getOrDefault("query")
+  valid_578914 = validateParameter(valid_578914, JString, required = false,
+                                 default = nil)
+  if valid_578914 != nil:
+    section.add "query", valid_578914
+  var valid_578915 = query.getOrDefault("callback")
+  valid_578915 = validateParameter(valid_578915, JString, required = false,
+                                 default = nil)
+  if valid_578915 != nil:
+    section.add "callback", valid_578915
+  var valid_578916 = query.getOrDefault("fields")
+  valid_578916 = validateParameter(valid_578916, JString, required = false,
+                                 default = nil)
+  if valid_578916 != nil:
+    section.add "fields", valid_578916
+  var valid_578917 = query.getOrDefault("access_token")
+  valid_578917 = validateParameter(valid_578917, JString, required = false,
+                                 default = nil)
+  if valid_578917 != nil:
+    section.add "access_token", valid_578917
+  var valid_578918 = query.getOrDefault("upload_protocol")
+  valid_578918 = validateParameter(valid_578918, JString, required = false,
+                                 default = nil)
+  if valid_578918 != nil:
+    section.add "upload_protocol", valid_578918
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -498,42 +502,53 @@ proc validate_CloudprivatecatalogProjectsProductsSearch_589002(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589019: Call_CloudprivatecatalogProjectsProductsSearch_589001;
+proc call*(call_578919: Call_CloudprivatecatalogProjectsProductsSearch_578901;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Search Product resources that consumers have access to, within the
   ## scope of the consumer cloud resource hierarchy context.
   ## 
-  let valid = call_589019.validator(path, query, header, formData, body)
-  let scheme = call_589019.pickScheme
+  let valid = call_578919.validator(path, query, header, formData, body)
+  let scheme = call_578919.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589019.url(scheme.get, call_589019.host, call_589019.base,
-                         call_589019.route, valid.getOrDefault("path"),
+  let url = call_578919.url(scheme.get, call_578919.host, call_578919.base,
+                         call_578919.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589019, url, valid)
+  result = hook(call_578919, url, valid)
 
-proc call*(call_589020: Call_CloudprivatecatalogProjectsProductsSearch_589001;
-          resource: string; uploadProtocol: string = ""; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          query: string = ""; oauthToken: string = ""; callback: string = "";
-          accessToken: string = ""; uploadType: string = ""; key: string = "";
-          Xgafv: string = "1"; pageSize: int = 0; prettyPrint: bool = true): Recallable =
+proc call*(call_578920: Call_CloudprivatecatalogProjectsProductsSearch_578901;
+          resource: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; pageSize: int = 0;
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          pageToken: string = ""; query: string = ""; callback: string = "";
+          fields: string = ""; accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## cloudprivatecatalogProjectsProductsSearch
   ## Search Product resources that consumers have access to, within the
   ## scope of the consumer cloud resource hierarchy context.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   pageSize: int
+  ##           : The maximum number of entries that are requested.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   resource: string (required)
+  ##           : Required. The name of the resource context. See
+  ## SearchCatalogsRequest.resource for details.
   ##   pageToken: string
   ##            : A pagination token returned from a previous call to SearchProducts that
   ## indicates where this listing should continue from.
   ## This field is optional.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
   ##   query: string
   ##        : The query to filter the products.
   ## 
@@ -542,54 +557,43 @@ proc call*(call_589020: Call_CloudprivatecatalogProjectsProductsSearch_589001;
   ## * List products under a catalog: `parent=catalogs/{catalog_id}`
   ## * Get a product by name:
   ## `name=catalogs/{catalog_id}/products/{product_id}`
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
   ##   callback: string
   ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   accessToken: string
   ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   resource: string (required)
-  ##           : Required. The name of the resource context. See
-  ## SearchCatalogsRequest.resource for details.
-  ##   pageSize: int
-  ##           : The maximum number of entries that are requested.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589021 = newJObject()
-  var query_589022 = newJObject()
-  add(query_589022, "upload_protocol", newJString(uploadProtocol))
-  add(query_589022, "fields", newJString(fields))
-  add(query_589022, "pageToken", newJString(pageToken))
-  add(query_589022, "quotaUser", newJString(quotaUser))
-  add(query_589022, "alt", newJString(alt))
-  add(query_589022, "query", newJString(query))
-  add(query_589022, "oauth_token", newJString(oauthToken))
-  add(query_589022, "callback", newJString(callback))
-  add(query_589022, "access_token", newJString(accessToken))
-  add(query_589022, "uploadType", newJString(uploadType))
-  add(query_589022, "key", newJString(key))
-  add(query_589022, "$.xgafv", newJString(Xgafv))
-  add(path_589021, "resource", newJString(resource))
-  add(query_589022, "pageSize", newJInt(pageSize))
-  add(query_589022, "prettyPrint", newJBool(prettyPrint))
-  result = call_589020.call(path_589021, query_589022, nil, nil, nil)
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_578921 = newJObject()
+  var query_578922 = newJObject()
+  add(query_578922, "key", newJString(key))
+  add(query_578922, "prettyPrint", newJBool(prettyPrint))
+  add(query_578922, "oauth_token", newJString(oauthToken))
+  add(query_578922, "$.xgafv", newJString(Xgafv))
+  add(query_578922, "pageSize", newJInt(pageSize))
+  add(query_578922, "alt", newJString(alt))
+  add(query_578922, "uploadType", newJString(uploadType))
+  add(query_578922, "quotaUser", newJString(quotaUser))
+  add(path_578921, "resource", newJString(resource))
+  add(query_578922, "pageToken", newJString(pageToken))
+  add(query_578922, "query", newJString(query))
+  add(query_578922, "callback", newJString(callback))
+  add(query_578922, "fields", newJString(fields))
+  add(query_578922, "access_token", newJString(accessToken))
+  add(query_578922, "upload_protocol", newJString(uploadProtocol))
+  result = call_578920.call(path_578921, query_578922, nil, nil, nil)
 
-var cloudprivatecatalogProjectsProductsSearch* = Call_CloudprivatecatalogProjectsProductsSearch_589001(
+var cloudprivatecatalogProjectsProductsSearch* = Call_CloudprivatecatalogProjectsProductsSearch_578901(
     name: "cloudprivatecatalogProjectsProductsSearch", meth: HttpMethod.HttpGet,
     host: "cloudprivatecatalog.googleapis.com",
     route: "/v1beta1/{resource}/products:search",
-    validator: validate_CloudprivatecatalogProjectsProductsSearch_589002,
-    base: "/", url: url_CloudprivatecatalogProjectsProductsSearch_589003,
+    validator: validate_CloudprivatecatalogProjectsProductsSearch_578902,
+    base: "/", url: url_CloudprivatecatalogProjectsProductsSearch_578903,
     schemes: {Scheme.Https})
 type
-  Call_CloudprivatecatalogProjectsVersionsSearch_589023 = ref object of OpenApiRestCall_588441
-proc url_CloudprivatecatalogProjectsVersionsSearch_589025(protocol: Scheme;
+  Call_CloudprivatecatalogProjectsVersionsSearch_578923 = ref object of OpenApiRestCall_578339
+proc url_CloudprivatecatalogProjectsVersionsSearch_578925(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -605,7 +609,7 @@ proc url_CloudprivatecatalogProjectsVersionsSearch_589025(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_CloudprivatecatalogProjectsVersionsSearch_589024(path: JsonNode;
+proc validate_CloudprivatecatalogProjectsVersionsSearch_578924(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Search Version resources that consumers have access to, within the
   ## scope of the consumer cloud resource hierarchy context.
@@ -618,25 +622,33 @@ proc validate_CloudprivatecatalogProjectsVersionsSearch_589024(path: JsonNode;
   ## SearchCatalogsRequest.resource for details.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_589026 = path.getOrDefault("resource")
-  valid_589026 = validateParameter(valid_589026, JString, required = true,
+  var valid_578926 = path.getOrDefault("resource")
+  valid_578926 = validateParameter(valid_578926, JString, required = true,
                                  default = nil)
-  if valid_589026 != nil:
-    section.add "resource", valid_589026
+  if valid_578926 != nil:
+    section.add "resource", valid_578926
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   pageSize: JInt
+  ##           : The maximum number of entries that are requested.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   pageToken: JString
   ##            : A pagination token returned from a previous call to SearchVersions
   ## that indicates where this listing should continue from.
   ## This field is optional.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
   ##   query: JString
   ##        : The query to filter the versions. Required.
   ## 
@@ -645,92 +657,84 @@ proc validate_CloudprivatecatalogProjectsVersionsSearch_589024(path: JsonNode;
   ## `parent=catalogs/{catalog_id}/products/{product_id}`
   ## * Get a version by name:
   ## `name=catalogs/{catalog_id}/products/{product_id}/versions/{version_id}`
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
   ##   callback: JString
   ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   ##   access_token: JString
   ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   pageSize: JInt
-  ##           : The maximum number of entries that are requested.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589027 = query.getOrDefault("upload_protocol")
-  valid_589027 = validateParameter(valid_589027, JString, required = false,
+  var valid_578927 = query.getOrDefault("key")
+  valid_578927 = validateParameter(valid_578927, JString, required = false,
                                  default = nil)
-  if valid_589027 != nil:
-    section.add "upload_protocol", valid_589027
-  var valid_589028 = query.getOrDefault("fields")
-  valid_589028 = validateParameter(valid_589028, JString, required = false,
-                                 default = nil)
-  if valid_589028 != nil:
-    section.add "fields", valid_589028
-  var valid_589029 = query.getOrDefault("pageToken")
-  valid_589029 = validateParameter(valid_589029, JString, required = false,
-                                 default = nil)
-  if valid_589029 != nil:
-    section.add "pageToken", valid_589029
-  var valid_589030 = query.getOrDefault("quotaUser")
-  valid_589030 = validateParameter(valid_589030, JString, required = false,
-                                 default = nil)
-  if valid_589030 != nil:
-    section.add "quotaUser", valid_589030
-  var valid_589031 = query.getOrDefault("alt")
-  valid_589031 = validateParameter(valid_589031, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589031 != nil:
-    section.add "alt", valid_589031
-  var valid_589032 = query.getOrDefault("query")
-  valid_589032 = validateParameter(valid_589032, JString, required = false,
-                                 default = nil)
-  if valid_589032 != nil:
-    section.add "query", valid_589032
-  var valid_589033 = query.getOrDefault("oauth_token")
-  valid_589033 = validateParameter(valid_589033, JString, required = false,
-                                 default = nil)
-  if valid_589033 != nil:
-    section.add "oauth_token", valid_589033
-  var valid_589034 = query.getOrDefault("callback")
-  valid_589034 = validateParameter(valid_589034, JString, required = false,
-                                 default = nil)
-  if valid_589034 != nil:
-    section.add "callback", valid_589034
-  var valid_589035 = query.getOrDefault("access_token")
-  valid_589035 = validateParameter(valid_589035, JString, required = false,
-                                 default = nil)
-  if valid_589035 != nil:
-    section.add "access_token", valid_589035
-  var valid_589036 = query.getOrDefault("uploadType")
-  valid_589036 = validateParameter(valid_589036, JString, required = false,
-                                 default = nil)
-  if valid_589036 != nil:
-    section.add "uploadType", valid_589036
-  var valid_589037 = query.getOrDefault("key")
-  valid_589037 = validateParameter(valid_589037, JString, required = false,
-                                 default = nil)
-  if valid_589037 != nil:
-    section.add "key", valid_589037
-  var valid_589038 = query.getOrDefault("$.xgafv")
-  valid_589038 = validateParameter(valid_589038, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589038 != nil:
-    section.add "$.xgafv", valid_589038
-  var valid_589039 = query.getOrDefault("pageSize")
-  valid_589039 = validateParameter(valid_589039, JInt, required = false, default = nil)
-  if valid_589039 != nil:
-    section.add "pageSize", valid_589039
-  var valid_589040 = query.getOrDefault("prettyPrint")
-  valid_589040 = validateParameter(valid_589040, JBool, required = false,
+  if valid_578927 != nil:
+    section.add "key", valid_578927
+  var valid_578928 = query.getOrDefault("prettyPrint")
+  valid_578928 = validateParameter(valid_578928, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589040 != nil:
-    section.add "prettyPrint", valid_589040
+  if valid_578928 != nil:
+    section.add "prettyPrint", valid_578928
+  var valid_578929 = query.getOrDefault("oauth_token")
+  valid_578929 = validateParameter(valid_578929, JString, required = false,
+                                 default = nil)
+  if valid_578929 != nil:
+    section.add "oauth_token", valid_578929
+  var valid_578930 = query.getOrDefault("$.xgafv")
+  valid_578930 = validateParameter(valid_578930, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578930 != nil:
+    section.add "$.xgafv", valid_578930
+  var valid_578931 = query.getOrDefault("pageSize")
+  valid_578931 = validateParameter(valid_578931, JInt, required = false, default = nil)
+  if valid_578931 != nil:
+    section.add "pageSize", valid_578931
+  var valid_578932 = query.getOrDefault("alt")
+  valid_578932 = validateParameter(valid_578932, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578932 != nil:
+    section.add "alt", valid_578932
+  var valid_578933 = query.getOrDefault("uploadType")
+  valid_578933 = validateParameter(valid_578933, JString, required = false,
+                                 default = nil)
+  if valid_578933 != nil:
+    section.add "uploadType", valid_578933
+  var valid_578934 = query.getOrDefault("quotaUser")
+  valid_578934 = validateParameter(valid_578934, JString, required = false,
+                                 default = nil)
+  if valid_578934 != nil:
+    section.add "quotaUser", valid_578934
+  var valid_578935 = query.getOrDefault("pageToken")
+  valid_578935 = validateParameter(valid_578935, JString, required = false,
+                                 default = nil)
+  if valid_578935 != nil:
+    section.add "pageToken", valid_578935
+  var valid_578936 = query.getOrDefault("query")
+  valid_578936 = validateParameter(valid_578936, JString, required = false,
+                                 default = nil)
+  if valid_578936 != nil:
+    section.add "query", valid_578936
+  var valid_578937 = query.getOrDefault("callback")
+  valid_578937 = validateParameter(valid_578937, JString, required = false,
+                                 default = nil)
+  if valid_578937 != nil:
+    section.add "callback", valid_578937
+  var valid_578938 = query.getOrDefault("fields")
+  valid_578938 = validateParameter(valid_578938, JString, required = false,
+                                 default = nil)
+  if valid_578938 != nil:
+    section.add "fields", valid_578938
+  var valid_578939 = query.getOrDefault("access_token")
+  valid_578939 = validateParameter(valid_578939, JString, required = false,
+                                 default = nil)
+  if valid_578939 != nil:
+    section.add "access_token", valid_578939
+  var valid_578940 = query.getOrDefault("upload_protocol")
+  valid_578940 = validateParameter(valid_578940, JString, required = false,
+                                 default = nil)
+  if valid_578940 != nil:
+    section.add "upload_protocol", valid_578940
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -739,42 +743,53 @@ proc validate_CloudprivatecatalogProjectsVersionsSearch_589024(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589041: Call_CloudprivatecatalogProjectsVersionsSearch_589023;
+proc call*(call_578941: Call_CloudprivatecatalogProjectsVersionsSearch_578923;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Search Version resources that consumers have access to, within the
   ## scope of the consumer cloud resource hierarchy context.
   ## 
-  let valid = call_589041.validator(path, query, header, formData, body)
-  let scheme = call_589041.pickScheme
+  let valid = call_578941.validator(path, query, header, formData, body)
+  let scheme = call_578941.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589041.url(scheme.get, call_589041.host, call_589041.base,
-                         call_589041.route, valid.getOrDefault("path"),
+  let url = call_578941.url(scheme.get, call_578941.host, call_578941.base,
+                         call_578941.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589041, url, valid)
+  result = hook(call_578941, url, valid)
 
-proc call*(call_589042: Call_CloudprivatecatalogProjectsVersionsSearch_589023;
-          resource: string; uploadProtocol: string = ""; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          query: string = ""; oauthToken: string = ""; callback: string = "";
-          accessToken: string = ""; uploadType: string = ""; key: string = "";
-          Xgafv: string = "1"; pageSize: int = 0; prettyPrint: bool = true): Recallable =
+proc call*(call_578942: Call_CloudprivatecatalogProjectsVersionsSearch_578923;
+          resource: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; pageSize: int = 0;
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          pageToken: string = ""; query: string = ""; callback: string = "";
+          fields: string = ""; accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## cloudprivatecatalogProjectsVersionsSearch
   ## Search Version resources that consumers have access to, within the
   ## scope of the consumer cloud resource hierarchy context.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   pageSize: int
+  ##           : The maximum number of entries that are requested.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   resource: string (required)
+  ##           : Required. The name of the resource context. See
+  ## SearchCatalogsRequest.resource for details.
   ##   pageToken: string
   ##            : A pagination token returned from a previous call to SearchVersions
   ## that indicates where this listing should continue from.
   ## This field is optional.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
   ##   query: string
   ##        : The query to filter the versions. Required.
   ## 
@@ -783,50 +798,39 @@ proc call*(call_589042: Call_CloudprivatecatalogProjectsVersionsSearch_589023;
   ## `parent=catalogs/{catalog_id}/products/{product_id}`
   ## * Get a version by name:
   ## `name=catalogs/{catalog_id}/products/{product_id}/versions/{version_id}`
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
   ##   callback: string
   ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   accessToken: string
   ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   resource: string (required)
-  ##           : Required. The name of the resource context. See
-  ## SearchCatalogsRequest.resource for details.
-  ##   pageSize: int
-  ##           : The maximum number of entries that are requested.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589043 = newJObject()
-  var query_589044 = newJObject()
-  add(query_589044, "upload_protocol", newJString(uploadProtocol))
-  add(query_589044, "fields", newJString(fields))
-  add(query_589044, "pageToken", newJString(pageToken))
-  add(query_589044, "quotaUser", newJString(quotaUser))
-  add(query_589044, "alt", newJString(alt))
-  add(query_589044, "query", newJString(query))
-  add(query_589044, "oauth_token", newJString(oauthToken))
-  add(query_589044, "callback", newJString(callback))
-  add(query_589044, "access_token", newJString(accessToken))
-  add(query_589044, "uploadType", newJString(uploadType))
-  add(query_589044, "key", newJString(key))
-  add(query_589044, "$.xgafv", newJString(Xgafv))
-  add(path_589043, "resource", newJString(resource))
-  add(query_589044, "pageSize", newJInt(pageSize))
-  add(query_589044, "prettyPrint", newJBool(prettyPrint))
-  result = call_589042.call(path_589043, query_589044, nil, nil, nil)
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_578943 = newJObject()
+  var query_578944 = newJObject()
+  add(query_578944, "key", newJString(key))
+  add(query_578944, "prettyPrint", newJBool(prettyPrint))
+  add(query_578944, "oauth_token", newJString(oauthToken))
+  add(query_578944, "$.xgafv", newJString(Xgafv))
+  add(query_578944, "pageSize", newJInt(pageSize))
+  add(query_578944, "alt", newJString(alt))
+  add(query_578944, "uploadType", newJString(uploadType))
+  add(query_578944, "quotaUser", newJString(quotaUser))
+  add(path_578943, "resource", newJString(resource))
+  add(query_578944, "pageToken", newJString(pageToken))
+  add(query_578944, "query", newJString(query))
+  add(query_578944, "callback", newJString(callback))
+  add(query_578944, "fields", newJString(fields))
+  add(query_578944, "access_token", newJString(accessToken))
+  add(query_578944, "upload_protocol", newJString(uploadProtocol))
+  result = call_578942.call(path_578943, query_578944, nil, nil, nil)
 
-var cloudprivatecatalogProjectsVersionsSearch* = Call_CloudprivatecatalogProjectsVersionsSearch_589023(
+var cloudprivatecatalogProjectsVersionsSearch* = Call_CloudprivatecatalogProjectsVersionsSearch_578923(
     name: "cloudprivatecatalogProjectsVersionsSearch", meth: HttpMethod.HttpGet,
     host: "cloudprivatecatalog.googleapis.com",
     route: "/v1beta1/{resource}/versions:search",
-    validator: validate_CloudprivatecatalogProjectsVersionsSearch_589024,
-    base: "/", url: url_CloudprivatecatalogProjectsVersionsSearch_589025,
+    validator: validate_CloudprivatecatalogProjectsVersionsSearch_578924,
+    base: "/", url: url_CloudprivatecatalogProjectsVersionsSearch_578925,
     schemes: {Scheme.Https})
 export
   rest

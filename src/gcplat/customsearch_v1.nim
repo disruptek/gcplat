@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588457 = ref object of OpenApiRestCall
+  OpenApiRestCall_578355 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588457](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578355](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588457): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578355): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,15 +112,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_SearchCseList_588725 = ref object of OpenApiRestCall_588457
-proc url_SearchCseList_588727(protocol: Scheme; host: string; base: string;
+  Call_SearchCseList_578625 = ref object of OpenApiRestCall_578355
+proc url_SearchCseList_578627(protocol: Scheme; host: string; base: string;
                              route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_SearchCseList_588726(path: JsonNode; query: JsonNode; header: JsonNode;
+proc validate_SearchCseList_578626(path: JsonNode; query: JsonNode; header: JsonNode;
                                   formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns metadata about the search performed, metadata about the custom search engine used for the search, and the search results.
   ## 
@@ -125,273 +129,273 @@ proc validate_SearchCseList_588726(path: JsonNode; query: JsonNode; header: Json
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   imgSize: JString
-  ##          : Returns images of a specified size, where size can be one of: icon, small, medium, large, xlarge, xxlarge, and huge.
-  ##   safe: JString
-  ##       : Search safety level
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   gl: JString
-  ##     : Geolocation of end user.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   rights: JString
-  ##         : Filters based on licensing. Supported values include: cc_publicdomain, cc_attribute, cc_sharealike, cc_noncommercial, cc_nonderived and combinations of these.
-  ##   hq: JString
-  ##     : Appends the extra query terms to the query.
-  ##   relatedSite: JString
-  ##              : Specifies that all search results should be pages that are related to the specified URL
-  ##   sort: JString
-  ##       : The sort expression to apply to the results
-  ##   lr: JString
-  ##     : The language restriction for the search results
-  ##   exactTerms: JString
-  ##             : Identifies a phrase that all documents in the search results must contain
-  ##   excludeTerms: JString
-  ##               : Identifies a word or phrase that should not appear in any documents in the search results
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   fileType: JString
-  ##           : Returns images of a specified type. Some of the allowed values are: bmp, gif, png, jpg, svg, pdf, ...
-  ##   googlehost: JString
-  ##             : The local Google domain to use to perform the search.
-  ##   imgType: JString
-  ##          : Returns images of a type, which can be one of: clipart, face, lineart, news, and photo.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   num: JInt
-  ##      : Number of search results to return
-  ##   highRange: JString
-  ##            : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
-  ##   imgColorType: JString
-  ##               : Returns black and white, grayscale, or color images: mono, gray, and color.
-  ##   q: JString (required)
-  ##    : Query
-  ##   imgDominantColor: JString
-  ##                   : Returns images of a specific dominant color: red, orange, yellow, green, teal, blue, purple, pink, white, gray, black and brown.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   c2coff: JString
-  ##         : Turns off the translation between zh-CN and zh-TW.
-  ##   siteSearchFilter: JString
-  ##                   : Controls whether to include or exclude results from the site named in the as_sitesearch parameter
-  ##   linkSite: JString
-  ##           : Specifies that all search results should contain a link to a particular URL
-  ##   lowRange: JString
-  ##           : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
-  ##   cx: JString
-  ##     : The custom search engine ID to scope this search query
+  ##   highRange: JString
+  ##            : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   c2coff: JString
+  ##         : Turns off the translation between zh-CN and zh-TW.
+  ##   cr: JString
+  ##     : Country restrict(s).
+  ##   safe: JString
+  ##       : Search safety level
+  ##   relatedSite: JString
+  ##              : Specifies that all search results should be pages that are related to the specified URL
+  ##   q: JString (required)
+  ##    : Query
+  ##   lowRange: JString
+  ##           : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
   ##   dateRestrict: JString
   ##               : Specifies all search results are from a time period
   ##   orTerms: JString
   ##          : Provides additional search terms to check for in a document, where each document in the search results must contain at least one of the additional search terms
-  ##   hl: JString
-  ##     : Sets the user interface language.
+  ##   siteSearchFilter: JString
+  ##                   : Controls whether to include or exclude results from the site named in the as_sitesearch parameter
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   googlehost: JString
+  ##             : The local Google domain to use to perform the search.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   hq: JString
+  ##     : Appends the extra query terms to the query.
+  ##   imgColorType: JString
+  ##               : Returns black and white, grayscale, or color images: mono, gray, and color.
+  ##   rights: JString
+  ##         : Filters based on licensing. Supported values include: cc_publicdomain, cc_attribute, cc_sharealike, cc_noncommercial, cc_nonderived and combinations of these.
   ##   filter: JString
   ##         : Controls turning on or off the duplicate content filter.
-  ##   cr: JString
-  ##     : Country restrict(s).
+  ##   imgDominantColor: JString
+  ##                   : Returns images of a specific dominant color: red, orange, yellow, green, teal, blue, purple, pink, white, gray, black and brown.
+  ##   imgType: JString
+  ##          : Returns images of a type, which can be one of: clipart, face, lineart, news, and photo.
   ##   searchType: JString
   ##             : Specifies the search type: image.
-  ##   siteSearch: JString
-  ##             : Specifies all search results should be pages from a given site
+  ##   fileType: JString
+  ##           : Returns images of a specified type. Some of the allowed values are: bmp, gif, png, jpg, svg, pdf, ...
   ##   start: JInt
   ##        : The index of the first result to return
+  ##   linkSite: JString
+  ##           : Specifies that all search results should contain a link to a particular URL
+  ##   lr: JString
+  ##     : The language restriction for the search results
+  ##   siteSearch: JString
+  ##             : Specifies all search results should be pages from a given site
+  ##   imgSize: JString
+  ##          : Returns images of a specified size, where size can be one of: icon, small, medium, large, xlarge, xxlarge, and huge.
+  ##   gl: JString
+  ##     : Geolocation of end user.
+  ##   excludeTerms: JString
+  ##               : Identifies a word or phrase that should not appear in any documents in the search results
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   hl: JString
+  ##     : Sets the user interface language.
+  ##   num: JInt
+  ##      : Number of search results to return
+  ##   exactTerms: JString
+  ##             : Identifies a phrase that all documents in the search results must contain
+  ##   cx: JString
+  ##     : The custom search engine ID to scope this search query
+  ##   sort: JString
+  ##       : The sort expression to apply to the results
   section = newJObject()
-  var valid_588852 = query.getOrDefault("imgSize")
-  valid_588852 = validateParameter(valid_588852, JString, required = false,
-                                 default = newJString("huge"))
-  if valid_588852 != nil:
-    section.add "imgSize", valid_588852
-  var valid_588853 = query.getOrDefault("safe")
-  valid_588853 = validateParameter(valid_588853, JString, required = false,
-                                 default = newJString("off"))
-  if valid_588853 != nil:
-    section.add "safe", valid_588853
-  var valid_588854 = query.getOrDefault("fields")
-  valid_588854 = validateParameter(valid_588854, JString, required = false,
+  var valid_578739 = query.getOrDefault("key")
+  valid_578739 = validateParameter(valid_578739, JString, required = false,
                                  default = nil)
-  if valid_588854 != nil:
-    section.add "fields", valid_588854
-  var valid_588855 = query.getOrDefault("quotaUser")
-  valid_588855 = validateParameter(valid_588855, JString, required = false,
+  if valid_578739 != nil:
+    section.add "key", valid_578739
+  var valid_578740 = query.getOrDefault("highRange")
+  valid_578740 = validateParameter(valid_578740, JString, required = false,
                                  default = nil)
-  if valid_588855 != nil:
-    section.add "quotaUser", valid_588855
-  var valid_588856 = query.getOrDefault("gl")
-  valid_588856 = validateParameter(valid_588856, JString, required = false,
-                                 default = nil)
-  if valid_588856 != nil:
-    section.add "gl", valid_588856
-  var valid_588857 = query.getOrDefault("alt")
-  valid_588857 = validateParameter(valid_588857, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588857 != nil:
-    section.add "alt", valid_588857
-  var valid_588858 = query.getOrDefault("rights")
-  valid_588858 = validateParameter(valid_588858, JString, required = false,
-                                 default = nil)
-  if valid_588858 != nil:
-    section.add "rights", valid_588858
-  var valid_588859 = query.getOrDefault("hq")
-  valid_588859 = validateParameter(valid_588859, JString, required = false,
-                                 default = nil)
-  if valid_588859 != nil:
-    section.add "hq", valid_588859
-  var valid_588860 = query.getOrDefault("relatedSite")
-  valid_588860 = validateParameter(valid_588860, JString, required = false,
-                                 default = nil)
-  if valid_588860 != nil:
-    section.add "relatedSite", valid_588860
-  var valid_588861 = query.getOrDefault("sort")
-  valid_588861 = validateParameter(valid_588861, JString, required = false,
-                                 default = nil)
-  if valid_588861 != nil:
-    section.add "sort", valid_588861
-  var valid_588862 = query.getOrDefault("lr")
-  valid_588862 = validateParameter(valid_588862, JString, required = false,
-                                 default = newJString("lang_ar"))
-  if valid_588862 != nil:
-    section.add "lr", valid_588862
-  var valid_588863 = query.getOrDefault("exactTerms")
-  valid_588863 = validateParameter(valid_588863, JString, required = false,
-                                 default = nil)
-  if valid_588863 != nil:
-    section.add "exactTerms", valid_588863
-  var valid_588864 = query.getOrDefault("excludeTerms")
-  valid_588864 = validateParameter(valid_588864, JString, required = false,
-                                 default = nil)
-  if valid_588864 != nil:
-    section.add "excludeTerms", valid_588864
-  var valid_588865 = query.getOrDefault("oauth_token")
-  valid_588865 = validateParameter(valid_588865, JString, required = false,
-                                 default = nil)
-  if valid_588865 != nil:
-    section.add "oauth_token", valid_588865
-  var valid_588866 = query.getOrDefault("fileType")
-  valid_588866 = validateParameter(valid_588866, JString, required = false,
-                                 default = nil)
-  if valid_588866 != nil:
-    section.add "fileType", valid_588866
-  var valid_588867 = query.getOrDefault("googlehost")
-  valid_588867 = validateParameter(valid_588867, JString, required = false,
-                                 default = nil)
-  if valid_588867 != nil:
-    section.add "googlehost", valid_588867
-  var valid_588868 = query.getOrDefault("imgType")
-  valid_588868 = validateParameter(valid_588868, JString, required = false,
-                                 default = newJString("clipart"))
-  if valid_588868 != nil:
-    section.add "imgType", valid_588868
-  var valid_588869 = query.getOrDefault("userIp")
-  valid_588869 = validateParameter(valid_588869, JString, required = false,
-                                 default = nil)
-  if valid_588869 != nil:
-    section.add "userIp", valid_588869
-  var valid_588871 = query.getOrDefault("num")
-  valid_588871 = validateParameter(valid_588871, JInt, required = false,
-                                 default = newJInt(10))
-  if valid_588871 != nil:
-    section.add "num", valid_588871
-  var valid_588872 = query.getOrDefault("highRange")
-  valid_588872 = validateParameter(valid_588872, JString, required = false,
-                                 default = nil)
-  if valid_588872 != nil:
-    section.add "highRange", valid_588872
-  var valid_588873 = query.getOrDefault("imgColorType")
-  valid_588873 = validateParameter(valid_588873, JString, required = false,
-                                 default = newJString("color"))
-  if valid_588873 != nil:
-    section.add "imgColorType", valid_588873
-  assert query != nil, "query argument is necessary due to required `q` field"
-  var valid_588874 = query.getOrDefault("q")
-  valid_588874 = validateParameter(valid_588874, JString, required = true,
-                                 default = nil)
-  if valid_588874 != nil:
-    section.add "q", valid_588874
-  var valid_588875 = query.getOrDefault("imgDominantColor")
-  valid_588875 = validateParameter(valid_588875, JString, required = false,
-                                 default = newJString("black"))
-  if valid_588875 != nil:
-    section.add "imgDominantColor", valid_588875
-  var valid_588876 = query.getOrDefault("key")
-  valid_588876 = validateParameter(valid_588876, JString, required = false,
-                                 default = nil)
-  if valid_588876 != nil:
-    section.add "key", valid_588876
-  var valid_588877 = query.getOrDefault("c2coff")
-  valid_588877 = validateParameter(valid_588877, JString, required = false,
-                                 default = nil)
-  if valid_588877 != nil:
-    section.add "c2coff", valid_588877
-  var valid_588878 = query.getOrDefault("siteSearchFilter")
-  valid_588878 = validateParameter(valid_588878, JString, required = false,
-                                 default = newJString("e"))
-  if valid_588878 != nil:
-    section.add "siteSearchFilter", valid_588878
-  var valid_588879 = query.getOrDefault("linkSite")
-  valid_588879 = validateParameter(valid_588879, JString, required = false,
-                                 default = nil)
-  if valid_588879 != nil:
-    section.add "linkSite", valid_588879
-  var valid_588880 = query.getOrDefault("lowRange")
-  valid_588880 = validateParameter(valid_588880, JString, required = false,
-                                 default = nil)
-  if valid_588880 != nil:
-    section.add "lowRange", valid_588880
-  var valid_588881 = query.getOrDefault("cx")
-  valid_588881 = validateParameter(valid_588881, JString, required = false,
-                                 default = nil)
-  if valid_588881 != nil:
-    section.add "cx", valid_588881
-  var valid_588882 = query.getOrDefault("prettyPrint")
-  valid_588882 = validateParameter(valid_588882, JBool, required = false,
+  if valid_578740 != nil:
+    section.add "highRange", valid_578740
+  var valid_578754 = query.getOrDefault("prettyPrint")
+  valid_578754 = validateParameter(valid_578754, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588882 != nil:
-    section.add "prettyPrint", valid_588882
-  var valid_588883 = query.getOrDefault("dateRestrict")
-  valid_588883 = validateParameter(valid_588883, JString, required = false,
+  if valid_578754 != nil:
+    section.add "prettyPrint", valid_578754
+  var valid_578755 = query.getOrDefault("oauth_token")
+  valid_578755 = validateParameter(valid_578755, JString, required = false,
                                  default = nil)
-  if valid_588883 != nil:
-    section.add "dateRestrict", valid_588883
-  var valid_588884 = query.getOrDefault("orTerms")
-  valid_588884 = validateParameter(valid_588884, JString, required = false,
+  if valid_578755 != nil:
+    section.add "oauth_token", valid_578755
+  var valid_578756 = query.getOrDefault("c2coff")
+  valid_578756 = validateParameter(valid_578756, JString, required = false,
                                  default = nil)
-  if valid_588884 != nil:
-    section.add "orTerms", valid_588884
-  var valid_588885 = query.getOrDefault("hl")
-  valid_588885 = validateParameter(valid_588885, JString, required = false,
+  if valid_578756 != nil:
+    section.add "c2coff", valid_578756
+  var valid_578757 = query.getOrDefault("cr")
+  valid_578757 = validateParameter(valid_578757, JString, required = false,
                                  default = nil)
-  if valid_588885 != nil:
-    section.add "hl", valid_588885
-  var valid_588886 = query.getOrDefault("filter")
-  valid_588886 = validateParameter(valid_588886, JString, required = false,
+  if valid_578757 != nil:
+    section.add "cr", valid_578757
+  var valid_578758 = query.getOrDefault("safe")
+  valid_578758 = validateParameter(valid_578758, JString, required = false,
+                                 default = newJString("off"))
+  if valid_578758 != nil:
+    section.add "safe", valid_578758
+  var valid_578759 = query.getOrDefault("relatedSite")
+  valid_578759 = validateParameter(valid_578759, JString, required = false,
+                                 default = nil)
+  if valid_578759 != nil:
+    section.add "relatedSite", valid_578759
+  assert query != nil, "query argument is necessary due to required `q` field"
+  var valid_578760 = query.getOrDefault("q")
+  valid_578760 = validateParameter(valid_578760, JString, required = true,
+                                 default = nil)
+  if valid_578760 != nil:
+    section.add "q", valid_578760
+  var valid_578761 = query.getOrDefault("lowRange")
+  valid_578761 = validateParameter(valid_578761, JString, required = false,
+                                 default = nil)
+  if valid_578761 != nil:
+    section.add "lowRange", valid_578761
+  var valid_578762 = query.getOrDefault("dateRestrict")
+  valid_578762 = validateParameter(valid_578762, JString, required = false,
+                                 default = nil)
+  if valid_578762 != nil:
+    section.add "dateRestrict", valid_578762
+  var valid_578763 = query.getOrDefault("orTerms")
+  valid_578763 = validateParameter(valid_578763, JString, required = false,
+                                 default = nil)
+  if valid_578763 != nil:
+    section.add "orTerms", valid_578763
+  var valid_578764 = query.getOrDefault("siteSearchFilter")
+  valid_578764 = validateParameter(valid_578764, JString, required = false,
+                                 default = newJString("e"))
+  if valid_578764 != nil:
+    section.add "siteSearchFilter", valid_578764
+  var valid_578765 = query.getOrDefault("alt")
+  valid_578765 = validateParameter(valid_578765, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578765 != nil:
+    section.add "alt", valid_578765
+  var valid_578766 = query.getOrDefault("userIp")
+  valid_578766 = validateParameter(valid_578766, JString, required = false,
+                                 default = nil)
+  if valid_578766 != nil:
+    section.add "userIp", valid_578766
+  var valid_578767 = query.getOrDefault("googlehost")
+  valid_578767 = validateParameter(valid_578767, JString, required = false,
+                                 default = nil)
+  if valid_578767 != nil:
+    section.add "googlehost", valid_578767
+  var valid_578768 = query.getOrDefault("quotaUser")
+  valid_578768 = validateParameter(valid_578768, JString, required = false,
+                                 default = nil)
+  if valid_578768 != nil:
+    section.add "quotaUser", valid_578768
+  var valid_578769 = query.getOrDefault("hq")
+  valid_578769 = validateParameter(valid_578769, JString, required = false,
+                                 default = nil)
+  if valid_578769 != nil:
+    section.add "hq", valid_578769
+  var valid_578770 = query.getOrDefault("imgColorType")
+  valid_578770 = validateParameter(valid_578770, JString, required = false,
+                                 default = newJString("color"))
+  if valid_578770 != nil:
+    section.add "imgColorType", valid_578770
+  var valid_578771 = query.getOrDefault("rights")
+  valid_578771 = validateParameter(valid_578771, JString, required = false,
+                                 default = nil)
+  if valid_578771 != nil:
+    section.add "rights", valid_578771
+  var valid_578772 = query.getOrDefault("filter")
+  valid_578772 = validateParameter(valid_578772, JString, required = false,
                                  default = newJString("0"))
-  if valid_588886 != nil:
-    section.add "filter", valid_588886
-  var valid_588887 = query.getOrDefault("cr")
-  valid_588887 = validateParameter(valid_588887, JString, required = false,
-                                 default = nil)
-  if valid_588887 != nil:
-    section.add "cr", valid_588887
-  var valid_588888 = query.getOrDefault("searchType")
-  valid_588888 = validateParameter(valid_588888, JString, required = false,
+  if valid_578772 != nil:
+    section.add "filter", valid_578772
+  var valid_578773 = query.getOrDefault("imgDominantColor")
+  valid_578773 = validateParameter(valid_578773, JString, required = false,
+                                 default = newJString("black"))
+  if valid_578773 != nil:
+    section.add "imgDominantColor", valid_578773
+  var valid_578774 = query.getOrDefault("imgType")
+  valid_578774 = validateParameter(valid_578774, JString, required = false,
+                                 default = newJString("clipart"))
+  if valid_578774 != nil:
+    section.add "imgType", valid_578774
+  var valid_578775 = query.getOrDefault("searchType")
+  valid_578775 = validateParameter(valid_578775, JString, required = false,
                                  default = newJString("image"))
-  if valid_588888 != nil:
-    section.add "searchType", valid_588888
-  var valid_588889 = query.getOrDefault("siteSearch")
-  valid_588889 = validateParameter(valid_588889, JString, required = false,
+  if valid_578775 != nil:
+    section.add "searchType", valid_578775
+  var valid_578776 = query.getOrDefault("fileType")
+  valid_578776 = validateParameter(valid_578776, JString, required = false,
                                  default = nil)
-  if valid_588889 != nil:
-    section.add "siteSearch", valid_588889
-  var valid_588890 = query.getOrDefault("start")
-  valid_588890 = validateParameter(valid_588890, JInt, required = false, default = nil)
-  if valid_588890 != nil:
-    section.add "start", valid_588890
+  if valid_578776 != nil:
+    section.add "fileType", valid_578776
+  var valid_578777 = query.getOrDefault("start")
+  valid_578777 = validateParameter(valid_578777, JInt, required = false, default = nil)
+  if valid_578777 != nil:
+    section.add "start", valid_578777
+  var valid_578778 = query.getOrDefault("linkSite")
+  valid_578778 = validateParameter(valid_578778, JString, required = false,
+                                 default = nil)
+  if valid_578778 != nil:
+    section.add "linkSite", valid_578778
+  var valid_578779 = query.getOrDefault("lr")
+  valid_578779 = validateParameter(valid_578779, JString, required = false,
+                                 default = newJString("lang_ar"))
+  if valid_578779 != nil:
+    section.add "lr", valid_578779
+  var valid_578780 = query.getOrDefault("siteSearch")
+  valid_578780 = validateParameter(valid_578780, JString, required = false,
+                                 default = nil)
+  if valid_578780 != nil:
+    section.add "siteSearch", valid_578780
+  var valid_578781 = query.getOrDefault("imgSize")
+  valid_578781 = validateParameter(valid_578781, JString, required = false,
+                                 default = newJString("huge"))
+  if valid_578781 != nil:
+    section.add "imgSize", valid_578781
+  var valid_578782 = query.getOrDefault("gl")
+  valid_578782 = validateParameter(valid_578782, JString, required = false,
+                                 default = nil)
+  if valid_578782 != nil:
+    section.add "gl", valid_578782
+  var valid_578783 = query.getOrDefault("excludeTerms")
+  valid_578783 = validateParameter(valid_578783, JString, required = false,
+                                 default = nil)
+  if valid_578783 != nil:
+    section.add "excludeTerms", valid_578783
+  var valid_578784 = query.getOrDefault("fields")
+  valid_578784 = validateParameter(valid_578784, JString, required = false,
+                                 default = nil)
+  if valid_578784 != nil:
+    section.add "fields", valid_578784
+  var valid_578785 = query.getOrDefault("hl")
+  valid_578785 = validateParameter(valid_578785, JString, required = false,
+                                 default = nil)
+  if valid_578785 != nil:
+    section.add "hl", valid_578785
+  var valid_578787 = query.getOrDefault("num")
+  valid_578787 = validateParameter(valid_578787, JInt, required = false,
+                                 default = newJInt(10))
+  if valid_578787 != nil:
+    section.add "num", valid_578787
+  var valid_578788 = query.getOrDefault("exactTerms")
+  valid_578788 = validateParameter(valid_578788, JString, required = false,
+                                 default = nil)
+  if valid_578788 != nil:
+    section.add "exactTerms", valid_578788
+  var valid_578789 = query.getOrDefault("cx")
+  valid_578789 = validateParameter(valid_578789, JString, required = false,
+                                 default = nil)
+  if valid_578789 != nil:
+    section.add "cx", valid_578789
+  var valid_578790 = query.getOrDefault("sort")
+  valid_578790 = validateParameter(valid_578790, JString, required = false,
+                                 default = nil)
+  if valid_578790 != nil:
+    section.add "sort", valid_578790
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -400,165 +404,165 @@ proc validate_SearchCseList_588726(path: JsonNode; query: JsonNode; header: Json
   if body != nil:
     result.add "body", body
 
-proc call*(call_588913: Call_SearchCseList_588725; path: JsonNode; query: JsonNode;
+proc call*(call_578813: Call_SearchCseList_578625; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns metadata about the search performed, metadata about the custom search engine used for the search, and the search results.
   ## 
-  let valid = call_588913.validator(path, query, header, formData, body)
-  let scheme = call_588913.pickScheme
+  let valid = call_578813.validator(path, query, header, formData, body)
+  let scheme = call_578813.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588913.url(scheme.get, call_588913.host, call_588913.base,
-                         call_588913.route, valid.getOrDefault("path"),
+  let url = call_578813.url(scheme.get, call_578813.host, call_578813.base,
+                         call_578813.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588913, url, valid)
+  result = hook(call_578813, url, valid)
 
-proc call*(call_588984: Call_SearchCseList_588725; q: string;
-          imgSize: string = "huge"; safe: string = "off"; fields: string = "";
-          quotaUser: string = ""; gl: string = ""; alt: string = "json";
-          rights: string = ""; hq: string = ""; relatedSite: string = ""; sort: string = "";
-          lr: string = "lang_ar"; exactTerms: string = ""; excludeTerms: string = "";
-          oauthToken: string = ""; fileType: string = ""; googlehost: string = "";
-          imgType: string = "clipart"; userIp: string = ""; num: int = 10;
-          highRange: string = ""; imgColorType: string = "color";
-          imgDominantColor: string = "black"; key: string = ""; c2coff: string = "";
-          siteSearchFilter: string = "e"; linkSite: string = ""; lowRange: string = "";
-          cx: string = ""; prettyPrint: bool = true; dateRestrict: string = "";
-          orTerms: string = ""; hl: string = ""; filter: string = "0"; cr: string = "";
-          searchType: string = "image"; siteSearch: string = ""; start: int = 0): Recallable =
+proc call*(call_578884: Call_SearchCseList_578625; q: string; key: string = "";
+          highRange: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          c2coff: string = ""; cr: string = ""; safe: string = "off";
+          relatedSite: string = ""; lowRange: string = ""; dateRestrict: string = "";
+          orTerms: string = ""; siteSearchFilter: string = "e"; alt: string = "json";
+          userIp: string = ""; googlehost: string = ""; quotaUser: string = "";
+          hq: string = ""; imgColorType: string = "color"; rights: string = "";
+          filter: string = "0"; imgDominantColor: string = "black";
+          imgType: string = "clipart"; searchType: string = "image";
+          fileType: string = ""; start: int = 0; linkSite: string = "";
+          lr: string = "lang_ar"; siteSearch: string = ""; imgSize: string = "huge";
+          gl: string = ""; excludeTerms: string = ""; fields: string = ""; hl: string = "";
+          num: int = 10; exactTerms: string = ""; cx: string = ""; sort: string = ""): Recallable =
   ## searchCseList
   ## Returns metadata about the search performed, metadata about the custom search engine used for the search, and the search results.
-  ##   imgSize: string
-  ##          : Returns images of a specified size, where size can be one of: icon, small, medium, large, xlarge, xxlarge, and huge.
-  ##   safe: string
-  ##       : Search safety level
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   gl: string
-  ##     : Geolocation of end user.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   rights: string
-  ##         : Filters based on licensing. Supported values include: cc_publicdomain, cc_attribute, cc_sharealike, cc_noncommercial, cc_nonderived and combinations of these.
-  ##   hq: string
-  ##     : Appends the extra query terms to the query.
-  ##   relatedSite: string
-  ##              : Specifies that all search results should be pages that are related to the specified URL
-  ##   sort: string
-  ##       : The sort expression to apply to the results
-  ##   lr: string
-  ##     : The language restriction for the search results
-  ##   exactTerms: string
-  ##             : Identifies a phrase that all documents in the search results must contain
-  ##   excludeTerms: string
-  ##               : Identifies a word or phrase that should not appear in any documents in the search results
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   fileType: string
-  ##           : Returns images of a specified type. Some of the allowed values are: bmp, gif, png, jpg, svg, pdf, ...
-  ##   googlehost: string
-  ##             : The local Google domain to use to perform the search.
-  ##   imgType: string
-  ##          : Returns images of a type, which can be one of: clipart, face, lineart, news, and photo.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   num: int
-  ##      : Number of search results to return
-  ##   highRange: string
-  ##            : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
-  ##   imgColorType: string
-  ##               : Returns black and white, grayscale, or color images: mono, gray, and color.
-  ##   q: string (required)
-  ##    : Query
-  ##   imgDominantColor: string
-  ##                   : Returns images of a specific dominant color: red, orange, yellow, green, teal, blue, purple, pink, white, gray, black and brown.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   c2coff: string
-  ##         : Turns off the translation between zh-CN and zh-TW.
-  ##   siteSearchFilter: string
-  ##                   : Controls whether to include or exclude results from the site named in the as_sitesearch parameter
-  ##   linkSite: string
-  ##           : Specifies that all search results should contain a link to a particular URL
-  ##   lowRange: string
-  ##           : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
-  ##   cx: string
-  ##     : The custom search engine ID to scope this search query
+  ##   highRange: string
+  ##            : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   c2coff: string
+  ##         : Turns off the translation between zh-CN and zh-TW.
+  ##   cr: string
+  ##     : Country restrict(s).
+  ##   safe: string
+  ##       : Search safety level
+  ##   relatedSite: string
+  ##              : Specifies that all search results should be pages that are related to the specified URL
+  ##   q: string (required)
+  ##    : Query
+  ##   lowRange: string
+  ##           : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
   ##   dateRestrict: string
   ##               : Specifies all search results are from a time period
   ##   orTerms: string
   ##          : Provides additional search terms to check for in a document, where each document in the search results must contain at least one of the additional search terms
-  ##   hl: string
-  ##     : Sets the user interface language.
+  ##   siteSearchFilter: string
+  ##                   : Controls whether to include or exclude results from the site named in the as_sitesearch parameter
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   googlehost: string
+  ##             : The local Google domain to use to perform the search.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   hq: string
+  ##     : Appends the extra query terms to the query.
+  ##   imgColorType: string
+  ##               : Returns black and white, grayscale, or color images: mono, gray, and color.
+  ##   rights: string
+  ##         : Filters based on licensing. Supported values include: cc_publicdomain, cc_attribute, cc_sharealike, cc_noncommercial, cc_nonderived and combinations of these.
   ##   filter: string
   ##         : Controls turning on or off the duplicate content filter.
-  ##   cr: string
-  ##     : Country restrict(s).
+  ##   imgDominantColor: string
+  ##                   : Returns images of a specific dominant color: red, orange, yellow, green, teal, blue, purple, pink, white, gray, black and brown.
+  ##   imgType: string
+  ##          : Returns images of a type, which can be one of: clipart, face, lineart, news, and photo.
   ##   searchType: string
   ##             : Specifies the search type: image.
-  ##   siteSearch: string
-  ##             : Specifies all search results should be pages from a given site
+  ##   fileType: string
+  ##           : Returns images of a specified type. Some of the allowed values are: bmp, gif, png, jpg, svg, pdf, ...
   ##   start: int
   ##        : The index of the first result to return
-  var query_588985 = newJObject()
-  add(query_588985, "imgSize", newJString(imgSize))
-  add(query_588985, "safe", newJString(safe))
-  add(query_588985, "fields", newJString(fields))
-  add(query_588985, "quotaUser", newJString(quotaUser))
-  add(query_588985, "gl", newJString(gl))
-  add(query_588985, "alt", newJString(alt))
-  add(query_588985, "rights", newJString(rights))
-  add(query_588985, "hq", newJString(hq))
-  add(query_588985, "relatedSite", newJString(relatedSite))
-  add(query_588985, "sort", newJString(sort))
-  add(query_588985, "lr", newJString(lr))
-  add(query_588985, "exactTerms", newJString(exactTerms))
-  add(query_588985, "excludeTerms", newJString(excludeTerms))
-  add(query_588985, "oauth_token", newJString(oauthToken))
-  add(query_588985, "fileType", newJString(fileType))
-  add(query_588985, "googlehost", newJString(googlehost))
-  add(query_588985, "imgType", newJString(imgType))
-  add(query_588985, "userIp", newJString(userIp))
-  add(query_588985, "num", newJInt(num))
-  add(query_588985, "highRange", newJString(highRange))
-  add(query_588985, "imgColorType", newJString(imgColorType))
-  add(query_588985, "q", newJString(q))
-  add(query_588985, "imgDominantColor", newJString(imgDominantColor))
-  add(query_588985, "key", newJString(key))
-  add(query_588985, "c2coff", newJString(c2coff))
-  add(query_588985, "siteSearchFilter", newJString(siteSearchFilter))
-  add(query_588985, "linkSite", newJString(linkSite))
-  add(query_588985, "lowRange", newJString(lowRange))
-  add(query_588985, "cx", newJString(cx))
-  add(query_588985, "prettyPrint", newJBool(prettyPrint))
-  add(query_588985, "dateRestrict", newJString(dateRestrict))
-  add(query_588985, "orTerms", newJString(orTerms))
-  add(query_588985, "hl", newJString(hl))
-  add(query_588985, "filter", newJString(filter))
-  add(query_588985, "cr", newJString(cr))
-  add(query_588985, "searchType", newJString(searchType))
-  add(query_588985, "siteSearch", newJString(siteSearch))
-  add(query_588985, "start", newJInt(start))
-  result = call_588984.call(nil, query_588985, nil, nil, nil)
+  ##   linkSite: string
+  ##           : Specifies that all search results should contain a link to a particular URL
+  ##   lr: string
+  ##     : The language restriction for the search results
+  ##   siteSearch: string
+  ##             : Specifies all search results should be pages from a given site
+  ##   imgSize: string
+  ##          : Returns images of a specified size, where size can be one of: icon, small, medium, large, xlarge, xxlarge, and huge.
+  ##   gl: string
+  ##     : Geolocation of end user.
+  ##   excludeTerms: string
+  ##               : Identifies a word or phrase that should not appear in any documents in the search results
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   hl: string
+  ##     : Sets the user interface language.
+  ##   num: int
+  ##      : Number of search results to return
+  ##   exactTerms: string
+  ##             : Identifies a phrase that all documents in the search results must contain
+  ##   cx: string
+  ##     : The custom search engine ID to scope this search query
+  ##   sort: string
+  ##       : The sort expression to apply to the results
+  var query_578885 = newJObject()
+  add(query_578885, "key", newJString(key))
+  add(query_578885, "highRange", newJString(highRange))
+  add(query_578885, "prettyPrint", newJBool(prettyPrint))
+  add(query_578885, "oauth_token", newJString(oauthToken))
+  add(query_578885, "c2coff", newJString(c2coff))
+  add(query_578885, "cr", newJString(cr))
+  add(query_578885, "safe", newJString(safe))
+  add(query_578885, "relatedSite", newJString(relatedSite))
+  add(query_578885, "q", newJString(q))
+  add(query_578885, "lowRange", newJString(lowRange))
+  add(query_578885, "dateRestrict", newJString(dateRestrict))
+  add(query_578885, "orTerms", newJString(orTerms))
+  add(query_578885, "siteSearchFilter", newJString(siteSearchFilter))
+  add(query_578885, "alt", newJString(alt))
+  add(query_578885, "userIp", newJString(userIp))
+  add(query_578885, "googlehost", newJString(googlehost))
+  add(query_578885, "quotaUser", newJString(quotaUser))
+  add(query_578885, "hq", newJString(hq))
+  add(query_578885, "imgColorType", newJString(imgColorType))
+  add(query_578885, "rights", newJString(rights))
+  add(query_578885, "filter", newJString(filter))
+  add(query_578885, "imgDominantColor", newJString(imgDominantColor))
+  add(query_578885, "imgType", newJString(imgType))
+  add(query_578885, "searchType", newJString(searchType))
+  add(query_578885, "fileType", newJString(fileType))
+  add(query_578885, "start", newJInt(start))
+  add(query_578885, "linkSite", newJString(linkSite))
+  add(query_578885, "lr", newJString(lr))
+  add(query_578885, "siteSearch", newJString(siteSearch))
+  add(query_578885, "imgSize", newJString(imgSize))
+  add(query_578885, "gl", newJString(gl))
+  add(query_578885, "excludeTerms", newJString(excludeTerms))
+  add(query_578885, "fields", newJString(fields))
+  add(query_578885, "hl", newJString(hl))
+  add(query_578885, "num", newJInt(num))
+  add(query_578885, "exactTerms", newJString(exactTerms))
+  add(query_578885, "cx", newJString(cx))
+  add(query_578885, "sort", newJString(sort))
+  result = call_578884.call(nil, query_578885, nil, nil, nil)
 
-var searchCseList* = Call_SearchCseList_588725(name: "searchCseList",
+var searchCseList* = Call_SearchCseList_578625(name: "searchCseList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/v1",
-    validator: validate_SearchCseList_588726, base: "/customsearch",
-    url: url_SearchCseList_588727, schemes: {Scheme.Https})
+    validator: validate_SearchCseList_578626, base: "/customsearch",
+    url: url_SearchCseList_578627, schemes: {Scheme.Https})
 type
-  Call_SearchCseSiterestrictList_589025 = ref object of OpenApiRestCall_588457
-proc url_SearchCseSiterestrictList_589027(protocol: Scheme; host: string;
+  Call_SearchCseSiterestrictList_578925 = ref object of OpenApiRestCall_578355
+proc url_SearchCseSiterestrictList_578927(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_SearchCseSiterestrictList_589026(path: JsonNode; query: JsonNode;
+proc validate_SearchCseSiterestrictList_578926(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns metadata about the search performed, metadata about the custom search engine used for the search, and the search results. Uses a small set of url patterns.
   ## 
@@ -567,273 +571,273 @@ proc validate_SearchCseSiterestrictList_589026(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   imgSize: JString
-  ##          : Returns images of a specified size, where size can be one of: icon, small, medium, large, xlarge, xxlarge, and huge.
-  ##   safe: JString
-  ##       : Search safety level
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   gl: JString
-  ##     : Geolocation of end user.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   rights: JString
-  ##         : Filters based on licensing. Supported values include: cc_publicdomain, cc_attribute, cc_sharealike, cc_noncommercial, cc_nonderived and combinations of these.
-  ##   hq: JString
-  ##     : Appends the extra query terms to the query.
-  ##   relatedSite: JString
-  ##              : Specifies that all search results should be pages that are related to the specified URL
-  ##   sort: JString
-  ##       : The sort expression to apply to the results
-  ##   lr: JString
-  ##     : The language restriction for the search results
-  ##   exactTerms: JString
-  ##             : Identifies a phrase that all documents in the search results must contain
-  ##   excludeTerms: JString
-  ##               : Identifies a word or phrase that should not appear in any documents in the search results
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   fileType: JString
-  ##           : Returns images of a specified type. Some of the allowed values are: bmp, gif, png, jpg, svg, pdf, ...
-  ##   googlehost: JString
-  ##             : The local Google domain to use to perform the search.
-  ##   imgType: JString
-  ##          : Returns images of a type, which can be one of: clipart, face, lineart, news, and photo.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   num: JInt
-  ##      : Number of search results to return
-  ##   highRange: JString
-  ##            : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
-  ##   imgColorType: JString
-  ##               : Returns black and white, grayscale, or color images: mono, gray, and color.
-  ##   q: JString (required)
-  ##    : Query
-  ##   imgDominantColor: JString
-  ##                   : Returns images of a specific dominant color: red, orange, yellow, green, teal, blue, purple, pink, white, gray, black and brown.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   c2coff: JString
-  ##         : Turns off the translation between zh-CN and zh-TW.
-  ##   siteSearchFilter: JString
-  ##                   : Controls whether to include or exclude results from the site named in the as_sitesearch parameter
-  ##   linkSite: JString
-  ##           : Specifies that all search results should contain a link to a particular URL
-  ##   lowRange: JString
-  ##           : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
-  ##   cx: JString
-  ##     : The custom search engine ID to scope this search query
+  ##   highRange: JString
+  ##            : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   c2coff: JString
+  ##         : Turns off the translation between zh-CN and zh-TW.
+  ##   cr: JString
+  ##     : Country restrict(s).
+  ##   safe: JString
+  ##       : Search safety level
+  ##   relatedSite: JString
+  ##              : Specifies that all search results should be pages that are related to the specified URL
+  ##   q: JString (required)
+  ##    : Query
+  ##   lowRange: JString
+  ##           : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
   ##   dateRestrict: JString
   ##               : Specifies all search results are from a time period
   ##   orTerms: JString
   ##          : Provides additional search terms to check for in a document, where each document in the search results must contain at least one of the additional search terms
-  ##   hl: JString
-  ##     : Sets the user interface language.
+  ##   siteSearchFilter: JString
+  ##                   : Controls whether to include or exclude results from the site named in the as_sitesearch parameter
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   googlehost: JString
+  ##             : The local Google domain to use to perform the search.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   hq: JString
+  ##     : Appends the extra query terms to the query.
+  ##   imgColorType: JString
+  ##               : Returns black and white, grayscale, or color images: mono, gray, and color.
+  ##   rights: JString
+  ##         : Filters based on licensing. Supported values include: cc_publicdomain, cc_attribute, cc_sharealike, cc_noncommercial, cc_nonderived and combinations of these.
   ##   filter: JString
   ##         : Controls turning on or off the duplicate content filter.
-  ##   cr: JString
-  ##     : Country restrict(s).
+  ##   imgDominantColor: JString
+  ##                   : Returns images of a specific dominant color: red, orange, yellow, green, teal, blue, purple, pink, white, gray, black and brown.
+  ##   imgType: JString
+  ##          : Returns images of a type, which can be one of: clipart, face, lineart, news, and photo.
   ##   searchType: JString
   ##             : Specifies the search type: image.
-  ##   siteSearch: JString
-  ##             : Specifies all search results should be pages from a given site
+  ##   fileType: JString
+  ##           : Returns images of a specified type. Some of the allowed values are: bmp, gif, png, jpg, svg, pdf, ...
   ##   start: JInt
   ##        : The index of the first result to return
+  ##   linkSite: JString
+  ##           : Specifies that all search results should contain a link to a particular URL
+  ##   lr: JString
+  ##     : The language restriction for the search results
+  ##   siteSearch: JString
+  ##             : Specifies all search results should be pages from a given site
+  ##   imgSize: JString
+  ##          : Returns images of a specified size, where size can be one of: icon, small, medium, large, xlarge, xxlarge, and huge.
+  ##   gl: JString
+  ##     : Geolocation of end user.
+  ##   excludeTerms: JString
+  ##               : Identifies a word or phrase that should not appear in any documents in the search results
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   hl: JString
+  ##     : Sets the user interface language.
+  ##   num: JInt
+  ##      : Number of search results to return
+  ##   exactTerms: JString
+  ##             : Identifies a phrase that all documents in the search results must contain
+  ##   cx: JString
+  ##     : The custom search engine ID to scope this search query
+  ##   sort: JString
+  ##       : The sort expression to apply to the results
   section = newJObject()
-  var valid_589028 = query.getOrDefault("imgSize")
-  valid_589028 = validateParameter(valid_589028, JString, required = false,
-                                 default = newJString("huge"))
-  if valid_589028 != nil:
-    section.add "imgSize", valid_589028
-  var valid_589029 = query.getOrDefault("safe")
-  valid_589029 = validateParameter(valid_589029, JString, required = false,
-                                 default = newJString("off"))
-  if valid_589029 != nil:
-    section.add "safe", valid_589029
-  var valid_589030 = query.getOrDefault("fields")
-  valid_589030 = validateParameter(valid_589030, JString, required = false,
+  var valid_578928 = query.getOrDefault("key")
+  valid_578928 = validateParameter(valid_578928, JString, required = false,
                                  default = nil)
-  if valid_589030 != nil:
-    section.add "fields", valid_589030
-  var valid_589031 = query.getOrDefault("quotaUser")
-  valid_589031 = validateParameter(valid_589031, JString, required = false,
+  if valid_578928 != nil:
+    section.add "key", valid_578928
+  var valid_578929 = query.getOrDefault("highRange")
+  valid_578929 = validateParameter(valid_578929, JString, required = false,
                                  default = nil)
-  if valid_589031 != nil:
-    section.add "quotaUser", valid_589031
-  var valid_589032 = query.getOrDefault("gl")
-  valid_589032 = validateParameter(valid_589032, JString, required = false,
-                                 default = nil)
-  if valid_589032 != nil:
-    section.add "gl", valid_589032
-  var valid_589033 = query.getOrDefault("alt")
-  valid_589033 = validateParameter(valid_589033, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589033 != nil:
-    section.add "alt", valid_589033
-  var valid_589034 = query.getOrDefault("rights")
-  valid_589034 = validateParameter(valid_589034, JString, required = false,
-                                 default = nil)
-  if valid_589034 != nil:
-    section.add "rights", valid_589034
-  var valid_589035 = query.getOrDefault("hq")
-  valid_589035 = validateParameter(valid_589035, JString, required = false,
-                                 default = nil)
-  if valid_589035 != nil:
-    section.add "hq", valid_589035
-  var valid_589036 = query.getOrDefault("relatedSite")
-  valid_589036 = validateParameter(valid_589036, JString, required = false,
-                                 default = nil)
-  if valid_589036 != nil:
-    section.add "relatedSite", valid_589036
-  var valid_589037 = query.getOrDefault("sort")
-  valid_589037 = validateParameter(valid_589037, JString, required = false,
-                                 default = nil)
-  if valid_589037 != nil:
-    section.add "sort", valid_589037
-  var valid_589038 = query.getOrDefault("lr")
-  valid_589038 = validateParameter(valid_589038, JString, required = false,
-                                 default = newJString("lang_ar"))
-  if valid_589038 != nil:
-    section.add "lr", valid_589038
-  var valid_589039 = query.getOrDefault("exactTerms")
-  valid_589039 = validateParameter(valid_589039, JString, required = false,
-                                 default = nil)
-  if valid_589039 != nil:
-    section.add "exactTerms", valid_589039
-  var valid_589040 = query.getOrDefault("excludeTerms")
-  valid_589040 = validateParameter(valid_589040, JString, required = false,
-                                 default = nil)
-  if valid_589040 != nil:
-    section.add "excludeTerms", valid_589040
-  var valid_589041 = query.getOrDefault("oauth_token")
-  valid_589041 = validateParameter(valid_589041, JString, required = false,
-                                 default = nil)
-  if valid_589041 != nil:
-    section.add "oauth_token", valid_589041
-  var valid_589042 = query.getOrDefault("fileType")
-  valid_589042 = validateParameter(valid_589042, JString, required = false,
-                                 default = nil)
-  if valid_589042 != nil:
-    section.add "fileType", valid_589042
-  var valid_589043 = query.getOrDefault("googlehost")
-  valid_589043 = validateParameter(valid_589043, JString, required = false,
-                                 default = nil)
-  if valid_589043 != nil:
-    section.add "googlehost", valid_589043
-  var valid_589044 = query.getOrDefault("imgType")
-  valid_589044 = validateParameter(valid_589044, JString, required = false,
-                                 default = newJString("clipart"))
-  if valid_589044 != nil:
-    section.add "imgType", valid_589044
-  var valid_589045 = query.getOrDefault("userIp")
-  valid_589045 = validateParameter(valid_589045, JString, required = false,
-                                 default = nil)
-  if valid_589045 != nil:
-    section.add "userIp", valid_589045
-  var valid_589046 = query.getOrDefault("num")
-  valid_589046 = validateParameter(valid_589046, JInt, required = false,
-                                 default = newJInt(10))
-  if valid_589046 != nil:
-    section.add "num", valid_589046
-  var valid_589047 = query.getOrDefault("highRange")
-  valid_589047 = validateParameter(valid_589047, JString, required = false,
-                                 default = nil)
-  if valid_589047 != nil:
-    section.add "highRange", valid_589047
-  var valid_589048 = query.getOrDefault("imgColorType")
-  valid_589048 = validateParameter(valid_589048, JString, required = false,
-                                 default = newJString("color"))
-  if valid_589048 != nil:
-    section.add "imgColorType", valid_589048
-  assert query != nil, "query argument is necessary due to required `q` field"
-  var valid_589049 = query.getOrDefault("q")
-  valid_589049 = validateParameter(valid_589049, JString, required = true,
-                                 default = nil)
-  if valid_589049 != nil:
-    section.add "q", valid_589049
-  var valid_589050 = query.getOrDefault("imgDominantColor")
-  valid_589050 = validateParameter(valid_589050, JString, required = false,
-                                 default = newJString("black"))
-  if valid_589050 != nil:
-    section.add "imgDominantColor", valid_589050
-  var valid_589051 = query.getOrDefault("key")
-  valid_589051 = validateParameter(valid_589051, JString, required = false,
-                                 default = nil)
-  if valid_589051 != nil:
-    section.add "key", valid_589051
-  var valid_589052 = query.getOrDefault("c2coff")
-  valid_589052 = validateParameter(valid_589052, JString, required = false,
-                                 default = nil)
-  if valid_589052 != nil:
-    section.add "c2coff", valid_589052
-  var valid_589053 = query.getOrDefault("siteSearchFilter")
-  valid_589053 = validateParameter(valid_589053, JString, required = false,
-                                 default = newJString("e"))
-  if valid_589053 != nil:
-    section.add "siteSearchFilter", valid_589053
-  var valid_589054 = query.getOrDefault("linkSite")
-  valid_589054 = validateParameter(valid_589054, JString, required = false,
-                                 default = nil)
-  if valid_589054 != nil:
-    section.add "linkSite", valid_589054
-  var valid_589055 = query.getOrDefault("lowRange")
-  valid_589055 = validateParameter(valid_589055, JString, required = false,
-                                 default = nil)
-  if valid_589055 != nil:
-    section.add "lowRange", valid_589055
-  var valid_589056 = query.getOrDefault("cx")
-  valid_589056 = validateParameter(valid_589056, JString, required = false,
-                                 default = nil)
-  if valid_589056 != nil:
-    section.add "cx", valid_589056
-  var valid_589057 = query.getOrDefault("prettyPrint")
-  valid_589057 = validateParameter(valid_589057, JBool, required = false,
+  if valid_578929 != nil:
+    section.add "highRange", valid_578929
+  var valid_578930 = query.getOrDefault("prettyPrint")
+  valid_578930 = validateParameter(valid_578930, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589057 != nil:
-    section.add "prettyPrint", valid_589057
-  var valid_589058 = query.getOrDefault("dateRestrict")
-  valid_589058 = validateParameter(valid_589058, JString, required = false,
+  if valid_578930 != nil:
+    section.add "prettyPrint", valid_578930
+  var valid_578931 = query.getOrDefault("oauth_token")
+  valid_578931 = validateParameter(valid_578931, JString, required = false,
                                  default = nil)
-  if valid_589058 != nil:
-    section.add "dateRestrict", valid_589058
-  var valid_589059 = query.getOrDefault("orTerms")
-  valid_589059 = validateParameter(valid_589059, JString, required = false,
+  if valid_578931 != nil:
+    section.add "oauth_token", valid_578931
+  var valid_578932 = query.getOrDefault("c2coff")
+  valid_578932 = validateParameter(valid_578932, JString, required = false,
                                  default = nil)
-  if valid_589059 != nil:
-    section.add "orTerms", valid_589059
-  var valid_589060 = query.getOrDefault("hl")
-  valid_589060 = validateParameter(valid_589060, JString, required = false,
+  if valid_578932 != nil:
+    section.add "c2coff", valid_578932
+  var valid_578933 = query.getOrDefault("cr")
+  valid_578933 = validateParameter(valid_578933, JString, required = false,
                                  default = nil)
-  if valid_589060 != nil:
-    section.add "hl", valid_589060
-  var valid_589061 = query.getOrDefault("filter")
-  valid_589061 = validateParameter(valid_589061, JString, required = false,
+  if valid_578933 != nil:
+    section.add "cr", valid_578933
+  var valid_578934 = query.getOrDefault("safe")
+  valid_578934 = validateParameter(valid_578934, JString, required = false,
+                                 default = newJString("off"))
+  if valid_578934 != nil:
+    section.add "safe", valid_578934
+  var valid_578935 = query.getOrDefault("relatedSite")
+  valid_578935 = validateParameter(valid_578935, JString, required = false,
+                                 default = nil)
+  if valid_578935 != nil:
+    section.add "relatedSite", valid_578935
+  assert query != nil, "query argument is necessary due to required `q` field"
+  var valid_578936 = query.getOrDefault("q")
+  valid_578936 = validateParameter(valid_578936, JString, required = true,
+                                 default = nil)
+  if valid_578936 != nil:
+    section.add "q", valid_578936
+  var valid_578937 = query.getOrDefault("lowRange")
+  valid_578937 = validateParameter(valid_578937, JString, required = false,
+                                 default = nil)
+  if valid_578937 != nil:
+    section.add "lowRange", valid_578937
+  var valid_578938 = query.getOrDefault("dateRestrict")
+  valid_578938 = validateParameter(valid_578938, JString, required = false,
+                                 default = nil)
+  if valid_578938 != nil:
+    section.add "dateRestrict", valid_578938
+  var valid_578939 = query.getOrDefault("orTerms")
+  valid_578939 = validateParameter(valid_578939, JString, required = false,
+                                 default = nil)
+  if valid_578939 != nil:
+    section.add "orTerms", valid_578939
+  var valid_578940 = query.getOrDefault("siteSearchFilter")
+  valid_578940 = validateParameter(valid_578940, JString, required = false,
+                                 default = newJString("e"))
+  if valid_578940 != nil:
+    section.add "siteSearchFilter", valid_578940
+  var valid_578941 = query.getOrDefault("alt")
+  valid_578941 = validateParameter(valid_578941, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578941 != nil:
+    section.add "alt", valid_578941
+  var valid_578942 = query.getOrDefault("userIp")
+  valid_578942 = validateParameter(valid_578942, JString, required = false,
+                                 default = nil)
+  if valid_578942 != nil:
+    section.add "userIp", valid_578942
+  var valid_578943 = query.getOrDefault("googlehost")
+  valid_578943 = validateParameter(valid_578943, JString, required = false,
+                                 default = nil)
+  if valid_578943 != nil:
+    section.add "googlehost", valid_578943
+  var valid_578944 = query.getOrDefault("quotaUser")
+  valid_578944 = validateParameter(valid_578944, JString, required = false,
+                                 default = nil)
+  if valid_578944 != nil:
+    section.add "quotaUser", valid_578944
+  var valid_578945 = query.getOrDefault("hq")
+  valid_578945 = validateParameter(valid_578945, JString, required = false,
+                                 default = nil)
+  if valid_578945 != nil:
+    section.add "hq", valid_578945
+  var valid_578946 = query.getOrDefault("imgColorType")
+  valid_578946 = validateParameter(valid_578946, JString, required = false,
+                                 default = newJString("color"))
+  if valid_578946 != nil:
+    section.add "imgColorType", valid_578946
+  var valid_578947 = query.getOrDefault("rights")
+  valid_578947 = validateParameter(valid_578947, JString, required = false,
+                                 default = nil)
+  if valid_578947 != nil:
+    section.add "rights", valid_578947
+  var valid_578948 = query.getOrDefault("filter")
+  valid_578948 = validateParameter(valid_578948, JString, required = false,
                                  default = newJString("0"))
-  if valid_589061 != nil:
-    section.add "filter", valid_589061
-  var valid_589062 = query.getOrDefault("cr")
-  valid_589062 = validateParameter(valid_589062, JString, required = false,
-                                 default = nil)
-  if valid_589062 != nil:
-    section.add "cr", valid_589062
-  var valid_589063 = query.getOrDefault("searchType")
-  valid_589063 = validateParameter(valid_589063, JString, required = false,
+  if valid_578948 != nil:
+    section.add "filter", valid_578948
+  var valid_578949 = query.getOrDefault("imgDominantColor")
+  valid_578949 = validateParameter(valid_578949, JString, required = false,
+                                 default = newJString("black"))
+  if valid_578949 != nil:
+    section.add "imgDominantColor", valid_578949
+  var valid_578950 = query.getOrDefault("imgType")
+  valid_578950 = validateParameter(valid_578950, JString, required = false,
+                                 default = newJString("clipart"))
+  if valid_578950 != nil:
+    section.add "imgType", valid_578950
+  var valid_578951 = query.getOrDefault("searchType")
+  valid_578951 = validateParameter(valid_578951, JString, required = false,
                                  default = newJString("image"))
-  if valid_589063 != nil:
-    section.add "searchType", valid_589063
-  var valid_589064 = query.getOrDefault("siteSearch")
-  valid_589064 = validateParameter(valid_589064, JString, required = false,
+  if valid_578951 != nil:
+    section.add "searchType", valid_578951
+  var valid_578952 = query.getOrDefault("fileType")
+  valid_578952 = validateParameter(valid_578952, JString, required = false,
                                  default = nil)
-  if valid_589064 != nil:
-    section.add "siteSearch", valid_589064
-  var valid_589065 = query.getOrDefault("start")
-  valid_589065 = validateParameter(valid_589065, JInt, required = false, default = nil)
-  if valid_589065 != nil:
-    section.add "start", valid_589065
+  if valid_578952 != nil:
+    section.add "fileType", valid_578952
+  var valid_578953 = query.getOrDefault("start")
+  valid_578953 = validateParameter(valid_578953, JInt, required = false, default = nil)
+  if valid_578953 != nil:
+    section.add "start", valid_578953
+  var valid_578954 = query.getOrDefault("linkSite")
+  valid_578954 = validateParameter(valid_578954, JString, required = false,
+                                 default = nil)
+  if valid_578954 != nil:
+    section.add "linkSite", valid_578954
+  var valid_578955 = query.getOrDefault("lr")
+  valid_578955 = validateParameter(valid_578955, JString, required = false,
+                                 default = newJString("lang_ar"))
+  if valid_578955 != nil:
+    section.add "lr", valid_578955
+  var valid_578956 = query.getOrDefault("siteSearch")
+  valid_578956 = validateParameter(valid_578956, JString, required = false,
+                                 default = nil)
+  if valid_578956 != nil:
+    section.add "siteSearch", valid_578956
+  var valid_578957 = query.getOrDefault("imgSize")
+  valid_578957 = validateParameter(valid_578957, JString, required = false,
+                                 default = newJString("huge"))
+  if valid_578957 != nil:
+    section.add "imgSize", valid_578957
+  var valid_578958 = query.getOrDefault("gl")
+  valid_578958 = validateParameter(valid_578958, JString, required = false,
+                                 default = nil)
+  if valid_578958 != nil:
+    section.add "gl", valid_578958
+  var valid_578959 = query.getOrDefault("excludeTerms")
+  valid_578959 = validateParameter(valid_578959, JString, required = false,
+                                 default = nil)
+  if valid_578959 != nil:
+    section.add "excludeTerms", valid_578959
+  var valid_578960 = query.getOrDefault("fields")
+  valid_578960 = validateParameter(valid_578960, JString, required = false,
+                                 default = nil)
+  if valid_578960 != nil:
+    section.add "fields", valid_578960
+  var valid_578961 = query.getOrDefault("hl")
+  valid_578961 = validateParameter(valid_578961, JString, required = false,
+                                 default = nil)
+  if valid_578961 != nil:
+    section.add "hl", valid_578961
+  var valid_578962 = query.getOrDefault("num")
+  valid_578962 = validateParameter(valid_578962, JInt, required = false,
+                                 default = newJInt(10))
+  if valid_578962 != nil:
+    section.add "num", valid_578962
+  var valid_578963 = query.getOrDefault("exactTerms")
+  valid_578963 = validateParameter(valid_578963, JString, required = false,
+                                 default = nil)
+  if valid_578963 != nil:
+    section.add "exactTerms", valid_578963
+  var valid_578964 = query.getOrDefault("cx")
+  valid_578964 = validateParameter(valid_578964, JString, required = false,
+                                 default = nil)
+  if valid_578964 != nil:
+    section.add "cx", valid_578964
+  var valid_578965 = query.getOrDefault("sort")
+  valid_578965 = validateParameter(valid_578965, JString, required = false,
+                                 default = nil)
+  if valid_578965 != nil:
+    section.add "sort", valid_578965
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -842,156 +846,157 @@ proc validate_SearchCseSiterestrictList_589026(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589066: Call_SearchCseSiterestrictList_589025; path: JsonNode;
+proc call*(call_578966: Call_SearchCseSiterestrictList_578925; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns metadata about the search performed, metadata about the custom search engine used for the search, and the search results. Uses a small set of url patterns.
   ## 
-  let valid = call_589066.validator(path, query, header, formData, body)
-  let scheme = call_589066.pickScheme
+  let valid = call_578966.validator(path, query, header, formData, body)
+  let scheme = call_578966.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589066.url(scheme.get, call_589066.host, call_589066.base,
-                         call_589066.route, valid.getOrDefault("path"),
+  let url = call_578966.url(scheme.get, call_578966.host, call_578966.base,
+                         call_578966.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589066, url, valid)
+  result = hook(call_578966, url, valid)
 
-proc call*(call_589067: Call_SearchCseSiterestrictList_589025; q: string;
-          imgSize: string = "huge"; safe: string = "off"; fields: string = "";
-          quotaUser: string = ""; gl: string = ""; alt: string = "json";
-          rights: string = ""; hq: string = ""; relatedSite: string = ""; sort: string = "";
-          lr: string = "lang_ar"; exactTerms: string = ""; excludeTerms: string = "";
-          oauthToken: string = ""; fileType: string = ""; googlehost: string = "";
-          imgType: string = "clipart"; userIp: string = ""; num: int = 10;
-          highRange: string = ""; imgColorType: string = "color";
-          imgDominantColor: string = "black"; key: string = ""; c2coff: string = "";
-          siteSearchFilter: string = "e"; linkSite: string = ""; lowRange: string = "";
-          cx: string = ""; prettyPrint: bool = true; dateRestrict: string = "";
-          orTerms: string = ""; hl: string = ""; filter: string = "0"; cr: string = "";
-          searchType: string = "image"; siteSearch: string = ""; start: int = 0): Recallable =
+proc call*(call_578967: Call_SearchCseSiterestrictList_578925; q: string;
+          key: string = ""; highRange: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; c2coff: string = ""; cr: string = "";
+          safe: string = "off"; relatedSite: string = ""; lowRange: string = "";
+          dateRestrict: string = ""; orTerms: string = "";
+          siteSearchFilter: string = "e"; alt: string = "json"; userIp: string = "";
+          googlehost: string = ""; quotaUser: string = ""; hq: string = "";
+          imgColorType: string = "color"; rights: string = ""; filter: string = "0";
+          imgDominantColor: string = "black"; imgType: string = "clipart";
+          searchType: string = "image"; fileType: string = ""; start: int = 0;
+          linkSite: string = ""; lr: string = "lang_ar"; siteSearch: string = "";
+          imgSize: string = "huge"; gl: string = ""; excludeTerms: string = "";
+          fields: string = ""; hl: string = ""; num: int = 10; exactTerms: string = "";
+          cx: string = ""; sort: string = ""): Recallable =
   ## searchCseSiterestrictList
   ## Returns metadata about the search performed, metadata about the custom search engine used for the search, and the search results. Uses a small set of url patterns.
-  ##   imgSize: string
-  ##          : Returns images of a specified size, where size can be one of: icon, small, medium, large, xlarge, xxlarge, and huge.
-  ##   safe: string
-  ##       : Search safety level
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   gl: string
-  ##     : Geolocation of end user.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   rights: string
-  ##         : Filters based on licensing. Supported values include: cc_publicdomain, cc_attribute, cc_sharealike, cc_noncommercial, cc_nonderived and combinations of these.
-  ##   hq: string
-  ##     : Appends the extra query terms to the query.
-  ##   relatedSite: string
-  ##              : Specifies that all search results should be pages that are related to the specified URL
-  ##   sort: string
-  ##       : The sort expression to apply to the results
-  ##   lr: string
-  ##     : The language restriction for the search results
-  ##   exactTerms: string
-  ##             : Identifies a phrase that all documents in the search results must contain
-  ##   excludeTerms: string
-  ##               : Identifies a word or phrase that should not appear in any documents in the search results
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   fileType: string
-  ##           : Returns images of a specified type. Some of the allowed values are: bmp, gif, png, jpg, svg, pdf, ...
-  ##   googlehost: string
-  ##             : The local Google domain to use to perform the search.
-  ##   imgType: string
-  ##          : Returns images of a type, which can be one of: clipart, face, lineart, news, and photo.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   num: int
-  ##      : Number of search results to return
-  ##   highRange: string
-  ##            : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
-  ##   imgColorType: string
-  ##               : Returns black and white, grayscale, or color images: mono, gray, and color.
-  ##   q: string (required)
-  ##    : Query
-  ##   imgDominantColor: string
-  ##                   : Returns images of a specific dominant color: red, orange, yellow, green, teal, blue, purple, pink, white, gray, black and brown.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   c2coff: string
-  ##         : Turns off the translation between zh-CN and zh-TW.
-  ##   siteSearchFilter: string
-  ##                   : Controls whether to include or exclude results from the site named in the as_sitesearch parameter
-  ##   linkSite: string
-  ##           : Specifies that all search results should contain a link to a particular URL
-  ##   lowRange: string
-  ##           : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
-  ##   cx: string
-  ##     : The custom search engine ID to scope this search query
+  ##   highRange: string
+  ##            : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   c2coff: string
+  ##         : Turns off the translation between zh-CN and zh-TW.
+  ##   cr: string
+  ##     : Country restrict(s).
+  ##   safe: string
+  ##       : Search safety level
+  ##   relatedSite: string
+  ##              : Specifies that all search results should be pages that are related to the specified URL
+  ##   q: string (required)
+  ##    : Query
+  ##   lowRange: string
+  ##           : Creates a range in form as_nlo value..as_nhi value and attempts to append it to query
   ##   dateRestrict: string
   ##               : Specifies all search results are from a time period
   ##   orTerms: string
   ##          : Provides additional search terms to check for in a document, where each document in the search results must contain at least one of the additional search terms
-  ##   hl: string
-  ##     : Sets the user interface language.
+  ##   siteSearchFilter: string
+  ##                   : Controls whether to include or exclude results from the site named in the as_sitesearch parameter
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   googlehost: string
+  ##             : The local Google domain to use to perform the search.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   hq: string
+  ##     : Appends the extra query terms to the query.
+  ##   imgColorType: string
+  ##               : Returns black and white, grayscale, or color images: mono, gray, and color.
+  ##   rights: string
+  ##         : Filters based on licensing. Supported values include: cc_publicdomain, cc_attribute, cc_sharealike, cc_noncommercial, cc_nonderived and combinations of these.
   ##   filter: string
   ##         : Controls turning on or off the duplicate content filter.
-  ##   cr: string
-  ##     : Country restrict(s).
+  ##   imgDominantColor: string
+  ##                   : Returns images of a specific dominant color: red, orange, yellow, green, teal, blue, purple, pink, white, gray, black and brown.
+  ##   imgType: string
+  ##          : Returns images of a type, which can be one of: clipart, face, lineart, news, and photo.
   ##   searchType: string
   ##             : Specifies the search type: image.
-  ##   siteSearch: string
-  ##             : Specifies all search results should be pages from a given site
+  ##   fileType: string
+  ##           : Returns images of a specified type. Some of the allowed values are: bmp, gif, png, jpg, svg, pdf, ...
   ##   start: int
   ##        : The index of the first result to return
-  var query_589068 = newJObject()
-  add(query_589068, "imgSize", newJString(imgSize))
-  add(query_589068, "safe", newJString(safe))
-  add(query_589068, "fields", newJString(fields))
-  add(query_589068, "quotaUser", newJString(quotaUser))
-  add(query_589068, "gl", newJString(gl))
-  add(query_589068, "alt", newJString(alt))
-  add(query_589068, "rights", newJString(rights))
-  add(query_589068, "hq", newJString(hq))
-  add(query_589068, "relatedSite", newJString(relatedSite))
-  add(query_589068, "sort", newJString(sort))
-  add(query_589068, "lr", newJString(lr))
-  add(query_589068, "exactTerms", newJString(exactTerms))
-  add(query_589068, "excludeTerms", newJString(excludeTerms))
-  add(query_589068, "oauth_token", newJString(oauthToken))
-  add(query_589068, "fileType", newJString(fileType))
-  add(query_589068, "googlehost", newJString(googlehost))
-  add(query_589068, "imgType", newJString(imgType))
-  add(query_589068, "userIp", newJString(userIp))
-  add(query_589068, "num", newJInt(num))
-  add(query_589068, "highRange", newJString(highRange))
-  add(query_589068, "imgColorType", newJString(imgColorType))
-  add(query_589068, "q", newJString(q))
-  add(query_589068, "imgDominantColor", newJString(imgDominantColor))
-  add(query_589068, "key", newJString(key))
-  add(query_589068, "c2coff", newJString(c2coff))
-  add(query_589068, "siteSearchFilter", newJString(siteSearchFilter))
-  add(query_589068, "linkSite", newJString(linkSite))
-  add(query_589068, "lowRange", newJString(lowRange))
-  add(query_589068, "cx", newJString(cx))
-  add(query_589068, "prettyPrint", newJBool(prettyPrint))
-  add(query_589068, "dateRestrict", newJString(dateRestrict))
-  add(query_589068, "orTerms", newJString(orTerms))
-  add(query_589068, "hl", newJString(hl))
-  add(query_589068, "filter", newJString(filter))
-  add(query_589068, "cr", newJString(cr))
-  add(query_589068, "searchType", newJString(searchType))
-  add(query_589068, "siteSearch", newJString(siteSearch))
-  add(query_589068, "start", newJInt(start))
-  result = call_589067.call(nil, query_589068, nil, nil, nil)
+  ##   linkSite: string
+  ##           : Specifies that all search results should contain a link to a particular URL
+  ##   lr: string
+  ##     : The language restriction for the search results
+  ##   siteSearch: string
+  ##             : Specifies all search results should be pages from a given site
+  ##   imgSize: string
+  ##          : Returns images of a specified size, where size can be one of: icon, small, medium, large, xlarge, xxlarge, and huge.
+  ##   gl: string
+  ##     : Geolocation of end user.
+  ##   excludeTerms: string
+  ##               : Identifies a word or phrase that should not appear in any documents in the search results
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   hl: string
+  ##     : Sets the user interface language.
+  ##   num: int
+  ##      : Number of search results to return
+  ##   exactTerms: string
+  ##             : Identifies a phrase that all documents in the search results must contain
+  ##   cx: string
+  ##     : The custom search engine ID to scope this search query
+  ##   sort: string
+  ##       : The sort expression to apply to the results
+  var query_578968 = newJObject()
+  add(query_578968, "key", newJString(key))
+  add(query_578968, "highRange", newJString(highRange))
+  add(query_578968, "prettyPrint", newJBool(prettyPrint))
+  add(query_578968, "oauth_token", newJString(oauthToken))
+  add(query_578968, "c2coff", newJString(c2coff))
+  add(query_578968, "cr", newJString(cr))
+  add(query_578968, "safe", newJString(safe))
+  add(query_578968, "relatedSite", newJString(relatedSite))
+  add(query_578968, "q", newJString(q))
+  add(query_578968, "lowRange", newJString(lowRange))
+  add(query_578968, "dateRestrict", newJString(dateRestrict))
+  add(query_578968, "orTerms", newJString(orTerms))
+  add(query_578968, "siteSearchFilter", newJString(siteSearchFilter))
+  add(query_578968, "alt", newJString(alt))
+  add(query_578968, "userIp", newJString(userIp))
+  add(query_578968, "googlehost", newJString(googlehost))
+  add(query_578968, "quotaUser", newJString(quotaUser))
+  add(query_578968, "hq", newJString(hq))
+  add(query_578968, "imgColorType", newJString(imgColorType))
+  add(query_578968, "rights", newJString(rights))
+  add(query_578968, "filter", newJString(filter))
+  add(query_578968, "imgDominantColor", newJString(imgDominantColor))
+  add(query_578968, "imgType", newJString(imgType))
+  add(query_578968, "searchType", newJString(searchType))
+  add(query_578968, "fileType", newJString(fileType))
+  add(query_578968, "start", newJInt(start))
+  add(query_578968, "linkSite", newJString(linkSite))
+  add(query_578968, "lr", newJString(lr))
+  add(query_578968, "siteSearch", newJString(siteSearch))
+  add(query_578968, "imgSize", newJString(imgSize))
+  add(query_578968, "gl", newJString(gl))
+  add(query_578968, "excludeTerms", newJString(excludeTerms))
+  add(query_578968, "fields", newJString(fields))
+  add(query_578968, "hl", newJString(hl))
+  add(query_578968, "num", newJInt(num))
+  add(query_578968, "exactTerms", newJString(exactTerms))
+  add(query_578968, "cx", newJString(cx))
+  add(query_578968, "sort", newJString(sort))
+  result = call_578967.call(nil, query_578968, nil, nil, nil)
 
-var searchCseSiterestrictList* = Call_SearchCseSiterestrictList_589025(
+var searchCseSiterestrictList* = Call_SearchCseSiterestrictList_578925(
     name: "searchCseSiterestrictList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/v1/siterestrict",
-    validator: validate_SearchCseSiterestrictList_589026, base: "/customsearch",
-    url: url_SearchCseSiterestrictList_589027, schemes: {Scheme.Https})
+    validator: validate_SearchCseSiterestrictList_578926, base: "/customsearch",
+    url: url_SearchCseSiterestrictList_578927, schemes: {Scheme.Https})
 export
   rest
 

@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588441 = ref object of OpenApiRestCall
+  OpenApiRestCall_578339 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,15 +112,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_YoutubeAnalyticsGroupItemsInsert_588984 = ref object of OpenApiRestCall_588441
-proc url_YoutubeAnalyticsGroupItemsInsert_588986(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsGroupItemsInsert_578884 = ref object of OpenApiRestCall_578339
+proc url_YoutubeAnalyticsGroupItemsInsert_578886(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsGroupItemsInsert_588985(path: JsonNode;
+proc validate_YoutubeAnalyticsGroupItemsInsert_578885(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a group item.
   ## 
@@ -125,6 +129,14 @@ proc validate_YoutubeAnalyticsGroupItemsInsert_588985(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
   ##   onBehalfOfContentOwner: JString
   ##                         : This parameter can only be used in a properly authorized request. **Note:**
   ## This parameter is intended exclusively for YouTube content partners that
@@ -137,89 +149,81 @@ proc validate_YoutubeAnalyticsGroupItemsInsert_588985(path: JsonNode;
   ## data, without having to provide authentication credentials for each
   ## individual channel. The account that the user authenticates with must be
   ## linked to the specified YouTube content owner.
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   alt: JString
   ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
   ##   uploadType: JString
   ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_588987 = query.getOrDefault("onBehalfOfContentOwner")
-  valid_588987 = validateParameter(valid_588987, JString, required = false,
+  var valid_578887 = query.getOrDefault("key")
+  valid_578887 = validateParameter(valid_578887, JString, required = false,
                                  default = nil)
-  if valid_588987 != nil:
-    section.add "onBehalfOfContentOwner", valid_588987
-  var valid_588988 = query.getOrDefault("upload_protocol")
-  valid_588988 = validateParameter(valid_588988, JString, required = false,
-                                 default = nil)
-  if valid_588988 != nil:
-    section.add "upload_protocol", valid_588988
-  var valid_588989 = query.getOrDefault("fields")
-  valid_588989 = validateParameter(valid_588989, JString, required = false,
-                                 default = nil)
-  if valid_588989 != nil:
-    section.add "fields", valid_588989
-  var valid_588990 = query.getOrDefault("quotaUser")
-  valid_588990 = validateParameter(valid_588990, JString, required = false,
-                                 default = nil)
-  if valid_588990 != nil:
-    section.add "quotaUser", valid_588990
-  var valid_588991 = query.getOrDefault("alt")
-  valid_588991 = validateParameter(valid_588991, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588991 != nil:
-    section.add "alt", valid_588991
-  var valid_588992 = query.getOrDefault("oauth_token")
-  valid_588992 = validateParameter(valid_588992, JString, required = false,
-                                 default = nil)
-  if valid_588992 != nil:
-    section.add "oauth_token", valid_588992
-  var valid_588993 = query.getOrDefault("callback")
-  valid_588993 = validateParameter(valid_588993, JString, required = false,
-                                 default = nil)
-  if valid_588993 != nil:
-    section.add "callback", valid_588993
-  var valid_588994 = query.getOrDefault("access_token")
-  valid_588994 = validateParameter(valid_588994, JString, required = false,
-                                 default = nil)
-  if valid_588994 != nil:
-    section.add "access_token", valid_588994
-  var valid_588995 = query.getOrDefault("uploadType")
-  valid_588995 = validateParameter(valid_588995, JString, required = false,
-                                 default = nil)
-  if valid_588995 != nil:
-    section.add "uploadType", valid_588995
-  var valid_588996 = query.getOrDefault("key")
-  valid_588996 = validateParameter(valid_588996, JString, required = false,
-                                 default = nil)
-  if valid_588996 != nil:
-    section.add "key", valid_588996
-  var valid_588997 = query.getOrDefault("$.xgafv")
-  valid_588997 = validateParameter(valid_588997, JString, required = false,
-                                 default = newJString("1"))
-  if valid_588997 != nil:
-    section.add "$.xgafv", valid_588997
-  var valid_588998 = query.getOrDefault("prettyPrint")
-  valid_588998 = validateParameter(valid_588998, JBool, required = false,
+  if valid_578887 != nil:
+    section.add "key", valid_578887
+  var valid_578888 = query.getOrDefault("prettyPrint")
+  valid_578888 = validateParameter(valid_578888, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588998 != nil:
-    section.add "prettyPrint", valid_588998
+  if valid_578888 != nil:
+    section.add "prettyPrint", valid_578888
+  var valid_578889 = query.getOrDefault("oauth_token")
+  valid_578889 = validateParameter(valid_578889, JString, required = false,
+                                 default = nil)
+  if valid_578889 != nil:
+    section.add "oauth_token", valid_578889
+  var valid_578890 = query.getOrDefault("$.xgafv")
+  valid_578890 = validateParameter(valid_578890, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578890 != nil:
+    section.add "$.xgafv", valid_578890
+  var valid_578891 = query.getOrDefault("onBehalfOfContentOwner")
+  valid_578891 = validateParameter(valid_578891, JString, required = false,
+                                 default = nil)
+  if valid_578891 != nil:
+    section.add "onBehalfOfContentOwner", valid_578891
+  var valid_578892 = query.getOrDefault("alt")
+  valid_578892 = validateParameter(valid_578892, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578892 != nil:
+    section.add "alt", valid_578892
+  var valid_578893 = query.getOrDefault("uploadType")
+  valid_578893 = validateParameter(valid_578893, JString, required = false,
+                                 default = nil)
+  if valid_578893 != nil:
+    section.add "uploadType", valid_578893
+  var valid_578894 = query.getOrDefault("quotaUser")
+  valid_578894 = validateParameter(valid_578894, JString, required = false,
+                                 default = nil)
+  if valid_578894 != nil:
+    section.add "quotaUser", valid_578894
+  var valid_578895 = query.getOrDefault("callback")
+  valid_578895 = validateParameter(valid_578895, JString, required = false,
+                                 default = nil)
+  if valid_578895 != nil:
+    section.add "callback", valid_578895
+  var valid_578896 = query.getOrDefault("fields")
+  valid_578896 = validateParameter(valid_578896, JString, required = false,
+                                 default = nil)
+  if valid_578896 != nil:
+    section.add "fields", valid_578896
+  var valid_578897 = query.getOrDefault("access_token")
+  valid_578897 = validateParameter(valid_578897, JString, required = false,
+                                 default = nil)
+  if valid_578897 != nil:
+    section.add "access_token", valid_578897
+  var valid_578898 = query.getOrDefault("upload_protocol")
+  valid_578898 = validateParameter(valid_578898, JString, required = false,
+                                 default = nil)
+  if valid_578898 != nil:
+    section.add "upload_protocol", valid_578898
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -231,28 +235,36 @@ proc validate_YoutubeAnalyticsGroupItemsInsert_588985(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589000: Call_YoutubeAnalyticsGroupItemsInsert_588984;
+proc call*(call_578900: Call_YoutubeAnalyticsGroupItemsInsert_578884;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a group item.
   ## 
-  let valid = call_589000.validator(path, query, header, formData, body)
-  let scheme = call_589000.pickScheme
+  let valid = call_578900.validator(path, query, header, formData, body)
+  let scheme = call_578900.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589000.url(scheme.get, call_589000.host, call_589000.base,
-                         call_589000.route, valid.getOrDefault("path"),
+  let url = call_578900.url(scheme.get, call_578900.host, call_578900.base,
+                         call_578900.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589000, url, valid)
+  result = hook(call_578900, url, valid)
 
-proc call*(call_589001: Call_YoutubeAnalyticsGroupItemsInsert_588984;
-          onBehalfOfContentOwner: string = ""; uploadProtocol: string = "";
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; callback: string = ""; accessToken: string = "";
-          uploadType: string = ""; key: string = ""; Xgafv: string = "1";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578901: Call_YoutubeAnalyticsGroupItemsInsert_578884;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          Xgafv: string = "1"; onBehalfOfContentOwner: string = "";
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; callback: string = ""; fields: string = "";
+          accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## youtubeAnalyticsGroupItemsInsert
   ## Creates a group item.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
   ##   onBehalfOfContentOwner: string
   ##                         : This parameter can only be used in a properly authorized request. **Note:**
   ## This parameter is intended exclusively for YouTube content partners that
@@ -265,62 +277,54 @@ proc call*(call_589001: Call_YoutubeAnalyticsGroupItemsInsert_588984;
   ## data, without having to provide authentication credentials for each
   ## individual channel. The account that the user authenticates with must be
   ## linked to the specified YouTube content owner.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   alt: string
   ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
   ##   uploadType: string
   ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var query_589002 = newJObject()
-  var body_589003 = newJObject()
-  add(query_589002, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
-  add(query_589002, "upload_protocol", newJString(uploadProtocol))
-  add(query_589002, "fields", newJString(fields))
-  add(query_589002, "quotaUser", newJString(quotaUser))
-  add(query_589002, "alt", newJString(alt))
-  add(query_589002, "oauth_token", newJString(oauthToken))
-  add(query_589002, "callback", newJString(callback))
-  add(query_589002, "access_token", newJString(accessToken))
-  add(query_589002, "uploadType", newJString(uploadType))
-  add(query_589002, "key", newJString(key))
-  add(query_589002, "$.xgafv", newJString(Xgafv))
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var query_578902 = newJObject()
+  var body_578903 = newJObject()
+  add(query_578902, "key", newJString(key))
+  add(query_578902, "prettyPrint", newJBool(prettyPrint))
+  add(query_578902, "oauth_token", newJString(oauthToken))
+  add(query_578902, "$.xgafv", newJString(Xgafv))
+  add(query_578902, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
+  add(query_578902, "alt", newJString(alt))
+  add(query_578902, "uploadType", newJString(uploadType))
+  add(query_578902, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589003 = body
-  add(query_589002, "prettyPrint", newJBool(prettyPrint))
-  result = call_589001.call(nil, query_589002, nil, nil, body_589003)
+    body_578903 = body
+  add(query_578902, "callback", newJString(callback))
+  add(query_578902, "fields", newJString(fields))
+  add(query_578902, "access_token", newJString(accessToken))
+  add(query_578902, "upload_protocol", newJString(uploadProtocol))
+  result = call_578901.call(nil, query_578902, nil, nil, body_578903)
 
-var youtubeAnalyticsGroupItemsInsert* = Call_YoutubeAnalyticsGroupItemsInsert_588984(
+var youtubeAnalyticsGroupItemsInsert* = Call_YoutubeAnalyticsGroupItemsInsert_578884(
     name: "youtubeAnalyticsGroupItemsInsert", meth: HttpMethod.HttpPost,
     host: "youtubeanalytics.googleapis.com", route: "/v2/groupItems",
-    validator: validate_YoutubeAnalyticsGroupItemsInsert_588985, base: "/",
-    url: url_YoutubeAnalyticsGroupItemsInsert_588986, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsGroupItemsInsert_578885, base: "/",
+    url: url_YoutubeAnalyticsGroupItemsInsert_578886, schemes: {Scheme.Https})
 type
-  Call_YoutubeAnalyticsGroupItemsList_588710 = ref object of OpenApiRestCall_588441
-proc url_YoutubeAnalyticsGroupItemsList_588712(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsGroupItemsList_578610 = ref object of OpenApiRestCall_578339
+proc url_YoutubeAnalyticsGroupItemsList_578612(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsGroupItemsList_588711(path: JsonNode;
+proc validate_YoutubeAnalyticsGroupItemsList_578611(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a collection of group items that match the API request parameters.
   ## 
@@ -329,6 +333,14 @@ proc validate_YoutubeAnalyticsGroupItemsList_588711(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
   ##   onBehalfOfContentOwner: JString
   ##                         : This parameter can only be used in a properly authorized request. **Note:**
   ## This parameter is intended exclusively for YouTube content partners that
@@ -341,97 +353,89 @@ proc validate_YoutubeAnalyticsGroupItemsList_588711(path: JsonNode;
   ## data, without having to provide authentication credentials for each
   ## individual channel. The account that the user authenticates with must be
   ## linked to the specified YouTube content owner.
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   alt: JString
   ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
   ##   uploadType: JString
   ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   groupId: JString
   ##          : The `groupId` parameter specifies the unique ID of the group for which you
   ## want to retrieve group items.
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_588824 = query.getOrDefault("onBehalfOfContentOwner")
-  valid_588824 = validateParameter(valid_588824, JString, required = false,
+  var valid_578724 = query.getOrDefault("key")
+  valid_578724 = validateParameter(valid_578724, JString, required = false,
                                  default = nil)
-  if valid_588824 != nil:
-    section.add "onBehalfOfContentOwner", valid_588824
-  var valid_588825 = query.getOrDefault("upload_protocol")
-  valid_588825 = validateParameter(valid_588825, JString, required = false,
-                                 default = nil)
-  if valid_588825 != nil:
-    section.add "upload_protocol", valid_588825
-  var valid_588826 = query.getOrDefault("fields")
-  valid_588826 = validateParameter(valid_588826, JString, required = false,
-                                 default = nil)
-  if valid_588826 != nil:
-    section.add "fields", valid_588826
-  var valid_588827 = query.getOrDefault("quotaUser")
-  valid_588827 = validateParameter(valid_588827, JString, required = false,
-                                 default = nil)
-  if valid_588827 != nil:
-    section.add "quotaUser", valid_588827
-  var valid_588841 = query.getOrDefault("alt")
-  valid_588841 = validateParameter(valid_588841, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588841 != nil:
-    section.add "alt", valid_588841
-  var valid_588842 = query.getOrDefault("oauth_token")
-  valid_588842 = validateParameter(valid_588842, JString, required = false,
-                                 default = nil)
-  if valid_588842 != nil:
-    section.add "oauth_token", valid_588842
-  var valid_588843 = query.getOrDefault("callback")
-  valid_588843 = validateParameter(valid_588843, JString, required = false,
-                                 default = nil)
-  if valid_588843 != nil:
-    section.add "callback", valid_588843
-  var valid_588844 = query.getOrDefault("access_token")
-  valid_588844 = validateParameter(valid_588844, JString, required = false,
-                                 default = nil)
-  if valid_588844 != nil:
-    section.add "access_token", valid_588844
-  var valid_588845 = query.getOrDefault("uploadType")
-  valid_588845 = validateParameter(valid_588845, JString, required = false,
-                                 default = nil)
-  if valid_588845 != nil:
-    section.add "uploadType", valid_588845
-  var valid_588846 = query.getOrDefault("groupId")
-  valid_588846 = validateParameter(valid_588846, JString, required = false,
-                                 default = nil)
-  if valid_588846 != nil:
-    section.add "groupId", valid_588846
-  var valid_588847 = query.getOrDefault("key")
-  valid_588847 = validateParameter(valid_588847, JString, required = false,
-                                 default = nil)
-  if valid_588847 != nil:
-    section.add "key", valid_588847
-  var valid_588848 = query.getOrDefault("$.xgafv")
-  valid_588848 = validateParameter(valid_588848, JString, required = false,
-                                 default = newJString("1"))
-  if valid_588848 != nil:
-    section.add "$.xgafv", valid_588848
-  var valid_588849 = query.getOrDefault("prettyPrint")
-  valid_588849 = validateParameter(valid_588849, JBool, required = false,
+  if valid_578724 != nil:
+    section.add "key", valid_578724
+  var valid_578738 = query.getOrDefault("prettyPrint")
+  valid_578738 = validateParameter(valid_578738, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588849 != nil:
-    section.add "prettyPrint", valid_588849
+  if valid_578738 != nil:
+    section.add "prettyPrint", valid_578738
+  var valid_578739 = query.getOrDefault("oauth_token")
+  valid_578739 = validateParameter(valid_578739, JString, required = false,
+                                 default = nil)
+  if valid_578739 != nil:
+    section.add "oauth_token", valid_578739
+  var valid_578740 = query.getOrDefault("$.xgafv")
+  valid_578740 = validateParameter(valid_578740, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578740 != nil:
+    section.add "$.xgafv", valid_578740
+  var valid_578741 = query.getOrDefault("onBehalfOfContentOwner")
+  valid_578741 = validateParameter(valid_578741, JString, required = false,
+                                 default = nil)
+  if valid_578741 != nil:
+    section.add "onBehalfOfContentOwner", valid_578741
+  var valid_578742 = query.getOrDefault("alt")
+  valid_578742 = validateParameter(valid_578742, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578742 != nil:
+    section.add "alt", valid_578742
+  var valid_578743 = query.getOrDefault("uploadType")
+  valid_578743 = validateParameter(valid_578743, JString, required = false,
+                                 default = nil)
+  if valid_578743 != nil:
+    section.add "uploadType", valid_578743
+  var valid_578744 = query.getOrDefault("quotaUser")
+  valid_578744 = validateParameter(valid_578744, JString, required = false,
+                                 default = nil)
+  if valid_578744 != nil:
+    section.add "quotaUser", valid_578744
+  var valid_578745 = query.getOrDefault("groupId")
+  valid_578745 = validateParameter(valid_578745, JString, required = false,
+                                 default = nil)
+  if valid_578745 != nil:
+    section.add "groupId", valid_578745
+  var valid_578746 = query.getOrDefault("callback")
+  valid_578746 = validateParameter(valid_578746, JString, required = false,
+                                 default = nil)
+  if valid_578746 != nil:
+    section.add "callback", valid_578746
+  var valid_578747 = query.getOrDefault("fields")
+  valid_578747 = validateParameter(valid_578747, JString, required = false,
+                                 default = nil)
+  if valid_578747 != nil:
+    section.add "fields", valid_578747
+  var valid_578748 = query.getOrDefault("access_token")
+  valid_578748 = validateParameter(valid_578748, JString, required = false,
+                                 default = nil)
+  if valid_578748 != nil:
+    section.add "access_token", valid_578748
+  var valid_578749 = query.getOrDefault("upload_protocol")
+  valid_578749 = validateParameter(valid_578749, JString, required = false,
+                                 default = nil)
+  if valid_578749 != nil:
+    section.add "upload_protocol", valid_578749
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -440,27 +444,35 @@ proc validate_YoutubeAnalyticsGroupItemsList_588711(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588872: Call_YoutubeAnalyticsGroupItemsList_588710; path: JsonNode;
+proc call*(call_578772: Call_YoutubeAnalyticsGroupItemsList_578610; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a collection of group items that match the API request parameters.
   ## 
-  let valid = call_588872.validator(path, query, header, formData, body)
-  let scheme = call_588872.pickScheme
+  let valid = call_578772.validator(path, query, header, formData, body)
+  let scheme = call_578772.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588872.url(scheme.get, call_588872.host, call_588872.base,
-                         call_588872.route, valid.getOrDefault("path"),
+  let url = call_578772.url(scheme.get, call_578772.host, call_578772.base,
+                         call_578772.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588872, url, valid)
+  result = hook(call_578772, url, valid)
 
-proc call*(call_588943: Call_YoutubeAnalyticsGroupItemsList_588710;
-          onBehalfOfContentOwner: string = ""; uploadProtocol: string = "";
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; callback: string = ""; accessToken: string = "";
-          uploadType: string = ""; groupId: string = ""; key: string = "";
-          Xgafv: string = "1"; prettyPrint: bool = true): Recallable =
+proc call*(call_578843: Call_YoutubeAnalyticsGroupItemsList_578610;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          Xgafv: string = "1"; onBehalfOfContentOwner: string = "";
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          groupId: string = ""; callback: string = ""; fields: string = "";
+          accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## youtubeAnalyticsGroupItemsList
   ## Returns a collection of group items that match the API request parameters.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
   ##   onBehalfOfContentOwner: string
   ##                         : This parameter can only be used in a properly authorized request. **Note:**
   ## This parameter is intended exclusively for YouTube content partners that
@@ -473,62 +485,54 @@ proc call*(call_588943: Call_YoutubeAnalyticsGroupItemsList_588710;
   ## data, without having to provide authentication credentials for each
   ## individual channel. The account that the user authenticates with must be
   ## linked to the specified YouTube content owner.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   alt: string
   ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
   ##   uploadType: string
   ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   groupId: string
   ##          : The `groupId` parameter specifies the unique ID of the group for which you
   ## want to retrieve group items.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var query_588944 = newJObject()
-  add(query_588944, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
-  add(query_588944, "upload_protocol", newJString(uploadProtocol))
-  add(query_588944, "fields", newJString(fields))
-  add(query_588944, "quotaUser", newJString(quotaUser))
-  add(query_588944, "alt", newJString(alt))
-  add(query_588944, "oauth_token", newJString(oauthToken))
-  add(query_588944, "callback", newJString(callback))
-  add(query_588944, "access_token", newJString(accessToken))
-  add(query_588944, "uploadType", newJString(uploadType))
-  add(query_588944, "groupId", newJString(groupId))
-  add(query_588944, "key", newJString(key))
-  add(query_588944, "$.xgafv", newJString(Xgafv))
-  add(query_588944, "prettyPrint", newJBool(prettyPrint))
-  result = call_588943.call(nil, query_588944, nil, nil, nil)
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var query_578844 = newJObject()
+  add(query_578844, "key", newJString(key))
+  add(query_578844, "prettyPrint", newJBool(prettyPrint))
+  add(query_578844, "oauth_token", newJString(oauthToken))
+  add(query_578844, "$.xgafv", newJString(Xgafv))
+  add(query_578844, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
+  add(query_578844, "alt", newJString(alt))
+  add(query_578844, "uploadType", newJString(uploadType))
+  add(query_578844, "quotaUser", newJString(quotaUser))
+  add(query_578844, "groupId", newJString(groupId))
+  add(query_578844, "callback", newJString(callback))
+  add(query_578844, "fields", newJString(fields))
+  add(query_578844, "access_token", newJString(accessToken))
+  add(query_578844, "upload_protocol", newJString(uploadProtocol))
+  result = call_578843.call(nil, query_578844, nil, nil, nil)
 
-var youtubeAnalyticsGroupItemsList* = Call_YoutubeAnalyticsGroupItemsList_588710(
+var youtubeAnalyticsGroupItemsList* = Call_YoutubeAnalyticsGroupItemsList_578610(
     name: "youtubeAnalyticsGroupItemsList", meth: HttpMethod.HttpGet,
     host: "youtubeanalytics.googleapis.com", route: "/v2/groupItems",
-    validator: validate_YoutubeAnalyticsGroupItemsList_588711, base: "/",
-    url: url_YoutubeAnalyticsGroupItemsList_588712, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsGroupItemsList_578611, base: "/",
+    url: url_YoutubeAnalyticsGroupItemsList_578612, schemes: {Scheme.Https})
 type
-  Call_YoutubeAnalyticsGroupItemsDelete_589004 = ref object of OpenApiRestCall_588441
-proc url_YoutubeAnalyticsGroupItemsDelete_589006(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsGroupItemsDelete_578904 = ref object of OpenApiRestCall_578339
+proc url_YoutubeAnalyticsGroupItemsDelete_578906(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsGroupItemsDelete_589005(path: JsonNode;
+proc validate_YoutubeAnalyticsGroupItemsDelete_578905(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes an item from a group.
   ## 
@@ -537,6 +541,14 @@ proc validate_YoutubeAnalyticsGroupItemsDelete_589005(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
   ##   onBehalfOfContentOwner: JString
   ##                         : This parameter can only be used in a properly authorized request. **Note:**
   ## This parameter is intended exclusively for YouTube content partners that
@@ -549,97 +561,89 @@ proc validate_YoutubeAnalyticsGroupItemsDelete_589005(path: JsonNode;
   ## data, without having to provide authentication credentials for each
   ## individual channel. The account that the user authenticates with must be
   ## linked to the specified YouTube content owner.
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   quotaUser: JString
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   id: JString
   ##     : The `id` parameter specifies the YouTube group item ID of the group item
   ## that is being deleted.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
   ##   callback: JString
   ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   ##   access_token: JString
   ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589007 = query.getOrDefault("onBehalfOfContentOwner")
-  valid_589007 = validateParameter(valid_589007, JString, required = false,
+  var valid_578907 = query.getOrDefault("key")
+  valid_578907 = validateParameter(valid_578907, JString, required = false,
                                  default = nil)
-  if valid_589007 != nil:
-    section.add "onBehalfOfContentOwner", valid_589007
-  var valid_589008 = query.getOrDefault("upload_protocol")
-  valid_589008 = validateParameter(valid_589008, JString, required = false,
-                                 default = nil)
-  if valid_589008 != nil:
-    section.add "upload_protocol", valid_589008
-  var valid_589009 = query.getOrDefault("fields")
-  valid_589009 = validateParameter(valid_589009, JString, required = false,
-                                 default = nil)
-  if valid_589009 != nil:
-    section.add "fields", valid_589009
-  var valid_589010 = query.getOrDefault("quotaUser")
-  valid_589010 = validateParameter(valid_589010, JString, required = false,
-                                 default = nil)
-  if valid_589010 != nil:
-    section.add "quotaUser", valid_589010
-  var valid_589011 = query.getOrDefault("id")
-  valid_589011 = validateParameter(valid_589011, JString, required = false,
-                                 default = nil)
-  if valid_589011 != nil:
-    section.add "id", valid_589011
-  var valid_589012 = query.getOrDefault("alt")
-  valid_589012 = validateParameter(valid_589012, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589012 != nil:
-    section.add "alt", valid_589012
-  var valid_589013 = query.getOrDefault("oauth_token")
-  valid_589013 = validateParameter(valid_589013, JString, required = false,
-                                 default = nil)
-  if valid_589013 != nil:
-    section.add "oauth_token", valid_589013
-  var valid_589014 = query.getOrDefault("callback")
-  valid_589014 = validateParameter(valid_589014, JString, required = false,
-                                 default = nil)
-  if valid_589014 != nil:
-    section.add "callback", valid_589014
-  var valid_589015 = query.getOrDefault("access_token")
-  valid_589015 = validateParameter(valid_589015, JString, required = false,
-                                 default = nil)
-  if valid_589015 != nil:
-    section.add "access_token", valid_589015
-  var valid_589016 = query.getOrDefault("uploadType")
-  valid_589016 = validateParameter(valid_589016, JString, required = false,
-                                 default = nil)
-  if valid_589016 != nil:
-    section.add "uploadType", valid_589016
-  var valid_589017 = query.getOrDefault("key")
-  valid_589017 = validateParameter(valid_589017, JString, required = false,
-                                 default = nil)
-  if valid_589017 != nil:
-    section.add "key", valid_589017
-  var valid_589018 = query.getOrDefault("$.xgafv")
-  valid_589018 = validateParameter(valid_589018, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589018 != nil:
-    section.add "$.xgafv", valid_589018
-  var valid_589019 = query.getOrDefault("prettyPrint")
-  valid_589019 = validateParameter(valid_589019, JBool, required = false,
+  if valid_578907 != nil:
+    section.add "key", valid_578907
+  var valid_578908 = query.getOrDefault("prettyPrint")
+  valid_578908 = validateParameter(valid_578908, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589019 != nil:
-    section.add "prettyPrint", valid_589019
+  if valid_578908 != nil:
+    section.add "prettyPrint", valid_578908
+  var valid_578909 = query.getOrDefault("oauth_token")
+  valid_578909 = validateParameter(valid_578909, JString, required = false,
+                                 default = nil)
+  if valid_578909 != nil:
+    section.add "oauth_token", valid_578909
+  var valid_578910 = query.getOrDefault("$.xgafv")
+  valid_578910 = validateParameter(valid_578910, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578910 != nil:
+    section.add "$.xgafv", valid_578910
+  var valid_578911 = query.getOrDefault("onBehalfOfContentOwner")
+  valid_578911 = validateParameter(valid_578911, JString, required = false,
+                                 default = nil)
+  if valid_578911 != nil:
+    section.add "onBehalfOfContentOwner", valid_578911
+  var valid_578912 = query.getOrDefault("alt")
+  valid_578912 = validateParameter(valid_578912, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578912 != nil:
+    section.add "alt", valid_578912
+  var valid_578913 = query.getOrDefault("uploadType")
+  valid_578913 = validateParameter(valid_578913, JString, required = false,
+                                 default = nil)
+  if valid_578913 != nil:
+    section.add "uploadType", valid_578913
+  var valid_578914 = query.getOrDefault("quotaUser")
+  valid_578914 = validateParameter(valid_578914, JString, required = false,
+                                 default = nil)
+  if valid_578914 != nil:
+    section.add "quotaUser", valid_578914
+  var valid_578915 = query.getOrDefault("id")
+  valid_578915 = validateParameter(valid_578915, JString, required = false,
+                                 default = nil)
+  if valid_578915 != nil:
+    section.add "id", valid_578915
+  var valid_578916 = query.getOrDefault("callback")
+  valid_578916 = validateParameter(valid_578916, JString, required = false,
+                                 default = nil)
+  if valid_578916 != nil:
+    section.add "callback", valid_578916
+  var valid_578917 = query.getOrDefault("fields")
+  valid_578917 = validateParameter(valid_578917, JString, required = false,
+                                 default = nil)
+  if valid_578917 != nil:
+    section.add "fields", valid_578917
+  var valid_578918 = query.getOrDefault("access_token")
+  valid_578918 = validateParameter(valid_578918, JString, required = false,
+                                 default = nil)
+  if valid_578918 != nil:
+    section.add "access_token", valid_578918
+  var valid_578919 = query.getOrDefault("upload_protocol")
+  valid_578919 = validateParameter(valid_578919, JString, required = false,
+                                 default = nil)
+  if valid_578919 != nil:
+    section.add "upload_protocol", valid_578919
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -648,28 +652,36 @@ proc validate_YoutubeAnalyticsGroupItemsDelete_589005(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589020: Call_YoutubeAnalyticsGroupItemsDelete_589004;
+proc call*(call_578920: Call_YoutubeAnalyticsGroupItemsDelete_578904;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Removes an item from a group.
   ## 
-  let valid = call_589020.validator(path, query, header, formData, body)
-  let scheme = call_589020.pickScheme
+  let valid = call_578920.validator(path, query, header, formData, body)
+  let scheme = call_578920.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589020.url(scheme.get, call_589020.host, call_589020.base,
-                         call_589020.route, valid.getOrDefault("path"),
+  let url = call_578920.url(scheme.get, call_578920.host, call_578920.base,
+                         call_578920.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589020, url, valid)
+  result = hook(call_578920, url, valid)
 
-proc call*(call_589021: Call_YoutubeAnalyticsGroupItemsDelete_589004;
-          onBehalfOfContentOwner: string = ""; uploadProtocol: string = "";
-          fields: string = ""; quotaUser: string = ""; id: string = "";
-          alt: string = "json"; oauthToken: string = ""; callback: string = "";
-          accessToken: string = ""; uploadType: string = ""; key: string = "";
-          Xgafv: string = "1"; prettyPrint: bool = true): Recallable =
+proc call*(call_578921: Call_YoutubeAnalyticsGroupItemsDelete_578904;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          Xgafv: string = "1"; onBehalfOfContentOwner: string = "";
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          id: string = ""; callback: string = ""; fields: string = "";
+          accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## youtubeAnalyticsGroupItemsDelete
   ## Removes an item from a group.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
   ##   onBehalfOfContentOwner: string
   ##                         : This parameter can only be used in a properly authorized request. **Note:**
   ## This parameter is intended exclusively for YouTube content partners that
@@ -682,62 +694,54 @@ proc call*(call_589021: Call_YoutubeAnalyticsGroupItemsDelete_589004;
   ## data, without having to provide authentication credentials for each
   ## individual channel. The account that the user authenticates with must be
   ## linked to the specified YouTube content owner.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   id: string
   ##     : The `id` parameter specifies the YouTube group item ID of the group item
   ## that is being deleted.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
   ##   callback: string
   ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   accessToken: string
   ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var query_589022 = newJObject()
-  add(query_589022, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
-  add(query_589022, "upload_protocol", newJString(uploadProtocol))
-  add(query_589022, "fields", newJString(fields))
-  add(query_589022, "quotaUser", newJString(quotaUser))
-  add(query_589022, "id", newJString(id))
-  add(query_589022, "alt", newJString(alt))
-  add(query_589022, "oauth_token", newJString(oauthToken))
-  add(query_589022, "callback", newJString(callback))
-  add(query_589022, "access_token", newJString(accessToken))
-  add(query_589022, "uploadType", newJString(uploadType))
-  add(query_589022, "key", newJString(key))
-  add(query_589022, "$.xgafv", newJString(Xgafv))
-  add(query_589022, "prettyPrint", newJBool(prettyPrint))
-  result = call_589021.call(nil, query_589022, nil, nil, nil)
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var query_578922 = newJObject()
+  add(query_578922, "key", newJString(key))
+  add(query_578922, "prettyPrint", newJBool(prettyPrint))
+  add(query_578922, "oauth_token", newJString(oauthToken))
+  add(query_578922, "$.xgafv", newJString(Xgafv))
+  add(query_578922, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
+  add(query_578922, "alt", newJString(alt))
+  add(query_578922, "uploadType", newJString(uploadType))
+  add(query_578922, "quotaUser", newJString(quotaUser))
+  add(query_578922, "id", newJString(id))
+  add(query_578922, "callback", newJString(callback))
+  add(query_578922, "fields", newJString(fields))
+  add(query_578922, "access_token", newJString(accessToken))
+  add(query_578922, "upload_protocol", newJString(uploadProtocol))
+  result = call_578921.call(nil, query_578922, nil, nil, nil)
 
-var youtubeAnalyticsGroupItemsDelete* = Call_YoutubeAnalyticsGroupItemsDelete_589004(
+var youtubeAnalyticsGroupItemsDelete* = Call_YoutubeAnalyticsGroupItemsDelete_578904(
     name: "youtubeAnalyticsGroupItemsDelete", meth: HttpMethod.HttpDelete,
     host: "youtubeanalytics.googleapis.com", route: "/v2/groupItems",
-    validator: validate_YoutubeAnalyticsGroupItemsDelete_589005, base: "/",
-    url: url_YoutubeAnalyticsGroupItemsDelete_589006, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsGroupItemsDelete_578905, base: "/",
+    url: url_YoutubeAnalyticsGroupItemsDelete_578906, schemes: {Scheme.Https})
 type
-  Call_YoutubeAnalyticsGroupsUpdate_589044 = ref object of OpenApiRestCall_588441
-proc url_YoutubeAnalyticsGroupsUpdate_589046(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsGroupsUpdate_578944 = ref object of OpenApiRestCall_578339
+proc url_YoutubeAnalyticsGroupsUpdate_578946(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsGroupsUpdate_589045(path: JsonNode; query: JsonNode;
+proc validate_YoutubeAnalyticsGroupsUpdate_578945(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Modifies a group. For example, you could change a group's title.
   ## 
@@ -746,6 +750,14 @@ proc validate_YoutubeAnalyticsGroupsUpdate_589045(path: JsonNode; query: JsonNod
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
   ##   onBehalfOfContentOwner: JString
   ##                         : This parameter can only be used in a properly authorized request. **Note:**
   ## This parameter is intended exclusively for YouTube content partners that
@@ -758,89 +770,81 @@ proc validate_YoutubeAnalyticsGroupsUpdate_589045(path: JsonNode; query: JsonNod
   ## data, without having to provide authentication credentials for each
   ## individual channel. The account that the user authenticates with must be
   ## linked to the specified YouTube content owner.
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   alt: JString
   ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
   ##   uploadType: JString
   ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589047 = query.getOrDefault("onBehalfOfContentOwner")
-  valid_589047 = validateParameter(valid_589047, JString, required = false,
+  var valid_578947 = query.getOrDefault("key")
+  valid_578947 = validateParameter(valid_578947, JString, required = false,
                                  default = nil)
-  if valid_589047 != nil:
-    section.add "onBehalfOfContentOwner", valid_589047
-  var valid_589048 = query.getOrDefault("upload_protocol")
-  valid_589048 = validateParameter(valid_589048, JString, required = false,
-                                 default = nil)
-  if valid_589048 != nil:
-    section.add "upload_protocol", valid_589048
-  var valid_589049 = query.getOrDefault("fields")
-  valid_589049 = validateParameter(valid_589049, JString, required = false,
-                                 default = nil)
-  if valid_589049 != nil:
-    section.add "fields", valid_589049
-  var valid_589050 = query.getOrDefault("quotaUser")
-  valid_589050 = validateParameter(valid_589050, JString, required = false,
-                                 default = nil)
-  if valid_589050 != nil:
-    section.add "quotaUser", valid_589050
-  var valid_589051 = query.getOrDefault("alt")
-  valid_589051 = validateParameter(valid_589051, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589051 != nil:
-    section.add "alt", valid_589051
-  var valid_589052 = query.getOrDefault("oauth_token")
-  valid_589052 = validateParameter(valid_589052, JString, required = false,
-                                 default = nil)
-  if valid_589052 != nil:
-    section.add "oauth_token", valid_589052
-  var valid_589053 = query.getOrDefault("callback")
-  valid_589053 = validateParameter(valid_589053, JString, required = false,
-                                 default = nil)
-  if valid_589053 != nil:
-    section.add "callback", valid_589053
-  var valid_589054 = query.getOrDefault("access_token")
-  valid_589054 = validateParameter(valid_589054, JString, required = false,
-                                 default = nil)
-  if valid_589054 != nil:
-    section.add "access_token", valid_589054
-  var valid_589055 = query.getOrDefault("uploadType")
-  valid_589055 = validateParameter(valid_589055, JString, required = false,
-                                 default = nil)
-  if valid_589055 != nil:
-    section.add "uploadType", valid_589055
-  var valid_589056 = query.getOrDefault("key")
-  valid_589056 = validateParameter(valid_589056, JString, required = false,
-                                 default = nil)
-  if valid_589056 != nil:
-    section.add "key", valid_589056
-  var valid_589057 = query.getOrDefault("$.xgafv")
-  valid_589057 = validateParameter(valid_589057, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589057 != nil:
-    section.add "$.xgafv", valid_589057
-  var valid_589058 = query.getOrDefault("prettyPrint")
-  valid_589058 = validateParameter(valid_589058, JBool, required = false,
+  if valid_578947 != nil:
+    section.add "key", valid_578947
+  var valid_578948 = query.getOrDefault("prettyPrint")
+  valid_578948 = validateParameter(valid_578948, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589058 != nil:
-    section.add "prettyPrint", valid_589058
+  if valid_578948 != nil:
+    section.add "prettyPrint", valid_578948
+  var valid_578949 = query.getOrDefault("oauth_token")
+  valid_578949 = validateParameter(valid_578949, JString, required = false,
+                                 default = nil)
+  if valid_578949 != nil:
+    section.add "oauth_token", valid_578949
+  var valid_578950 = query.getOrDefault("$.xgafv")
+  valid_578950 = validateParameter(valid_578950, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578950 != nil:
+    section.add "$.xgafv", valid_578950
+  var valid_578951 = query.getOrDefault("onBehalfOfContentOwner")
+  valid_578951 = validateParameter(valid_578951, JString, required = false,
+                                 default = nil)
+  if valid_578951 != nil:
+    section.add "onBehalfOfContentOwner", valid_578951
+  var valid_578952 = query.getOrDefault("alt")
+  valid_578952 = validateParameter(valid_578952, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578952 != nil:
+    section.add "alt", valid_578952
+  var valid_578953 = query.getOrDefault("uploadType")
+  valid_578953 = validateParameter(valid_578953, JString, required = false,
+                                 default = nil)
+  if valid_578953 != nil:
+    section.add "uploadType", valid_578953
+  var valid_578954 = query.getOrDefault("quotaUser")
+  valid_578954 = validateParameter(valid_578954, JString, required = false,
+                                 default = nil)
+  if valid_578954 != nil:
+    section.add "quotaUser", valid_578954
+  var valid_578955 = query.getOrDefault("callback")
+  valid_578955 = validateParameter(valid_578955, JString, required = false,
+                                 default = nil)
+  if valid_578955 != nil:
+    section.add "callback", valid_578955
+  var valid_578956 = query.getOrDefault("fields")
+  valid_578956 = validateParameter(valid_578956, JString, required = false,
+                                 default = nil)
+  if valid_578956 != nil:
+    section.add "fields", valid_578956
+  var valid_578957 = query.getOrDefault("access_token")
+  valid_578957 = validateParameter(valid_578957, JString, required = false,
+                                 default = nil)
+  if valid_578957 != nil:
+    section.add "access_token", valid_578957
+  var valid_578958 = query.getOrDefault("upload_protocol")
+  valid_578958 = validateParameter(valid_578958, JString, required = false,
+                                 default = nil)
+  if valid_578958 != nil:
+    section.add "upload_protocol", valid_578958
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -852,27 +856,35 @@ proc validate_YoutubeAnalyticsGroupsUpdate_589045(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_589060: Call_YoutubeAnalyticsGroupsUpdate_589044; path: JsonNode;
+proc call*(call_578960: Call_YoutubeAnalyticsGroupsUpdate_578944; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Modifies a group. For example, you could change a group's title.
   ## 
-  let valid = call_589060.validator(path, query, header, formData, body)
-  let scheme = call_589060.pickScheme
+  let valid = call_578960.validator(path, query, header, formData, body)
+  let scheme = call_578960.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589060.url(scheme.get, call_589060.host, call_589060.base,
-                         call_589060.route, valid.getOrDefault("path"),
+  let url = call_578960.url(scheme.get, call_578960.host, call_578960.base,
+                         call_578960.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589060, url, valid)
+  result = hook(call_578960, url, valid)
 
-proc call*(call_589061: Call_YoutubeAnalyticsGroupsUpdate_589044;
-          onBehalfOfContentOwner: string = ""; uploadProtocol: string = "";
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; callback: string = ""; accessToken: string = "";
-          uploadType: string = ""; key: string = ""; Xgafv: string = "1";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578961: Call_YoutubeAnalyticsGroupsUpdate_578944; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; Xgafv: string = "1";
+          onBehalfOfContentOwner: string = ""; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          callback: string = ""; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""): Recallable =
   ## youtubeAnalyticsGroupsUpdate
   ## Modifies a group. For example, you could change a group's title.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
   ##   onBehalfOfContentOwner: string
   ##                         : This parameter can only be used in a properly authorized request. **Note:**
   ## This parameter is intended exclusively for YouTube content partners that
@@ -885,62 +897,54 @@ proc call*(call_589061: Call_YoutubeAnalyticsGroupsUpdate_589044;
   ## data, without having to provide authentication credentials for each
   ## individual channel. The account that the user authenticates with must be
   ## linked to the specified YouTube content owner.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   alt: string
   ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
   ##   uploadType: string
   ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var query_589062 = newJObject()
-  var body_589063 = newJObject()
-  add(query_589062, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
-  add(query_589062, "upload_protocol", newJString(uploadProtocol))
-  add(query_589062, "fields", newJString(fields))
-  add(query_589062, "quotaUser", newJString(quotaUser))
-  add(query_589062, "alt", newJString(alt))
-  add(query_589062, "oauth_token", newJString(oauthToken))
-  add(query_589062, "callback", newJString(callback))
-  add(query_589062, "access_token", newJString(accessToken))
-  add(query_589062, "uploadType", newJString(uploadType))
-  add(query_589062, "key", newJString(key))
-  add(query_589062, "$.xgafv", newJString(Xgafv))
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var query_578962 = newJObject()
+  var body_578963 = newJObject()
+  add(query_578962, "key", newJString(key))
+  add(query_578962, "prettyPrint", newJBool(prettyPrint))
+  add(query_578962, "oauth_token", newJString(oauthToken))
+  add(query_578962, "$.xgafv", newJString(Xgafv))
+  add(query_578962, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
+  add(query_578962, "alt", newJString(alt))
+  add(query_578962, "uploadType", newJString(uploadType))
+  add(query_578962, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589063 = body
-  add(query_589062, "prettyPrint", newJBool(prettyPrint))
-  result = call_589061.call(nil, query_589062, nil, nil, body_589063)
+    body_578963 = body
+  add(query_578962, "callback", newJString(callback))
+  add(query_578962, "fields", newJString(fields))
+  add(query_578962, "access_token", newJString(accessToken))
+  add(query_578962, "upload_protocol", newJString(uploadProtocol))
+  result = call_578961.call(nil, query_578962, nil, nil, body_578963)
 
-var youtubeAnalyticsGroupsUpdate* = Call_YoutubeAnalyticsGroupsUpdate_589044(
+var youtubeAnalyticsGroupsUpdate* = Call_YoutubeAnalyticsGroupsUpdate_578944(
     name: "youtubeAnalyticsGroupsUpdate", meth: HttpMethod.HttpPut,
     host: "youtubeanalytics.googleapis.com", route: "/v2/groups",
-    validator: validate_YoutubeAnalyticsGroupsUpdate_589045, base: "/",
-    url: url_YoutubeAnalyticsGroupsUpdate_589046, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsGroupsUpdate_578945, base: "/",
+    url: url_YoutubeAnalyticsGroupsUpdate_578946, schemes: {Scheme.Https})
 type
-  Call_YoutubeAnalyticsGroupsInsert_589064 = ref object of OpenApiRestCall_588441
-proc url_YoutubeAnalyticsGroupsInsert_589066(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsGroupsInsert_578964 = ref object of OpenApiRestCall_578339
+proc url_YoutubeAnalyticsGroupsInsert_578966(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsGroupsInsert_589065(path: JsonNode; query: JsonNode;
+proc validate_YoutubeAnalyticsGroupsInsert_578965(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a group.
   ## 
@@ -949,6 +953,14 @@ proc validate_YoutubeAnalyticsGroupsInsert_589065(path: JsonNode; query: JsonNod
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
   ##   onBehalfOfContentOwner: JString
   ##                         : This parameter can only be used in a properly authorized request. **Note:**
   ## This parameter is intended exclusively for YouTube content partners that
@@ -961,89 +973,81 @@ proc validate_YoutubeAnalyticsGroupsInsert_589065(path: JsonNode; query: JsonNod
   ## data, without having to provide authentication credentials for each
   ## individual channel. The account that the user authenticates with must be
   ## linked to the specified YouTube content owner.
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   alt: JString
   ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
   ##   uploadType: JString
   ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589067 = query.getOrDefault("onBehalfOfContentOwner")
-  valid_589067 = validateParameter(valid_589067, JString, required = false,
+  var valid_578967 = query.getOrDefault("key")
+  valid_578967 = validateParameter(valid_578967, JString, required = false,
                                  default = nil)
-  if valid_589067 != nil:
-    section.add "onBehalfOfContentOwner", valid_589067
-  var valid_589068 = query.getOrDefault("upload_protocol")
-  valid_589068 = validateParameter(valid_589068, JString, required = false,
-                                 default = nil)
-  if valid_589068 != nil:
-    section.add "upload_protocol", valid_589068
-  var valid_589069 = query.getOrDefault("fields")
-  valid_589069 = validateParameter(valid_589069, JString, required = false,
-                                 default = nil)
-  if valid_589069 != nil:
-    section.add "fields", valid_589069
-  var valid_589070 = query.getOrDefault("quotaUser")
-  valid_589070 = validateParameter(valid_589070, JString, required = false,
-                                 default = nil)
-  if valid_589070 != nil:
-    section.add "quotaUser", valid_589070
-  var valid_589071 = query.getOrDefault("alt")
-  valid_589071 = validateParameter(valid_589071, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589071 != nil:
-    section.add "alt", valid_589071
-  var valid_589072 = query.getOrDefault("oauth_token")
-  valid_589072 = validateParameter(valid_589072, JString, required = false,
-                                 default = nil)
-  if valid_589072 != nil:
-    section.add "oauth_token", valid_589072
-  var valid_589073 = query.getOrDefault("callback")
-  valid_589073 = validateParameter(valid_589073, JString, required = false,
-                                 default = nil)
-  if valid_589073 != nil:
-    section.add "callback", valid_589073
-  var valid_589074 = query.getOrDefault("access_token")
-  valid_589074 = validateParameter(valid_589074, JString, required = false,
-                                 default = nil)
-  if valid_589074 != nil:
-    section.add "access_token", valid_589074
-  var valid_589075 = query.getOrDefault("uploadType")
-  valid_589075 = validateParameter(valid_589075, JString, required = false,
-                                 default = nil)
-  if valid_589075 != nil:
-    section.add "uploadType", valid_589075
-  var valid_589076 = query.getOrDefault("key")
-  valid_589076 = validateParameter(valid_589076, JString, required = false,
-                                 default = nil)
-  if valid_589076 != nil:
-    section.add "key", valid_589076
-  var valid_589077 = query.getOrDefault("$.xgafv")
-  valid_589077 = validateParameter(valid_589077, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589077 != nil:
-    section.add "$.xgafv", valid_589077
-  var valid_589078 = query.getOrDefault("prettyPrint")
-  valid_589078 = validateParameter(valid_589078, JBool, required = false,
+  if valid_578967 != nil:
+    section.add "key", valid_578967
+  var valid_578968 = query.getOrDefault("prettyPrint")
+  valid_578968 = validateParameter(valid_578968, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589078 != nil:
-    section.add "prettyPrint", valid_589078
+  if valid_578968 != nil:
+    section.add "prettyPrint", valid_578968
+  var valid_578969 = query.getOrDefault("oauth_token")
+  valid_578969 = validateParameter(valid_578969, JString, required = false,
+                                 default = nil)
+  if valid_578969 != nil:
+    section.add "oauth_token", valid_578969
+  var valid_578970 = query.getOrDefault("$.xgafv")
+  valid_578970 = validateParameter(valid_578970, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578970 != nil:
+    section.add "$.xgafv", valid_578970
+  var valid_578971 = query.getOrDefault("onBehalfOfContentOwner")
+  valid_578971 = validateParameter(valid_578971, JString, required = false,
+                                 default = nil)
+  if valid_578971 != nil:
+    section.add "onBehalfOfContentOwner", valid_578971
+  var valid_578972 = query.getOrDefault("alt")
+  valid_578972 = validateParameter(valid_578972, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578972 != nil:
+    section.add "alt", valid_578972
+  var valid_578973 = query.getOrDefault("uploadType")
+  valid_578973 = validateParameter(valid_578973, JString, required = false,
+                                 default = nil)
+  if valid_578973 != nil:
+    section.add "uploadType", valid_578973
+  var valid_578974 = query.getOrDefault("quotaUser")
+  valid_578974 = validateParameter(valid_578974, JString, required = false,
+                                 default = nil)
+  if valid_578974 != nil:
+    section.add "quotaUser", valid_578974
+  var valid_578975 = query.getOrDefault("callback")
+  valid_578975 = validateParameter(valid_578975, JString, required = false,
+                                 default = nil)
+  if valid_578975 != nil:
+    section.add "callback", valid_578975
+  var valid_578976 = query.getOrDefault("fields")
+  valid_578976 = validateParameter(valid_578976, JString, required = false,
+                                 default = nil)
+  if valid_578976 != nil:
+    section.add "fields", valid_578976
+  var valid_578977 = query.getOrDefault("access_token")
+  valid_578977 = validateParameter(valid_578977, JString, required = false,
+                                 default = nil)
+  if valid_578977 != nil:
+    section.add "access_token", valid_578977
+  var valid_578978 = query.getOrDefault("upload_protocol")
+  valid_578978 = validateParameter(valid_578978, JString, required = false,
+                                 default = nil)
+  if valid_578978 != nil:
+    section.add "upload_protocol", valid_578978
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1055,27 +1059,35 @@ proc validate_YoutubeAnalyticsGroupsInsert_589065(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_589080: Call_YoutubeAnalyticsGroupsInsert_589064; path: JsonNode;
+proc call*(call_578980: Call_YoutubeAnalyticsGroupsInsert_578964; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a group.
   ## 
-  let valid = call_589080.validator(path, query, header, formData, body)
-  let scheme = call_589080.pickScheme
+  let valid = call_578980.validator(path, query, header, formData, body)
+  let scheme = call_578980.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589080.url(scheme.get, call_589080.host, call_589080.base,
-                         call_589080.route, valid.getOrDefault("path"),
+  let url = call_578980.url(scheme.get, call_578980.host, call_578980.base,
+                         call_578980.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589080, url, valid)
+  result = hook(call_578980, url, valid)
 
-proc call*(call_589081: Call_YoutubeAnalyticsGroupsInsert_589064;
-          onBehalfOfContentOwner: string = ""; uploadProtocol: string = "";
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; callback: string = ""; accessToken: string = "";
-          uploadType: string = ""; key: string = ""; Xgafv: string = "1";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578981: Call_YoutubeAnalyticsGroupsInsert_578964; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; Xgafv: string = "1";
+          onBehalfOfContentOwner: string = ""; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          callback: string = ""; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""): Recallable =
   ## youtubeAnalyticsGroupsInsert
   ## Creates a group.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
   ##   onBehalfOfContentOwner: string
   ##                         : This parameter can only be used in a properly authorized request. **Note:**
   ## This parameter is intended exclusively for YouTube content partners that
@@ -1088,62 +1100,54 @@ proc call*(call_589081: Call_YoutubeAnalyticsGroupsInsert_589064;
   ## data, without having to provide authentication credentials for each
   ## individual channel. The account that the user authenticates with must be
   ## linked to the specified YouTube content owner.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   alt: string
   ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
   ##   uploadType: string
   ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var query_589082 = newJObject()
-  var body_589083 = newJObject()
-  add(query_589082, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
-  add(query_589082, "upload_protocol", newJString(uploadProtocol))
-  add(query_589082, "fields", newJString(fields))
-  add(query_589082, "quotaUser", newJString(quotaUser))
-  add(query_589082, "alt", newJString(alt))
-  add(query_589082, "oauth_token", newJString(oauthToken))
-  add(query_589082, "callback", newJString(callback))
-  add(query_589082, "access_token", newJString(accessToken))
-  add(query_589082, "uploadType", newJString(uploadType))
-  add(query_589082, "key", newJString(key))
-  add(query_589082, "$.xgafv", newJString(Xgafv))
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var query_578982 = newJObject()
+  var body_578983 = newJObject()
+  add(query_578982, "key", newJString(key))
+  add(query_578982, "prettyPrint", newJBool(prettyPrint))
+  add(query_578982, "oauth_token", newJString(oauthToken))
+  add(query_578982, "$.xgafv", newJString(Xgafv))
+  add(query_578982, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
+  add(query_578982, "alt", newJString(alt))
+  add(query_578982, "uploadType", newJString(uploadType))
+  add(query_578982, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589083 = body
-  add(query_589082, "prettyPrint", newJBool(prettyPrint))
-  result = call_589081.call(nil, query_589082, nil, nil, body_589083)
+    body_578983 = body
+  add(query_578982, "callback", newJString(callback))
+  add(query_578982, "fields", newJString(fields))
+  add(query_578982, "access_token", newJString(accessToken))
+  add(query_578982, "upload_protocol", newJString(uploadProtocol))
+  result = call_578981.call(nil, query_578982, nil, nil, body_578983)
 
-var youtubeAnalyticsGroupsInsert* = Call_YoutubeAnalyticsGroupsInsert_589064(
+var youtubeAnalyticsGroupsInsert* = Call_YoutubeAnalyticsGroupsInsert_578964(
     name: "youtubeAnalyticsGroupsInsert", meth: HttpMethod.HttpPost,
     host: "youtubeanalytics.googleapis.com", route: "/v2/groups",
-    validator: validate_YoutubeAnalyticsGroupsInsert_589065, base: "/",
-    url: url_YoutubeAnalyticsGroupsInsert_589066, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsGroupsInsert_578965, base: "/",
+    url: url_YoutubeAnalyticsGroupsInsert_578966, schemes: {Scheme.Https})
 type
-  Call_YoutubeAnalyticsGroupsList_589023 = ref object of OpenApiRestCall_588441
-proc url_YoutubeAnalyticsGroupsList_589025(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsGroupsList_578923 = ref object of OpenApiRestCall_578339
+proc url_YoutubeAnalyticsGroupsList_578925(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsGroupsList_589024(path: JsonNode; query: JsonNode;
+proc validate_YoutubeAnalyticsGroupsList_578924(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a collection of groups that match the API request parameters. For
   ## example, you can retrieve all groups that the authenticated user owns,
@@ -1154,6 +1158,14 @@ proc validate_YoutubeAnalyticsGroupsList_589024(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
   ##   onBehalfOfContentOwner: JString
   ##                         : This parameter can only be used in a properly authorized request. **Note:**
   ## This parameter is intended exclusively for YouTube content partners that
@@ -1166,20 +1178,16 @@ proc validate_YoutubeAnalyticsGroupsList_589024(path: JsonNode; query: JsonNode;
   ## data, without having to provide authentication credentials for each
   ## individual channel. The account that the user authenticates with must be
   ## linked to the specified YouTube content owner.
-  ##   mine: JBool
-  ##       : This parameter can only be used in a properly authorized request. Set this
-  ## parameter's value to true to retrieve all groups owned by the authenticated
-  ## user.
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   pageToken: JString
   ##            : The `pageToken` parameter identifies a specific page in the result set that
   ## should be returned. In an API response, the `nextPageToken` property
   ## identifies the next page that can be retrieved.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   id: JString
   ##     : The `id` parameter specifies a comma-separated list of the YouTube group
   ## ID(s) for the resource(s) that are being retrieved. Each group must be
@@ -1188,97 +1196,93 @@ proc validate_YoutubeAnalyticsGroupsList_589024(path: JsonNode; query: JsonNode;
   ## 
   ## Note that if you do not specify a value for the `id` parameter, then you
   ## must set the `mine` parameter to `true`.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
   ##   callback: JString
   ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   ##   access_token: JString
   ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
+  ##   mine: JBool
+  ##       : This parameter can only be used in a properly authorized request. Set this
+  ## parameter's value to true to retrieve all groups owned by the authenticated
+  ## user.
   section = newJObject()
-  var valid_589026 = query.getOrDefault("onBehalfOfContentOwner")
-  valid_589026 = validateParameter(valid_589026, JString, required = false,
+  var valid_578926 = query.getOrDefault("key")
+  valid_578926 = validateParameter(valid_578926, JString, required = false,
                                  default = nil)
-  if valid_589026 != nil:
-    section.add "onBehalfOfContentOwner", valid_589026
-  var valid_589027 = query.getOrDefault("mine")
-  valid_589027 = validateParameter(valid_589027, JBool, required = false, default = nil)
-  if valid_589027 != nil:
-    section.add "mine", valid_589027
-  var valid_589028 = query.getOrDefault("upload_protocol")
-  valid_589028 = validateParameter(valid_589028, JString, required = false,
-                                 default = nil)
-  if valid_589028 != nil:
-    section.add "upload_protocol", valid_589028
-  var valid_589029 = query.getOrDefault("fields")
-  valid_589029 = validateParameter(valid_589029, JString, required = false,
-                                 default = nil)
-  if valid_589029 != nil:
-    section.add "fields", valid_589029
-  var valid_589030 = query.getOrDefault("pageToken")
-  valid_589030 = validateParameter(valid_589030, JString, required = false,
-                                 default = nil)
-  if valid_589030 != nil:
-    section.add "pageToken", valid_589030
-  var valid_589031 = query.getOrDefault("quotaUser")
-  valid_589031 = validateParameter(valid_589031, JString, required = false,
-                                 default = nil)
-  if valid_589031 != nil:
-    section.add "quotaUser", valid_589031
-  var valid_589032 = query.getOrDefault("id")
-  valid_589032 = validateParameter(valid_589032, JString, required = false,
-                                 default = nil)
-  if valid_589032 != nil:
-    section.add "id", valid_589032
-  var valid_589033 = query.getOrDefault("alt")
-  valid_589033 = validateParameter(valid_589033, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589033 != nil:
-    section.add "alt", valid_589033
-  var valid_589034 = query.getOrDefault("oauth_token")
-  valid_589034 = validateParameter(valid_589034, JString, required = false,
-                                 default = nil)
-  if valid_589034 != nil:
-    section.add "oauth_token", valid_589034
-  var valid_589035 = query.getOrDefault("callback")
-  valid_589035 = validateParameter(valid_589035, JString, required = false,
-                                 default = nil)
-  if valid_589035 != nil:
-    section.add "callback", valid_589035
-  var valid_589036 = query.getOrDefault("access_token")
-  valid_589036 = validateParameter(valid_589036, JString, required = false,
-                                 default = nil)
-  if valid_589036 != nil:
-    section.add "access_token", valid_589036
-  var valid_589037 = query.getOrDefault("uploadType")
-  valid_589037 = validateParameter(valid_589037, JString, required = false,
-                                 default = nil)
-  if valid_589037 != nil:
-    section.add "uploadType", valid_589037
-  var valid_589038 = query.getOrDefault("key")
-  valid_589038 = validateParameter(valid_589038, JString, required = false,
-                                 default = nil)
-  if valid_589038 != nil:
-    section.add "key", valid_589038
-  var valid_589039 = query.getOrDefault("$.xgafv")
-  valid_589039 = validateParameter(valid_589039, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589039 != nil:
-    section.add "$.xgafv", valid_589039
-  var valid_589040 = query.getOrDefault("prettyPrint")
-  valid_589040 = validateParameter(valid_589040, JBool, required = false,
+  if valid_578926 != nil:
+    section.add "key", valid_578926
+  var valid_578927 = query.getOrDefault("prettyPrint")
+  valid_578927 = validateParameter(valid_578927, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589040 != nil:
-    section.add "prettyPrint", valid_589040
+  if valid_578927 != nil:
+    section.add "prettyPrint", valid_578927
+  var valid_578928 = query.getOrDefault("oauth_token")
+  valid_578928 = validateParameter(valid_578928, JString, required = false,
+                                 default = nil)
+  if valid_578928 != nil:
+    section.add "oauth_token", valid_578928
+  var valid_578929 = query.getOrDefault("$.xgafv")
+  valid_578929 = validateParameter(valid_578929, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578929 != nil:
+    section.add "$.xgafv", valid_578929
+  var valid_578930 = query.getOrDefault("onBehalfOfContentOwner")
+  valid_578930 = validateParameter(valid_578930, JString, required = false,
+                                 default = nil)
+  if valid_578930 != nil:
+    section.add "onBehalfOfContentOwner", valid_578930
+  var valid_578931 = query.getOrDefault("alt")
+  valid_578931 = validateParameter(valid_578931, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578931 != nil:
+    section.add "alt", valid_578931
+  var valid_578932 = query.getOrDefault("uploadType")
+  valid_578932 = validateParameter(valid_578932, JString, required = false,
+                                 default = nil)
+  if valid_578932 != nil:
+    section.add "uploadType", valid_578932
+  var valid_578933 = query.getOrDefault("quotaUser")
+  valid_578933 = validateParameter(valid_578933, JString, required = false,
+                                 default = nil)
+  if valid_578933 != nil:
+    section.add "quotaUser", valid_578933
+  var valid_578934 = query.getOrDefault("pageToken")
+  valid_578934 = validateParameter(valid_578934, JString, required = false,
+                                 default = nil)
+  if valid_578934 != nil:
+    section.add "pageToken", valid_578934
+  var valid_578935 = query.getOrDefault("id")
+  valid_578935 = validateParameter(valid_578935, JString, required = false,
+                                 default = nil)
+  if valid_578935 != nil:
+    section.add "id", valid_578935
+  var valid_578936 = query.getOrDefault("callback")
+  valid_578936 = validateParameter(valid_578936, JString, required = false,
+                                 default = nil)
+  if valid_578936 != nil:
+    section.add "callback", valid_578936
+  var valid_578937 = query.getOrDefault("fields")
+  valid_578937 = validateParameter(valid_578937, JString, required = false,
+                                 default = nil)
+  if valid_578937 != nil:
+    section.add "fields", valid_578937
+  var valid_578938 = query.getOrDefault("access_token")
+  valid_578938 = validateParameter(valid_578938, JString, required = false,
+                                 default = nil)
+  if valid_578938 != nil:
+    section.add "access_token", valid_578938
+  var valid_578939 = query.getOrDefault("upload_protocol")
+  valid_578939 = validateParameter(valid_578939, JString, required = false,
+                                 default = nil)
+  if valid_578939 != nil:
+    section.add "upload_protocol", valid_578939
+  var valid_578940 = query.getOrDefault("mine")
+  valid_578940 = validateParameter(valid_578940, JBool, required = false, default = nil)
+  if valid_578940 != nil:
+    section.add "mine", valid_578940
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1287,32 +1291,39 @@ proc validate_YoutubeAnalyticsGroupsList_589024(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589041: Call_YoutubeAnalyticsGroupsList_589023; path: JsonNode;
+proc call*(call_578941: Call_YoutubeAnalyticsGroupsList_578923; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a collection of groups that match the API request parameters. For
   ## example, you can retrieve all groups that the authenticated user owns,
   ## or you can retrieve one or more groups by their unique IDs.
   ## 
-  let valid = call_589041.validator(path, query, header, formData, body)
-  let scheme = call_589041.pickScheme
+  let valid = call_578941.validator(path, query, header, formData, body)
+  let scheme = call_578941.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589041.url(scheme.get, call_589041.host, call_589041.base,
-                         call_589041.route, valid.getOrDefault("path"),
+  let url = call_578941.url(scheme.get, call_578941.host, call_578941.base,
+                         call_578941.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589041, url, valid)
+  result = hook(call_578941, url, valid)
 
-proc call*(call_589042: Call_YoutubeAnalyticsGroupsList_589023;
-          onBehalfOfContentOwner: string = ""; mine: bool = false;
-          uploadProtocol: string = ""; fields: string = ""; pageToken: string = "";
-          quotaUser: string = ""; id: string = ""; alt: string = "json";
-          oauthToken: string = ""; callback: string = ""; accessToken: string = "";
-          uploadType: string = ""; key: string = ""; Xgafv: string = "1";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578942: Call_YoutubeAnalyticsGroupsList_578923; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; Xgafv: string = "1";
+          onBehalfOfContentOwner: string = ""; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; pageToken: string = "";
+          id: string = ""; callback: string = ""; fields: string = "";
+          accessToken: string = ""; uploadProtocol: string = ""; mine: bool = false): Recallable =
   ## youtubeAnalyticsGroupsList
   ## Returns a collection of groups that match the API request parameters. For
   ## example, you can retrieve all groups that the authenticated user owns,
   ## or you can retrieve one or more groups by their unique IDs.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
   ##   onBehalfOfContentOwner: string
   ##                         : This parameter can only be used in a properly authorized request. **Note:**
   ## This parameter is intended exclusively for YouTube content partners that
@@ -1325,20 +1336,16 @@ proc call*(call_589042: Call_YoutubeAnalyticsGroupsList_589023;
   ## data, without having to provide authentication credentials for each
   ## individual channel. The account that the user authenticates with must be
   ## linked to the specified YouTube content owner.
-  ##   mine: bool
-  ##       : This parameter can only be used in a properly authorized request. Set this
-  ## parameter's value to true to retrieve all groups owned by the authenticated
-  ## user.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   pageToken: string
   ##            : The `pageToken` parameter identifies a specific page in the result set that
   ## should be returned. In an API response, the `nextPageToken` property
   ## identifies the next page that can be retrieved.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   id: string
   ##     : The `id` parameter specifies a comma-separated list of the YouTube group
   ## ID(s) for the resource(s) that are being retrieved. Each group must be
@@ -1347,55 +1354,51 @@ proc call*(call_589042: Call_YoutubeAnalyticsGroupsList_589023;
   ## 
   ## Note that if you do not specify a value for the `id` parameter, then you
   ## must set the `mine` parameter to `true`.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
   ##   callback: string
   ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   accessToken: string
   ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var query_589043 = newJObject()
-  add(query_589043, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
-  add(query_589043, "mine", newJBool(mine))
-  add(query_589043, "upload_protocol", newJString(uploadProtocol))
-  add(query_589043, "fields", newJString(fields))
-  add(query_589043, "pageToken", newJString(pageToken))
-  add(query_589043, "quotaUser", newJString(quotaUser))
-  add(query_589043, "id", newJString(id))
-  add(query_589043, "alt", newJString(alt))
-  add(query_589043, "oauth_token", newJString(oauthToken))
-  add(query_589043, "callback", newJString(callback))
-  add(query_589043, "access_token", newJString(accessToken))
-  add(query_589043, "uploadType", newJString(uploadType))
-  add(query_589043, "key", newJString(key))
-  add(query_589043, "$.xgafv", newJString(Xgafv))
-  add(query_589043, "prettyPrint", newJBool(prettyPrint))
-  result = call_589042.call(nil, query_589043, nil, nil, nil)
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  ##   mine: bool
+  ##       : This parameter can only be used in a properly authorized request. Set this
+  ## parameter's value to true to retrieve all groups owned by the authenticated
+  ## user.
+  var query_578943 = newJObject()
+  add(query_578943, "key", newJString(key))
+  add(query_578943, "prettyPrint", newJBool(prettyPrint))
+  add(query_578943, "oauth_token", newJString(oauthToken))
+  add(query_578943, "$.xgafv", newJString(Xgafv))
+  add(query_578943, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
+  add(query_578943, "alt", newJString(alt))
+  add(query_578943, "uploadType", newJString(uploadType))
+  add(query_578943, "quotaUser", newJString(quotaUser))
+  add(query_578943, "pageToken", newJString(pageToken))
+  add(query_578943, "id", newJString(id))
+  add(query_578943, "callback", newJString(callback))
+  add(query_578943, "fields", newJString(fields))
+  add(query_578943, "access_token", newJString(accessToken))
+  add(query_578943, "upload_protocol", newJString(uploadProtocol))
+  add(query_578943, "mine", newJBool(mine))
+  result = call_578942.call(nil, query_578943, nil, nil, nil)
 
-var youtubeAnalyticsGroupsList* = Call_YoutubeAnalyticsGroupsList_589023(
+var youtubeAnalyticsGroupsList* = Call_YoutubeAnalyticsGroupsList_578923(
     name: "youtubeAnalyticsGroupsList", meth: HttpMethod.HttpGet,
     host: "youtubeanalytics.googleapis.com", route: "/v2/groups",
-    validator: validate_YoutubeAnalyticsGroupsList_589024, base: "/",
-    url: url_YoutubeAnalyticsGroupsList_589025, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsGroupsList_578924, base: "/",
+    url: url_YoutubeAnalyticsGroupsList_578925, schemes: {Scheme.Https})
 type
-  Call_YoutubeAnalyticsGroupsDelete_589084 = ref object of OpenApiRestCall_588441
-proc url_YoutubeAnalyticsGroupsDelete_589086(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsGroupsDelete_578984 = ref object of OpenApiRestCall_578339
+proc url_YoutubeAnalyticsGroupsDelete_578986(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsGroupsDelete_589085(path: JsonNode; query: JsonNode;
+proc validate_YoutubeAnalyticsGroupsDelete_578985(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a group.
   ## 
@@ -1404,6 +1407,14 @@ proc validate_YoutubeAnalyticsGroupsDelete_589085(path: JsonNode; query: JsonNod
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
   ##   onBehalfOfContentOwner: JString
   ##                         : This parameter can only be used in a properly authorized request. **Note:**
   ## This parameter is intended exclusively for YouTube content partners that
@@ -1416,97 +1427,89 @@ proc validate_YoutubeAnalyticsGroupsDelete_589085(path: JsonNode; query: JsonNod
   ## data, without having to provide authentication credentials for each
   ## individual channel. The account that the user authenticates with must be
   ## linked to the specified YouTube content owner.
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   quotaUser: JString
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   id: JString
   ##     : The `id` parameter specifies the YouTube group ID of the group that is
   ## being deleted.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
   ##   callback: JString
   ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   ##   access_token: JString
   ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589087 = query.getOrDefault("onBehalfOfContentOwner")
-  valid_589087 = validateParameter(valid_589087, JString, required = false,
+  var valid_578987 = query.getOrDefault("key")
+  valid_578987 = validateParameter(valid_578987, JString, required = false,
                                  default = nil)
-  if valid_589087 != nil:
-    section.add "onBehalfOfContentOwner", valid_589087
-  var valid_589088 = query.getOrDefault("upload_protocol")
-  valid_589088 = validateParameter(valid_589088, JString, required = false,
-                                 default = nil)
-  if valid_589088 != nil:
-    section.add "upload_protocol", valid_589088
-  var valid_589089 = query.getOrDefault("fields")
-  valid_589089 = validateParameter(valid_589089, JString, required = false,
-                                 default = nil)
-  if valid_589089 != nil:
-    section.add "fields", valid_589089
-  var valid_589090 = query.getOrDefault("quotaUser")
-  valid_589090 = validateParameter(valid_589090, JString, required = false,
-                                 default = nil)
-  if valid_589090 != nil:
-    section.add "quotaUser", valid_589090
-  var valid_589091 = query.getOrDefault("id")
-  valid_589091 = validateParameter(valid_589091, JString, required = false,
-                                 default = nil)
-  if valid_589091 != nil:
-    section.add "id", valid_589091
-  var valid_589092 = query.getOrDefault("alt")
-  valid_589092 = validateParameter(valid_589092, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589092 != nil:
-    section.add "alt", valid_589092
-  var valid_589093 = query.getOrDefault("oauth_token")
-  valid_589093 = validateParameter(valid_589093, JString, required = false,
-                                 default = nil)
-  if valid_589093 != nil:
-    section.add "oauth_token", valid_589093
-  var valid_589094 = query.getOrDefault("callback")
-  valid_589094 = validateParameter(valid_589094, JString, required = false,
-                                 default = nil)
-  if valid_589094 != nil:
-    section.add "callback", valid_589094
-  var valid_589095 = query.getOrDefault("access_token")
-  valid_589095 = validateParameter(valid_589095, JString, required = false,
-                                 default = nil)
-  if valid_589095 != nil:
-    section.add "access_token", valid_589095
-  var valid_589096 = query.getOrDefault("uploadType")
-  valid_589096 = validateParameter(valid_589096, JString, required = false,
-                                 default = nil)
-  if valid_589096 != nil:
-    section.add "uploadType", valid_589096
-  var valid_589097 = query.getOrDefault("key")
-  valid_589097 = validateParameter(valid_589097, JString, required = false,
-                                 default = nil)
-  if valid_589097 != nil:
-    section.add "key", valid_589097
-  var valid_589098 = query.getOrDefault("$.xgafv")
-  valid_589098 = validateParameter(valid_589098, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589098 != nil:
-    section.add "$.xgafv", valid_589098
-  var valid_589099 = query.getOrDefault("prettyPrint")
-  valid_589099 = validateParameter(valid_589099, JBool, required = false,
+  if valid_578987 != nil:
+    section.add "key", valid_578987
+  var valid_578988 = query.getOrDefault("prettyPrint")
+  valid_578988 = validateParameter(valid_578988, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589099 != nil:
-    section.add "prettyPrint", valid_589099
+  if valid_578988 != nil:
+    section.add "prettyPrint", valid_578988
+  var valid_578989 = query.getOrDefault("oauth_token")
+  valid_578989 = validateParameter(valid_578989, JString, required = false,
+                                 default = nil)
+  if valid_578989 != nil:
+    section.add "oauth_token", valid_578989
+  var valid_578990 = query.getOrDefault("$.xgafv")
+  valid_578990 = validateParameter(valid_578990, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578990 != nil:
+    section.add "$.xgafv", valid_578990
+  var valid_578991 = query.getOrDefault("onBehalfOfContentOwner")
+  valid_578991 = validateParameter(valid_578991, JString, required = false,
+                                 default = nil)
+  if valid_578991 != nil:
+    section.add "onBehalfOfContentOwner", valid_578991
+  var valid_578992 = query.getOrDefault("alt")
+  valid_578992 = validateParameter(valid_578992, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578992 != nil:
+    section.add "alt", valid_578992
+  var valid_578993 = query.getOrDefault("uploadType")
+  valid_578993 = validateParameter(valid_578993, JString, required = false,
+                                 default = nil)
+  if valid_578993 != nil:
+    section.add "uploadType", valid_578993
+  var valid_578994 = query.getOrDefault("quotaUser")
+  valid_578994 = validateParameter(valid_578994, JString, required = false,
+                                 default = nil)
+  if valid_578994 != nil:
+    section.add "quotaUser", valid_578994
+  var valid_578995 = query.getOrDefault("id")
+  valid_578995 = validateParameter(valid_578995, JString, required = false,
+                                 default = nil)
+  if valid_578995 != nil:
+    section.add "id", valid_578995
+  var valid_578996 = query.getOrDefault("callback")
+  valid_578996 = validateParameter(valid_578996, JString, required = false,
+                                 default = nil)
+  if valid_578996 != nil:
+    section.add "callback", valid_578996
+  var valid_578997 = query.getOrDefault("fields")
+  valid_578997 = validateParameter(valid_578997, JString, required = false,
+                                 default = nil)
+  if valid_578997 != nil:
+    section.add "fields", valid_578997
+  var valid_578998 = query.getOrDefault("access_token")
+  valid_578998 = validateParameter(valid_578998, JString, required = false,
+                                 default = nil)
+  if valid_578998 != nil:
+    section.add "access_token", valid_578998
+  var valid_578999 = query.getOrDefault("upload_protocol")
+  valid_578999 = validateParameter(valid_578999, JString, required = false,
+                                 default = nil)
+  if valid_578999 != nil:
+    section.add "upload_protocol", valid_578999
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1515,27 +1518,35 @@ proc validate_YoutubeAnalyticsGroupsDelete_589085(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_589100: Call_YoutubeAnalyticsGroupsDelete_589084; path: JsonNode;
+proc call*(call_579000: Call_YoutubeAnalyticsGroupsDelete_578984; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a group.
   ## 
-  let valid = call_589100.validator(path, query, header, formData, body)
-  let scheme = call_589100.pickScheme
+  let valid = call_579000.validator(path, query, header, formData, body)
+  let scheme = call_579000.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589100.url(scheme.get, call_589100.host, call_589100.base,
-                         call_589100.route, valid.getOrDefault("path"),
+  let url = call_579000.url(scheme.get, call_579000.host, call_579000.base,
+                         call_579000.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589100, url, valid)
+  result = hook(call_579000, url, valid)
 
-proc call*(call_589101: Call_YoutubeAnalyticsGroupsDelete_589084;
-          onBehalfOfContentOwner: string = ""; uploadProtocol: string = "";
-          fields: string = ""; quotaUser: string = ""; id: string = "";
-          alt: string = "json"; oauthToken: string = ""; callback: string = "";
-          accessToken: string = ""; uploadType: string = ""; key: string = "";
-          Xgafv: string = "1"; prettyPrint: bool = true): Recallable =
+proc call*(call_579001: Call_YoutubeAnalyticsGroupsDelete_578984; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; Xgafv: string = "1";
+          onBehalfOfContentOwner: string = ""; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; id: string = "";
+          callback: string = ""; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""): Recallable =
   ## youtubeAnalyticsGroupsDelete
   ## Deletes a group.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
   ##   onBehalfOfContentOwner: string
   ##                         : This parameter can only be used in a properly authorized request. **Note:**
   ## This parameter is intended exclusively for YouTube content partners that
@@ -1548,62 +1559,54 @@ proc call*(call_589101: Call_YoutubeAnalyticsGroupsDelete_589084;
   ## data, without having to provide authentication credentials for each
   ## individual channel. The account that the user authenticates with must be
   ## linked to the specified YouTube content owner.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   id: string
   ##     : The `id` parameter specifies the YouTube group ID of the group that is
   ## being deleted.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
   ##   callback: string
   ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   accessToken: string
   ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var query_589102 = newJObject()
-  add(query_589102, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
-  add(query_589102, "upload_protocol", newJString(uploadProtocol))
-  add(query_589102, "fields", newJString(fields))
-  add(query_589102, "quotaUser", newJString(quotaUser))
-  add(query_589102, "id", newJString(id))
-  add(query_589102, "alt", newJString(alt))
-  add(query_589102, "oauth_token", newJString(oauthToken))
-  add(query_589102, "callback", newJString(callback))
-  add(query_589102, "access_token", newJString(accessToken))
-  add(query_589102, "uploadType", newJString(uploadType))
-  add(query_589102, "key", newJString(key))
-  add(query_589102, "$.xgafv", newJString(Xgafv))
-  add(query_589102, "prettyPrint", newJBool(prettyPrint))
-  result = call_589101.call(nil, query_589102, nil, nil, nil)
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var query_579002 = newJObject()
+  add(query_579002, "key", newJString(key))
+  add(query_579002, "prettyPrint", newJBool(prettyPrint))
+  add(query_579002, "oauth_token", newJString(oauthToken))
+  add(query_579002, "$.xgafv", newJString(Xgafv))
+  add(query_579002, "onBehalfOfContentOwner", newJString(onBehalfOfContentOwner))
+  add(query_579002, "alt", newJString(alt))
+  add(query_579002, "uploadType", newJString(uploadType))
+  add(query_579002, "quotaUser", newJString(quotaUser))
+  add(query_579002, "id", newJString(id))
+  add(query_579002, "callback", newJString(callback))
+  add(query_579002, "fields", newJString(fields))
+  add(query_579002, "access_token", newJString(accessToken))
+  add(query_579002, "upload_protocol", newJString(uploadProtocol))
+  result = call_579001.call(nil, query_579002, nil, nil, nil)
 
-var youtubeAnalyticsGroupsDelete* = Call_YoutubeAnalyticsGroupsDelete_589084(
+var youtubeAnalyticsGroupsDelete* = Call_YoutubeAnalyticsGroupsDelete_578984(
     name: "youtubeAnalyticsGroupsDelete", meth: HttpMethod.HttpDelete,
     host: "youtubeanalytics.googleapis.com", route: "/v2/groups",
-    validator: validate_YoutubeAnalyticsGroupsDelete_589085, base: "/",
-    url: url_YoutubeAnalyticsGroupsDelete_589086, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsGroupsDelete_578985, base: "/",
+    url: url_YoutubeAnalyticsGroupsDelete_578986, schemes: {Scheme.Https})
 type
-  Call_YoutubeAnalyticsReportsQuery_589103 = ref object of OpenApiRestCall_588441
-proc url_YoutubeAnalyticsReportsQuery_589105(protocol: Scheme; host: string;
+  Call_YoutubeAnalyticsReportsQuery_579003 = ref object of OpenApiRestCall_578339
+proc url_YoutubeAnalyticsReportsQuery_579005(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_YoutubeAnalyticsReportsQuery_589104(path: JsonNode; query: JsonNode;
+proc validate_YoutubeAnalyticsReportsQuery_579004(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieve your YouTube Analytics reports.
   ## 
@@ -1612,33 +1615,23 @@ proc validate_YoutubeAnalyticsReportsQuery_589104(path: JsonNode; query: JsonNod
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   endDate: JString
-  ##          : The end date for fetching YouTube Analytics data. The value should be in
-  ## `YYYY-MM-DD` format.
-  ## required: true, pattern: [0-9]{4}-[0-9]{2}-[0-9]{2}
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   includeHistoricalChannelData: JBool
+  ##                               : If set to true historical data (i.e. channel data from before the linking
+  ## of the channel to the content owner) will be retrieved.",
+  ##   $.xgafv: JString
+  ##          : V1 error format.
   ##   currency: JString
   ##           : The currency to which financial metrics should be converted. The default is
   ## US Dollar (USD). If the result contains no financial metrics, this flag
   ## will be ignored. Responds with an error if the specified currency is not
   ## recognized.",
   ## pattern: [A-Z]{3}
-  ##   startDate: JString
-  ##            : The start date for fetching YouTube Analytics data. The value should be in
-  ## `YYYY-MM-DD` format.
-  ## required: true, pattern: "[0-9]{4}-[0-9]{2}-[0-9]{2}
-  ##   sort: JString
-  ##       : A comma-separated list of dimensions or metrics that determine the sort
-  ## order for YouTube Analytics data. By default the sort order is ascending.
-  ## The '`-`' prefix causes descending sort order.",
-  ## pattern: [-0-9a-zA-Z,]+
   ##   metrics: JString
   ##          : A comma-separated list of YouTube Analytics metrics, such as `views` or
   ## `likes,dislikes`. See the
@@ -1648,17 +1641,16 @@ proc validate_YoutubeAnalyticsReportsQuery_589104(path: JsonNode; query: JsonNod
   ## [Metrics](/youtube/analytics/v2/dimsmets/mets) document for definitions of
   ## those metrics.
   ## required: true, pattern: [0-9a-zA-Z,]+
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
+  ##   alt: JString
+  ##      : Data format for response.
   ##   uploadType: JString
   ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   maxResults: JInt
-  ##             : The maximum number of rows to include in the response.",
-  ## minValue: 1
+  ##   endDate: JString
+  ##          : The end date for fetching YouTube Analytics data. The value should be in
+  ## `YYYY-MM-DD` format.
+  ## required: true, pattern: [0-9]{4}-[0-9]{2}-[0-9]{2}
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   dimensions: JString
   ##             : A comma-separated list of YouTube Analytics dimensions, such as `views` or
   ## `ageGroup,gender`. See the [Available
@@ -1667,6 +1659,23 @@ proc validate_YoutubeAnalyticsReportsQuery_589104(path: JsonNode; query: JsonNod
   ## reports. Also see the [Dimensions](/youtube/analytics/v2/dimsmets/dims)
   ## document for definitions of those dimensions."
   ## pattern: [0-9a-zA-Z,]+
+  ##   startIndex: JInt
+  ##             : An index of the first entity to retrieve. Use this parameter as a
+  ## pagination mechanism along with the max-results parameter (one-based,
+  ## inclusive).",
+  ## minValue: 1
+  ##   filters: JString
+  ##          : A list of filters that should be applied when retrieving YouTube Analytics
+  ## data. The [Available Reports](/youtube/analytics/v2/available_reports)
+  ## document identifies the dimensions that can be used to filter each report,
+  ## and the [Dimensions](/youtube/analytics/v2/dimsmets/dims)  document defines
+  ## those dimensions. If a request uses multiple filters, join them together
+  ## with a semicolon (`;`), and the returned result table will satisfy both
+  ## filters. For example, a filters parameter value of
+  ## `video==dMH0bHeiRNg;country==IT` restricts the result set to include data
+  ## for the given video in Italy.",
+  ##   callback: JString
+  ##           : JSONP
   ##   ids: JString
   ##      : Identifies the YouTube channel or content owner for which you are
   ## retrieving YouTube Analytics data.
@@ -1678,138 +1687,132 @@ proc validate_YoutubeAnalyticsReportsQuery_589104(path: JsonNode; query: JsonNod
   ##   value to `contentOwner==OWNER_NAME`, where `OWNER_NAME` is the CMS name
   ##   of the content owner.
   ## required: true, pattern: [a-zA-Z]+==[a-zA-Z0-9_+-]+
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   includeHistoricalChannelData: JBool
-  ##                               : If set to true historical data (i.e. channel data from before the linking
-  ## of the channel to the content owner) will be retrieved.",
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   filters: JString
-  ##          : A list of filters that should be applied when retrieving YouTube Analytics
-  ## data. The [Available Reports](/youtube/analytics/v2/available_reports)
-  ## document identifies the dimensions that can be used to filter each report,
-  ## and the [Dimensions](/youtube/analytics/v2/dimsmets/dims)  document defines
-  ## those dimensions. If a request uses multiple filters, join them together
-  ## with a semicolon (`;`), and the returned result table will satisfy both
-  ## filters. For example, a filters parameter value of
-  ## `video==dMH0bHeiRNg;country==IT` restricts the result set to include data
-  ## for the given video in Italy.",
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
-  ##   startIndex: JInt
-  ##             : An index of the first entity to retrieve. Use this parameter as a
-  ## pagination mechanism along with the max-results parameter (one-based,
-  ## inclusive).",
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
+  ##   startDate: JString
+  ##            : The start date for fetching YouTube Analytics data. The value should be in
+  ## `YYYY-MM-DD` format.
+  ## required: true, pattern: "[0-9]{4}-[0-9]{2}-[0-9]{2}
+  ##   maxResults: JInt
+  ##             : The maximum number of rows to include in the response.",
   ## minValue: 1
+  ##   sort: JString
+  ##       : A comma-separated list of dimensions or metrics that determine the sort
+  ## order for YouTube Analytics data. By default the sort order is ascending.
+  ## The '`-`' prefix causes descending sort order.",
+  ## pattern: [-0-9a-zA-Z,]+
   section = newJObject()
-  var valid_589106 = query.getOrDefault("upload_protocol")
-  valid_589106 = validateParameter(valid_589106, JString, required = false,
+  var valid_579006 = query.getOrDefault("key")
+  valid_579006 = validateParameter(valid_579006, JString, required = false,
                                  default = nil)
-  if valid_589106 != nil:
-    section.add "upload_protocol", valid_589106
-  var valid_589107 = query.getOrDefault("fields")
-  valid_589107 = validateParameter(valid_589107, JString, required = false,
-                                 default = nil)
-  if valid_589107 != nil:
-    section.add "fields", valid_589107
-  var valid_589108 = query.getOrDefault("quotaUser")
-  valid_589108 = validateParameter(valid_589108, JString, required = false,
-                                 default = nil)
-  if valid_589108 != nil:
-    section.add "quotaUser", valid_589108
-  var valid_589109 = query.getOrDefault("alt")
-  valid_589109 = validateParameter(valid_589109, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589109 != nil:
-    section.add "alt", valid_589109
-  var valid_589110 = query.getOrDefault("endDate")
-  valid_589110 = validateParameter(valid_589110, JString, required = false,
-                                 default = nil)
-  if valid_589110 != nil:
-    section.add "endDate", valid_589110
-  var valid_589111 = query.getOrDefault("currency")
-  valid_589111 = validateParameter(valid_589111, JString, required = false,
-                                 default = nil)
-  if valid_589111 != nil:
-    section.add "currency", valid_589111
-  var valid_589112 = query.getOrDefault("startDate")
-  valid_589112 = validateParameter(valid_589112, JString, required = false,
-                                 default = nil)
-  if valid_589112 != nil:
-    section.add "startDate", valid_589112
-  var valid_589113 = query.getOrDefault("sort")
-  valid_589113 = validateParameter(valid_589113, JString, required = false,
-                                 default = nil)
-  if valid_589113 != nil:
-    section.add "sort", valid_589113
-  var valid_589114 = query.getOrDefault("metrics")
-  valid_589114 = validateParameter(valid_589114, JString, required = false,
-                                 default = nil)
-  if valid_589114 != nil:
-    section.add "metrics", valid_589114
-  var valid_589115 = query.getOrDefault("oauth_token")
-  valid_589115 = validateParameter(valid_589115, JString, required = false,
-                                 default = nil)
-  if valid_589115 != nil:
-    section.add "oauth_token", valid_589115
-  var valid_589116 = query.getOrDefault("callback")
-  valid_589116 = validateParameter(valid_589116, JString, required = false,
-                                 default = nil)
-  if valid_589116 != nil:
-    section.add "callback", valid_589116
-  var valid_589117 = query.getOrDefault("access_token")
-  valid_589117 = validateParameter(valid_589117, JString, required = false,
-                                 default = nil)
-  if valid_589117 != nil:
-    section.add "access_token", valid_589117
-  var valid_589118 = query.getOrDefault("uploadType")
-  valid_589118 = validateParameter(valid_589118, JString, required = false,
-                                 default = nil)
-  if valid_589118 != nil:
-    section.add "uploadType", valid_589118
-  var valid_589119 = query.getOrDefault("maxResults")
-  valid_589119 = validateParameter(valid_589119, JInt, required = false, default = nil)
-  if valid_589119 != nil:
-    section.add "maxResults", valid_589119
-  var valid_589120 = query.getOrDefault("dimensions")
-  valid_589120 = validateParameter(valid_589120, JString, required = false,
-                                 default = nil)
-  if valid_589120 != nil:
-    section.add "dimensions", valid_589120
-  var valid_589121 = query.getOrDefault("ids")
-  valid_589121 = validateParameter(valid_589121, JString, required = false,
-                                 default = nil)
-  if valid_589121 != nil:
-    section.add "ids", valid_589121
-  var valid_589122 = query.getOrDefault("key")
-  valid_589122 = validateParameter(valid_589122, JString, required = false,
-                                 default = nil)
-  if valid_589122 != nil:
-    section.add "key", valid_589122
-  var valid_589123 = query.getOrDefault("includeHistoricalChannelData")
-  valid_589123 = validateParameter(valid_589123, JBool, required = false, default = nil)
-  if valid_589123 != nil:
-    section.add "includeHistoricalChannelData", valid_589123
-  var valid_589124 = query.getOrDefault("$.xgafv")
-  valid_589124 = validateParameter(valid_589124, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589124 != nil:
-    section.add "$.xgafv", valid_589124
-  var valid_589125 = query.getOrDefault("filters")
-  valid_589125 = validateParameter(valid_589125, JString, required = false,
-                                 default = nil)
-  if valid_589125 != nil:
-    section.add "filters", valid_589125
-  var valid_589126 = query.getOrDefault("prettyPrint")
-  valid_589126 = validateParameter(valid_589126, JBool, required = false,
+  if valid_579006 != nil:
+    section.add "key", valid_579006
+  var valid_579007 = query.getOrDefault("prettyPrint")
+  valid_579007 = validateParameter(valid_579007, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589126 != nil:
-    section.add "prettyPrint", valid_589126
-  var valid_589127 = query.getOrDefault("startIndex")
-  valid_589127 = validateParameter(valid_589127, JInt, required = false, default = nil)
-  if valid_589127 != nil:
-    section.add "startIndex", valid_589127
+  if valid_579007 != nil:
+    section.add "prettyPrint", valid_579007
+  var valid_579008 = query.getOrDefault("oauth_token")
+  valid_579008 = validateParameter(valid_579008, JString, required = false,
+                                 default = nil)
+  if valid_579008 != nil:
+    section.add "oauth_token", valid_579008
+  var valid_579009 = query.getOrDefault("includeHistoricalChannelData")
+  valid_579009 = validateParameter(valid_579009, JBool, required = false, default = nil)
+  if valid_579009 != nil:
+    section.add "includeHistoricalChannelData", valid_579009
+  var valid_579010 = query.getOrDefault("$.xgafv")
+  valid_579010 = validateParameter(valid_579010, JString, required = false,
+                                 default = newJString("1"))
+  if valid_579010 != nil:
+    section.add "$.xgafv", valid_579010
+  var valid_579011 = query.getOrDefault("currency")
+  valid_579011 = validateParameter(valid_579011, JString, required = false,
+                                 default = nil)
+  if valid_579011 != nil:
+    section.add "currency", valid_579011
+  var valid_579012 = query.getOrDefault("metrics")
+  valid_579012 = validateParameter(valid_579012, JString, required = false,
+                                 default = nil)
+  if valid_579012 != nil:
+    section.add "metrics", valid_579012
+  var valid_579013 = query.getOrDefault("alt")
+  valid_579013 = validateParameter(valid_579013, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579013 != nil:
+    section.add "alt", valid_579013
+  var valid_579014 = query.getOrDefault("uploadType")
+  valid_579014 = validateParameter(valid_579014, JString, required = false,
+                                 default = nil)
+  if valid_579014 != nil:
+    section.add "uploadType", valid_579014
+  var valid_579015 = query.getOrDefault("endDate")
+  valid_579015 = validateParameter(valid_579015, JString, required = false,
+                                 default = nil)
+  if valid_579015 != nil:
+    section.add "endDate", valid_579015
+  var valid_579016 = query.getOrDefault("quotaUser")
+  valid_579016 = validateParameter(valid_579016, JString, required = false,
+                                 default = nil)
+  if valid_579016 != nil:
+    section.add "quotaUser", valid_579016
+  var valid_579017 = query.getOrDefault("dimensions")
+  valid_579017 = validateParameter(valid_579017, JString, required = false,
+                                 default = nil)
+  if valid_579017 != nil:
+    section.add "dimensions", valid_579017
+  var valid_579018 = query.getOrDefault("startIndex")
+  valid_579018 = validateParameter(valid_579018, JInt, required = false, default = nil)
+  if valid_579018 != nil:
+    section.add "startIndex", valid_579018
+  var valid_579019 = query.getOrDefault("filters")
+  valid_579019 = validateParameter(valid_579019, JString, required = false,
+                                 default = nil)
+  if valid_579019 != nil:
+    section.add "filters", valid_579019
+  var valid_579020 = query.getOrDefault("callback")
+  valid_579020 = validateParameter(valid_579020, JString, required = false,
+                                 default = nil)
+  if valid_579020 != nil:
+    section.add "callback", valid_579020
+  var valid_579021 = query.getOrDefault("ids")
+  valid_579021 = validateParameter(valid_579021, JString, required = false,
+                                 default = nil)
+  if valid_579021 != nil:
+    section.add "ids", valid_579021
+  var valid_579022 = query.getOrDefault("fields")
+  valid_579022 = validateParameter(valid_579022, JString, required = false,
+                                 default = nil)
+  if valid_579022 != nil:
+    section.add "fields", valid_579022
+  var valid_579023 = query.getOrDefault("access_token")
+  valid_579023 = validateParameter(valid_579023, JString, required = false,
+                                 default = nil)
+  if valid_579023 != nil:
+    section.add "access_token", valid_579023
+  var valid_579024 = query.getOrDefault("upload_protocol")
+  valid_579024 = validateParameter(valid_579024, JString, required = false,
+                                 default = nil)
+  if valid_579024 != nil:
+    section.add "upload_protocol", valid_579024
+  var valid_579025 = query.getOrDefault("startDate")
+  valid_579025 = validateParameter(valid_579025, JString, required = false,
+                                 default = nil)
+  if valid_579025 != nil:
+    section.add "startDate", valid_579025
+  var valid_579026 = query.getOrDefault("maxResults")
+  valid_579026 = validateParameter(valid_579026, JInt, required = false, default = nil)
+  if valid_579026 != nil:
+    section.add "maxResults", valid_579026
+  var valid_579027 = query.getOrDefault("sort")
+  valid_579027 = validateParameter(valid_579027, JString, required = false,
+                                 default = nil)
+  if valid_579027 != nil:
+    section.add "sort", valid_579027
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1818,57 +1821,47 @@ proc validate_YoutubeAnalyticsReportsQuery_589104(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_589128: Call_YoutubeAnalyticsReportsQuery_589103; path: JsonNode;
+proc call*(call_579028: Call_YoutubeAnalyticsReportsQuery_579003; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieve your YouTube Analytics reports.
   ## 
-  let valid = call_589128.validator(path, query, header, formData, body)
-  let scheme = call_589128.pickScheme
+  let valid = call_579028.validator(path, query, header, formData, body)
+  let scheme = call_579028.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589128.url(scheme.get, call_589128.host, call_589128.base,
-                         call_589128.route, valid.getOrDefault("path"),
+  let url = call_579028.url(scheme.get, call_579028.host, call_579028.base,
+                         call_579028.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589128, url, valid)
+  result = hook(call_579028, url, valid)
 
-proc call*(call_589129: Call_YoutubeAnalyticsReportsQuery_589103;
-          uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; endDate: string = ""; currency: string = "";
-          startDate: string = ""; sort: string = ""; metrics: string = "";
-          oauthToken: string = ""; callback: string = ""; accessToken: string = "";
-          uploadType: string = ""; maxResults: int = 0; dimensions: string = "";
-          ids: string = ""; key: string = "";
+proc call*(call_579029: Call_YoutubeAnalyticsReportsQuery_579003; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = "";
           includeHistoricalChannelData: bool = false; Xgafv: string = "1";
-          filters: string = ""; prettyPrint: bool = true; startIndex: int = 0): Recallable =
+          currency: string = ""; metrics: string = ""; alt: string = "json";
+          uploadType: string = ""; endDate: string = ""; quotaUser: string = "";
+          dimensions: string = ""; startIndex: int = 0; filters: string = "";
+          callback: string = ""; ids: string = ""; fields: string = "";
+          accessToken: string = ""; uploadProtocol: string = ""; startDate: string = "";
+          maxResults: int = 0; sort: string = ""): Recallable =
   ## youtubeAnalyticsReportsQuery
   ## Retrieve your YouTube Analytics reports.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   endDate: string
-  ##          : The end date for fetching YouTube Analytics data. The value should be in
-  ## `YYYY-MM-DD` format.
-  ## required: true, pattern: [0-9]{4}-[0-9]{2}-[0-9]{2}
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   includeHistoricalChannelData: bool
+  ##                               : If set to true historical data (i.e. channel data from before the linking
+  ## of the channel to the content owner) will be retrieved.",
+  ##   Xgafv: string
+  ##        : V1 error format.
   ##   currency: string
   ##           : The currency to which financial metrics should be converted. The default is
   ## US Dollar (USD). If the result contains no financial metrics, this flag
   ## will be ignored. Responds with an error if the specified currency is not
   ## recognized.",
   ## pattern: [A-Z]{3}
-  ##   startDate: string
-  ##            : The start date for fetching YouTube Analytics data. The value should be in
-  ## `YYYY-MM-DD` format.
-  ## required: true, pattern: "[0-9]{4}-[0-9]{2}-[0-9]{2}
-  ##   sort: string
-  ##       : A comma-separated list of dimensions or metrics that determine the sort
-  ## order for YouTube Analytics data. By default the sort order is ascending.
-  ## The '`-`' prefix causes descending sort order.",
-  ## pattern: [-0-9a-zA-Z,]+
   ##   metrics: string
   ##          : A comma-separated list of YouTube Analytics metrics, such as `views` or
   ## `likes,dislikes`. See the
@@ -1878,17 +1871,16 @@ proc call*(call_589129: Call_YoutubeAnalyticsReportsQuery_589103;
   ## [Metrics](/youtube/analytics/v2/dimsmets/mets) document for definitions of
   ## those metrics.
   ## required: true, pattern: [0-9a-zA-Z,]+
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
+  ##   alt: string
+  ##      : Data format for response.
   ##   uploadType: string
   ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   maxResults: int
-  ##             : The maximum number of rows to include in the response.",
-  ## minValue: 1
+  ##   endDate: string
+  ##          : The end date for fetching YouTube Analytics data. The value should be in
+  ## `YYYY-MM-DD` format.
+  ## required: true, pattern: [0-9]{4}-[0-9]{2}-[0-9]{2}
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   dimensions: string
   ##             : A comma-separated list of YouTube Analytics dimensions, such as `views` or
   ## `ageGroup,gender`. See the [Available
@@ -1897,6 +1889,23 @@ proc call*(call_589129: Call_YoutubeAnalyticsReportsQuery_589103;
   ## reports. Also see the [Dimensions](/youtube/analytics/v2/dimsmets/dims)
   ## document for definitions of those dimensions."
   ## pattern: [0-9a-zA-Z,]+
+  ##   startIndex: int
+  ##             : An index of the first entity to retrieve. Use this parameter as a
+  ## pagination mechanism along with the max-results parameter (one-based,
+  ## inclusive).",
+  ## minValue: 1
+  ##   filters: string
+  ##          : A list of filters that should be applied when retrieving YouTube Analytics
+  ## data. The [Available Reports](/youtube/analytics/v2/available_reports)
+  ## document identifies the dimensions that can be used to filter each report,
+  ## and the [Dimensions](/youtube/analytics/v2/dimsmets/dims)  document defines
+  ## those dimensions. If a request uses multiple filters, join them together
+  ## with a semicolon (`;`), and the returned result table will satisfy both
+  ## filters. For example, a filters parameter value of
+  ## `video==dMH0bHeiRNg;country==IT` restricts the result set to include data
+  ## for the given video in Italy.",
+  ##   callback: string
+  ##           : JSONP
   ##   ids: string
   ##      : Identifies the YouTube channel or content owner for which you are
   ## retrieving YouTube Analytics data.
@@ -1908,61 +1917,55 @@ proc call*(call_589129: Call_YoutubeAnalyticsReportsQuery_589103;
   ##   value to `contentOwner==OWNER_NAME`, where `OWNER_NAME` is the CMS name
   ##   of the content owner.
   ## required: true, pattern: [a-zA-Z]+==[a-zA-Z0-9_+-]+
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   includeHistoricalChannelData: bool
-  ##                               : If set to true historical data (i.e. channel data from before the linking
-  ## of the channel to the content owner) will be retrieved.",
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   filters: string
-  ##          : A list of filters that should be applied when retrieving YouTube Analytics
-  ## data. The [Available Reports](/youtube/analytics/v2/available_reports)
-  ## document identifies the dimensions that can be used to filter each report,
-  ## and the [Dimensions](/youtube/analytics/v2/dimsmets/dims)  document defines
-  ## those dimensions. If a request uses multiple filters, join them together
-  ## with a semicolon (`;`), and the returned result table will satisfy both
-  ## filters. For example, a filters parameter value of
-  ## `video==dMH0bHeiRNg;country==IT` restricts the result set to include data
-  ## for the given video in Italy.",
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  ##   startIndex: int
-  ##             : An index of the first entity to retrieve. Use this parameter as a
-  ## pagination mechanism along with the max-results parameter (one-based,
-  ## inclusive).",
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  ##   startDate: string
+  ##            : The start date for fetching YouTube Analytics data. The value should be in
+  ## `YYYY-MM-DD` format.
+  ## required: true, pattern: "[0-9]{4}-[0-9]{2}-[0-9]{2}
+  ##   maxResults: int
+  ##             : The maximum number of rows to include in the response.",
   ## minValue: 1
-  var query_589130 = newJObject()
-  add(query_589130, "upload_protocol", newJString(uploadProtocol))
-  add(query_589130, "fields", newJString(fields))
-  add(query_589130, "quotaUser", newJString(quotaUser))
-  add(query_589130, "alt", newJString(alt))
-  add(query_589130, "endDate", newJString(endDate))
-  add(query_589130, "currency", newJString(currency))
-  add(query_589130, "startDate", newJString(startDate))
-  add(query_589130, "sort", newJString(sort))
-  add(query_589130, "metrics", newJString(metrics))
-  add(query_589130, "oauth_token", newJString(oauthToken))
-  add(query_589130, "callback", newJString(callback))
-  add(query_589130, "access_token", newJString(accessToken))
-  add(query_589130, "uploadType", newJString(uploadType))
-  add(query_589130, "maxResults", newJInt(maxResults))
-  add(query_589130, "dimensions", newJString(dimensions))
-  add(query_589130, "ids", newJString(ids))
-  add(query_589130, "key", newJString(key))
-  add(query_589130, "includeHistoricalChannelData",
+  ##   sort: string
+  ##       : A comma-separated list of dimensions or metrics that determine the sort
+  ## order for YouTube Analytics data. By default the sort order is ascending.
+  ## The '`-`' prefix causes descending sort order.",
+  ## pattern: [-0-9a-zA-Z,]+
+  var query_579030 = newJObject()
+  add(query_579030, "key", newJString(key))
+  add(query_579030, "prettyPrint", newJBool(prettyPrint))
+  add(query_579030, "oauth_token", newJString(oauthToken))
+  add(query_579030, "includeHistoricalChannelData",
       newJBool(includeHistoricalChannelData))
-  add(query_589130, "$.xgafv", newJString(Xgafv))
-  add(query_589130, "filters", newJString(filters))
-  add(query_589130, "prettyPrint", newJBool(prettyPrint))
-  add(query_589130, "startIndex", newJInt(startIndex))
-  result = call_589129.call(nil, query_589130, nil, nil, nil)
+  add(query_579030, "$.xgafv", newJString(Xgafv))
+  add(query_579030, "currency", newJString(currency))
+  add(query_579030, "metrics", newJString(metrics))
+  add(query_579030, "alt", newJString(alt))
+  add(query_579030, "uploadType", newJString(uploadType))
+  add(query_579030, "endDate", newJString(endDate))
+  add(query_579030, "quotaUser", newJString(quotaUser))
+  add(query_579030, "dimensions", newJString(dimensions))
+  add(query_579030, "startIndex", newJInt(startIndex))
+  add(query_579030, "filters", newJString(filters))
+  add(query_579030, "callback", newJString(callback))
+  add(query_579030, "ids", newJString(ids))
+  add(query_579030, "fields", newJString(fields))
+  add(query_579030, "access_token", newJString(accessToken))
+  add(query_579030, "upload_protocol", newJString(uploadProtocol))
+  add(query_579030, "startDate", newJString(startDate))
+  add(query_579030, "maxResults", newJInt(maxResults))
+  add(query_579030, "sort", newJString(sort))
+  result = call_579029.call(nil, query_579030, nil, nil, nil)
 
-var youtubeAnalyticsReportsQuery* = Call_YoutubeAnalyticsReportsQuery_589103(
+var youtubeAnalyticsReportsQuery* = Call_YoutubeAnalyticsReportsQuery_579003(
     name: "youtubeAnalyticsReportsQuery", meth: HttpMethod.HttpGet,
     host: "youtubeanalytics.googleapis.com", route: "/v2/reports",
-    validator: validate_YoutubeAnalyticsReportsQuery_589104, base: "/",
-    url: url_YoutubeAnalyticsReportsQuery_589105, schemes: {Scheme.Https})
+    validator: validate_YoutubeAnalyticsReportsQuery_579004, base: "/",
+    url: url_YoutubeAnalyticsReportsQuery_579005, schemes: {Scheme.Https})
 export
   rest
 

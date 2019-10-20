@@ -30,15 +30,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588441 = ref object of OpenApiRestCall
+  OpenApiRestCall_578339 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -96,9 +96,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -109,15 +113,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_LanguageTranslationsTranslate_588990 = ref object of OpenApiRestCall_588441
-proc url_LanguageTranslationsTranslate_588992(protocol: Scheme; host: string;
+  Call_LanguageTranslationsTranslate_578890 = ref object of OpenApiRestCall_578339
+proc url_LanguageTranslationsTranslate_578892(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_LanguageTranslationsTranslate_588991(path: JsonNode; query: JsonNode;
+proc validate_LanguageTranslationsTranslate_578891(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Translates input text, returning translated text.
   ## 
@@ -126,98 +130,98 @@ proc validate_LanguageTranslationsTranslate_588991(path: JsonNode; query: JsonNo
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   pp: JBool
-  ##     : Pretty-print response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
+  ##   pp: JBool
+  ##     : Pretty-print response.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
   ##   bearer_token: JString
   ##               : OAuth bearer token.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_588993 = query.getOrDefault("upload_protocol")
-  valid_588993 = validateParameter(valid_588993, JString, required = false,
+  var valid_578893 = query.getOrDefault("key")
+  valid_578893 = validateParameter(valid_578893, JString, required = false,
                                  default = nil)
-  if valid_588993 != nil:
-    section.add "upload_protocol", valid_588993
-  var valid_588994 = query.getOrDefault("fields")
-  valid_588994 = validateParameter(valid_588994, JString, required = false,
-                                 default = nil)
-  if valid_588994 != nil:
-    section.add "fields", valid_588994
-  var valid_588995 = query.getOrDefault("quotaUser")
-  valid_588995 = validateParameter(valid_588995, JString, required = false,
-                                 default = nil)
-  if valid_588995 != nil:
-    section.add "quotaUser", valid_588995
-  var valid_588996 = query.getOrDefault("alt")
-  valid_588996 = validateParameter(valid_588996, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588996 != nil:
-    section.add "alt", valid_588996
-  var valid_588997 = query.getOrDefault("pp")
-  valid_588997 = validateParameter(valid_588997, JBool, required = false,
+  if valid_578893 != nil:
+    section.add "key", valid_578893
+  var valid_578894 = query.getOrDefault("pp")
+  valid_578894 = validateParameter(valid_578894, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588997 != nil:
-    section.add "pp", valid_588997
-  var valid_588998 = query.getOrDefault("oauth_token")
-  valid_588998 = validateParameter(valid_588998, JString, required = false,
+  if valid_578894 != nil:
+    section.add "pp", valid_578894
+  var valid_578895 = query.getOrDefault("prettyPrint")
+  valid_578895 = validateParameter(valid_578895, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_578895 != nil:
+    section.add "prettyPrint", valid_578895
+  var valid_578896 = query.getOrDefault("oauth_token")
+  valid_578896 = validateParameter(valid_578896, JString, required = false,
                                  default = nil)
-  if valid_588998 != nil:
-    section.add "oauth_token", valid_588998
-  var valid_588999 = query.getOrDefault("callback")
-  valid_588999 = validateParameter(valid_588999, JString, required = false,
-                                 default = nil)
-  if valid_588999 != nil:
-    section.add "callback", valid_588999
-  var valid_589000 = query.getOrDefault("access_token")
-  valid_589000 = validateParameter(valid_589000, JString, required = false,
-                                 default = nil)
-  if valid_589000 != nil:
-    section.add "access_token", valid_589000
-  var valid_589001 = query.getOrDefault("uploadType")
-  valid_589001 = validateParameter(valid_589001, JString, required = false,
-                                 default = nil)
-  if valid_589001 != nil:
-    section.add "uploadType", valid_589001
-  var valid_589002 = query.getOrDefault("key")
-  valid_589002 = validateParameter(valid_589002, JString, required = false,
-                                 default = nil)
-  if valid_589002 != nil:
-    section.add "key", valid_589002
-  var valid_589003 = query.getOrDefault("$.xgafv")
-  valid_589003 = validateParameter(valid_589003, JString, required = false,
+  if valid_578896 != nil:
+    section.add "oauth_token", valid_578896
+  var valid_578897 = query.getOrDefault("$.xgafv")
+  valid_578897 = validateParameter(valid_578897, JString, required = false,
                                  default = newJString("1"))
-  if valid_589003 != nil:
-    section.add "$.xgafv", valid_589003
-  var valid_589004 = query.getOrDefault("prettyPrint")
-  valid_589004 = validateParameter(valid_589004, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_589004 != nil:
-    section.add "prettyPrint", valid_589004
-  var valid_589005 = query.getOrDefault("bearer_token")
-  valid_589005 = validateParameter(valid_589005, JString, required = false,
+  if valid_578897 != nil:
+    section.add "$.xgafv", valid_578897
+  var valid_578898 = query.getOrDefault("bearer_token")
+  valid_578898 = validateParameter(valid_578898, JString, required = false,
                                  default = nil)
-  if valid_589005 != nil:
-    section.add "bearer_token", valid_589005
+  if valid_578898 != nil:
+    section.add "bearer_token", valid_578898
+  var valid_578899 = query.getOrDefault("alt")
+  valid_578899 = validateParameter(valid_578899, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578899 != nil:
+    section.add "alt", valid_578899
+  var valid_578900 = query.getOrDefault("uploadType")
+  valid_578900 = validateParameter(valid_578900, JString, required = false,
+                                 default = nil)
+  if valid_578900 != nil:
+    section.add "uploadType", valid_578900
+  var valid_578901 = query.getOrDefault("quotaUser")
+  valid_578901 = validateParameter(valid_578901, JString, required = false,
+                                 default = nil)
+  if valid_578901 != nil:
+    section.add "quotaUser", valid_578901
+  var valid_578902 = query.getOrDefault("callback")
+  valid_578902 = validateParameter(valid_578902, JString, required = false,
+                                 default = nil)
+  if valid_578902 != nil:
+    section.add "callback", valid_578902
+  var valid_578903 = query.getOrDefault("fields")
+  valid_578903 = validateParameter(valid_578903, JString, required = false,
+                                 default = nil)
+  if valid_578903 != nil:
+    section.add "fields", valid_578903
+  var valid_578904 = query.getOrDefault("access_token")
+  valid_578904 = validateParameter(valid_578904, JString, required = false,
+                                 default = nil)
+  if valid_578904 != nil:
+    section.add "access_token", valid_578904
+  var valid_578905 = query.getOrDefault("upload_protocol")
+  valid_578905 = validateParameter(valid_578905, JString, required = false,
+                                 default = nil)
+  if valid_578905 != nil:
+    section.add "upload_protocol", valid_578905
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -229,82 +233,82 @@ proc validate_LanguageTranslationsTranslate_588991(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_589007: Call_LanguageTranslationsTranslate_588990; path: JsonNode;
+proc call*(call_578907: Call_LanguageTranslationsTranslate_578890; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Translates input text, returning translated text.
   ## 
-  let valid = call_589007.validator(path, query, header, formData, body)
-  let scheme = call_589007.pickScheme
+  let valid = call_578907.validator(path, query, header, formData, body)
+  let scheme = call_578907.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589007.url(scheme.get, call_589007.host, call_589007.base,
-                         call_589007.route, valid.getOrDefault("path"),
+  let url = call_578907.url(scheme.get, call_578907.host, call_578907.base,
+                         call_578907.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589007, url, valid)
+  result = hook(call_578907, url, valid)
 
-proc call*(call_589008: Call_LanguageTranslationsTranslate_588990;
-          uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; pp: bool = true; oauthToken: string = "";
-          callback: string = ""; accessToken: string = ""; uploadType: string = "";
-          key: string = ""; Xgafv: string = "1"; body: JsonNode = nil;
-          prettyPrint: bool = true; bearerToken: string = ""): Recallable =
+proc call*(call_578908: Call_LanguageTranslationsTranslate_578890;
+          key: string = ""; pp: bool = true; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; bearerToken: string = "";
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; callback: string = ""; fields: string = "";
+          accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## languageTranslationsTranslate
   ## Translates input text, returning translated text.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   pp: bool
-  ##     : Pretty-print response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   body: JObject
+  ##   pp: bool
+  ##     : Pretty-print response.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
   ##   bearerToken: string
   ##              : OAuth bearer token.
-  var query_589009 = newJObject()
-  var body_589010 = newJObject()
-  add(query_589009, "upload_protocol", newJString(uploadProtocol))
-  add(query_589009, "fields", newJString(fields))
-  add(query_589009, "quotaUser", newJString(quotaUser))
-  add(query_589009, "alt", newJString(alt))
-  add(query_589009, "pp", newJBool(pp))
-  add(query_589009, "oauth_token", newJString(oauthToken))
-  add(query_589009, "callback", newJString(callback))
-  add(query_589009, "access_token", newJString(accessToken))
-  add(query_589009, "uploadType", newJString(uploadType))
-  add(query_589009, "key", newJString(key))
-  add(query_589009, "$.xgafv", newJString(Xgafv))
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   body: JObject
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var query_578909 = newJObject()
+  var body_578910 = newJObject()
+  add(query_578909, "key", newJString(key))
+  add(query_578909, "pp", newJBool(pp))
+  add(query_578909, "prettyPrint", newJBool(prettyPrint))
+  add(query_578909, "oauth_token", newJString(oauthToken))
+  add(query_578909, "$.xgafv", newJString(Xgafv))
+  add(query_578909, "bearer_token", newJString(bearerToken))
+  add(query_578909, "alt", newJString(alt))
+  add(query_578909, "uploadType", newJString(uploadType))
+  add(query_578909, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589010 = body
-  add(query_589009, "prettyPrint", newJBool(prettyPrint))
-  add(query_589009, "bearer_token", newJString(bearerToken))
-  result = call_589008.call(nil, query_589009, nil, nil, body_589010)
+    body_578910 = body
+  add(query_578909, "callback", newJString(callback))
+  add(query_578909, "fields", newJString(fields))
+  add(query_578909, "access_token", newJString(accessToken))
+  add(query_578909, "upload_protocol", newJString(uploadProtocol))
+  result = call_578908.call(nil, query_578909, nil, nil, body_578910)
 
-var languageTranslationsTranslate* = Call_LanguageTranslationsTranslate_588990(
+var languageTranslationsTranslate* = Call_LanguageTranslationsTranslate_578890(
     name: "languageTranslationsTranslate", meth: HttpMethod.HttpPost,
     host: "translation.googleapis.com", route: "/v2",
-    validator: validate_LanguageTranslationsTranslate_588991,
-    base: "/language/translate", url: url_LanguageTranslationsTranslate_588992,
+    validator: validate_LanguageTranslationsTranslate_578891,
+    base: "/language/translate", url: url_LanguageTranslationsTranslate_578892,
     schemes: {Scheme.Https})
 type
-  Call_LanguageTranslationsList_588710 = ref object of OpenApiRestCall_588441
-proc url_LanguageTranslationsList_588712(protocol: Scheme; host: string;
+  Call_LanguageTranslationsList_578610 = ref object of OpenApiRestCall_578339
+proc url_LanguageTranslationsList_578612(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -312,7 +316,7 @@ proc url_LanguageTranslationsList_588712(protocol: Scheme; host: string;
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_LanguageTranslationsList_588711(path: JsonNode; query: JsonNode;
+proc validate_LanguageTranslationsList_578611(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Translates input text, returning translated text.
   ## 
@@ -321,147 +325,147 @@ proc validate_LanguageTranslationsList_588711(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: JString
-  ##      : Data format for response.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   pp: JBool
   ##     : Pretty-print response.
-  ##   cid: JArray
-  ##      : The customization id for translate
-  ##   target: JString (required)
-  ##         : The language to use for translation of the input text, set to one of the
-  ## language codes listed in Language Support.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
   ##   model: JString
   ##        : The `model` type requested for this translation. Valid values are
   ## listed in public documentation.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   target: JString (required)
+  ##         : The language to use for translation of the input text, set to one of the
+  ## language codes listed in Language Support.
+  ##   bearer_token: JString
+  ##               : OAuth bearer token.
+  ##   q: JArray (required)
+  ##    : The input text to translate. Repeat this parameter to perform translation
+  ## operations on multiple text inputs.
   ##   source: JString
   ##         : The language of the source text, set to one of the language codes listed in
   ## Language Support. If the source language is not specified, the API will
   ## attempt to identify the source language automatically and return it within
   ## the response.
-  ##   q: JArray (required)
-  ##    : The input text to translate. Repeat this parameter to perform translation
-  ## operations on multiple text inputs.
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   callback: JString
+  ##           : JSONP
+  ##   cid: JArray
+  ##      : The customization id for translate
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   ##   format: JString
   ##         : The format of the source text, in either HTML (default) or plain-text. A
   ## value of "html" indicates HTML and a value of "text" indicates plain-text.
-  ##   bearer_token: JString
-  ##               : OAuth bearer token.
   section = newJObject()
-  var valid_588824 = query.getOrDefault("upload_protocol")
-  valid_588824 = validateParameter(valid_588824, JString, required = false,
+  var valid_578724 = query.getOrDefault("key")
+  valid_578724 = validateParameter(valid_578724, JString, required = false,
                                  default = nil)
-  if valid_588824 != nil:
-    section.add "upload_protocol", valid_588824
-  var valid_588825 = query.getOrDefault("fields")
-  valid_588825 = validateParameter(valid_588825, JString, required = false,
-                                 default = nil)
-  if valid_588825 != nil:
-    section.add "fields", valid_588825
-  var valid_588826 = query.getOrDefault("quotaUser")
-  valid_588826 = validateParameter(valid_588826, JString, required = false,
-                                 default = nil)
-  if valid_588826 != nil:
-    section.add "quotaUser", valid_588826
-  var valid_588840 = query.getOrDefault("alt")
-  valid_588840 = validateParameter(valid_588840, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588840 != nil:
-    section.add "alt", valid_588840
-  var valid_588841 = query.getOrDefault("pp")
-  valid_588841 = validateParameter(valid_588841, JBool, required = false,
+  if valid_578724 != nil:
+    section.add "key", valid_578724
+  var valid_578738 = query.getOrDefault("pp")
+  valid_578738 = validateParameter(valid_578738, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588841 != nil:
-    section.add "pp", valid_588841
-  var valid_588842 = query.getOrDefault("cid")
-  valid_588842 = validateParameter(valid_588842, JArray, required = false,
+  if valid_578738 != nil:
+    section.add "pp", valid_578738
+  var valid_578739 = query.getOrDefault("prettyPrint")
+  valid_578739 = validateParameter(valid_578739, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_578739 != nil:
+    section.add "prettyPrint", valid_578739
+  var valid_578740 = query.getOrDefault("oauth_token")
+  valid_578740 = validateParameter(valid_578740, JString, required = false,
                                  default = nil)
-  if valid_588842 != nil:
-    section.add "cid", valid_588842
-  assert query != nil, "query argument is necessary due to required `target` field"
-  var valid_588843 = query.getOrDefault("target")
-  valid_588843 = validateParameter(valid_588843, JString, required = true,
+  if valid_578740 != nil:
+    section.add "oauth_token", valid_578740
+  var valid_578741 = query.getOrDefault("model")
+  valid_578741 = validateParameter(valid_578741, JString, required = false,
                                  default = nil)
-  if valid_588843 != nil:
-    section.add "target", valid_588843
-  var valid_588844 = query.getOrDefault("model")
-  valid_588844 = validateParameter(valid_588844, JString, required = false,
-                                 default = nil)
-  if valid_588844 != nil:
-    section.add "model", valid_588844
-  var valid_588845 = query.getOrDefault("oauth_token")
-  valid_588845 = validateParameter(valid_588845, JString, required = false,
-                                 default = nil)
-  if valid_588845 != nil:
-    section.add "oauth_token", valid_588845
-  var valid_588846 = query.getOrDefault("callback")
-  valid_588846 = validateParameter(valid_588846, JString, required = false,
-                                 default = nil)
-  if valid_588846 != nil:
-    section.add "callback", valid_588846
-  var valid_588847 = query.getOrDefault("access_token")
-  valid_588847 = validateParameter(valid_588847, JString, required = false,
-                                 default = nil)
-  if valid_588847 != nil:
-    section.add "access_token", valid_588847
-  var valid_588848 = query.getOrDefault("uploadType")
-  valid_588848 = validateParameter(valid_588848, JString, required = false,
-                                 default = nil)
-  if valid_588848 != nil:
-    section.add "uploadType", valid_588848
-  var valid_588849 = query.getOrDefault("source")
-  valid_588849 = validateParameter(valid_588849, JString, required = false,
-                                 default = nil)
-  if valid_588849 != nil:
-    section.add "source", valid_588849
-  var valid_588850 = query.getOrDefault("q")
-  valid_588850 = validateParameter(valid_588850, JArray, required = true, default = nil)
-  if valid_588850 != nil:
-    section.add "q", valid_588850
-  var valid_588851 = query.getOrDefault("key")
-  valid_588851 = validateParameter(valid_588851, JString, required = false,
-                                 default = nil)
-  if valid_588851 != nil:
-    section.add "key", valid_588851
-  var valid_588852 = query.getOrDefault("$.xgafv")
-  valid_588852 = validateParameter(valid_588852, JString, required = false,
+  if valid_578741 != nil:
+    section.add "model", valid_578741
+  var valid_578742 = query.getOrDefault("$.xgafv")
+  valid_578742 = validateParameter(valid_578742, JString, required = false,
                                  default = newJString("1"))
-  if valid_588852 != nil:
-    section.add "$.xgafv", valid_588852
-  var valid_588853 = query.getOrDefault("prettyPrint")
-  valid_588853 = validateParameter(valid_588853, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_588853 != nil:
-    section.add "prettyPrint", valid_588853
-  var valid_588854 = query.getOrDefault("format")
-  valid_588854 = validateParameter(valid_588854, JString, required = false,
-                                 default = newJString("html"))
-  if valid_588854 != nil:
-    section.add "format", valid_588854
-  var valid_588855 = query.getOrDefault("bearer_token")
-  valid_588855 = validateParameter(valid_588855, JString, required = false,
+  if valid_578742 != nil:
+    section.add "$.xgafv", valid_578742
+  assert query != nil, "query argument is necessary due to required `target` field"
+  var valid_578743 = query.getOrDefault("target")
+  valid_578743 = validateParameter(valid_578743, JString, required = true,
                                  default = nil)
-  if valid_588855 != nil:
-    section.add "bearer_token", valid_588855
+  if valid_578743 != nil:
+    section.add "target", valid_578743
+  var valid_578744 = query.getOrDefault("bearer_token")
+  valid_578744 = validateParameter(valid_578744, JString, required = false,
+                                 default = nil)
+  if valid_578744 != nil:
+    section.add "bearer_token", valid_578744
+  var valid_578745 = query.getOrDefault("q")
+  valid_578745 = validateParameter(valid_578745, JArray, required = true, default = nil)
+  if valid_578745 != nil:
+    section.add "q", valid_578745
+  var valid_578746 = query.getOrDefault("source")
+  valid_578746 = validateParameter(valid_578746, JString, required = false,
+                                 default = nil)
+  if valid_578746 != nil:
+    section.add "source", valid_578746
+  var valid_578747 = query.getOrDefault("alt")
+  valid_578747 = validateParameter(valid_578747, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578747 != nil:
+    section.add "alt", valid_578747
+  var valid_578748 = query.getOrDefault("uploadType")
+  valid_578748 = validateParameter(valid_578748, JString, required = false,
+                                 default = nil)
+  if valid_578748 != nil:
+    section.add "uploadType", valid_578748
+  var valid_578749 = query.getOrDefault("quotaUser")
+  valid_578749 = validateParameter(valid_578749, JString, required = false,
+                                 default = nil)
+  if valid_578749 != nil:
+    section.add "quotaUser", valid_578749
+  var valid_578750 = query.getOrDefault("callback")
+  valid_578750 = validateParameter(valid_578750, JString, required = false,
+                                 default = nil)
+  if valid_578750 != nil:
+    section.add "callback", valid_578750
+  var valid_578751 = query.getOrDefault("cid")
+  valid_578751 = validateParameter(valid_578751, JArray, required = false,
+                                 default = nil)
+  if valid_578751 != nil:
+    section.add "cid", valid_578751
+  var valid_578752 = query.getOrDefault("fields")
+  valid_578752 = validateParameter(valid_578752, JString, required = false,
+                                 default = nil)
+  if valid_578752 != nil:
+    section.add "fields", valid_578752
+  var valid_578753 = query.getOrDefault("access_token")
+  valid_578753 = validateParameter(valid_578753, JString, required = false,
+                                 default = nil)
+  if valid_578753 != nil:
+    section.add "access_token", valid_578753
+  var valid_578754 = query.getOrDefault("upload_protocol")
+  valid_578754 = validateParameter(valid_578754, JString, required = false,
+                                 default = nil)
+  if valid_578754 != nil:
+    section.add "upload_protocol", valid_578754
+  var valid_578755 = query.getOrDefault("format")
+  valid_578755 = validateParameter(valid_578755, JString, required = false,
+                                 default = newJString("html"))
+  if valid_578755 != nil:
+    section.add "format", valid_578755
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -470,106 +474,106 @@ proc validate_LanguageTranslationsList_588711(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588878: Call_LanguageTranslationsList_588710; path: JsonNode;
+proc call*(call_578778: Call_LanguageTranslationsList_578610; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Translates input text, returning translated text.
   ## 
-  let valid = call_588878.validator(path, query, header, formData, body)
-  let scheme = call_588878.pickScheme
+  let valid = call_578778.validator(path, query, header, formData, body)
+  let scheme = call_578778.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588878.url(scheme.get, call_588878.host, call_588878.base,
-                         call_588878.route, valid.getOrDefault("path"),
+  let url = call_578778.url(scheme.get, call_578778.host, call_578778.base,
+                         call_578778.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588878, url, valid)
+  result = hook(call_578778, url, valid)
 
-proc call*(call_588949: Call_LanguageTranslationsList_588710; target: string;
-          q: JsonNode; uploadProtocol: string = ""; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; pp: bool = true;
-          cid: JsonNode = nil; model: string = ""; oauthToken: string = "";
-          callback: string = ""; accessToken: string = ""; uploadType: string = "";
-          source: string = ""; key: string = ""; Xgafv: string = "1";
-          prettyPrint: bool = true; format: string = "html"; bearerToken: string = ""): Recallable =
+proc call*(call_578849: Call_LanguageTranslationsList_578610; target: string;
+          q: JsonNode; key: string = ""; pp: bool = true; prettyPrint: bool = true;
+          oauthToken: string = ""; model: string = ""; Xgafv: string = "1";
+          bearerToken: string = ""; source: string = ""; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; callback: string = "";
+          cid: JsonNode = nil; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""; format: string = "html"): Recallable =
   ## languageTranslationsList
   ## Translates input text, returning translated text.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: string
-  ##      : Data format for response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   pp: bool
   ##     : Pretty-print response.
-  ##   cid: JArray
-  ##      : The customization id for translate
-  ##   target: string (required)
-  ##         : The language to use for translation of the input text, set to one of the
-  ## language codes listed in Language Support.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   model: string
   ##        : The `model` type requested for this translation. Valid values are
   ## listed in public documentation.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   target: string (required)
+  ##         : The language to use for translation of the input text, set to one of the
+  ## language codes listed in Language Support.
+  ##   bearerToken: string
+  ##              : OAuth bearer token.
+  ##   q: JArray (required)
+  ##    : The input text to translate. Repeat this parameter to perform translation
+  ## operations on multiple text inputs.
   ##   source: string
   ##         : The language of the source text, set to one of the language codes listed in
   ## Language Support. If the source language is not specified, the API will
   ## attempt to identify the source language automatically and return it within
   ## the response.
-  ##   q: JArray (required)
-  ##    : The input text to translate. Repeat this parameter to perform translation
-  ## operations on multiple text inputs.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   callback: string
+  ##           : JSONP
+  ##   cid: JArray
+  ##      : The customization id for translate
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
   ##   format: string
   ##         : The format of the source text, in either HTML (default) or plain-text. A
   ## value of "html" indicates HTML and a value of "text" indicates plain-text.
-  ##   bearerToken: string
-  ##              : OAuth bearer token.
-  var query_588950 = newJObject()
-  add(query_588950, "upload_protocol", newJString(uploadProtocol))
-  add(query_588950, "fields", newJString(fields))
-  add(query_588950, "quotaUser", newJString(quotaUser))
-  add(query_588950, "alt", newJString(alt))
-  add(query_588950, "pp", newJBool(pp))
-  if cid != nil:
-    query_588950.add "cid", cid
-  add(query_588950, "target", newJString(target))
-  add(query_588950, "model", newJString(model))
-  add(query_588950, "oauth_token", newJString(oauthToken))
-  add(query_588950, "callback", newJString(callback))
-  add(query_588950, "access_token", newJString(accessToken))
-  add(query_588950, "uploadType", newJString(uploadType))
-  add(query_588950, "source", newJString(source))
+  var query_578850 = newJObject()
+  add(query_578850, "key", newJString(key))
+  add(query_578850, "pp", newJBool(pp))
+  add(query_578850, "prettyPrint", newJBool(prettyPrint))
+  add(query_578850, "oauth_token", newJString(oauthToken))
+  add(query_578850, "model", newJString(model))
+  add(query_578850, "$.xgafv", newJString(Xgafv))
+  add(query_578850, "target", newJString(target))
+  add(query_578850, "bearer_token", newJString(bearerToken))
   if q != nil:
-    query_588950.add "q", q
-  add(query_588950, "key", newJString(key))
-  add(query_588950, "$.xgafv", newJString(Xgafv))
-  add(query_588950, "prettyPrint", newJBool(prettyPrint))
-  add(query_588950, "format", newJString(format))
-  add(query_588950, "bearer_token", newJString(bearerToken))
-  result = call_588949.call(nil, query_588950, nil, nil, nil)
+    query_578850.add "q", q
+  add(query_578850, "source", newJString(source))
+  add(query_578850, "alt", newJString(alt))
+  add(query_578850, "uploadType", newJString(uploadType))
+  add(query_578850, "quotaUser", newJString(quotaUser))
+  add(query_578850, "callback", newJString(callback))
+  if cid != nil:
+    query_578850.add "cid", cid
+  add(query_578850, "fields", newJString(fields))
+  add(query_578850, "access_token", newJString(accessToken))
+  add(query_578850, "upload_protocol", newJString(uploadProtocol))
+  add(query_578850, "format", newJString(format))
+  result = call_578849.call(nil, query_578850, nil, nil, nil)
 
-var languageTranslationsList* = Call_LanguageTranslationsList_588710(
+var languageTranslationsList* = Call_LanguageTranslationsList_578610(
     name: "languageTranslationsList", meth: HttpMethod.HttpGet,
     host: "translation.googleapis.com", route: "/v2",
-    validator: validate_LanguageTranslationsList_588711,
-    base: "/language/translate", url: url_LanguageTranslationsList_588712,
+    validator: validate_LanguageTranslationsList_578611,
+    base: "/language/translate", url: url_LanguageTranslationsList_578612,
     schemes: {Scheme.Https})
 type
-  Call_LanguageDetectionsDetect_589031 = ref object of OpenApiRestCall_588441
-proc url_LanguageDetectionsDetect_589033(protocol: Scheme; host: string;
+  Call_LanguageDetectionsDetect_578931 = ref object of OpenApiRestCall_578339
+proc url_LanguageDetectionsDetect_578933(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -577,7 +581,7 @@ proc url_LanguageDetectionsDetect_589033(protocol: Scheme; host: string;
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_LanguageDetectionsDetect_589032(path: JsonNode; query: JsonNode;
+proc validate_LanguageDetectionsDetect_578932(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Detects the language of text within a request.
   ## 
@@ -586,98 +590,98 @@ proc validate_LanguageDetectionsDetect_589032(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   pp: JBool
-  ##     : Pretty-print response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
+  ##   pp: JBool
+  ##     : Pretty-print response.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
   ##   bearer_token: JString
   ##               : OAuth bearer token.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589034 = query.getOrDefault("upload_protocol")
-  valid_589034 = validateParameter(valid_589034, JString, required = false,
+  var valid_578934 = query.getOrDefault("key")
+  valid_578934 = validateParameter(valid_578934, JString, required = false,
                                  default = nil)
-  if valid_589034 != nil:
-    section.add "upload_protocol", valid_589034
-  var valid_589035 = query.getOrDefault("fields")
-  valid_589035 = validateParameter(valid_589035, JString, required = false,
-                                 default = nil)
-  if valid_589035 != nil:
-    section.add "fields", valid_589035
-  var valid_589036 = query.getOrDefault("quotaUser")
-  valid_589036 = validateParameter(valid_589036, JString, required = false,
-                                 default = nil)
-  if valid_589036 != nil:
-    section.add "quotaUser", valid_589036
-  var valid_589037 = query.getOrDefault("alt")
-  valid_589037 = validateParameter(valid_589037, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589037 != nil:
-    section.add "alt", valid_589037
-  var valid_589038 = query.getOrDefault("pp")
-  valid_589038 = validateParameter(valid_589038, JBool, required = false,
+  if valid_578934 != nil:
+    section.add "key", valid_578934
+  var valid_578935 = query.getOrDefault("pp")
+  valid_578935 = validateParameter(valid_578935, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589038 != nil:
-    section.add "pp", valid_589038
-  var valid_589039 = query.getOrDefault("oauth_token")
-  valid_589039 = validateParameter(valid_589039, JString, required = false,
+  if valid_578935 != nil:
+    section.add "pp", valid_578935
+  var valid_578936 = query.getOrDefault("prettyPrint")
+  valid_578936 = validateParameter(valid_578936, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_578936 != nil:
+    section.add "prettyPrint", valid_578936
+  var valid_578937 = query.getOrDefault("oauth_token")
+  valid_578937 = validateParameter(valid_578937, JString, required = false,
                                  default = nil)
-  if valid_589039 != nil:
-    section.add "oauth_token", valid_589039
-  var valid_589040 = query.getOrDefault("callback")
-  valid_589040 = validateParameter(valid_589040, JString, required = false,
-                                 default = nil)
-  if valid_589040 != nil:
-    section.add "callback", valid_589040
-  var valid_589041 = query.getOrDefault("access_token")
-  valid_589041 = validateParameter(valid_589041, JString, required = false,
-                                 default = nil)
-  if valid_589041 != nil:
-    section.add "access_token", valid_589041
-  var valid_589042 = query.getOrDefault("uploadType")
-  valid_589042 = validateParameter(valid_589042, JString, required = false,
-                                 default = nil)
-  if valid_589042 != nil:
-    section.add "uploadType", valid_589042
-  var valid_589043 = query.getOrDefault("key")
-  valid_589043 = validateParameter(valid_589043, JString, required = false,
-                                 default = nil)
-  if valid_589043 != nil:
-    section.add "key", valid_589043
-  var valid_589044 = query.getOrDefault("$.xgafv")
-  valid_589044 = validateParameter(valid_589044, JString, required = false,
+  if valid_578937 != nil:
+    section.add "oauth_token", valid_578937
+  var valid_578938 = query.getOrDefault("$.xgafv")
+  valid_578938 = validateParameter(valid_578938, JString, required = false,
                                  default = newJString("1"))
-  if valid_589044 != nil:
-    section.add "$.xgafv", valid_589044
-  var valid_589045 = query.getOrDefault("prettyPrint")
-  valid_589045 = validateParameter(valid_589045, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_589045 != nil:
-    section.add "prettyPrint", valid_589045
-  var valid_589046 = query.getOrDefault("bearer_token")
-  valid_589046 = validateParameter(valid_589046, JString, required = false,
+  if valid_578938 != nil:
+    section.add "$.xgafv", valid_578938
+  var valid_578939 = query.getOrDefault("bearer_token")
+  valid_578939 = validateParameter(valid_578939, JString, required = false,
                                  default = nil)
-  if valid_589046 != nil:
-    section.add "bearer_token", valid_589046
+  if valid_578939 != nil:
+    section.add "bearer_token", valid_578939
+  var valid_578940 = query.getOrDefault("alt")
+  valid_578940 = validateParameter(valid_578940, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578940 != nil:
+    section.add "alt", valid_578940
+  var valid_578941 = query.getOrDefault("uploadType")
+  valid_578941 = validateParameter(valid_578941, JString, required = false,
+                                 default = nil)
+  if valid_578941 != nil:
+    section.add "uploadType", valid_578941
+  var valid_578942 = query.getOrDefault("quotaUser")
+  valid_578942 = validateParameter(valid_578942, JString, required = false,
+                                 default = nil)
+  if valid_578942 != nil:
+    section.add "quotaUser", valid_578942
+  var valid_578943 = query.getOrDefault("callback")
+  valid_578943 = validateParameter(valid_578943, JString, required = false,
+                                 default = nil)
+  if valid_578943 != nil:
+    section.add "callback", valid_578943
+  var valid_578944 = query.getOrDefault("fields")
+  valid_578944 = validateParameter(valid_578944, JString, required = false,
+                                 default = nil)
+  if valid_578944 != nil:
+    section.add "fields", valid_578944
+  var valid_578945 = query.getOrDefault("access_token")
+  valid_578945 = validateParameter(valid_578945, JString, required = false,
+                                 default = nil)
+  if valid_578945 != nil:
+    section.add "access_token", valid_578945
+  var valid_578946 = query.getOrDefault("upload_protocol")
+  valid_578946 = validateParameter(valid_578946, JString, required = false,
+                                 default = nil)
+  if valid_578946 != nil:
+    section.add "upload_protocol", valid_578946
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -689,89 +693,89 @@ proc validate_LanguageDetectionsDetect_589032(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589048: Call_LanguageDetectionsDetect_589031; path: JsonNode;
+proc call*(call_578948: Call_LanguageDetectionsDetect_578931; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Detects the language of text within a request.
   ## 
-  let valid = call_589048.validator(path, query, header, formData, body)
-  let scheme = call_589048.pickScheme
+  let valid = call_578948.validator(path, query, header, formData, body)
+  let scheme = call_578948.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589048.url(scheme.get, call_589048.host, call_589048.base,
-                         call_589048.route, valid.getOrDefault("path"),
+  let url = call_578948.url(scheme.get, call_578948.host, call_578948.base,
+                         call_578948.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589048, url, valid)
+  result = hook(call_578948, url, valid)
 
-proc call*(call_589049: Call_LanguageDetectionsDetect_589031;
-          uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; pp: bool = true; oauthToken: string = "";
-          callback: string = ""; accessToken: string = ""; uploadType: string = "";
-          key: string = ""; Xgafv: string = "1"; body: JsonNode = nil;
-          prettyPrint: bool = true; bearerToken: string = ""): Recallable =
+proc call*(call_578949: Call_LanguageDetectionsDetect_578931; key: string = "";
+          pp: bool = true; prettyPrint: bool = true; oauthToken: string = "";
+          Xgafv: string = "1"; bearerToken: string = ""; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          callback: string = ""; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""): Recallable =
   ## languageDetectionsDetect
   ## Detects the language of text within a request.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   pp: bool
-  ##     : Pretty-print response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   body: JObject
+  ##   pp: bool
+  ##     : Pretty-print response.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
   ##   bearerToken: string
   ##              : OAuth bearer token.
-  var query_589050 = newJObject()
-  var body_589051 = newJObject()
-  add(query_589050, "upload_protocol", newJString(uploadProtocol))
-  add(query_589050, "fields", newJString(fields))
-  add(query_589050, "quotaUser", newJString(quotaUser))
-  add(query_589050, "alt", newJString(alt))
-  add(query_589050, "pp", newJBool(pp))
-  add(query_589050, "oauth_token", newJString(oauthToken))
-  add(query_589050, "callback", newJString(callback))
-  add(query_589050, "access_token", newJString(accessToken))
-  add(query_589050, "uploadType", newJString(uploadType))
-  add(query_589050, "key", newJString(key))
-  add(query_589050, "$.xgafv", newJString(Xgafv))
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   body: JObject
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var query_578950 = newJObject()
+  var body_578951 = newJObject()
+  add(query_578950, "key", newJString(key))
+  add(query_578950, "pp", newJBool(pp))
+  add(query_578950, "prettyPrint", newJBool(prettyPrint))
+  add(query_578950, "oauth_token", newJString(oauthToken))
+  add(query_578950, "$.xgafv", newJString(Xgafv))
+  add(query_578950, "bearer_token", newJString(bearerToken))
+  add(query_578950, "alt", newJString(alt))
+  add(query_578950, "uploadType", newJString(uploadType))
+  add(query_578950, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589051 = body
-  add(query_589050, "prettyPrint", newJBool(prettyPrint))
-  add(query_589050, "bearer_token", newJString(bearerToken))
-  result = call_589049.call(nil, query_589050, nil, nil, body_589051)
+    body_578951 = body
+  add(query_578950, "callback", newJString(callback))
+  add(query_578950, "fields", newJString(fields))
+  add(query_578950, "access_token", newJString(accessToken))
+  add(query_578950, "upload_protocol", newJString(uploadProtocol))
+  result = call_578949.call(nil, query_578950, nil, nil, body_578951)
 
-var languageDetectionsDetect* = Call_LanguageDetectionsDetect_589031(
+var languageDetectionsDetect* = Call_LanguageDetectionsDetect_578931(
     name: "languageDetectionsDetect", meth: HttpMethod.HttpPost,
     host: "translation.googleapis.com", route: "/v2/detect",
-    validator: validate_LanguageDetectionsDetect_589032,
-    base: "/language/translate", url: url_LanguageDetectionsDetect_589033,
+    validator: validate_LanguageDetectionsDetect_578932,
+    base: "/language/translate", url: url_LanguageDetectionsDetect_578933,
     schemes: {Scheme.Https})
 type
-  Call_LanguageDetectionsList_589011 = ref object of OpenApiRestCall_588441
-proc url_LanguageDetectionsList_589013(protocol: Scheme; host: string; base: string;
+  Call_LanguageDetectionsList_578911 = ref object of OpenApiRestCall_578339
+proc url_LanguageDetectionsList_578913(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_LanguageDetectionsList_589012(path: JsonNode; query: JsonNode;
+proc validate_LanguageDetectionsList_578912(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Detects the language of text within a request.
   ## 
@@ -780,106 +784,106 @@ proc validate_LanguageDetectionsList_589012(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: JString
-  ##      : Data format for response.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   pp: JBool
   ##     : Pretty-print response.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
   ##   oauth_token: JString
   ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   bearer_token: JString
+  ##               : OAuth bearer token.
   ##   q: JArray (required)
   ##    : The input text upon which to perform language detection. Repeat this
   ## parameter to perform language detection on multiple text inputs.
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
-  ##   bearer_token: JString
-  ##               : OAuth bearer token.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589014 = query.getOrDefault("upload_protocol")
-  valid_589014 = validateParameter(valid_589014, JString, required = false,
+  var valid_578914 = query.getOrDefault("key")
+  valid_578914 = validateParameter(valid_578914, JString, required = false,
                                  default = nil)
-  if valid_589014 != nil:
-    section.add "upload_protocol", valid_589014
-  var valid_589015 = query.getOrDefault("fields")
-  valid_589015 = validateParameter(valid_589015, JString, required = false,
-                                 default = nil)
-  if valid_589015 != nil:
-    section.add "fields", valid_589015
-  var valid_589016 = query.getOrDefault("quotaUser")
-  valid_589016 = validateParameter(valid_589016, JString, required = false,
-                                 default = nil)
-  if valid_589016 != nil:
-    section.add "quotaUser", valid_589016
-  var valid_589017 = query.getOrDefault("alt")
-  valid_589017 = validateParameter(valid_589017, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589017 != nil:
-    section.add "alt", valid_589017
-  var valid_589018 = query.getOrDefault("pp")
-  valid_589018 = validateParameter(valid_589018, JBool, required = false,
+  if valid_578914 != nil:
+    section.add "key", valid_578914
+  var valid_578915 = query.getOrDefault("pp")
+  valid_578915 = validateParameter(valid_578915, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589018 != nil:
-    section.add "pp", valid_589018
-  var valid_589019 = query.getOrDefault("oauth_token")
-  valid_589019 = validateParameter(valid_589019, JString, required = false,
+  if valid_578915 != nil:
+    section.add "pp", valid_578915
+  var valid_578916 = query.getOrDefault("prettyPrint")
+  valid_578916 = validateParameter(valid_578916, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_578916 != nil:
+    section.add "prettyPrint", valid_578916
+  var valid_578917 = query.getOrDefault("oauth_token")
+  valid_578917 = validateParameter(valid_578917, JString, required = false,
                                  default = nil)
-  if valid_589019 != nil:
-    section.add "oauth_token", valid_589019
-  var valid_589020 = query.getOrDefault("callback")
-  valid_589020 = validateParameter(valid_589020, JString, required = false,
-                                 default = nil)
-  if valid_589020 != nil:
-    section.add "callback", valid_589020
-  var valid_589021 = query.getOrDefault("access_token")
-  valid_589021 = validateParameter(valid_589021, JString, required = false,
-                                 default = nil)
-  if valid_589021 != nil:
-    section.add "access_token", valid_589021
-  var valid_589022 = query.getOrDefault("uploadType")
-  valid_589022 = validateParameter(valid_589022, JString, required = false,
-                                 default = nil)
-  if valid_589022 != nil:
-    section.add "uploadType", valid_589022
-  assert query != nil, "query argument is necessary due to required `q` field"
-  var valid_589023 = query.getOrDefault("q")
-  valid_589023 = validateParameter(valid_589023, JArray, required = true, default = nil)
-  if valid_589023 != nil:
-    section.add "q", valid_589023
-  var valid_589024 = query.getOrDefault("key")
-  valid_589024 = validateParameter(valid_589024, JString, required = false,
-                                 default = nil)
-  if valid_589024 != nil:
-    section.add "key", valid_589024
-  var valid_589025 = query.getOrDefault("$.xgafv")
-  valid_589025 = validateParameter(valid_589025, JString, required = false,
+  if valid_578917 != nil:
+    section.add "oauth_token", valid_578917
+  var valid_578918 = query.getOrDefault("$.xgafv")
+  valid_578918 = validateParameter(valid_578918, JString, required = false,
                                  default = newJString("1"))
-  if valid_589025 != nil:
-    section.add "$.xgafv", valid_589025
-  var valid_589026 = query.getOrDefault("prettyPrint")
-  valid_589026 = validateParameter(valid_589026, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_589026 != nil:
-    section.add "prettyPrint", valid_589026
-  var valid_589027 = query.getOrDefault("bearer_token")
-  valid_589027 = validateParameter(valid_589027, JString, required = false,
+  if valid_578918 != nil:
+    section.add "$.xgafv", valid_578918
+  var valid_578919 = query.getOrDefault("bearer_token")
+  valid_578919 = validateParameter(valid_578919, JString, required = false,
                                  default = nil)
-  if valid_589027 != nil:
-    section.add "bearer_token", valid_589027
+  if valid_578919 != nil:
+    section.add "bearer_token", valid_578919
+  assert query != nil, "query argument is necessary due to required `q` field"
+  var valid_578920 = query.getOrDefault("q")
+  valid_578920 = validateParameter(valid_578920, JArray, required = true, default = nil)
+  if valid_578920 != nil:
+    section.add "q", valid_578920
+  var valid_578921 = query.getOrDefault("alt")
+  valid_578921 = validateParameter(valid_578921, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578921 != nil:
+    section.add "alt", valid_578921
+  var valid_578922 = query.getOrDefault("uploadType")
+  valid_578922 = validateParameter(valid_578922, JString, required = false,
+                                 default = nil)
+  if valid_578922 != nil:
+    section.add "uploadType", valid_578922
+  var valid_578923 = query.getOrDefault("quotaUser")
+  valid_578923 = validateParameter(valid_578923, JString, required = false,
+                                 default = nil)
+  if valid_578923 != nil:
+    section.add "quotaUser", valid_578923
+  var valid_578924 = query.getOrDefault("callback")
+  valid_578924 = validateParameter(valid_578924, JString, required = false,
+                                 default = nil)
+  if valid_578924 != nil:
+    section.add "callback", valid_578924
+  var valid_578925 = query.getOrDefault("fields")
+  valid_578925 = validateParameter(valid_578925, JString, required = false,
+                                 default = nil)
+  if valid_578925 != nil:
+    section.add "fields", valid_578925
+  var valid_578926 = query.getOrDefault("access_token")
+  valid_578926 = validateParameter(valid_578926, JString, required = false,
+                                 default = nil)
+  if valid_578926 != nil:
+    section.add "access_token", valid_578926
+  var valid_578927 = query.getOrDefault("upload_protocol")
+  valid_578927 = validateParameter(valid_578927, JString, required = false,
+                                 default = nil)
+  if valid_578927 != nil:
+    section.add "upload_protocol", valid_578927
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -888,90 +892,90 @@ proc validate_LanguageDetectionsList_589012(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589028: Call_LanguageDetectionsList_589011; path: JsonNode;
+proc call*(call_578928: Call_LanguageDetectionsList_578911; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Detects the language of text within a request.
   ## 
-  let valid = call_589028.validator(path, query, header, formData, body)
-  let scheme = call_589028.pickScheme
+  let valid = call_578928.validator(path, query, header, formData, body)
+  let scheme = call_578928.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589028.url(scheme.get, call_589028.host, call_589028.base,
-                         call_589028.route, valid.getOrDefault("path"),
+  let url = call_578928.url(scheme.get, call_578928.host, call_578928.base,
+                         call_578928.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589028, url, valid)
+  result = hook(call_578928, url, valid)
 
-proc call*(call_589029: Call_LanguageDetectionsList_589011; q: JsonNode;
-          uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; pp: bool = true; oauthToken: string = "";
-          callback: string = ""; accessToken: string = ""; uploadType: string = "";
-          key: string = ""; Xgafv: string = "1"; prettyPrint: bool = true;
-          bearerToken: string = ""): Recallable =
+proc call*(call_578929: Call_LanguageDetectionsList_578911; q: JsonNode;
+          key: string = ""; pp: bool = true; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; bearerToken: string = "";
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          callback: string = ""; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""): Recallable =
   ## languageDetectionsList
   ## Detects the language of text within a request.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: string
-  ##      : Data format for response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   pp: bool
   ##     : Pretty-print response.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
   ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   bearerToken: string
+  ##              : OAuth bearer token.
   ##   q: JArray (required)
   ##    : The input text upon which to perform language detection. Repeat this
   ## parameter to perform language detection on multiple text inputs.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  ##   bearerToken: string
-  ##              : OAuth bearer token.
-  var query_589030 = newJObject()
-  add(query_589030, "upload_protocol", newJString(uploadProtocol))
-  add(query_589030, "fields", newJString(fields))
-  add(query_589030, "quotaUser", newJString(quotaUser))
-  add(query_589030, "alt", newJString(alt))
-  add(query_589030, "pp", newJBool(pp))
-  add(query_589030, "oauth_token", newJString(oauthToken))
-  add(query_589030, "callback", newJString(callback))
-  add(query_589030, "access_token", newJString(accessToken))
-  add(query_589030, "uploadType", newJString(uploadType))
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var query_578930 = newJObject()
+  add(query_578930, "key", newJString(key))
+  add(query_578930, "pp", newJBool(pp))
+  add(query_578930, "prettyPrint", newJBool(prettyPrint))
+  add(query_578930, "oauth_token", newJString(oauthToken))
+  add(query_578930, "$.xgafv", newJString(Xgafv))
+  add(query_578930, "bearer_token", newJString(bearerToken))
   if q != nil:
-    query_589030.add "q", q
-  add(query_589030, "key", newJString(key))
-  add(query_589030, "$.xgafv", newJString(Xgafv))
-  add(query_589030, "prettyPrint", newJBool(prettyPrint))
-  add(query_589030, "bearer_token", newJString(bearerToken))
-  result = call_589029.call(nil, query_589030, nil, nil, nil)
+    query_578930.add "q", q
+  add(query_578930, "alt", newJString(alt))
+  add(query_578930, "uploadType", newJString(uploadType))
+  add(query_578930, "quotaUser", newJString(quotaUser))
+  add(query_578930, "callback", newJString(callback))
+  add(query_578930, "fields", newJString(fields))
+  add(query_578930, "access_token", newJString(accessToken))
+  add(query_578930, "upload_protocol", newJString(uploadProtocol))
+  result = call_578929.call(nil, query_578930, nil, nil, nil)
 
-var languageDetectionsList* = Call_LanguageDetectionsList_589011(
+var languageDetectionsList* = Call_LanguageDetectionsList_578911(
     name: "languageDetectionsList", meth: HttpMethod.HttpGet,
     host: "translation.googleapis.com", route: "/v2/detect",
-    validator: validate_LanguageDetectionsList_589012,
-    base: "/language/translate", url: url_LanguageDetectionsList_589013,
+    validator: validate_LanguageDetectionsList_578912,
+    base: "/language/translate", url: url_LanguageDetectionsList_578913,
     schemes: {Scheme.Https})
 type
-  Call_LanguageLanguagesList_589052 = ref object of OpenApiRestCall_588441
-proc url_LanguageLanguagesList_589054(protocol: Scheme; host: string; base: string;
+  Call_LanguageLanguagesList_578952 = ref object of OpenApiRestCall_578339
+proc url_LanguageLanguagesList_578954(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_LanguageLanguagesList_589053(path: JsonNode; query: JsonNode;
+proc validate_LanguageLanguagesList_578953(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a list of supported languages for translation.
   ## 
@@ -980,113 +984,113 @@ proc validate_LanguageLanguagesList_589053(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: JString
-  ##      : Data format for response.
+  ##   key: JString
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   pp: JBool
   ##     : Pretty-print response.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   model: JString
+  ##        : The model type for which supported languages should be returned.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
   ##   target: JString
   ##         : The language to use to return localized, human readable names of supported
   ## languages.
-  ##   model: JString
-  ##        : The model type for which supported languages should be returned.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: JString
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
   ##   bearer_token: JString
   ##               : OAuth bearer token.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589055 = query.getOrDefault("upload_protocol")
-  valid_589055 = validateParameter(valid_589055, JString, required = false,
+  var valid_578955 = query.getOrDefault("key")
+  valid_578955 = validateParameter(valid_578955, JString, required = false,
                                  default = nil)
-  if valid_589055 != nil:
-    section.add "upload_protocol", valid_589055
-  var valid_589056 = query.getOrDefault("fields")
-  valid_589056 = validateParameter(valid_589056, JString, required = false,
-                                 default = nil)
-  if valid_589056 != nil:
-    section.add "fields", valid_589056
-  var valid_589057 = query.getOrDefault("quotaUser")
-  valid_589057 = validateParameter(valid_589057, JString, required = false,
-                                 default = nil)
-  if valid_589057 != nil:
-    section.add "quotaUser", valid_589057
-  var valid_589058 = query.getOrDefault("alt")
-  valid_589058 = validateParameter(valid_589058, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589058 != nil:
-    section.add "alt", valid_589058
-  var valid_589059 = query.getOrDefault("pp")
-  valid_589059 = validateParameter(valid_589059, JBool, required = false,
+  if valid_578955 != nil:
+    section.add "key", valid_578955
+  var valid_578956 = query.getOrDefault("pp")
+  valid_578956 = validateParameter(valid_578956, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589059 != nil:
-    section.add "pp", valid_589059
-  var valid_589060 = query.getOrDefault("target")
-  valid_589060 = validateParameter(valid_589060, JString, required = false,
+  if valid_578956 != nil:
+    section.add "pp", valid_578956
+  var valid_578957 = query.getOrDefault("prettyPrint")
+  valid_578957 = validateParameter(valid_578957, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_578957 != nil:
+    section.add "prettyPrint", valid_578957
+  var valid_578958 = query.getOrDefault("oauth_token")
+  valid_578958 = validateParameter(valid_578958, JString, required = false,
                                  default = nil)
-  if valid_589060 != nil:
-    section.add "target", valid_589060
-  var valid_589061 = query.getOrDefault("model")
-  valid_589061 = validateParameter(valid_589061, JString, required = false,
+  if valid_578958 != nil:
+    section.add "oauth_token", valid_578958
+  var valid_578959 = query.getOrDefault("model")
+  valid_578959 = validateParameter(valid_578959, JString, required = false,
                                  default = nil)
-  if valid_589061 != nil:
-    section.add "model", valid_589061
-  var valid_589062 = query.getOrDefault("oauth_token")
-  valid_589062 = validateParameter(valid_589062, JString, required = false,
-                                 default = nil)
-  if valid_589062 != nil:
-    section.add "oauth_token", valid_589062
-  var valid_589063 = query.getOrDefault("callback")
-  valid_589063 = validateParameter(valid_589063, JString, required = false,
-                                 default = nil)
-  if valid_589063 != nil:
-    section.add "callback", valid_589063
-  var valid_589064 = query.getOrDefault("access_token")
-  valid_589064 = validateParameter(valid_589064, JString, required = false,
-                                 default = nil)
-  if valid_589064 != nil:
-    section.add "access_token", valid_589064
-  var valid_589065 = query.getOrDefault("uploadType")
-  valid_589065 = validateParameter(valid_589065, JString, required = false,
-                                 default = nil)
-  if valid_589065 != nil:
-    section.add "uploadType", valid_589065
-  var valid_589066 = query.getOrDefault("key")
-  valid_589066 = validateParameter(valid_589066, JString, required = false,
-                                 default = nil)
-  if valid_589066 != nil:
-    section.add "key", valid_589066
-  var valid_589067 = query.getOrDefault("$.xgafv")
-  valid_589067 = validateParameter(valid_589067, JString, required = false,
+  if valid_578959 != nil:
+    section.add "model", valid_578959
+  var valid_578960 = query.getOrDefault("$.xgafv")
+  valid_578960 = validateParameter(valid_578960, JString, required = false,
                                  default = newJString("1"))
-  if valid_589067 != nil:
-    section.add "$.xgafv", valid_589067
-  var valid_589068 = query.getOrDefault("prettyPrint")
-  valid_589068 = validateParameter(valid_589068, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_589068 != nil:
-    section.add "prettyPrint", valid_589068
-  var valid_589069 = query.getOrDefault("bearer_token")
-  valid_589069 = validateParameter(valid_589069, JString, required = false,
+  if valid_578960 != nil:
+    section.add "$.xgafv", valid_578960
+  var valid_578961 = query.getOrDefault("target")
+  valid_578961 = validateParameter(valid_578961, JString, required = false,
                                  default = nil)
-  if valid_589069 != nil:
-    section.add "bearer_token", valid_589069
+  if valid_578961 != nil:
+    section.add "target", valid_578961
+  var valid_578962 = query.getOrDefault("bearer_token")
+  valid_578962 = validateParameter(valid_578962, JString, required = false,
+                                 default = nil)
+  if valid_578962 != nil:
+    section.add "bearer_token", valid_578962
+  var valid_578963 = query.getOrDefault("alt")
+  valid_578963 = validateParameter(valid_578963, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578963 != nil:
+    section.add "alt", valid_578963
+  var valid_578964 = query.getOrDefault("uploadType")
+  valid_578964 = validateParameter(valid_578964, JString, required = false,
+                                 default = nil)
+  if valid_578964 != nil:
+    section.add "uploadType", valid_578964
+  var valid_578965 = query.getOrDefault("quotaUser")
+  valid_578965 = validateParameter(valid_578965, JString, required = false,
+                                 default = nil)
+  if valid_578965 != nil:
+    section.add "quotaUser", valid_578965
+  var valid_578966 = query.getOrDefault("callback")
+  valid_578966 = validateParameter(valid_578966, JString, required = false,
+                                 default = nil)
+  if valid_578966 != nil:
+    section.add "callback", valid_578966
+  var valid_578967 = query.getOrDefault("fields")
+  valid_578967 = validateParameter(valid_578967, JString, required = false,
+                                 default = nil)
+  if valid_578967 != nil:
+    section.add "fields", valid_578967
+  var valid_578968 = query.getOrDefault("access_token")
+  valid_578968 = validateParameter(valid_578968, JString, required = false,
+                                 default = nil)
+  if valid_578968 != nil:
+    section.add "access_token", valid_578968
+  var valid_578969 = query.getOrDefault("upload_protocol")
+  valid_578969 = validateParameter(valid_578969, JString, required = false,
+                                 default = nil)
+  if valid_578969 != nil:
+    section.add "upload_protocol", valid_578969
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1095,81 +1099,81 @@ proc validate_LanguageLanguagesList_589053(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589070: Call_LanguageLanguagesList_589052; path: JsonNode;
+proc call*(call_578970: Call_LanguageLanguagesList_578952; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a list of supported languages for translation.
   ## 
-  let valid = call_589070.validator(path, query, header, formData, body)
-  let scheme = call_589070.pickScheme
+  let valid = call_578970.validator(path, query, header, formData, body)
+  let scheme = call_578970.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589070.url(scheme.get, call_589070.host, call_589070.base,
-                         call_589070.route, valid.getOrDefault("path"),
+  let url = call_578970.url(scheme.get, call_578970.host, call_578970.base,
+                         call_578970.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589070, url, valid)
+  result = hook(call_578970, url, valid)
 
-proc call*(call_589071: Call_LanguageLanguagesList_589052;
-          uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; pp: bool = true; target: string = ""; model: string = "";
-          oauthToken: string = ""; callback: string = ""; accessToken: string = "";
-          uploadType: string = ""; key: string = ""; Xgafv: string = "1";
-          prettyPrint: bool = true; bearerToken: string = ""): Recallable =
+proc call*(call_578971: Call_LanguageLanguagesList_578952; key: string = "";
+          pp: bool = true; prettyPrint: bool = true; oauthToken: string = "";
+          model: string = ""; Xgafv: string = "1"; target: string = "";
+          bearerToken: string = ""; alt: string = "json"; uploadType: string = "";
+          quotaUser: string = ""; callback: string = ""; fields: string = "";
+          accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## languageLanguagesList
   ## Returns a list of supported languages for translation.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: string
-  ##      : Data format for response.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   pp: bool
   ##     : Pretty-print response.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   model: string
+  ##        : The model type for which supported languages should be returned.
+  ##   Xgafv: string
+  ##        : V1 error format.
   ##   target: string
   ##         : The language to use to return localized, human readable names of supported
   ## languages.
-  ##   model: string
-  ##        : The model type for which supported languages should be returned.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
   ##   bearerToken: string
   ##              : OAuth bearer token.
-  var query_589072 = newJObject()
-  add(query_589072, "upload_protocol", newJString(uploadProtocol))
-  add(query_589072, "fields", newJString(fields))
-  add(query_589072, "quotaUser", newJString(quotaUser))
-  add(query_589072, "alt", newJString(alt))
-  add(query_589072, "pp", newJBool(pp))
-  add(query_589072, "target", newJString(target))
-  add(query_589072, "model", newJString(model))
-  add(query_589072, "oauth_token", newJString(oauthToken))
-  add(query_589072, "callback", newJString(callback))
-  add(query_589072, "access_token", newJString(accessToken))
-  add(query_589072, "uploadType", newJString(uploadType))
-  add(query_589072, "key", newJString(key))
-  add(query_589072, "$.xgafv", newJString(Xgafv))
-  add(query_589072, "prettyPrint", newJBool(prettyPrint))
-  add(query_589072, "bearer_token", newJString(bearerToken))
-  result = call_589071.call(nil, query_589072, nil, nil, nil)
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var query_578972 = newJObject()
+  add(query_578972, "key", newJString(key))
+  add(query_578972, "pp", newJBool(pp))
+  add(query_578972, "prettyPrint", newJBool(prettyPrint))
+  add(query_578972, "oauth_token", newJString(oauthToken))
+  add(query_578972, "model", newJString(model))
+  add(query_578972, "$.xgafv", newJString(Xgafv))
+  add(query_578972, "target", newJString(target))
+  add(query_578972, "bearer_token", newJString(bearerToken))
+  add(query_578972, "alt", newJString(alt))
+  add(query_578972, "uploadType", newJString(uploadType))
+  add(query_578972, "quotaUser", newJString(quotaUser))
+  add(query_578972, "callback", newJString(callback))
+  add(query_578972, "fields", newJString(fields))
+  add(query_578972, "access_token", newJString(accessToken))
+  add(query_578972, "upload_protocol", newJString(uploadProtocol))
+  result = call_578971.call(nil, query_578972, nil, nil, nil)
 
-var languageLanguagesList* = Call_LanguageLanguagesList_589052(
+var languageLanguagesList* = Call_LanguageLanguagesList_578952(
     name: "languageLanguagesList", meth: HttpMethod.HttpGet,
     host: "translation.googleapis.com", route: "/v2/languages",
-    validator: validate_LanguageLanguagesList_589053, base: "/language/translate",
-    url: url_LanguageLanguagesList_589054, schemes: {Scheme.Https})
+    validator: validate_LanguageLanguagesList_578953, base: "/language/translate",
+    url: url_LanguageLanguagesList_578954, schemes: {Scheme.Https})
 export
   rest
 

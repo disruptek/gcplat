@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588450 = ref object of OpenApiRestCall
+  OpenApiRestCall_578348 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588450](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578348](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588450): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578348): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,15 +112,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_SlidesPresentationsCreate_588719 = ref object of OpenApiRestCall_588450
-proc url_SlidesPresentationsCreate_588721(protocol: Scheme; host: string;
+  Call_SlidesPresentationsCreate_578619 = ref object of OpenApiRestCall_578348
+proc url_SlidesPresentationsCreate_578621(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_SlidesPresentationsCreate_588720(path: JsonNode; query: JsonNode;
+proc validate_SlidesPresentationsCreate_578620(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a blank presentation using the title given in the request. If a
   ## `presentationId` is provided, it is used as the ID of the new presentation.
@@ -129,84 +133,84 @@ proc validate_SlidesPresentationsCreate_588720(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_588833 = query.getOrDefault("upload_protocol")
-  valid_588833 = validateParameter(valid_588833, JString, required = false,
+  var valid_578733 = query.getOrDefault("key")
+  valid_578733 = validateParameter(valid_578733, JString, required = false,
                                  default = nil)
-  if valid_588833 != nil:
-    section.add "upload_protocol", valid_588833
-  var valid_588834 = query.getOrDefault("fields")
-  valid_588834 = validateParameter(valid_588834, JString, required = false,
-                                 default = nil)
-  if valid_588834 != nil:
-    section.add "fields", valid_588834
-  var valid_588835 = query.getOrDefault("quotaUser")
-  valid_588835 = validateParameter(valid_588835, JString, required = false,
-                                 default = nil)
-  if valid_588835 != nil:
-    section.add "quotaUser", valid_588835
-  var valid_588849 = query.getOrDefault("alt")
-  valid_588849 = validateParameter(valid_588849, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588849 != nil:
-    section.add "alt", valid_588849
-  var valid_588850 = query.getOrDefault("oauth_token")
-  valid_588850 = validateParameter(valid_588850, JString, required = false,
-                                 default = nil)
-  if valid_588850 != nil:
-    section.add "oauth_token", valid_588850
-  var valid_588851 = query.getOrDefault("callback")
-  valid_588851 = validateParameter(valid_588851, JString, required = false,
-                                 default = nil)
-  if valid_588851 != nil:
-    section.add "callback", valid_588851
-  var valid_588852 = query.getOrDefault("access_token")
-  valid_588852 = validateParameter(valid_588852, JString, required = false,
-                                 default = nil)
-  if valid_588852 != nil:
-    section.add "access_token", valid_588852
-  var valid_588853 = query.getOrDefault("uploadType")
-  valid_588853 = validateParameter(valid_588853, JString, required = false,
-                                 default = nil)
-  if valid_588853 != nil:
-    section.add "uploadType", valid_588853
-  var valid_588854 = query.getOrDefault("key")
-  valid_588854 = validateParameter(valid_588854, JString, required = false,
-                                 default = nil)
-  if valid_588854 != nil:
-    section.add "key", valid_588854
-  var valid_588855 = query.getOrDefault("$.xgafv")
-  valid_588855 = validateParameter(valid_588855, JString, required = false,
-                                 default = newJString("1"))
-  if valid_588855 != nil:
-    section.add "$.xgafv", valid_588855
-  var valid_588856 = query.getOrDefault("prettyPrint")
-  valid_588856 = validateParameter(valid_588856, JBool, required = false,
+  if valid_578733 != nil:
+    section.add "key", valid_578733
+  var valid_578747 = query.getOrDefault("prettyPrint")
+  valid_578747 = validateParameter(valid_578747, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588856 != nil:
-    section.add "prettyPrint", valid_588856
+  if valid_578747 != nil:
+    section.add "prettyPrint", valid_578747
+  var valid_578748 = query.getOrDefault("oauth_token")
+  valid_578748 = validateParameter(valid_578748, JString, required = false,
+                                 default = nil)
+  if valid_578748 != nil:
+    section.add "oauth_token", valid_578748
+  var valid_578749 = query.getOrDefault("$.xgafv")
+  valid_578749 = validateParameter(valid_578749, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578749 != nil:
+    section.add "$.xgafv", valid_578749
+  var valid_578750 = query.getOrDefault("alt")
+  valid_578750 = validateParameter(valid_578750, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578750 != nil:
+    section.add "alt", valid_578750
+  var valid_578751 = query.getOrDefault("uploadType")
+  valid_578751 = validateParameter(valid_578751, JString, required = false,
+                                 default = nil)
+  if valid_578751 != nil:
+    section.add "uploadType", valid_578751
+  var valid_578752 = query.getOrDefault("quotaUser")
+  valid_578752 = validateParameter(valid_578752, JString, required = false,
+                                 default = nil)
+  if valid_578752 != nil:
+    section.add "quotaUser", valid_578752
+  var valid_578753 = query.getOrDefault("callback")
+  valid_578753 = validateParameter(valid_578753, JString, required = false,
+                                 default = nil)
+  if valid_578753 != nil:
+    section.add "callback", valid_578753
+  var valid_578754 = query.getOrDefault("fields")
+  valid_578754 = validateParameter(valid_578754, JString, required = false,
+                                 default = nil)
+  if valid_578754 != nil:
+    section.add "fields", valid_578754
+  var valid_578755 = query.getOrDefault("access_token")
+  valid_578755 = validateParameter(valid_578755, JString, required = false,
+                                 default = nil)
+  if valid_578755 != nil:
+    section.add "access_token", valid_578755
+  var valid_578756 = query.getOrDefault("upload_protocol")
+  valid_578756 = validateParameter(valid_578756, JString, required = false,
+                                 default = nil)
+  if valid_578756 != nil:
+    section.add "upload_protocol", valid_578756
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -218,7 +222,7 @@ proc validate_SlidesPresentationsCreate_588720(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588880: Call_SlidesPresentationsCreate_588719; path: JsonNode;
+proc call*(call_578780: Call_SlidesPresentationsCreate_578619; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a blank presentation using the title given in the request. If a
   ## `presentationId` is provided, it is used as the ID of the new presentation.
@@ -226,74 +230,74 @@ proc call*(call_588880: Call_SlidesPresentationsCreate_588719; path: JsonNode;
   ## any provided content, are ignored.
   ## Returns the created presentation.
   ## 
-  let valid = call_588880.validator(path, query, header, formData, body)
-  let scheme = call_588880.pickScheme
+  let valid = call_578780.validator(path, query, header, formData, body)
+  let scheme = call_578780.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588880.url(scheme.get, call_588880.host, call_588880.base,
-                         call_588880.route, valid.getOrDefault("path"),
+  let url = call_578780.url(scheme.get, call_578780.host, call_578780.base,
+                         call_578780.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588880, url, valid)
+  result = hook(call_578780, url, valid)
 
-proc call*(call_588951: Call_SlidesPresentationsCreate_588719;
-          uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; callback: string = "";
-          accessToken: string = ""; uploadType: string = ""; key: string = "";
-          Xgafv: string = "1"; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578851: Call_SlidesPresentationsCreate_578619; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; Xgafv: string = "1";
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; callback: string = ""; fields: string = "";
+          accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## slidesPresentationsCreate
   ## Creates a blank presentation using the title given in the request. If a
   ## `presentationId` is provided, it is used as the ID of the new presentation.
   ## Otherwise, a new ID is generated. Other fields in the request, including
   ## any provided content, are ignored.
   ## Returns the created presentation.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_588952 = newJObject()
-  var body_588954 = newJObject()
-  add(query_588952, "upload_protocol", newJString(uploadProtocol))
-  add(query_588952, "fields", newJString(fields))
-  add(query_588952, "quotaUser", newJString(quotaUser))
-  add(query_588952, "alt", newJString(alt))
-  add(query_588952, "oauth_token", newJString(oauthToken))
-  add(query_588952, "callback", newJString(callback))
-  add(query_588952, "access_token", newJString(accessToken))
-  add(query_588952, "uploadType", newJString(uploadType))
-  add(query_588952, "key", newJString(key))
-  add(query_588952, "$.xgafv", newJString(Xgafv))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   body: JObject
+  ##   callback: string
+  ##           : JSONP
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var query_578852 = newJObject()
+  var body_578854 = newJObject()
+  add(query_578852, "key", newJString(key))
+  add(query_578852, "prettyPrint", newJBool(prettyPrint))
+  add(query_578852, "oauth_token", newJString(oauthToken))
+  add(query_578852, "$.xgafv", newJString(Xgafv))
+  add(query_578852, "alt", newJString(alt))
+  add(query_578852, "uploadType", newJString(uploadType))
+  add(query_578852, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_588954 = body
-  add(query_588952, "prettyPrint", newJBool(prettyPrint))
-  result = call_588951.call(nil, query_588952, nil, nil, body_588954)
+    body_578854 = body
+  add(query_578852, "callback", newJString(callback))
+  add(query_578852, "fields", newJString(fields))
+  add(query_578852, "access_token", newJString(accessToken))
+  add(query_578852, "upload_protocol", newJString(uploadProtocol))
+  result = call_578851.call(nil, query_578852, nil, nil, body_578854)
 
-var slidesPresentationsCreate* = Call_SlidesPresentationsCreate_588719(
+var slidesPresentationsCreate* = Call_SlidesPresentationsCreate_578619(
     name: "slidesPresentationsCreate", meth: HttpMethod.HttpPost,
     host: "slides.googleapis.com", route: "/v1/presentations",
-    validator: validate_SlidesPresentationsCreate_588720, base: "/",
-    url: url_SlidesPresentationsCreate_588721, schemes: {Scheme.Https})
+    validator: validate_SlidesPresentationsCreate_578620, base: "/",
+    url: url_SlidesPresentationsCreate_578621, schemes: {Scheme.Https})
 type
-  Call_SlidesPresentationsGet_588993 = ref object of OpenApiRestCall_588450
-proc url_SlidesPresentationsGet_588995(protocol: Scheme; host: string; base: string;
+  Call_SlidesPresentationsGet_578893 = ref object of OpenApiRestCall_578348
+proc url_SlidesPresentationsGet_578895(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -308,7 +312,7 @@ proc url_SlidesPresentationsGet_588995(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_SlidesPresentationsGet_588994(path: JsonNode; query: JsonNode;
+proc validate_SlidesPresentationsGet_578894(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the latest version of the specified presentation.
   ## 
@@ -320,91 +324,91 @@ proc validate_SlidesPresentationsGet_588994(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `presentationId` field"
-  var valid_589010 = path.getOrDefault("presentationId")
-  valid_589010 = validateParameter(valid_589010, JString, required = true,
+  var valid_578910 = path.getOrDefault("presentationId")
+  valid_578910 = validateParameter(valid_578910, JString, required = true,
                                  default = nil)
-  if valid_589010 != nil:
-    section.add "presentationId", valid_589010
+  if valid_578910 != nil:
+    section.add "presentationId", valid_578910
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589011 = query.getOrDefault("upload_protocol")
-  valid_589011 = validateParameter(valid_589011, JString, required = false,
+  var valid_578911 = query.getOrDefault("key")
+  valid_578911 = validateParameter(valid_578911, JString, required = false,
                                  default = nil)
-  if valid_589011 != nil:
-    section.add "upload_protocol", valid_589011
-  var valid_589012 = query.getOrDefault("fields")
-  valid_589012 = validateParameter(valid_589012, JString, required = false,
-                                 default = nil)
-  if valid_589012 != nil:
-    section.add "fields", valid_589012
-  var valid_589013 = query.getOrDefault("quotaUser")
-  valid_589013 = validateParameter(valid_589013, JString, required = false,
-                                 default = nil)
-  if valid_589013 != nil:
-    section.add "quotaUser", valid_589013
-  var valid_589014 = query.getOrDefault("alt")
-  valid_589014 = validateParameter(valid_589014, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589014 != nil:
-    section.add "alt", valid_589014
-  var valid_589015 = query.getOrDefault("oauth_token")
-  valid_589015 = validateParameter(valid_589015, JString, required = false,
-                                 default = nil)
-  if valid_589015 != nil:
-    section.add "oauth_token", valid_589015
-  var valid_589016 = query.getOrDefault("callback")
-  valid_589016 = validateParameter(valid_589016, JString, required = false,
-                                 default = nil)
-  if valid_589016 != nil:
-    section.add "callback", valid_589016
-  var valid_589017 = query.getOrDefault("access_token")
-  valid_589017 = validateParameter(valid_589017, JString, required = false,
-                                 default = nil)
-  if valid_589017 != nil:
-    section.add "access_token", valid_589017
-  var valid_589018 = query.getOrDefault("uploadType")
-  valid_589018 = validateParameter(valid_589018, JString, required = false,
-                                 default = nil)
-  if valid_589018 != nil:
-    section.add "uploadType", valid_589018
-  var valid_589019 = query.getOrDefault("key")
-  valid_589019 = validateParameter(valid_589019, JString, required = false,
-                                 default = nil)
-  if valid_589019 != nil:
-    section.add "key", valid_589019
-  var valid_589020 = query.getOrDefault("$.xgafv")
-  valid_589020 = validateParameter(valid_589020, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589020 != nil:
-    section.add "$.xgafv", valid_589020
-  var valid_589021 = query.getOrDefault("prettyPrint")
-  valid_589021 = validateParameter(valid_589021, JBool, required = false,
+  if valid_578911 != nil:
+    section.add "key", valid_578911
+  var valid_578912 = query.getOrDefault("prettyPrint")
+  valid_578912 = validateParameter(valid_578912, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589021 != nil:
-    section.add "prettyPrint", valid_589021
+  if valid_578912 != nil:
+    section.add "prettyPrint", valid_578912
+  var valid_578913 = query.getOrDefault("oauth_token")
+  valid_578913 = validateParameter(valid_578913, JString, required = false,
+                                 default = nil)
+  if valid_578913 != nil:
+    section.add "oauth_token", valid_578913
+  var valid_578914 = query.getOrDefault("$.xgafv")
+  valid_578914 = validateParameter(valid_578914, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578914 != nil:
+    section.add "$.xgafv", valid_578914
+  var valid_578915 = query.getOrDefault("alt")
+  valid_578915 = validateParameter(valid_578915, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578915 != nil:
+    section.add "alt", valid_578915
+  var valid_578916 = query.getOrDefault("uploadType")
+  valid_578916 = validateParameter(valid_578916, JString, required = false,
+                                 default = nil)
+  if valid_578916 != nil:
+    section.add "uploadType", valid_578916
+  var valid_578917 = query.getOrDefault("quotaUser")
+  valid_578917 = validateParameter(valid_578917, JString, required = false,
+                                 default = nil)
+  if valid_578917 != nil:
+    section.add "quotaUser", valid_578917
+  var valid_578918 = query.getOrDefault("callback")
+  valid_578918 = validateParameter(valid_578918, JString, required = false,
+                                 default = nil)
+  if valid_578918 != nil:
+    section.add "callback", valid_578918
+  var valid_578919 = query.getOrDefault("fields")
+  valid_578919 = validateParameter(valid_578919, JString, required = false,
+                                 default = nil)
+  if valid_578919 != nil:
+    section.add "fields", valid_578919
+  var valid_578920 = query.getOrDefault("access_token")
+  valid_578920 = validateParameter(valid_578920, JString, required = false,
+                                 default = nil)
+  if valid_578920 != nil:
+    section.add "access_token", valid_578920
+  var valid_578921 = query.getOrDefault("upload_protocol")
+  valid_578921 = validateParameter(valid_578921, JString, required = false,
+                                 default = nil)
+  if valid_578921 != nil:
+    section.add "upload_protocol", valid_578921
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -413,74 +417,74 @@ proc validate_SlidesPresentationsGet_588994(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589022: Call_SlidesPresentationsGet_588993; path: JsonNode;
+proc call*(call_578922: Call_SlidesPresentationsGet_578893; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the latest version of the specified presentation.
   ## 
-  let valid = call_589022.validator(path, query, header, formData, body)
-  let scheme = call_589022.pickScheme
+  let valid = call_578922.validator(path, query, header, formData, body)
+  let scheme = call_578922.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589022.url(scheme.get, call_589022.host, call_589022.base,
-                         call_589022.route, valid.getOrDefault("path"),
+  let url = call_578922.url(scheme.get, call_578922.host, call_578922.base,
+                         call_578922.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589022, url, valid)
+  result = hook(call_578922, url, valid)
 
-proc call*(call_589023: Call_SlidesPresentationsGet_588993; presentationId: string;
-          uploadProtocol: string = ""; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; callback: string = "";
-          accessToken: string = ""; uploadType: string = ""; key: string = "";
-          Xgafv: string = "1"; prettyPrint: bool = true): Recallable =
+proc call*(call_578923: Call_SlidesPresentationsGet_578893; presentationId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          Xgafv: string = "1"; alt: string = "json"; uploadType: string = "";
+          quotaUser: string = ""; callback: string = ""; fields: string = "";
+          accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## slidesPresentationsGet
   ## Gets the latest version of the specified presentation.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   presentationId: string (required)
-  ##                 : The ID of the presentation to retrieve.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589024 = newJObject()
-  var query_589025 = newJObject()
-  add(query_589025, "upload_protocol", newJString(uploadProtocol))
-  add(query_589025, "fields", newJString(fields))
-  add(query_589025, "quotaUser", newJString(quotaUser))
-  add(query_589025, "alt", newJString(alt))
-  add(path_589024, "presentationId", newJString(presentationId))
-  add(query_589025, "oauth_token", newJString(oauthToken))
-  add(query_589025, "callback", newJString(callback))
-  add(query_589025, "access_token", newJString(accessToken))
-  add(query_589025, "uploadType", newJString(uploadType))
-  add(query_589025, "key", newJString(key))
-  add(query_589025, "$.xgafv", newJString(Xgafv))
-  add(query_589025, "prettyPrint", newJBool(prettyPrint))
-  result = call_589023.call(path_589024, query_589025, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: string
+  ##           : JSONP
+  ##   presentationId: string (required)
+  ##                 : The ID of the presentation to retrieve.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_578924 = newJObject()
+  var query_578925 = newJObject()
+  add(query_578925, "key", newJString(key))
+  add(query_578925, "prettyPrint", newJBool(prettyPrint))
+  add(query_578925, "oauth_token", newJString(oauthToken))
+  add(query_578925, "$.xgafv", newJString(Xgafv))
+  add(query_578925, "alt", newJString(alt))
+  add(query_578925, "uploadType", newJString(uploadType))
+  add(query_578925, "quotaUser", newJString(quotaUser))
+  add(query_578925, "callback", newJString(callback))
+  add(path_578924, "presentationId", newJString(presentationId))
+  add(query_578925, "fields", newJString(fields))
+  add(query_578925, "access_token", newJString(accessToken))
+  add(query_578925, "upload_protocol", newJString(uploadProtocol))
+  result = call_578923.call(path_578924, query_578925, nil, nil, nil)
 
-var slidesPresentationsGet* = Call_SlidesPresentationsGet_588993(
+var slidesPresentationsGet* = Call_SlidesPresentationsGet_578893(
     name: "slidesPresentationsGet", meth: HttpMethod.HttpGet,
     host: "slides.googleapis.com", route: "/v1/presentations/{presentationId}",
-    validator: validate_SlidesPresentationsGet_588994, base: "/",
-    url: url_SlidesPresentationsGet_588995, schemes: {Scheme.Https})
+    validator: validate_SlidesPresentationsGet_578894, base: "/",
+    url: url_SlidesPresentationsGet_578895, schemes: {Scheme.Https})
 type
-  Call_SlidesPresentationsPagesGet_589026 = ref object of OpenApiRestCall_588450
-proc url_SlidesPresentationsPagesGet_589028(protocol: Scheme; host: string;
+  Call_SlidesPresentationsPagesGet_578926 = ref object of OpenApiRestCall_578348
+proc url_SlidesPresentationsPagesGet_578928(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -498,7 +502,7 @@ proc url_SlidesPresentationsPagesGet_589028(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_SlidesPresentationsPagesGet_589027(path: JsonNode; query: JsonNode;
+proc validate_SlidesPresentationsPagesGet_578927(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets the latest version of the specified page in the presentation.
   ## 
@@ -512,96 +516,96 @@ proc validate_SlidesPresentationsPagesGet_589027(path: JsonNode; query: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `pageObjectId` field"
-  var valid_589029 = path.getOrDefault("pageObjectId")
-  valid_589029 = validateParameter(valid_589029, JString, required = true,
+  var valid_578929 = path.getOrDefault("pageObjectId")
+  valid_578929 = validateParameter(valid_578929, JString, required = true,
                                  default = nil)
-  if valid_589029 != nil:
-    section.add "pageObjectId", valid_589029
-  var valid_589030 = path.getOrDefault("presentationId")
-  valid_589030 = validateParameter(valid_589030, JString, required = true,
+  if valid_578929 != nil:
+    section.add "pageObjectId", valid_578929
+  var valid_578930 = path.getOrDefault("presentationId")
+  valid_578930 = validateParameter(valid_578930, JString, required = true,
                                  default = nil)
-  if valid_589030 != nil:
-    section.add "presentationId", valid_589030
+  if valid_578930 != nil:
+    section.add "presentationId", valid_578930
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589031 = query.getOrDefault("upload_protocol")
-  valid_589031 = validateParameter(valid_589031, JString, required = false,
+  var valid_578931 = query.getOrDefault("key")
+  valid_578931 = validateParameter(valid_578931, JString, required = false,
                                  default = nil)
-  if valid_589031 != nil:
-    section.add "upload_protocol", valid_589031
-  var valid_589032 = query.getOrDefault("fields")
-  valid_589032 = validateParameter(valid_589032, JString, required = false,
-                                 default = nil)
-  if valid_589032 != nil:
-    section.add "fields", valid_589032
-  var valid_589033 = query.getOrDefault("quotaUser")
-  valid_589033 = validateParameter(valid_589033, JString, required = false,
-                                 default = nil)
-  if valid_589033 != nil:
-    section.add "quotaUser", valid_589033
-  var valid_589034 = query.getOrDefault("alt")
-  valid_589034 = validateParameter(valid_589034, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589034 != nil:
-    section.add "alt", valid_589034
-  var valid_589035 = query.getOrDefault("oauth_token")
-  valid_589035 = validateParameter(valid_589035, JString, required = false,
-                                 default = nil)
-  if valid_589035 != nil:
-    section.add "oauth_token", valid_589035
-  var valid_589036 = query.getOrDefault("callback")
-  valid_589036 = validateParameter(valid_589036, JString, required = false,
-                                 default = nil)
-  if valid_589036 != nil:
-    section.add "callback", valid_589036
-  var valid_589037 = query.getOrDefault("access_token")
-  valid_589037 = validateParameter(valid_589037, JString, required = false,
-                                 default = nil)
-  if valid_589037 != nil:
-    section.add "access_token", valid_589037
-  var valid_589038 = query.getOrDefault("uploadType")
-  valid_589038 = validateParameter(valid_589038, JString, required = false,
-                                 default = nil)
-  if valid_589038 != nil:
-    section.add "uploadType", valid_589038
-  var valid_589039 = query.getOrDefault("key")
-  valid_589039 = validateParameter(valid_589039, JString, required = false,
-                                 default = nil)
-  if valid_589039 != nil:
-    section.add "key", valid_589039
-  var valid_589040 = query.getOrDefault("$.xgafv")
-  valid_589040 = validateParameter(valid_589040, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589040 != nil:
-    section.add "$.xgafv", valid_589040
-  var valid_589041 = query.getOrDefault("prettyPrint")
-  valid_589041 = validateParameter(valid_589041, JBool, required = false,
+  if valid_578931 != nil:
+    section.add "key", valid_578931
+  var valid_578932 = query.getOrDefault("prettyPrint")
+  valid_578932 = validateParameter(valid_578932, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589041 != nil:
-    section.add "prettyPrint", valid_589041
+  if valid_578932 != nil:
+    section.add "prettyPrint", valid_578932
+  var valid_578933 = query.getOrDefault("oauth_token")
+  valid_578933 = validateParameter(valid_578933, JString, required = false,
+                                 default = nil)
+  if valid_578933 != nil:
+    section.add "oauth_token", valid_578933
+  var valid_578934 = query.getOrDefault("$.xgafv")
+  valid_578934 = validateParameter(valid_578934, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578934 != nil:
+    section.add "$.xgafv", valid_578934
+  var valid_578935 = query.getOrDefault("alt")
+  valid_578935 = validateParameter(valid_578935, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578935 != nil:
+    section.add "alt", valid_578935
+  var valid_578936 = query.getOrDefault("uploadType")
+  valid_578936 = validateParameter(valid_578936, JString, required = false,
+                                 default = nil)
+  if valid_578936 != nil:
+    section.add "uploadType", valid_578936
+  var valid_578937 = query.getOrDefault("quotaUser")
+  valid_578937 = validateParameter(valid_578937, JString, required = false,
+                                 default = nil)
+  if valid_578937 != nil:
+    section.add "quotaUser", valid_578937
+  var valid_578938 = query.getOrDefault("callback")
+  valid_578938 = validateParameter(valid_578938, JString, required = false,
+                                 default = nil)
+  if valid_578938 != nil:
+    section.add "callback", valid_578938
+  var valid_578939 = query.getOrDefault("fields")
+  valid_578939 = validateParameter(valid_578939, JString, required = false,
+                                 default = nil)
+  if valid_578939 != nil:
+    section.add "fields", valid_578939
+  var valid_578940 = query.getOrDefault("access_token")
+  valid_578940 = validateParameter(valid_578940, JString, required = false,
+                                 default = nil)
+  if valid_578940 != nil:
+    section.add "access_token", valid_578940
+  var valid_578941 = query.getOrDefault("upload_protocol")
+  valid_578941 = validateParameter(valid_578941, JString, required = false,
+                                 default = nil)
+  if valid_578941 != nil:
+    section.add "upload_protocol", valid_578941
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -610,79 +614,79 @@ proc validate_SlidesPresentationsPagesGet_589027(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_589042: Call_SlidesPresentationsPagesGet_589026; path: JsonNode;
+proc call*(call_578942: Call_SlidesPresentationsPagesGet_578926; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Gets the latest version of the specified page in the presentation.
   ## 
-  let valid = call_589042.validator(path, query, header, formData, body)
-  let scheme = call_589042.pickScheme
+  let valid = call_578942.validator(path, query, header, formData, body)
+  let scheme = call_578942.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589042.url(scheme.get, call_589042.host, call_589042.base,
-                         call_589042.route, valid.getOrDefault("path"),
+  let url = call_578942.url(scheme.get, call_578942.host, call_578942.base,
+                         call_578942.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589042, url, valid)
+  result = hook(call_578942, url, valid)
 
-proc call*(call_589043: Call_SlidesPresentationsPagesGet_589026;
-          pageObjectId: string; presentationId: string; uploadProtocol: string = "";
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; callback: string = ""; accessToken: string = "";
-          uploadType: string = ""; key: string = ""; Xgafv: string = "1";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578943: Call_SlidesPresentationsPagesGet_578926;
+          pageObjectId: string; presentationId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; Xgafv: string = "1";
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+          callback: string = ""; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""): Recallable =
   ## slidesPresentationsPagesGet
   ## Gets the latest version of the specified page in the presentation.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageObjectId: string (required)
-  ##               : The object ID of the page to retrieve.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   presentationId: string (required)
-  ##                 : The ID of the presentation to retrieve.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589044 = newJObject()
-  var query_589045 = newJObject()
-  add(query_589045, "upload_protocol", newJString(uploadProtocol))
-  add(query_589045, "fields", newJString(fields))
-  add(path_589044, "pageObjectId", newJString(pageObjectId))
-  add(query_589045, "quotaUser", newJString(quotaUser))
-  add(query_589045, "alt", newJString(alt))
-  add(path_589044, "presentationId", newJString(presentationId))
-  add(query_589045, "oauth_token", newJString(oauthToken))
-  add(query_589045, "callback", newJString(callback))
-  add(query_589045, "access_token", newJString(accessToken))
-  add(query_589045, "uploadType", newJString(uploadType))
-  add(query_589045, "key", newJString(key))
-  add(query_589045, "$.xgafv", newJString(Xgafv))
-  add(query_589045, "prettyPrint", newJBool(prettyPrint))
-  result = call_589043.call(path_589044, query_589045, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   pageObjectId: string (required)
+  ##               : The object ID of the page to retrieve.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: string
+  ##           : JSONP
+  ##   presentationId: string (required)
+  ##                 : The ID of the presentation to retrieve.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_578944 = newJObject()
+  var query_578945 = newJObject()
+  add(query_578945, "key", newJString(key))
+  add(query_578945, "prettyPrint", newJBool(prettyPrint))
+  add(query_578945, "oauth_token", newJString(oauthToken))
+  add(path_578944, "pageObjectId", newJString(pageObjectId))
+  add(query_578945, "$.xgafv", newJString(Xgafv))
+  add(query_578945, "alt", newJString(alt))
+  add(query_578945, "uploadType", newJString(uploadType))
+  add(query_578945, "quotaUser", newJString(quotaUser))
+  add(query_578945, "callback", newJString(callback))
+  add(path_578944, "presentationId", newJString(presentationId))
+  add(query_578945, "fields", newJString(fields))
+  add(query_578945, "access_token", newJString(accessToken))
+  add(query_578945, "upload_protocol", newJString(uploadProtocol))
+  result = call_578943.call(path_578944, query_578945, nil, nil, nil)
 
-var slidesPresentationsPagesGet* = Call_SlidesPresentationsPagesGet_589026(
+var slidesPresentationsPagesGet* = Call_SlidesPresentationsPagesGet_578926(
     name: "slidesPresentationsPagesGet", meth: HttpMethod.HttpGet,
     host: "slides.googleapis.com",
     route: "/v1/presentations/{presentationId}/pages/{pageObjectId}",
-    validator: validate_SlidesPresentationsPagesGet_589027, base: "/",
-    url: url_SlidesPresentationsPagesGet_589028, schemes: {Scheme.Https})
+    validator: validate_SlidesPresentationsPagesGet_578927, base: "/",
+    url: url_SlidesPresentationsPagesGet_578928, schemes: {Scheme.Https})
 type
-  Call_SlidesPresentationsPagesGetThumbnail_589046 = ref object of OpenApiRestCall_588450
-proc url_SlidesPresentationsPagesGetThumbnail_589048(protocol: Scheme;
+  Call_SlidesPresentationsPagesGetThumbnail_578946 = ref object of OpenApiRestCall_578348
+proc url_SlidesPresentationsPagesGetThumbnail_578948(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -701,7 +705,7 @@ proc url_SlidesPresentationsPagesGetThumbnail_589048(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_SlidesPresentationsPagesGetThumbnail_589047(path: JsonNode;
+proc validate_SlidesPresentationsPagesGetThumbnail_578947(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Generates a thumbnail of the latest version of the specified page in the
   ## presentation and returns a URL to the thumbnail image.
@@ -719,115 +723,115 @@ proc validate_SlidesPresentationsPagesGetThumbnail_589047(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `pageObjectId` field"
-  var valid_589049 = path.getOrDefault("pageObjectId")
-  valid_589049 = validateParameter(valid_589049, JString, required = true,
+  var valid_578949 = path.getOrDefault("pageObjectId")
+  valid_578949 = validateParameter(valid_578949, JString, required = true,
                                  default = nil)
-  if valid_589049 != nil:
-    section.add "pageObjectId", valid_589049
-  var valid_589050 = path.getOrDefault("presentationId")
-  valid_589050 = validateParameter(valid_589050, JString, required = true,
+  if valid_578949 != nil:
+    section.add "pageObjectId", valid_578949
+  var valid_578950 = path.getOrDefault("presentationId")
+  valid_578950 = validateParameter(valid_578950, JString, required = true,
                                  default = nil)
-  if valid_589050 != nil:
-    section.add "presentationId", valid_589050
+  if valid_578950 != nil:
+    section.add "presentationId", valid_578950
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   thumbnailProperties.mimeType: JString
-  ##                               : The optional mime type of the thumbnail image.
-  ## 
-  ## If you don't specify the mime type, the default mime type will be PNG.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   thumbnailProperties.thumbnailSize: JString
   ##                                    : The optional thumbnail image size.
   ## 
   ## If you don't specify the size, the server chooses a default size of the
   ## image.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   thumbnailProperties.mimeType: JString
+  ##                               : The optional mime type of the thumbnail image.
+  ## 
+  ## If you don't specify the mime type, the default mime type will be PNG.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589051 = query.getOrDefault("upload_protocol")
-  valid_589051 = validateParameter(valid_589051, JString, required = false,
+  var valid_578951 = query.getOrDefault("key")
+  valid_578951 = validateParameter(valid_578951, JString, required = false,
                                  default = nil)
-  if valid_589051 != nil:
-    section.add "upload_protocol", valid_589051
-  var valid_589052 = query.getOrDefault("fields")
-  valid_589052 = validateParameter(valid_589052, JString, required = false,
-                                 default = nil)
-  if valid_589052 != nil:
-    section.add "fields", valid_589052
-  var valid_589053 = query.getOrDefault("quotaUser")
-  valid_589053 = validateParameter(valid_589053, JString, required = false,
-                                 default = nil)
-  if valid_589053 != nil:
-    section.add "quotaUser", valid_589053
-  var valid_589054 = query.getOrDefault("alt")
-  valid_589054 = validateParameter(valid_589054, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589054 != nil:
-    section.add "alt", valid_589054
-  var valid_589055 = query.getOrDefault("thumbnailProperties.mimeType")
-  valid_589055 = validateParameter(valid_589055, JString, required = false,
-                                 default = newJString("PNG"))
-  if valid_589055 != nil:
-    section.add "thumbnailProperties.mimeType", valid_589055
-  var valid_589056 = query.getOrDefault("oauth_token")
-  valid_589056 = validateParameter(valid_589056, JString, required = false,
-                                 default = nil)
-  if valid_589056 != nil:
-    section.add "oauth_token", valid_589056
-  var valid_589057 = query.getOrDefault("callback")
-  valid_589057 = validateParameter(valid_589057, JString, required = false,
-                                 default = nil)
-  if valid_589057 != nil:
-    section.add "callback", valid_589057
-  var valid_589058 = query.getOrDefault("access_token")
-  valid_589058 = validateParameter(valid_589058, JString, required = false,
-                                 default = nil)
-  if valid_589058 != nil:
-    section.add "access_token", valid_589058
-  var valid_589059 = query.getOrDefault("uploadType")
-  valid_589059 = validateParameter(valid_589059, JString, required = false,
-                                 default = nil)
-  if valid_589059 != nil:
-    section.add "uploadType", valid_589059
-  var valid_589060 = query.getOrDefault("key")
-  valid_589060 = validateParameter(valid_589060, JString, required = false,
-                                 default = nil)
-  if valid_589060 != nil:
-    section.add "key", valid_589060
-  var valid_589061 = query.getOrDefault("thumbnailProperties.thumbnailSize")
-  valid_589061 = validateParameter(valid_589061, JString, required = false, default = newJString(
-      "THUMBNAIL_SIZE_UNSPECIFIED"))
-  if valid_589061 != nil:
-    section.add "thumbnailProperties.thumbnailSize", valid_589061
-  var valid_589062 = query.getOrDefault("$.xgafv")
-  valid_589062 = validateParameter(valid_589062, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589062 != nil:
-    section.add "$.xgafv", valid_589062
-  var valid_589063 = query.getOrDefault("prettyPrint")
-  valid_589063 = validateParameter(valid_589063, JBool, required = false,
+  if valid_578951 != nil:
+    section.add "key", valid_578951
+  var valid_578952 = query.getOrDefault("prettyPrint")
+  valid_578952 = validateParameter(valid_578952, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589063 != nil:
-    section.add "prettyPrint", valid_589063
+  if valid_578952 != nil:
+    section.add "prettyPrint", valid_578952
+  var valid_578953 = query.getOrDefault("oauth_token")
+  valid_578953 = validateParameter(valid_578953, JString, required = false,
+                                 default = nil)
+  if valid_578953 != nil:
+    section.add "oauth_token", valid_578953
+  var valid_578954 = query.getOrDefault("$.xgafv")
+  valid_578954 = validateParameter(valid_578954, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578954 != nil:
+    section.add "$.xgafv", valid_578954
+  var valid_578955 = query.getOrDefault("alt")
+  valid_578955 = validateParameter(valid_578955, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578955 != nil:
+    section.add "alt", valid_578955
+  var valid_578956 = query.getOrDefault("uploadType")
+  valid_578956 = validateParameter(valid_578956, JString, required = false,
+                                 default = nil)
+  if valid_578956 != nil:
+    section.add "uploadType", valid_578956
+  var valid_578957 = query.getOrDefault("quotaUser")
+  valid_578957 = validateParameter(valid_578957, JString, required = false,
+                                 default = nil)
+  if valid_578957 != nil:
+    section.add "quotaUser", valid_578957
+  var valid_578958 = query.getOrDefault("thumbnailProperties.thumbnailSize")
+  valid_578958 = validateParameter(valid_578958, JString, required = false, default = newJString(
+      "THUMBNAIL_SIZE_UNSPECIFIED"))
+  if valid_578958 != nil:
+    section.add "thumbnailProperties.thumbnailSize", valid_578958
+  var valid_578959 = query.getOrDefault("thumbnailProperties.mimeType")
+  valid_578959 = validateParameter(valid_578959, JString, required = false,
+                                 default = newJString("PNG"))
+  if valid_578959 != nil:
+    section.add "thumbnailProperties.mimeType", valid_578959
+  var valid_578960 = query.getOrDefault("callback")
+  valid_578960 = validateParameter(valid_578960, JString, required = false,
+                                 default = nil)
+  if valid_578960 != nil:
+    section.add "callback", valid_578960
+  var valid_578961 = query.getOrDefault("fields")
+  valid_578961 = validateParameter(valid_578961, JString, required = false,
+                                 default = nil)
+  if valid_578961 != nil:
+    section.add "fields", valid_578961
+  var valid_578962 = query.getOrDefault("access_token")
+  valid_578962 = validateParameter(valid_578962, JString, required = false,
+                                 default = nil)
+  if valid_578962 != nil:
+    section.add "access_token", valid_578962
+  var valid_578963 = query.getOrDefault("upload_protocol")
+  valid_578963 = validateParameter(valid_578963, JString, required = false,
+                                 default = nil)
+  if valid_578963 != nil:
+    section.add "upload_protocol", valid_578963
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -836,7 +840,7 @@ proc validate_SlidesPresentationsPagesGetThumbnail_589047(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589064: Call_SlidesPresentationsPagesGetThumbnail_589046;
+proc call*(call_578964: Call_SlidesPresentationsPagesGetThumbnail_578946;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Generates a thumbnail of the latest version of the specified page in the
@@ -845,93 +849,93 @@ proc call*(call_589064: Call_SlidesPresentationsPagesGetThumbnail_589046;
   ## This request counts as an [expensive read request](/slides/limits) for
   ## quota purposes.
   ## 
-  let valid = call_589064.validator(path, query, header, formData, body)
-  let scheme = call_589064.pickScheme
+  let valid = call_578964.validator(path, query, header, formData, body)
+  let scheme = call_578964.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589064.url(scheme.get, call_589064.host, call_589064.base,
-                         call_589064.route, valid.getOrDefault("path"),
+  let url = call_578964.url(scheme.get, call_578964.host, call_578964.base,
+                         call_578964.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589064, url, valid)
+  result = hook(call_578964, url, valid)
 
-proc call*(call_589065: Call_SlidesPresentationsPagesGetThumbnail_589046;
-          pageObjectId: string; presentationId: string; uploadProtocol: string = "";
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          thumbnailPropertiesMimeType: string = "PNG"; oauthToken: string = "";
-          callback: string = ""; accessToken: string = ""; uploadType: string = "";
-          key: string = ""; thumbnailPropertiesThumbnailSize: string = "THUMBNAIL_SIZE_UNSPECIFIED";
-          Xgafv: string = "1"; prettyPrint: bool = true): Recallable =
+proc call*(call_578965: Call_SlidesPresentationsPagesGetThumbnail_578946;
+          pageObjectId: string; presentationId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; Xgafv: string = "1";
+          alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
+    thumbnailPropertiesThumbnailSize: string = "THUMBNAIL_SIZE_UNSPECIFIED";
+          thumbnailPropertiesMimeType: string = "PNG"; callback: string = "";
+          fields: string = ""; accessToken: string = ""; uploadProtocol: string = ""): Recallable =
   ## slidesPresentationsPagesGetThumbnail
   ## Generates a thumbnail of the latest version of the specified page in the
   ## presentation and returns a URL to the thumbnail image.
   ## 
   ## This request counts as an [expensive read request](/slides/limits) for
   ## quota purposes.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageObjectId: string (required)
-  ##               : The object ID of the page whose thumbnail to retrieve.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   presentationId: string (required)
-  ##                 : The ID of the presentation to retrieve.
-  ##   thumbnailPropertiesMimeType: string
-  ##                              : The optional mime type of the thumbnail image.
-  ## 
-  ## If you don't specify the mime type, the default mime type will be PNG.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   pageObjectId: string (required)
+  ##               : The object ID of the page whose thumbnail to retrieve.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   thumbnailPropertiesThumbnailSize: string
   ##                                   : The optional thumbnail image size.
   ## 
   ## If you don't specify the size, the server chooses a default size of the
   ## image.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589066 = newJObject()
-  var query_589067 = newJObject()
-  add(query_589067, "upload_protocol", newJString(uploadProtocol))
-  add(query_589067, "fields", newJString(fields))
-  add(path_589066, "pageObjectId", newJString(pageObjectId))
-  add(query_589067, "quotaUser", newJString(quotaUser))
-  add(query_589067, "alt", newJString(alt))
-  add(path_589066, "presentationId", newJString(presentationId))
-  add(query_589067, "thumbnailProperties.mimeType",
-      newJString(thumbnailPropertiesMimeType))
-  add(query_589067, "oauth_token", newJString(oauthToken))
-  add(query_589067, "callback", newJString(callback))
-  add(query_589067, "access_token", newJString(accessToken))
-  add(query_589067, "uploadType", newJString(uploadType))
-  add(query_589067, "key", newJString(key))
-  add(query_589067, "thumbnailProperties.thumbnailSize",
+  ##   thumbnailPropertiesMimeType: string
+  ##                              : The optional mime type of the thumbnail image.
+  ## 
+  ## If you don't specify the mime type, the default mime type will be PNG.
+  ##   callback: string
+  ##           : JSONP
+  ##   presentationId: string (required)
+  ##                 : The ID of the presentation to retrieve.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_578966 = newJObject()
+  var query_578967 = newJObject()
+  add(query_578967, "key", newJString(key))
+  add(query_578967, "prettyPrint", newJBool(prettyPrint))
+  add(query_578967, "oauth_token", newJString(oauthToken))
+  add(path_578966, "pageObjectId", newJString(pageObjectId))
+  add(query_578967, "$.xgafv", newJString(Xgafv))
+  add(query_578967, "alt", newJString(alt))
+  add(query_578967, "uploadType", newJString(uploadType))
+  add(query_578967, "quotaUser", newJString(quotaUser))
+  add(query_578967, "thumbnailProperties.thumbnailSize",
       newJString(thumbnailPropertiesThumbnailSize))
-  add(query_589067, "$.xgafv", newJString(Xgafv))
-  add(query_589067, "prettyPrint", newJBool(prettyPrint))
-  result = call_589065.call(path_589066, query_589067, nil, nil, nil)
+  add(query_578967, "thumbnailProperties.mimeType",
+      newJString(thumbnailPropertiesMimeType))
+  add(query_578967, "callback", newJString(callback))
+  add(path_578966, "presentationId", newJString(presentationId))
+  add(query_578967, "fields", newJString(fields))
+  add(query_578967, "access_token", newJString(accessToken))
+  add(query_578967, "upload_protocol", newJString(uploadProtocol))
+  result = call_578965.call(path_578966, query_578967, nil, nil, nil)
 
-var slidesPresentationsPagesGetThumbnail* = Call_SlidesPresentationsPagesGetThumbnail_589046(
+var slidesPresentationsPagesGetThumbnail* = Call_SlidesPresentationsPagesGetThumbnail_578946(
     name: "slidesPresentationsPagesGetThumbnail", meth: HttpMethod.HttpGet,
     host: "slides.googleapis.com",
     route: "/v1/presentations/{presentationId}/pages/{pageObjectId}/thumbnail",
-    validator: validate_SlidesPresentationsPagesGetThumbnail_589047, base: "/",
-    url: url_SlidesPresentationsPagesGetThumbnail_589048, schemes: {Scheme.Https})
+    validator: validate_SlidesPresentationsPagesGetThumbnail_578947, base: "/",
+    url: url_SlidesPresentationsPagesGetThumbnail_578948, schemes: {Scheme.Https})
 type
-  Call_SlidesPresentationsBatchUpdate_589068 = ref object of OpenApiRestCall_588450
-proc url_SlidesPresentationsBatchUpdate_589070(protocol: Scheme; host: string;
+  Call_SlidesPresentationsBatchUpdate_578968 = ref object of OpenApiRestCall_578348
+proc url_SlidesPresentationsBatchUpdate_578970(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -947,7 +951,7 @@ proc url_SlidesPresentationsBatchUpdate_589070(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_SlidesPresentationsBatchUpdate_589069(path: JsonNode;
+proc validate_SlidesPresentationsBatchUpdate_578969(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Applies one or more updates to the presentation.
   ## 
@@ -979,91 +983,91 @@ proc validate_SlidesPresentationsBatchUpdate_589069(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `presentationId` field"
-  var valid_589071 = path.getOrDefault("presentationId")
-  valid_589071 = validateParameter(valid_589071, JString, required = true,
+  var valid_578971 = path.getOrDefault("presentationId")
+  valid_578971 = validateParameter(valid_578971, JString, required = true,
                                  default = nil)
-  if valid_589071 != nil:
-    section.add "presentationId", valid_589071
+  if valid_578971 != nil:
+    section.add "presentationId", valid_578971
   result.add "path", section
   ## parameters in `query` object:
-  ##   upload_protocol: JString
-  ##                  : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   callback: JString
-  ##           : JSONP
-  ##   access_token: JString
-  ##               : OAuth access token.
-  ##   uploadType: JString
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   $.xgafv: JString
-  ##          : V1 error format.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   $.xgafv: JString
+  ##          : V1 error format.
+  ##   alt: JString
+  ##      : Data format for response.
+  ##   uploadType: JString
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   callback: JString
+  ##           : JSONP
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   access_token: JString
+  ##               : OAuth access token.
+  ##   upload_protocol: JString
+  ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_589072 = query.getOrDefault("upload_protocol")
-  valid_589072 = validateParameter(valid_589072, JString, required = false,
+  var valid_578972 = query.getOrDefault("key")
+  valid_578972 = validateParameter(valid_578972, JString, required = false,
                                  default = nil)
-  if valid_589072 != nil:
-    section.add "upload_protocol", valid_589072
-  var valid_589073 = query.getOrDefault("fields")
-  valid_589073 = validateParameter(valid_589073, JString, required = false,
-                                 default = nil)
-  if valid_589073 != nil:
-    section.add "fields", valid_589073
-  var valid_589074 = query.getOrDefault("quotaUser")
-  valid_589074 = validateParameter(valid_589074, JString, required = false,
-                                 default = nil)
-  if valid_589074 != nil:
-    section.add "quotaUser", valid_589074
-  var valid_589075 = query.getOrDefault("alt")
-  valid_589075 = validateParameter(valid_589075, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589075 != nil:
-    section.add "alt", valid_589075
-  var valid_589076 = query.getOrDefault("oauth_token")
-  valid_589076 = validateParameter(valid_589076, JString, required = false,
-                                 default = nil)
-  if valid_589076 != nil:
-    section.add "oauth_token", valid_589076
-  var valid_589077 = query.getOrDefault("callback")
-  valid_589077 = validateParameter(valid_589077, JString, required = false,
-                                 default = nil)
-  if valid_589077 != nil:
-    section.add "callback", valid_589077
-  var valid_589078 = query.getOrDefault("access_token")
-  valid_589078 = validateParameter(valid_589078, JString, required = false,
-                                 default = nil)
-  if valid_589078 != nil:
-    section.add "access_token", valid_589078
-  var valid_589079 = query.getOrDefault("uploadType")
-  valid_589079 = validateParameter(valid_589079, JString, required = false,
-                                 default = nil)
-  if valid_589079 != nil:
-    section.add "uploadType", valid_589079
-  var valid_589080 = query.getOrDefault("key")
-  valid_589080 = validateParameter(valid_589080, JString, required = false,
-                                 default = nil)
-  if valid_589080 != nil:
-    section.add "key", valid_589080
-  var valid_589081 = query.getOrDefault("$.xgafv")
-  valid_589081 = validateParameter(valid_589081, JString, required = false,
-                                 default = newJString("1"))
-  if valid_589081 != nil:
-    section.add "$.xgafv", valid_589081
-  var valid_589082 = query.getOrDefault("prettyPrint")
-  valid_589082 = validateParameter(valid_589082, JBool, required = false,
+  if valid_578972 != nil:
+    section.add "key", valid_578972
+  var valid_578973 = query.getOrDefault("prettyPrint")
+  valid_578973 = validateParameter(valid_578973, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589082 != nil:
-    section.add "prettyPrint", valid_589082
+  if valid_578973 != nil:
+    section.add "prettyPrint", valid_578973
+  var valid_578974 = query.getOrDefault("oauth_token")
+  valid_578974 = validateParameter(valid_578974, JString, required = false,
+                                 default = nil)
+  if valid_578974 != nil:
+    section.add "oauth_token", valid_578974
+  var valid_578975 = query.getOrDefault("$.xgafv")
+  valid_578975 = validateParameter(valid_578975, JString, required = false,
+                                 default = newJString("1"))
+  if valid_578975 != nil:
+    section.add "$.xgafv", valid_578975
+  var valid_578976 = query.getOrDefault("alt")
+  valid_578976 = validateParameter(valid_578976, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578976 != nil:
+    section.add "alt", valid_578976
+  var valid_578977 = query.getOrDefault("uploadType")
+  valid_578977 = validateParameter(valid_578977, JString, required = false,
+                                 default = nil)
+  if valid_578977 != nil:
+    section.add "uploadType", valid_578977
+  var valid_578978 = query.getOrDefault("quotaUser")
+  valid_578978 = validateParameter(valid_578978, JString, required = false,
+                                 default = nil)
+  if valid_578978 != nil:
+    section.add "quotaUser", valid_578978
+  var valid_578979 = query.getOrDefault("callback")
+  valid_578979 = validateParameter(valid_578979, JString, required = false,
+                                 default = nil)
+  if valid_578979 != nil:
+    section.add "callback", valid_578979
+  var valid_578980 = query.getOrDefault("fields")
+  valid_578980 = validateParameter(valid_578980, JString, required = false,
+                                 default = nil)
+  if valid_578980 != nil:
+    section.add "fields", valid_578980
+  var valid_578981 = query.getOrDefault("access_token")
+  valid_578981 = validateParameter(valid_578981, JString, required = false,
+                                 default = nil)
+  if valid_578981 != nil:
+    section.add "access_token", valid_578981
+  var valid_578982 = query.getOrDefault("upload_protocol")
+  valid_578982 = validateParameter(valid_578982, JString, required = false,
+                                 default = nil)
+  if valid_578982 != nil:
+    section.add "upload_protocol", valid_578982
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1075,7 +1079,7 @@ proc validate_SlidesPresentationsBatchUpdate_589069(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589084: Call_SlidesPresentationsBatchUpdate_589068; path: JsonNode;
+proc call*(call_578984: Call_SlidesPresentationsBatchUpdate_578968; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Applies one or more updates to the presentation.
   ## 
@@ -1099,21 +1103,21 @@ proc call*(call_589084: Call_SlidesPresentationsBatchUpdate_589068; path: JsonNo
   ## the updates in your request are guaranteed to be applied together
   ## atomically.
   ## 
-  let valid = call_589084.validator(path, query, header, formData, body)
-  let scheme = call_589084.pickScheme
+  let valid = call_578984.validator(path, query, header, formData, body)
+  let scheme = call_578984.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589084.url(scheme.get, call_589084.host, call_589084.base,
-                         call_589084.route, valid.getOrDefault("path"),
+  let url = call_578984.url(scheme.get, call_578984.host, call_578984.base,
+                         call_578984.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589084, url, valid)
+  result = hook(call_578984, url, valid)
 
-proc call*(call_589085: Call_SlidesPresentationsBatchUpdate_589068;
-          presentationId: string; uploadProtocol: string = ""; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          callback: string = ""; accessToken: string = ""; uploadType: string = "";
-          key: string = ""; Xgafv: string = "1"; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578985: Call_SlidesPresentationsBatchUpdate_578968;
+          presentationId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
+          uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          callback: string = ""; fields: string = ""; accessToken: string = "";
+          uploadProtocol: string = ""): Recallable =
   ## slidesPresentationsBatchUpdate
   ## Applies one or more updates to the presentation.
   ## 
@@ -1136,56 +1140,56 @@ proc call*(call_589085: Call_SlidesPresentationsBatchUpdate_589068;
   ## collaborators, the presentation should reflect your changes. In any case,
   ## the updates in your request are guaranteed to be applied together
   ## atomically.
-  ##   uploadProtocol: string
-  ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for response.
-  ##   presentationId: string (required)
-  ##                 : The presentation to apply the updates to.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   callback: string
-  ##           : JSONP
-  ##   accessToken: string
-  ##              : OAuth access token.
-  ##   uploadType: string
-  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   Xgafv: string
-  ##        : V1 error format.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589086 = newJObject()
-  var query_589087 = newJObject()
-  var body_589088 = newJObject()
-  add(query_589087, "upload_protocol", newJString(uploadProtocol))
-  add(query_589087, "fields", newJString(fields))
-  add(query_589087, "quotaUser", newJString(quotaUser))
-  add(query_589087, "alt", newJString(alt))
-  add(path_589086, "presentationId", newJString(presentationId))
-  add(query_589087, "oauth_token", newJString(oauthToken))
-  add(query_589087, "callback", newJString(callback))
-  add(query_589087, "access_token", newJString(accessToken))
-  add(query_589087, "uploadType", newJString(uploadType))
-  add(query_589087, "key", newJString(key))
-  add(query_589087, "$.xgafv", newJString(Xgafv))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   Xgafv: string
+  ##        : V1 error format.
+  ##   alt: string
+  ##      : Data format for response.
+  ##   uploadType: string
+  ##             : Legacy upload protocol for media (e.g. "media", "multipart").
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
+  ##   body: JObject
+  ##   callback: string
+  ##           : JSONP
+  ##   presentationId: string (required)
+  ##                 : The presentation to apply the updates to.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   accessToken: string
+  ##              : OAuth access token.
+  ##   uploadProtocol: string
+  ##                 : Upload protocol for media (e.g. "raw", "multipart").
+  var path_578986 = newJObject()
+  var query_578987 = newJObject()
+  var body_578988 = newJObject()
+  add(query_578987, "key", newJString(key))
+  add(query_578987, "prettyPrint", newJBool(prettyPrint))
+  add(query_578987, "oauth_token", newJString(oauthToken))
+  add(query_578987, "$.xgafv", newJString(Xgafv))
+  add(query_578987, "alt", newJString(alt))
+  add(query_578987, "uploadType", newJString(uploadType))
+  add(query_578987, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589088 = body
-  add(query_589087, "prettyPrint", newJBool(prettyPrint))
-  result = call_589085.call(path_589086, query_589087, nil, nil, body_589088)
+    body_578988 = body
+  add(query_578987, "callback", newJString(callback))
+  add(path_578986, "presentationId", newJString(presentationId))
+  add(query_578987, "fields", newJString(fields))
+  add(query_578987, "access_token", newJString(accessToken))
+  add(query_578987, "upload_protocol", newJString(uploadProtocol))
+  result = call_578985.call(path_578986, query_578987, nil, nil, body_578988)
 
-var slidesPresentationsBatchUpdate* = Call_SlidesPresentationsBatchUpdate_589068(
+var slidesPresentationsBatchUpdate* = Call_SlidesPresentationsBatchUpdate_578968(
     name: "slidesPresentationsBatchUpdate", meth: HttpMethod.HttpPost,
     host: "slides.googleapis.com",
     route: "/v1/presentations/{presentationId}:batchUpdate",
-    validator: validate_SlidesPresentationsBatchUpdate_589069, base: "/",
-    url: url_SlidesPresentationsBatchUpdate_589070, schemes: {Scheme.Https})
+    validator: validate_SlidesPresentationsBatchUpdate_578969, base: "/",
+    url: url_SlidesPresentationsBatchUpdate_578970, schemes: {Scheme.Https})
 export
   rest
 

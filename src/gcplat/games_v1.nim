@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588466 = ref object of OpenApiRestCall
+  OpenApiRestCall_578364 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588466](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578364](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588466): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578364): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,15 +112,15 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_GamesAchievementDefinitionsList_588734 = ref object of OpenApiRestCall_588466
-proc url_GamesAchievementDefinitionsList_588736(protocol: Scheme; host: string;
+  Call_GamesAchievementDefinitionsList_578634 = ref object of OpenApiRestCall_578364
+proc url_GamesAchievementDefinitionsList_578636(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesAchievementDefinitionsList_588735(path: JsonNode;
+proc validate_GamesAchievementDefinitionsList_578635(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all the achievement definitions for your application.
   ## 
@@ -125,76 +129,76 @@ proc validate_GamesAchievementDefinitionsList_588735(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of achievement resources to return in the response, used for paging. For any response, the actual number of achievement resources returned may be less than the specified maxResults.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of achievement resources to return in the response, used for paging. For any response, the actual number of achievement resources returned may be less than the specified maxResults.
   section = newJObject()
-  var valid_588848 = query.getOrDefault("fields")
-  valid_588848 = validateParameter(valid_588848, JString, required = false,
+  var valid_578748 = query.getOrDefault("key")
+  valid_578748 = validateParameter(valid_578748, JString, required = false,
                                  default = nil)
-  if valid_588848 != nil:
-    section.add "fields", valid_588848
-  var valid_588849 = query.getOrDefault("pageToken")
-  valid_588849 = validateParameter(valid_588849, JString, required = false,
-                                 default = nil)
-  if valid_588849 != nil:
-    section.add "pageToken", valid_588849
-  var valid_588850 = query.getOrDefault("quotaUser")
-  valid_588850 = validateParameter(valid_588850, JString, required = false,
-                                 default = nil)
-  if valid_588850 != nil:
-    section.add "quotaUser", valid_588850
-  var valid_588864 = query.getOrDefault("alt")
-  valid_588864 = validateParameter(valid_588864, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588864 != nil:
-    section.add "alt", valid_588864
-  var valid_588865 = query.getOrDefault("language")
-  valid_588865 = validateParameter(valid_588865, JString, required = false,
-                                 default = nil)
-  if valid_588865 != nil:
-    section.add "language", valid_588865
-  var valid_588866 = query.getOrDefault("oauth_token")
-  valid_588866 = validateParameter(valid_588866, JString, required = false,
-                                 default = nil)
-  if valid_588866 != nil:
-    section.add "oauth_token", valid_588866
-  var valid_588867 = query.getOrDefault("userIp")
-  valid_588867 = validateParameter(valid_588867, JString, required = false,
-                                 default = nil)
-  if valid_588867 != nil:
-    section.add "userIp", valid_588867
-  var valid_588868 = query.getOrDefault("maxResults")
-  valid_588868 = validateParameter(valid_588868, JInt, required = false, default = nil)
-  if valid_588868 != nil:
-    section.add "maxResults", valid_588868
-  var valid_588869 = query.getOrDefault("key")
-  valid_588869 = validateParameter(valid_588869, JString, required = false,
-                                 default = nil)
-  if valid_588869 != nil:
-    section.add "key", valid_588869
-  var valid_588870 = query.getOrDefault("prettyPrint")
-  valid_588870 = validateParameter(valid_588870, JBool, required = false,
+  if valid_578748 != nil:
+    section.add "key", valid_578748
+  var valid_578762 = query.getOrDefault("prettyPrint")
+  valid_578762 = validateParameter(valid_578762, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588870 != nil:
-    section.add "prettyPrint", valid_588870
+  if valid_578762 != nil:
+    section.add "prettyPrint", valid_578762
+  var valid_578763 = query.getOrDefault("oauth_token")
+  valid_578763 = validateParameter(valid_578763, JString, required = false,
+                                 default = nil)
+  if valid_578763 != nil:
+    section.add "oauth_token", valid_578763
+  var valid_578764 = query.getOrDefault("alt")
+  valid_578764 = validateParameter(valid_578764, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578764 != nil:
+    section.add "alt", valid_578764
+  var valid_578765 = query.getOrDefault("userIp")
+  valid_578765 = validateParameter(valid_578765, JString, required = false,
+                                 default = nil)
+  if valid_578765 != nil:
+    section.add "userIp", valid_578765
+  var valid_578766 = query.getOrDefault("quotaUser")
+  valid_578766 = validateParameter(valid_578766, JString, required = false,
+                                 default = nil)
+  if valid_578766 != nil:
+    section.add "quotaUser", valid_578766
+  var valid_578767 = query.getOrDefault("pageToken")
+  valid_578767 = validateParameter(valid_578767, JString, required = false,
+                                 default = nil)
+  if valid_578767 != nil:
+    section.add "pageToken", valid_578767
+  var valid_578768 = query.getOrDefault("fields")
+  valid_578768 = validateParameter(valid_578768, JString, required = false,
+                                 default = nil)
+  if valid_578768 != nil:
+    section.add "fields", valid_578768
+  var valid_578769 = query.getOrDefault("language")
+  valid_578769 = validateParameter(valid_578769, JString, required = false,
+                                 default = nil)
+  if valid_578769 != nil:
+    section.add "language", valid_578769
+  var valid_578770 = query.getOrDefault("maxResults")
+  valid_578770 = validateParameter(valid_578770, JInt, required = false, default = nil)
+  if valid_578770 != nil:
+    section.add "maxResults", valid_578770
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -203,75 +207,75 @@ proc validate_GamesAchievementDefinitionsList_588735(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588893: Call_GamesAchievementDefinitionsList_588734;
+proc call*(call_578793: Call_GamesAchievementDefinitionsList_578634;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists all the achievement definitions for your application.
   ## 
-  let valid = call_588893.validator(path, query, header, formData, body)
-  let scheme = call_588893.pickScheme
+  let valid = call_578793.validator(path, query, header, formData, body)
+  let scheme = call_578793.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588893.url(scheme.get, call_588893.host, call_588893.base,
-                         call_588893.route, valid.getOrDefault("path"),
+  let url = call_578793.url(scheme.get, call_578793.host, call_578793.base,
+                         call_578793.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588893, url, valid)
+  result = hook(call_578793, url, valid)
 
-proc call*(call_588964: Call_GamesAchievementDefinitionsList_588734;
-          fields: string = ""; pageToken: string = ""; quotaUser: string = "";
-          alt: string = "json"; language: string = ""; oauthToken: string = "";
-          userIp: string = ""; maxResults: int = 0; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578864: Call_GamesAchievementDefinitionsList_578634;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          pageToken: string = ""; fields: string = ""; language: string = "";
+          maxResults: int = 0): Recallable =
   ## gamesAchievementDefinitionsList
   ## Lists all the achievement definitions for your application.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of achievement resources to return in the response, used for paging. For any response, the actual number of achievement resources returned may be less than the specified maxResults.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_588965 = newJObject()
-  add(query_588965, "fields", newJString(fields))
-  add(query_588965, "pageToken", newJString(pageToken))
-  add(query_588965, "quotaUser", newJString(quotaUser))
-  add(query_588965, "alt", newJString(alt))
-  add(query_588965, "language", newJString(language))
-  add(query_588965, "oauth_token", newJString(oauthToken))
-  add(query_588965, "userIp", newJString(userIp))
-  add(query_588965, "maxResults", newJInt(maxResults))
-  add(query_588965, "key", newJString(key))
-  add(query_588965, "prettyPrint", newJBool(prettyPrint))
-  result = call_588964.call(nil, query_588965, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: int
+  ##             : The maximum number of achievement resources to return in the response, used for paging. For any response, the actual number of achievement resources returned may be less than the specified maxResults.
+  var query_578865 = newJObject()
+  add(query_578865, "key", newJString(key))
+  add(query_578865, "prettyPrint", newJBool(prettyPrint))
+  add(query_578865, "oauth_token", newJString(oauthToken))
+  add(query_578865, "alt", newJString(alt))
+  add(query_578865, "userIp", newJString(userIp))
+  add(query_578865, "quotaUser", newJString(quotaUser))
+  add(query_578865, "pageToken", newJString(pageToken))
+  add(query_578865, "fields", newJString(fields))
+  add(query_578865, "language", newJString(language))
+  add(query_578865, "maxResults", newJInt(maxResults))
+  result = call_578864.call(nil, query_578865, nil, nil, nil)
 
-var gamesAchievementDefinitionsList* = Call_GamesAchievementDefinitionsList_588734(
+var gamesAchievementDefinitionsList* = Call_GamesAchievementDefinitionsList_578634(
     name: "gamesAchievementDefinitionsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/achievements",
-    validator: validate_GamesAchievementDefinitionsList_588735, base: "/games/v1",
-    url: url_GamesAchievementDefinitionsList_588736, schemes: {Scheme.Https})
+    validator: validate_GamesAchievementDefinitionsList_578635, base: "/games/v1",
+    url: url_GamesAchievementDefinitionsList_578636, schemes: {Scheme.Https})
 type
-  Call_GamesAchievementsUpdateMultiple_589005 = ref object of OpenApiRestCall_588466
-proc url_GamesAchievementsUpdateMultiple_589007(protocol: Scheme; host: string;
+  Call_GamesAchievementsUpdateMultiple_578905 = ref object of OpenApiRestCall_578364
+proc url_GamesAchievementsUpdateMultiple_578907(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesAchievementsUpdateMultiple_589006(path: JsonNode;
+proc validate_GamesAchievementsUpdateMultiple_578906(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates multiple achievements for the currently authenticated player.
   ## 
@@ -280,63 +284,63 @@ proc validate_GamesAchievementsUpdateMultiple_589006(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   builtinGameId: JString
-  ##                : Override used only by built-in games in Play Games application.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   builtinGameId: JString
+  ##                : Override used only by built-in games in Play Games application.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589008 = query.getOrDefault("fields")
-  valid_589008 = validateParameter(valid_589008, JString, required = false,
+  var valid_578908 = query.getOrDefault("key")
+  valid_578908 = validateParameter(valid_578908, JString, required = false,
                                  default = nil)
-  if valid_589008 != nil:
-    section.add "fields", valid_589008
-  var valid_589009 = query.getOrDefault("quotaUser")
-  valid_589009 = validateParameter(valid_589009, JString, required = false,
-                                 default = nil)
-  if valid_589009 != nil:
-    section.add "quotaUser", valid_589009
-  var valid_589010 = query.getOrDefault("alt")
-  valid_589010 = validateParameter(valid_589010, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589010 != nil:
-    section.add "alt", valid_589010
-  var valid_589011 = query.getOrDefault("builtinGameId")
-  valid_589011 = validateParameter(valid_589011, JString, required = false,
-                                 default = nil)
-  if valid_589011 != nil:
-    section.add "builtinGameId", valid_589011
-  var valid_589012 = query.getOrDefault("oauth_token")
-  valid_589012 = validateParameter(valid_589012, JString, required = false,
-                                 default = nil)
-  if valid_589012 != nil:
-    section.add "oauth_token", valid_589012
-  var valid_589013 = query.getOrDefault("userIp")
-  valid_589013 = validateParameter(valid_589013, JString, required = false,
-                                 default = nil)
-  if valid_589013 != nil:
-    section.add "userIp", valid_589013
-  var valid_589014 = query.getOrDefault("key")
-  valid_589014 = validateParameter(valid_589014, JString, required = false,
-                                 default = nil)
-  if valid_589014 != nil:
-    section.add "key", valid_589014
-  var valid_589015 = query.getOrDefault("prettyPrint")
-  valid_589015 = validateParameter(valid_589015, JBool, required = false,
+  if valid_578908 != nil:
+    section.add "key", valid_578908
+  var valid_578909 = query.getOrDefault("prettyPrint")
+  valid_578909 = validateParameter(valid_578909, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589015 != nil:
-    section.add "prettyPrint", valid_589015
+  if valid_578909 != nil:
+    section.add "prettyPrint", valid_578909
+  var valid_578910 = query.getOrDefault("oauth_token")
+  valid_578910 = validateParameter(valid_578910, JString, required = false,
+                                 default = nil)
+  if valid_578910 != nil:
+    section.add "oauth_token", valid_578910
+  var valid_578911 = query.getOrDefault("alt")
+  valid_578911 = validateParameter(valid_578911, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578911 != nil:
+    section.add "alt", valid_578911
+  var valid_578912 = query.getOrDefault("userIp")
+  valid_578912 = validateParameter(valid_578912, JString, required = false,
+                                 default = nil)
+  if valid_578912 != nil:
+    section.add "userIp", valid_578912
+  var valid_578913 = query.getOrDefault("quotaUser")
+  valid_578913 = validateParameter(valid_578913, JString, required = false,
+                                 default = nil)
+  if valid_578913 != nil:
+    section.add "quotaUser", valid_578913
+  var valid_578914 = query.getOrDefault("builtinGameId")
+  valid_578914 = validateParameter(valid_578914, JString, required = false,
+                                 default = nil)
+  if valid_578914 != nil:
+    section.add "builtinGameId", valid_578914
+  var valid_578915 = query.getOrDefault("fields")
+  valid_578915 = validateParameter(valid_578915, JString, required = false,
+                                 default = nil)
+  if valid_578915 != nil:
+    section.add "fields", valid_578915
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -348,65 +352,65 @@ proc validate_GamesAchievementsUpdateMultiple_589006(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589017: Call_GamesAchievementsUpdateMultiple_589005;
+proc call*(call_578917: Call_GamesAchievementsUpdateMultiple_578905;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates multiple achievements for the currently authenticated player.
   ## 
-  let valid = call_589017.validator(path, query, header, formData, body)
-  let scheme = call_589017.pickScheme
+  let valid = call_578917.validator(path, query, header, formData, body)
+  let scheme = call_578917.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589017.url(scheme.get, call_589017.host, call_589017.base,
-                         call_589017.route, valid.getOrDefault("path"),
+  let url = call_578917.url(scheme.get, call_578917.host, call_578917.base,
+                         call_578917.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589017, url, valid)
+  result = hook(call_578917, url, valid)
 
-proc call*(call_589018: Call_GamesAchievementsUpdateMultiple_589005;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          builtinGameId: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578918: Call_GamesAchievementsUpdateMultiple_578905;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; builtinGameId: string = ""; fields: string = ""): Recallable =
   ## gamesAchievementsUpdateMultiple
   ## Updates multiple achievements for the currently authenticated player.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   builtinGameId: string
-  ##                : Override used only by built-in games in Play Games application.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589019 = newJObject()
-  var body_589020 = newJObject()
-  add(query_589019, "fields", newJString(fields))
-  add(query_589019, "quotaUser", newJString(quotaUser))
-  add(query_589019, "alt", newJString(alt))
-  add(query_589019, "builtinGameId", newJString(builtinGameId))
-  add(query_589019, "oauth_token", newJString(oauthToken))
-  add(query_589019, "userIp", newJString(userIp))
-  add(query_589019, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   builtinGameId: string
+  ##                : Override used only by built-in games in Play Games application.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_578919 = newJObject()
+  var body_578920 = newJObject()
+  add(query_578919, "key", newJString(key))
+  add(query_578919, "prettyPrint", newJBool(prettyPrint))
+  add(query_578919, "oauth_token", newJString(oauthToken))
+  add(query_578919, "alt", newJString(alt))
+  add(query_578919, "userIp", newJString(userIp))
+  add(query_578919, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589020 = body
-  add(query_589019, "prettyPrint", newJBool(prettyPrint))
-  result = call_589018.call(nil, query_589019, nil, nil, body_589020)
+    body_578920 = body
+  add(query_578919, "builtinGameId", newJString(builtinGameId))
+  add(query_578919, "fields", newJString(fields))
+  result = call_578918.call(nil, query_578919, nil, nil, body_578920)
 
-var gamesAchievementsUpdateMultiple* = Call_GamesAchievementsUpdateMultiple_589005(
+var gamesAchievementsUpdateMultiple* = Call_GamesAchievementsUpdateMultiple_578905(
     name: "gamesAchievementsUpdateMultiple", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/achievements/updateMultiple",
-    validator: validate_GamesAchievementsUpdateMultiple_589006, base: "/games/v1",
-    url: url_GamesAchievementsUpdateMultiple_589007, schemes: {Scheme.Https})
+    validator: validate_GamesAchievementsUpdateMultiple_578906, base: "/games/v1",
+    url: url_GamesAchievementsUpdateMultiple_578907, schemes: {Scheme.Https})
 type
-  Call_GamesAchievementsIncrement_589021 = ref object of OpenApiRestCall_588466
-proc url_GamesAchievementsIncrement_589023(protocol: Scheme; host: string;
+  Call_GamesAchievementsIncrement_578921 = ref object of OpenApiRestCall_578364
+proc url_GamesAchievementsIncrement_578923(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -422,7 +426,7 @@ proc url_GamesAchievementsIncrement_589023(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesAchievementsIncrement_589022(path: JsonNode; query: JsonNode;
+proc validate_GamesAchievementsIncrement_578922(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Increments the steps of the achievement with the given ID for the currently authenticated player.
   ## 
@@ -434,78 +438,78 @@ proc validate_GamesAchievementsIncrement_589022(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `achievementId` field"
-  var valid_589038 = path.getOrDefault("achievementId")
-  valid_589038 = validateParameter(valid_589038, JString, required = true,
+  var valid_578938 = path.getOrDefault("achievementId")
+  valid_578938 = validateParameter(valid_578938, JString, required = true,
                                  default = nil)
-  if valid_589038 != nil:
-    section.add "achievementId", valid_589038
+  if valid_578938 != nil:
+    section.add "achievementId", valid_578938
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   requestId: JString
-  ##            : A randomly generated numeric ID for each request specified by the caller. This number is used at the server to ensure that the request is handled correctly across retries.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   stepsToIncrement: JInt (required)
-  ##                   : The number of steps to increment.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   requestId: JString
+  ##            : A randomly generated numeric ID for each request specified by the caller. This number is used at the server to ensure that the request is handled correctly across retries.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   stepsToIncrement: JInt (required)
+  ##                   : The number of steps to increment.
   section = newJObject()
-  var valid_589039 = query.getOrDefault("fields")
-  valid_589039 = validateParameter(valid_589039, JString, required = false,
+  var valid_578939 = query.getOrDefault("key")
+  valid_578939 = validateParameter(valid_578939, JString, required = false,
                                  default = nil)
-  if valid_589039 != nil:
-    section.add "fields", valid_589039
-  var valid_589040 = query.getOrDefault("requestId")
-  valid_589040 = validateParameter(valid_589040, JString, required = false,
+  if valid_578939 != nil:
+    section.add "key", valid_578939
+  var valid_578940 = query.getOrDefault("prettyPrint")
+  valid_578940 = validateParameter(valid_578940, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_578940 != nil:
+    section.add "prettyPrint", valid_578940
+  var valid_578941 = query.getOrDefault("oauth_token")
+  valid_578941 = validateParameter(valid_578941, JString, required = false,
                                  default = nil)
-  if valid_589040 != nil:
-    section.add "requestId", valid_589040
-  var valid_589041 = query.getOrDefault("quotaUser")
-  valid_589041 = validateParameter(valid_589041, JString, required = false,
-                                 default = nil)
-  if valid_589041 != nil:
-    section.add "quotaUser", valid_589041
-  var valid_589042 = query.getOrDefault("alt")
-  valid_589042 = validateParameter(valid_589042, JString, required = false,
+  if valid_578941 != nil:
+    section.add "oauth_token", valid_578941
+  var valid_578942 = query.getOrDefault("alt")
+  valid_578942 = validateParameter(valid_578942, JString, required = false,
                                  default = newJString("json"))
-  if valid_589042 != nil:
-    section.add "alt", valid_589042
-  var valid_589043 = query.getOrDefault("oauth_token")
-  valid_589043 = validateParameter(valid_589043, JString, required = false,
+  if valid_578942 != nil:
+    section.add "alt", valid_578942
+  var valid_578943 = query.getOrDefault("userIp")
+  valid_578943 = validateParameter(valid_578943, JString, required = false,
                                  default = nil)
-  if valid_589043 != nil:
-    section.add "oauth_token", valid_589043
-  var valid_589044 = query.getOrDefault("userIp")
-  valid_589044 = validateParameter(valid_589044, JString, required = false,
+  if valid_578943 != nil:
+    section.add "userIp", valid_578943
+  var valid_578944 = query.getOrDefault("quotaUser")
+  valid_578944 = validateParameter(valid_578944, JString, required = false,
                                  default = nil)
-  if valid_589044 != nil:
-    section.add "userIp", valid_589044
-  var valid_589045 = query.getOrDefault("key")
-  valid_589045 = validateParameter(valid_589045, JString, required = false,
+  if valid_578944 != nil:
+    section.add "quotaUser", valid_578944
+  var valid_578945 = query.getOrDefault("requestId")
+  valid_578945 = validateParameter(valid_578945, JString, required = false,
                                  default = nil)
-  if valid_589045 != nil:
-    section.add "key", valid_589045
+  if valid_578945 != nil:
+    section.add "requestId", valid_578945
+  var valid_578946 = query.getOrDefault("fields")
+  valid_578946 = validateParameter(valid_578946, JString, required = false,
+                                 default = nil)
+  if valid_578946 != nil:
+    section.add "fields", valid_578946
   assert query != nil,
         "query argument is necessary due to required `stepsToIncrement` field"
-  var valid_589046 = query.getOrDefault("stepsToIncrement")
-  valid_589046 = validateParameter(valid_589046, JInt, required = true, default = nil)
-  if valid_589046 != nil:
-    section.add "stepsToIncrement", valid_589046
-  var valid_589047 = query.getOrDefault("prettyPrint")
-  valid_589047 = validateParameter(valid_589047, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_589047 != nil:
-    section.add "prettyPrint", valid_589047
+  var valid_578947 = query.getOrDefault("stepsToIncrement")
+  valid_578947 = validateParameter(valid_578947, JInt, required = true, default = nil)
+  if valid_578947 != nil:
+    section.add "stepsToIncrement", valid_578947
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -514,68 +518,68 @@ proc validate_GamesAchievementsIncrement_589022(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589048: Call_GamesAchievementsIncrement_589021; path: JsonNode;
+proc call*(call_578948: Call_GamesAchievementsIncrement_578921; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Increments the steps of the achievement with the given ID for the currently authenticated player.
   ## 
-  let valid = call_589048.validator(path, query, header, formData, body)
-  let scheme = call_589048.pickScheme
+  let valid = call_578948.validator(path, query, header, formData, body)
+  let scheme = call_578948.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589048.url(scheme.get, call_589048.host, call_589048.base,
-                         call_589048.route, valid.getOrDefault("path"),
+  let url = call_578948.url(scheme.get, call_578948.host, call_578948.base,
+                         call_578948.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589048, url, valid)
+  result = hook(call_578948, url, valid)
 
-proc call*(call_589049: Call_GamesAchievementsIncrement_589021;
-          stepsToIncrement: int; achievementId: string; fields: string = "";
-          requestId: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578949: Call_GamesAchievementsIncrement_578921;
+          achievementId: string; stepsToIncrement: int; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; requestId: string = "";
+          fields: string = ""): Recallable =
   ## gamesAchievementsIncrement
   ## Increments the steps of the achievement with the given ID for the currently authenticated player.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   requestId: string
-  ##            : A randomly generated numeric ID for each request specified by the caller. This number is used at the server to ensure that the request is handled correctly across retries.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   stepsToIncrement: int (required)
-  ##                   : The number of steps to increment.
-  ##   achievementId: string (required)
-  ##                : The ID of the achievement used by this method.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589050 = newJObject()
-  var query_589051 = newJObject()
-  add(query_589051, "fields", newJString(fields))
-  add(query_589051, "requestId", newJString(requestId))
-  add(query_589051, "quotaUser", newJString(quotaUser))
-  add(query_589051, "alt", newJString(alt))
-  add(query_589051, "oauth_token", newJString(oauthToken))
-  add(query_589051, "userIp", newJString(userIp))
-  add(query_589051, "key", newJString(key))
-  add(query_589051, "stepsToIncrement", newJInt(stepsToIncrement))
-  add(path_589050, "achievementId", newJString(achievementId))
-  add(query_589051, "prettyPrint", newJBool(prettyPrint))
-  result = call_589049.call(path_589050, query_589051, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   achievementId: string (required)
+  ##                : The ID of the achievement used by this method.
+  ##   requestId: string
+  ##            : A randomly generated numeric ID for each request specified by the caller. This number is used at the server to ensure that the request is handled correctly across retries.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   stepsToIncrement: int (required)
+  ##                   : The number of steps to increment.
+  var path_578950 = newJObject()
+  var query_578951 = newJObject()
+  add(query_578951, "key", newJString(key))
+  add(query_578951, "prettyPrint", newJBool(prettyPrint))
+  add(query_578951, "oauth_token", newJString(oauthToken))
+  add(query_578951, "alt", newJString(alt))
+  add(query_578951, "userIp", newJString(userIp))
+  add(query_578951, "quotaUser", newJString(quotaUser))
+  add(path_578950, "achievementId", newJString(achievementId))
+  add(query_578951, "requestId", newJString(requestId))
+  add(query_578951, "fields", newJString(fields))
+  add(query_578951, "stepsToIncrement", newJInt(stepsToIncrement))
+  result = call_578949.call(path_578950, query_578951, nil, nil, nil)
 
-var gamesAchievementsIncrement* = Call_GamesAchievementsIncrement_589021(
+var gamesAchievementsIncrement* = Call_GamesAchievementsIncrement_578921(
     name: "gamesAchievementsIncrement", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/achievements/{achievementId}/increment",
-    validator: validate_GamesAchievementsIncrement_589022, base: "/games/v1",
-    url: url_GamesAchievementsIncrement_589023, schemes: {Scheme.Https})
+    validator: validate_GamesAchievementsIncrement_578922, base: "/games/v1",
+    url: url_GamesAchievementsIncrement_578923, schemes: {Scheme.Https})
 type
-  Call_GamesAchievementsReveal_589052 = ref object of OpenApiRestCall_588466
-proc url_GamesAchievementsReveal_589054(protocol: Scheme; host: string; base: string;
+  Call_GamesAchievementsReveal_578952 = ref object of OpenApiRestCall_578364
+proc url_GamesAchievementsReveal_578954(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -592,7 +596,7 @@ proc url_GamesAchievementsReveal_589054(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesAchievementsReveal_589053(path: JsonNode; query: JsonNode;
+proc validate_GamesAchievementsReveal_578953(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets the state of the achievement with the given ID to REVEALED for the currently authenticated player.
   ## 
@@ -604,63 +608,63 @@ proc validate_GamesAchievementsReveal_589053(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `achievementId` field"
-  var valid_589055 = path.getOrDefault("achievementId")
-  valid_589055 = validateParameter(valid_589055, JString, required = true,
+  var valid_578955 = path.getOrDefault("achievementId")
+  valid_578955 = validateParameter(valid_578955, JString, required = true,
                                  default = nil)
-  if valid_589055 != nil:
-    section.add "achievementId", valid_589055
+  if valid_578955 != nil:
+    section.add "achievementId", valid_578955
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589056 = query.getOrDefault("fields")
-  valid_589056 = validateParameter(valid_589056, JString, required = false,
+  var valid_578956 = query.getOrDefault("key")
+  valid_578956 = validateParameter(valid_578956, JString, required = false,
                                  default = nil)
-  if valid_589056 != nil:
-    section.add "fields", valid_589056
-  var valid_589057 = query.getOrDefault("quotaUser")
-  valid_589057 = validateParameter(valid_589057, JString, required = false,
-                                 default = nil)
-  if valid_589057 != nil:
-    section.add "quotaUser", valid_589057
-  var valid_589058 = query.getOrDefault("alt")
-  valid_589058 = validateParameter(valid_589058, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589058 != nil:
-    section.add "alt", valid_589058
-  var valid_589059 = query.getOrDefault("oauth_token")
-  valid_589059 = validateParameter(valid_589059, JString, required = false,
-                                 default = nil)
-  if valid_589059 != nil:
-    section.add "oauth_token", valid_589059
-  var valid_589060 = query.getOrDefault("userIp")
-  valid_589060 = validateParameter(valid_589060, JString, required = false,
-                                 default = nil)
-  if valid_589060 != nil:
-    section.add "userIp", valid_589060
-  var valid_589061 = query.getOrDefault("key")
-  valid_589061 = validateParameter(valid_589061, JString, required = false,
-                                 default = nil)
-  if valid_589061 != nil:
-    section.add "key", valid_589061
-  var valid_589062 = query.getOrDefault("prettyPrint")
-  valid_589062 = validateParameter(valid_589062, JBool, required = false,
+  if valid_578956 != nil:
+    section.add "key", valid_578956
+  var valid_578957 = query.getOrDefault("prettyPrint")
+  valid_578957 = validateParameter(valid_578957, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589062 != nil:
-    section.add "prettyPrint", valid_589062
+  if valid_578957 != nil:
+    section.add "prettyPrint", valid_578957
+  var valid_578958 = query.getOrDefault("oauth_token")
+  valid_578958 = validateParameter(valid_578958, JString, required = false,
+                                 default = nil)
+  if valid_578958 != nil:
+    section.add "oauth_token", valid_578958
+  var valid_578959 = query.getOrDefault("alt")
+  valid_578959 = validateParameter(valid_578959, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578959 != nil:
+    section.add "alt", valid_578959
+  var valid_578960 = query.getOrDefault("userIp")
+  valid_578960 = validateParameter(valid_578960, JString, required = false,
+                                 default = nil)
+  if valid_578960 != nil:
+    section.add "userIp", valid_578960
+  var valid_578961 = query.getOrDefault("quotaUser")
+  valid_578961 = validateParameter(valid_578961, JString, required = false,
+                                 default = nil)
+  if valid_578961 != nil:
+    section.add "quotaUser", valid_578961
+  var valid_578962 = query.getOrDefault("fields")
+  valid_578962 = validateParameter(valid_578962, JString, required = false,
+                                 default = nil)
+  if valid_578962 != nil:
+    section.add "fields", valid_578962
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -669,61 +673,61 @@ proc validate_GamesAchievementsReveal_589053(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589063: Call_GamesAchievementsReveal_589052; path: JsonNode;
+proc call*(call_578963: Call_GamesAchievementsReveal_578952; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Sets the state of the achievement with the given ID to REVEALED for the currently authenticated player.
   ## 
-  let valid = call_589063.validator(path, query, header, formData, body)
-  let scheme = call_589063.pickScheme
+  let valid = call_578963.validator(path, query, header, formData, body)
+  let scheme = call_578963.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589063.url(scheme.get, call_589063.host, call_589063.base,
-                         call_589063.route, valid.getOrDefault("path"),
+  let url = call_578963.url(scheme.get, call_578963.host, call_578963.base,
+                         call_578963.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589063, url, valid)
+  result = hook(call_578963, url, valid)
 
-proc call*(call_589064: Call_GamesAchievementsReveal_589052; achievementId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578964: Call_GamesAchievementsReveal_578952; achievementId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## gamesAchievementsReveal
   ## Sets the state of the achievement with the given ID to REVEALED for the currently authenticated player.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   achievementId: string (required)
-  ##                : The ID of the achievement used by this method.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589065 = newJObject()
-  var query_589066 = newJObject()
-  add(query_589066, "fields", newJString(fields))
-  add(query_589066, "quotaUser", newJString(quotaUser))
-  add(query_589066, "alt", newJString(alt))
-  add(query_589066, "oauth_token", newJString(oauthToken))
-  add(query_589066, "userIp", newJString(userIp))
-  add(query_589066, "key", newJString(key))
-  add(path_589065, "achievementId", newJString(achievementId))
-  add(query_589066, "prettyPrint", newJBool(prettyPrint))
-  result = call_589064.call(path_589065, query_589066, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   achievementId: string (required)
+  ##                : The ID of the achievement used by this method.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578965 = newJObject()
+  var query_578966 = newJObject()
+  add(query_578966, "key", newJString(key))
+  add(query_578966, "prettyPrint", newJBool(prettyPrint))
+  add(query_578966, "oauth_token", newJString(oauthToken))
+  add(query_578966, "alt", newJString(alt))
+  add(query_578966, "userIp", newJString(userIp))
+  add(query_578966, "quotaUser", newJString(quotaUser))
+  add(path_578965, "achievementId", newJString(achievementId))
+  add(query_578966, "fields", newJString(fields))
+  result = call_578964.call(path_578965, query_578966, nil, nil, nil)
 
-var gamesAchievementsReveal* = Call_GamesAchievementsReveal_589052(
+var gamesAchievementsReveal* = Call_GamesAchievementsReveal_578952(
     name: "gamesAchievementsReveal", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/achievements/{achievementId}/reveal",
-    validator: validate_GamesAchievementsReveal_589053, base: "/games/v1",
-    url: url_GamesAchievementsReveal_589054, schemes: {Scheme.Https})
+    validator: validate_GamesAchievementsReveal_578953, base: "/games/v1",
+    url: url_GamesAchievementsReveal_578954, schemes: {Scheme.Https})
 type
-  Call_GamesAchievementsSetStepsAtLeast_589067 = ref object of OpenApiRestCall_588466
-proc url_GamesAchievementsSetStepsAtLeast_589069(protocol: Scheme; host: string;
+  Call_GamesAchievementsSetStepsAtLeast_578967 = ref object of OpenApiRestCall_578364
+proc url_GamesAchievementsSetStepsAtLeast_578969(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -739,7 +743,7 @@ proc url_GamesAchievementsSetStepsAtLeast_589069(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesAchievementsSetStepsAtLeast_589068(path: JsonNode;
+proc validate_GamesAchievementsSetStepsAtLeast_578968(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets the steps for the currently authenticated player towards unlocking an achievement. If the steps parameter is less than the current number of steps that the player already gained for the achievement, the achievement is not modified.
   ## 
@@ -751,70 +755,70 @@ proc validate_GamesAchievementsSetStepsAtLeast_589068(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `achievementId` field"
-  var valid_589070 = path.getOrDefault("achievementId")
-  valid_589070 = validateParameter(valid_589070, JString, required = true,
+  var valid_578970 = path.getOrDefault("achievementId")
+  valid_578970 = validateParameter(valid_578970, JString, required = true,
                                  default = nil)
-  if valid_589070 != nil:
-    section.add "achievementId", valid_589070
+  if valid_578970 != nil:
+    section.add "achievementId", valid_578970
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   steps: JInt (required)
-  ##        : The minimum value to set the steps to.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   steps: JInt (required)
+  ##        : The minimum value to set the steps to.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589071 = query.getOrDefault("fields")
-  valid_589071 = validateParameter(valid_589071, JString, required = false,
+  var valid_578971 = query.getOrDefault("key")
+  valid_578971 = validateParameter(valid_578971, JString, required = false,
                                  default = nil)
-  if valid_589071 != nil:
-    section.add "fields", valid_589071
-  var valid_589072 = query.getOrDefault("quotaUser")
-  valid_589072 = validateParameter(valid_589072, JString, required = false,
-                                 default = nil)
-  if valid_589072 != nil:
-    section.add "quotaUser", valid_589072
-  var valid_589073 = query.getOrDefault("alt")
-  valid_589073 = validateParameter(valid_589073, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589073 != nil:
-    section.add "alt", valid_589073
-  assert query != nil, "query argument is necessary due to required `steps` field"
-  var valid_589074 = query.getOrDefault("steps")
-  valid_589074 = validateParameter(valid_589074, JInt, required = true, default = nil)
-  if valid_589074 != nil:
-    section.add "steps", valid_589074
-  var valid_589075 = query.getOrDefault("oauth_token")
-  valid_589075 = validateParameter(valid_589075, JString, required = false,
-                                 default = nil)
-  if valid_589075 != nil:
-    section.add "oauth_token", valid_589075
-  var valid_589076 = query.getOrDefault("userIp")
-  valid_589076 = validateParameter(valid_589076, JString, required = false,
-                                 default = nil)
-  if valid_589076 != nil:
-    section.add "userIp", valid_589076
-  var valid_589077 = query.getOrDefault("key")
-  valid_589077 = validateParameter(valid_589077, JString, required = false,
-                                 default = nil)
-  if valid_589077 != nil:
-    section.add "key", valid_589077
-  var valid_589078 = query.getOrDefault("prettyPrint")
-  valid_589078 = validateParameter(valid_589078, JBool, required = false,
+  if valid_578971 != nil:
+    section.add "key", valid_578971
+  var valid_578972 = query.getOrDefault("prettyPrint")
+  valid_578972 = validateParameter(valid_578972, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589078 != nil:
-    section.add "prettyPrint", valid_589078
+  if valid_578972 != nil:
+    section.add "prettyPrint", valid_578972
+  var valid_578973 = query.getOrDefault("oauth_token")
+  valid_578973 = validateParameter(valid_578973, JString, required = false,
+                                 default = nil)
+  if valid_578973 != nil:
+    section.add "oauth_token", valid_578973
+  assert query != nil, "query argument is necessary due to required `steps` field"
+  var valid_578974 = query.getOrDefault("steps")
+  valid_578974 = validateParameter(valid_578974, JInt, required = true, default = nil)
+  if valid_578974 != nil:
+    section.add "steps", valid_578974
+  var valid_578975 = query.getOrDefault("alt")
+  valid_578975 = validateParameter(valid_578975, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578975 != nil:
+    section.add "alt", valid_578975
+  var valid_578976 = query.getOrDefault("userIp")
+  valid_578976 = validateParameter(valid_578976, JString, required = false,
+                                 default = nil)
+  if valid_578976 != nil:
+    section.add "userIp", valid_578976
+  var valid_578977 = query.getOrDefault("quotaUser")
+  valid_578977 = validateParameter(valid_578977, JString, required = false,
+                                 default = nil)
+  if valid_578977 != nil:
+    section.add "quotaUser", valid_578977
+  var valid_578978 = query.getOrDefault("fields")
+  valid_578978 = validateParameter(valid_578978, JString, required = false,
+                                 default = nil)
+  if valid_578978 != nil:
+    section.add "fields", valid_578978
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -823,67 +827,67 @@ proc validate_GamesAchievementsSetStepsAtLeast_589068(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589079: Call_GamesAchievementsSetStepsAtLeast_589067;
+proc call*(call_578979: Call_GamesAchievementsSetStepsAtLeast_578967;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the steps for the currently authenticated player towards unlocking an achievement. If the steps parameter is less than the current number of steps that the player already gained for the achievement, the achievement is not modified.
   ## 
-  let valid = call_589079.validator(path, query, header, formData, body)
-  let scheme = call_589079.pickScheme
+  let valid = call_578979.validator(path, query, header, formData, body)
+  let scheme = call_578979.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589079.url(scheme.get, call_589079.host, call_589079.base,
-                         call_589079.route, valid.getOrDefault("path"),
+  let url = call_578979.url(scheme.get, call_578979.host, call_578979.base,
+                         call_578979.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589079, url, valid)
+  result = hook(call_578979, url, valid)
 
-proc call*(call_589080: Call_GamesAchievementsSetStepsAtLeast_589067; steps: int;
-          achievementId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_578980: Call_GamesAchievementsSetStepsAtLeast_578967; steps: int;
+          achievementId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; fields: string = ""): Recallable =
   ## gamesAchievementsSetStepsAtLeast
   ## Sets the steps for the currently authenticated player towards unlocking an achievement. If the steps parameter is less than the current number of steps that the player already gained for the achievement, the achievement is not modified.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   steps: int (required)
-  ##        : The minimum value to set the steps to.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   achievementId: string (required)
-  ##                : The ID of the achievement used by this method.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589081 = newJObject()
-  var query_589082 = newJObject()
-  add(query_589082, "fields", newJString(fields))
-  add(query_589082, "quotaUser", newJString(quotaUser))
-  add(query_589082, "alt", newJString(alt))
-  add(query_589082, "steps", newJInt(steps))
-  add(query_589082, "oauth_token", newJString(oauthToken))
-  add(query_589082, "userIp", newJString(userIp))
-  add(query_589082, "key", newJString(key))
-  add(path_589081, "achievementId", newJString(achievementId))
-  add(query_589082, "prettyPrint", newJBool(prettyPrint))
-  result = call_589080.call(path_589081, query_589082, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   steps: int (required)
+  ##        : The minimum value to set the steps to.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   achievementId: string (required)
+  ##                : The ID of the achievement used by this method.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578981 = newJObject()
+  var query_578982 = newJObject()
+  add(query_578982, "key", newJString(key))
+  add(query_578982, "prettyPrint", newJBool(prettyPrint))
+  add(query_578982, "oauth_token", newJString(oauthToken))
+  add(query_578982, "steps", newJInt(steps))
+  add(query_578982, "alt", newJString(alt))
+  add(query_578982, "userIp", newJString(userIp))
+  add(query_578982, "quotaUser", newJString(quotaUser))
+  add(path_578981, "achievementId", newJString(achievementId))
+  add(query_578982, "fields", newJString(fields))
+  result = call_578980.call(path_578981, query_578982, nil, nil, nil)
 
-var gamesAchievementsSetStepsAtLeast* = Call_GamesAchievementsSetStepsAtLeast_589067(
+var gamesAchievementsSetStepsAtLeast* = Call_GamesAchievementsSetStepsAtLeast_578967(
     name: "gamesAchievementsSetStepsAtLeast", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/achievements/{achievementId}/setStepsAtLeast",
-    validator: validate_GamesAchievementsSetStepsAtLeast_589068,
-    base: "/games/v1", url: url_GamesAchievementsSetStepsAtLeast_589069,
+    validator: validate_GamesAchievementsSetStepsAtLeast_578968,
+    base: "/games/v1", url: url_GamesAchievementsSetStepsAtLeast_578969,
     schemes: {Scheme.Https})
 type
-  Call_GamesAchievementsUnlock_589083 = ref object of OpenApiRestCall_588466
-proc url_GamesAchievementsUnlock_589085(protocol: Scheme; host: string; base: string;
+  Call_GamesAchievementsUnlock_578983 = ref object of OpenApiRestCall_578364
+proc url_GamesAchievementsUnlock_578985(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -900,7 +904,7 @@ proc url_GamesAchievementsUnlock_589085(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesAchievementsUnlock_589084(path: JsonNode; query: JsonNode;
+proc validate_GamesAchievementsUnlock_578984(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Unlocks this achievement for the currently authenticated player.
   ## 
@@ -912,70 +916,70 @@ proc validate_GamesAchievementsUnlock_589084(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `achievementId` field"
-  var valid_589086 = path.getOrDefault("achievementId")
-  valid_589086 = validateParameter(valid_589086, JString, required = true,
+  var valid_578986 = path.getOrDefault("achievementId")
+  valid_578986 = validateParameter(valid_578986, JString, required = true,
                                  default = nil)
-  if valid_589086 != nil:
-    section.add "achievementId", valid_589086
+  if valid_578986 != nil:
+    section.add "achievementId", valid_578986
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   builtinGameId: JString
-  ##                : Override used only by built-in games in Play Games application.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   builtinGameId: JString
+  ##                : Override used only by built-in games in Play Games application.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589087 = query.getOrDefault("fields")
-  valid_589087 = validateParameter(valid_589087, JString, required = false,
+  var valid_578987 = query.getOrDefault("key")
+  valid_578987 = validateParameter(valid_578987, JString, required = false,
                                  default = nil)
-  if valid_589087 != nil:
-    section.add "fields", valid_589087
-  var valid_589088 = query.getOrDefault("quotaUser")
-  valid_589088 = validateParameter(valid_589088, JString, required = false,
-                                 default = nil)
-  if valid_589088 != nil:
-    section.add "quotaUser", valid_589088
-  var valid_589089 = query.getOrDefault("alt")
-  valid_589089 = validateParameter(valid_589089, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589089 != nil:
-    section.add "alt", valid_589089
-  var valid_589090 = query.getOrDefault("builtinGameId")
-  valid_589090 = validateParameter(valid_589090, JString, required = false,
-                                 default = nil)
-  if valid_589090 != nil:
-    section.add "builtinGameId", valid_589090
-  var valid_589091 = query.getOrDefault("oauth_token")
-  valid_589091 = validateParameter(valid_589091, JString, required = false,
-                                 default = nil)
-  if valid_589091 != nil:
-    section.add "oauth_token", valid_589091
-  var valid_589092 = query.getOrDefault("userIp")
-  valid_589092 = validateParameter(valid_589092, JString, required = false,
-                                 default = nil)
-  if valid_589092 != nil:
-    section.add "userIp", valid_589092
-  var valid_589093 = query.getOrDefault("key")
-  valid_589093 = validateParameter(valid_589093, JString, required = false,
-                                 default = nil)
-  if valid_589093 != nil:
-    section.add "key", valid_589093
-  var valid_589094 = query.getOrDefault("prettyPrint")
-  valid_589094 = validateParameter(valid_589094, JBool, required = false,
+  if valid_578987 != nil:
+    section.add "key", valid_578987
+  var valid_578988 = query.getOrDefault("prettyPrint")
+  valid_578988 = validateParameter(valid_578988, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589094 != nil:
-    section.add "prettyPrint", valid_589094
+  if valid_578988 != nil:
+    section.add "prettyPrint", valid_578988
+  var valid_578989 = query.getOrDefault("oauth_token")
+  valid_578989 = validateParameter(valid_578989, JString, required = false,
+                                 default = nil)
+  if valid_578989 != nil:
+    section.add "oauth_token", valid_578989
+  var valid_578990 = query.getOrDefault("alt")
+  valid_578990 = validateParameter(valid_578990, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578990 != nil:
+    section.add "alt", valid_578990
+  var valid_578991 = query.getOrDefault("userIp")
+  valid_578991 = validateParameter(valid_578991, JString, required = false,
+                                 default = nil)
+  if valid_578991 != nil:
+    section.add "userIp", valid_578991
+  var valid_578992 = query.getOrDefault("quotaUser")
+  valid_578992 = validateParameter(valid_578992, JString, required = false,
+                                 default = nil)
+  if valid_578992 != nil:
+    section.add "quotaUser", valid_578992
+  var valid_578993 = query.getOrDefault("builtinGameId")
+  valid_578993 = validateParameter(valid_578993, JString, required = false,
+                                 default = nil)
+  if valid_578993 != nil:
+    section.add "builtinGameId", valid_578993
+  var valid_578994 = query.getOrDefault("fields")
+  valid_578994 = validateParameter(valid_578994, JString, required = false,
+                                 default = nil)
+  if valid_578994 != nil:
+    section.add "fields", valid_578994
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -984,64 +988,64 @@ proc validate_GamesAchievementsUnlock_589084(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589095: Call_GamesAchievementsUnlock_589083; path: JsonNode;
+proc call*(call_578995: Call_GamesAchievementsUnlock_578983; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Unlocks this achievement for the currently authenticated player.
   ## 
-  let valid = call_589095.validator(path, query, header, formData, body)
-  let scheme = call_589095.pickScheme
+  let valid = call_578995.validator(path, query, header, formData, body)
+  let scheme = call_578995.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589095.url(scheme.get, call_589095.host, call_589095.base,
-                         call_589095.route, valid.getOrDefault("path"),
+  let url = call_578995.url(scheme.get, call_578995.host, call_578995.base,
+                         call_578995.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589095, url, valid)
+  result = hook(call_578995, url, valid)
 
-proc call*(call_589096: Call_GamesAchievementsUnlock_589083; achievementId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          builtinGameId: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_578996: Call_GamesAchievementsUnlock_578983; achievementId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          builtinGameId: string = ""; fields: string = ""): Recallable =
   ## gamesAchievementsUnlock
   ## Unlocks this achievement for the currently authenticated player.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   builtinGameId: string
-  ##                : Override used only by built-in games in Play Games application.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   achievementId: string (required)
-  ##                : The ID of the achievement used by this method.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589097 = newJObject()
-  var query_589098 = newJObject()
-  add(query_589098, "fields", newJString(fields))
-  add(query_589098, "quotaUser", newJString(quotaUser))
-  add(query_589098, "alt", newJString(alt))
-  add(query_589098, "builtinGameId", newJString(builtinGameId))
-  add(query_589098, "oauth_token", newJString(oauthToken))
-  add(query_589098, "userIp", newJString(userIp))
-  add(query_589098, "key", newJString(key))
-  add(path_589097, "achievementId", newJString(achievementId))
-  add(query_589098, "prettyPrint", newJBool(prettyPrint))
-  result = call_589096.call(path_589097, query_589098, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   achievementId: string (required)
+  ##                : The ID of the achievement used by this method.
+  ##   builtinGameId: string
+  ##                : Override used only by built-in games in Play Games application.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578997 = newJObject()
+  var query_578998 = newJObject()
+  add(query_578998, "key", newJString(key))
+  add(query_578998, "prettyPrint", newJBool(prettyPrint))
+  add(query_578998, "oauth_token", newJString(oauthToken))
+  add(query_578998, "alt", newJString(alt))
+  add(query_578998, "userIp", newJString(userIp))
+  add(query_578998, "quotaUser", newJString(quotaUser))
+  add(path_578997, "achievementId", newJString(achievementId))
+  add(query_578998, "builtinGameId", newJString(builtinGameId))
+  add(query_578998, "fields", newJString(fields))
+  result = call_578996.call(path_578997, query_578998, nil, nil, nil)
 
-var gamesAchievementsUnlock* = Call_GamesAchievementsUnlock_589083(
+var gamesAchievementsUnlock* = Call_GamesAchievementsUnlock_578983(
     name: "gamesAchievementsUnlock", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/achievements/{achievementId}/unlock",
-    validator: validate_GamesAchievementsUnlock_589084, base: "/games/v1",
-    url: url_GamesAchievementsUnlock_589085, schemes: {Scheme.Https})
+    validator: validate_GamesAchievementsUnlock_578984, base: "/games/v1",
+    url: url_GamesAchievementsUnlock_578985, schemes: {Scheme.Https})
 type
-  Call_GamesApplicationsPlayed_589099 = ref object of OpenApiRestCall_588466
-proc url_GamesApplicationsPlayed_589101(protocol: Scheme; host: string; base: string;
+  Call_GamesApplicationsPlayed_578999 = ref object of OpenApiRestCall_578364
+proc url_GamesApplicationsPlayed_579001(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1049,7 +1053,7 @@ proc url_GamesApplicationsPlayed_589101(protocol: Scheme; host: string; base: st
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesApplicationsPlayed_589100(path: JsonNode; query: JsonNode;
+proc validate_GamesApplicationsPlayed_579000(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Indicate that the the currently authenticated user is playing your application.
   ## 
@@ -1058,63 +1062,63 @@ proc validate_GamesApplicationsPlayed_589100(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   builtinGameId: JString
-  ##                : Override used only by built-in games in Play Games application.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   builtinGameId: JString
+  ##                : Override used only by built-in games in Play Games application.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589102 = query.getOrDefault("fields")
-  valid_589102 = validateParameter(valid_589102, JString, required = false,
+  var valid_579002 = query.getOrDefault("key")
+  valid_579002 = validateParameter(valid_579002, JString, required = false,
                                  default = nil)
-  if valid_589102 != nil:
-    section.add "fields", valid_589102
-  var valid_589103 = query.getOrDefault("quotaUser")
-  valid_589103 = validateParameter(valid_589103, JString, required = false,
-                                 default = nil)
-  if valid_589103 != nil:
-    section.add "quotaUser", valid_589103
-  var valid_589104 = query.getOrDefault("alt")
-  valid_589104 = validateParameter(valid_589104, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589104 != nil:
-    section.add "alt", valid_589104
-  var valid_589105 = query.getOrDefault("builtinGameId")
-  valid_589105 = validateParameter(valid_589105, JString, required = false,
-                                 default = nil)
-  if valid_589105 != nil:
-    section.add "builtinGameId", valid_589105
-  var valid_589106 = query.getOrDefault("oauth_token")
-  valid_589106 = validateParameter(valid_589106, JString, required = false,
-                                 default = nil)
-  if valid_589106 != nil:
-    section.add "oauth_token", valid_589106
-  var valid_589107 = query.getOrDefault("userIp")
-  valid_589107 = validateParameter(valid_589107, JString, required = false,
-                                 default = nil)
-  if valid_589107 != nil:
-    section.add "userIp", valid_589107
-  var valid_589108 = query.getOrDefault("key")
-  valid_589108 = validateParameter(valid_589108, JString, required = false,
-                                 default = nil)
-  if valid_589108 != nil:
-    section.add "key", valid_589108
-  var valid_589109 = query.getOrDefault("prettyPrint")
-  valid_589109 = validateParameter(valid_589109, JBool, required = false,
+  if valid_579002 != nil:
+    section.add "key", valid_579002
+  var valid_579003 = query.getOrDefault("prettyPrint")
+  valid_579003 = validateParameter(valid_579003, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589109 != nil:
-    section.add "prettyPrint", valid_589109
+  if valid_579003 != nil:
+    section.add "prettyPrint", valid_579003
+  var valid_579004 = query.getOrDefault("oauth_token")
+  valid_579004 = validateParameter(valid_579004, JString, required = false,
+                                 default = nil)
+  if valid_579004 != nil:
+    section.add "oauth_token", valid_579004
+  var valid_579005 = query.getOrDefault("alt")
+  valid_579005 = validateParameter(valid_579005, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579005 != nil:
+    section.add "alt", valid_579005
+  var valid_579006 = query.getOrDefault("userIp")
+  valid_579006 = validateParameter(valid_579006, JString, required = false,
+                                 default = nil)
+  if valid_579006 != nil:
+    section.add "userIp", valid_579006
+  var valid_579007 = query.getOrDefault("quotaUser")
+  valid_579007 = validateParameter(valid_579007, JString, required = false,
+                                 default = nil)
+  if valid_579007 != nil:
+    section.add "quotaUser", valid_579007
+  var valid_579008 = query.getOrDefault("builtinGameId")
+  valid_579008 = validateParameter(valid_579008, JString, required = false,
+                                 default = nil)
+  if valid_579008 != nil:
+    section.add "builtinGameId", valid_579008
+  var valid_579009 = query.getOrDefault("fields")
+  valid_579009 = validateParameter(valid_579009, JString, required = false,
+                                 default = nil)
+  if valid_579009 != nil:
+    section.add "fields", valid_579009
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1123,60 +1127,60 @@ proc validate_GamesApplicationsPlayed_589100(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589110: Call_GamesApplicationsPlayed_589099; path: JsonNode;
+proc call*(call_579010: Call_GamesApplicationsPlayed_578999; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Indicate that the the currently authenticated user is playing your application.
   ## 
-  let valid = call_589110.validator(path, query, header, formData, body)
-  let scheme = call_589110.pickScheme
+  let valid = call_579010.validator(path, query, header, formData, body)
+  let scheme = call_579010.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589110.url(scheme.get, call_589110.host, call_589110.base,
-                         call_589110.route, valid.getOrDefault("path"),
+  let url = call_579010.url(scheme.get, call_579010.host, call_579010.base,
+                         call_579010.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589110, url, valid)
+  result = hook(call_579010, url, valid)
 
-proc call*(call_589111: Call_GamesApplicationsPlayed_589099; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; builtinGameId: string = "";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579011: Call_GamesApplicationsPlayed_578999; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; builtinGameId: string = "";
+          fields: string = ""): Recallable =
   ## gamesApplicationsPlayed
   ## Indicate that the the currently authenticated user is playing your application.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   builtinGameId: string
-  ##                : Override used only by built-in games in Play Games application.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589112 = newJObject()
-  add(query_589112, "fields", newJString(fields))
-  add(query_589112, "quotaUser", newJString(quotaUser))
-  add(query_589112, "alt", newJString(alt))
-  add(query_589112, "builtinGameId", newJString(builtinGameId))
-  add(query_589112, "oauth_token", newJString(oauthToken))
-  add(query_589112, "userIp", newJString(userIp))
-  add(query_589112, "key", newJString(key))
-  add(query_589112, "prettyPrint", newJBool(prettyPrint))
-  result = call_589111.call(nil, query_589112, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   builtinGameId: string
+  ##                : Override used only by built-in games in Play Games application.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_579012 = newJObject()
+  add(query_579012, "key", newJString(key))
+  add(query_579012, "prettyPrint", newJBool(prettyPrint))
+  add(query_579012, "oauth_token", newJString(oauthToken))
+  add(query_579012, "alt", newJString(alt))
+  add(query_579012, "userIp", newJString(userIp))
+  add(query_579012, "quotaUser", newJString(quotaUser))
+  add(query_579012, "builtinGameId", newJString(builtinGameId))
+  add(query_579012, "fields", newJString(fields))
+  result = call_579011.call(nil, query_579012, nil, nil, nil)
 
-var gamesApplicationsPlayed* = Call_GamesApplicationsPlayed_589099(
+var gamesApplicationsPlayed* = Call_GamesApplicationsPlayed_578999(
     name: "gamesApplicationsPlayed", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/applications/played",
-    validator: validate_GamesApplicationsPlayed_589100, base: "/games/v1",
-    url: url_GamesApplicationsPlayed_589101, schemes: {Scheme.Https})
+    validator: validate_GamesApplicationsPlayed_579000, base: "/games/v1",
+    url: url_GamesApplicationsPlayed_579001, schemes: {Scheme.Https})
 type
-  Call_GamesApplicationsGet_589113 = ref object of OpenApiRestCall_588466
-proc url_GamesApplicationsGet_589115(protocol: Scheme; host: string; base: string;
+  Call_GamesApplicationsGet_579013 = ref object of OpenApiRestCall_578364
+proc url_GamesApplicationsGet_579015(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1191,7 +1195,7 @@ proc url_GamesApplicationsGet_589115(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesApplicationsGet_589114(path: JsonNode; query: JsonNode;
+proc validate_GamesApplicationsGet_579014(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the metadata of the application with the given ID. If the requested application is not available for the specified platformType, the returned response will not include any instance data.
   ## 
@@ -1203,77 +1207,77 @@ proc validate_GamesApplicationsGet_589114(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `applicationId` field"
-  var valid_589116 = path.getOrDefault("applicationId")
-  valid_589116 = validateParameter(valid_589116, JString, required = true,
+  var valid_579016 = path.getOrDefault("applicationId")
+  valid_579016 = validateParameter(valid_579016, JString, required = true,
                                  default = nil)
-  if valid_589116 != nil:
-    section.add "applicationId", valid_589116
+  if valid_579016 != nil:
+    section.add "applicationId", valid_579016
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   platformType: JString
-  ##               : Restrict application details returned to the specific platform.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   platformType: JString
+  ##               : Restrict application details returned to the specific platform.
   section = newJObject()
-  var valid_589117 = query.getOrDefault("fields")
-  valid_589117 = validateParameter(valid_589117, JString, required = false,
+  var valid_579017 = query.getOrDefault("key")
+  valid_579017 = validateParameter(valid_579017, JString, required = false,
                                  default = nil)
-  if valid_589117 != nil:
-    section.add "fields", valid_589117
-  var valid_589118 = query.getOrDefault("quotaUser")
-  valid_589118 = validateParameter(valid_589118, JString, required = false,
-                                 default = nil)
-  if valid_589118 != nil:
-    section.add "quotaUser", valid_589118
-  var valid_589119 = query.getOrDefault("alt")
-  valid_589119 = validateParameter(valid_589119, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589119 != nil:
-    section.add "alt", valid_589119
-  var valid_589120 = query.getOrDefault("language")
-  valid_589120 = validateParameter(valid_589120, JString, required = false,
-                                 default = nil)
-  if valid_589120 != nil:
-    section.add "language", valid_589120
-  var valid_589121 = query.getOrDefault("oauth_token")
-  valid_589121 = validateParameter(valid_589121, JString, required = false,
-                                 default = nil)
-  if valid_589121 != nil:
-    section.add "oauth_token", valid_589121
-  var valid_589122 = query.getOrDefault("userIp")
-  valid_589122 = validateParameter(valid_589122, JString, required = false,
-                                 default = nil)
-  if valid_589122 != nil:
-    section.add "userIp", valid_589122
-  var valid_589123 = query.getOrDefault("key")
-  valid_589123 = validateParameter(valid_589123, JString, required = false,
-                                 default = nil)
-  if valid_589123 != nil:
-    section.add "key", valid_589123
-  var valid_589124 = query.getOrDefault("platformType")
-  valid_589124 = validateParameter(valid_589124, JString, required = false,
-                                 default = newJString("ANDROID"))
-  if valid_589124 != nil:
-    section.add "platformType", valid_589124
-  var valid_589125 = query.getOrDefault("prettyPrint")
-  valid_589125 = validateParameter(valid_589125, JBool, required = false,
+  if valid_579017 != nil:
+    section.add "key", valid_579017
+  var valid_579018 = query.getOrDefault("prettyPrint")
+  valid_579018 = validateParameter(valid_579018, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589125 != nil:
-    section.add "prettyPrint", valid_589125
+  if valid_579018 != nil:
+    section.add "prettyPrint", valid_579018
+  var valid_579019 = query.getOrDefault("oauth_token")
+  valid_579019 = validateParameter(valid_579019, JString, required = false,
+                                 default = nil)
+  if valid_579019 != nil:
+    section.add "oauth_token", valid_579019
+  var valid_579020 = query.getOrDefault("alt")
+  valid_579020 = validateParameter(valid_579020, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579020 != nil:
+    section.add "alt", valid_579020
+  var valid_579021 = query.getOrDefault("userIp")
+  valid_579021 = validateParameter(valid_579021, JString, required = false,
+                                 default = nil)
+  if valid_579021 != nil:
+    section.add "userIp", valid_579021
+  var valid_579022 = query.getOrDefault("quotaUser")
+  valid_579022 = validateParameter(valid_579022, JString, required = false,
+                                 default = nil)
+  if valid_579022 != nil:
+    section.add "quotaUser", valid_579022
+  var valid_579023 = query.getOrDefault("fields")
+  valid_579023 = validateParameter(valid_579023, JString, required = false,
+                                 default = nil)
+  if valid_579023 != nil:
+    section.add "fields", valid_579023
+  var valid_579024 = query.getOrDefault("language")
+  valid_579024 = validateParameter(valid_579024, JString, required = false,
+                                 default = nil)
+  if valid_579024 != nil:
+    section.add "language", valid_579024
+  var valid_579025 = query.getOrDefault("platformType")
+  valid_579025 = validateParameter(valid_579025, JString, required = false,
+                                 default = newJString("ANDROID"))
+  if valid_579025 != nil:
+    section.add "platformType", valid_579025
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1282,67 +1286,67 @@ proc validate_GamesApplicationsGet_589114(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589126: Call_GamesApplicationsGet_589113; path: JsonNode;
+proc call*(call_579026: Call_GamesApplicationsGet_579013; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the metadata of the application with the given ID. If the requested application is not available for the specified platformType, the returned response will not include any instance data.
   ## 
-  let valid = call_589126.validator(path, query, header, formData, body)
-  let scheme = call_589126.pickScheme
+  let valid = call_579026.validator(path, query, header, formData, body)
+  let scheme = call_579026.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589126.url(scheme.get, call_589126.host, call_589126.base,
-                         call_589126.route, valid.getOrDefault("path"),
+  let url = call_579026.url(scheme.get, call_579026.host, call_579026.base,
+                         call_579026.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589126, url, valid)
+  result = hook(call_579026, url, valid)
 
-proc call*(call_589127: Call_GamesApplicationsGet_589113; applicationId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; platformType: string = "ANDROID"; prettyPrint: bool = true): Recallable =
+proc call*(call_579027: Call_GamesApplicationsGet_579013; applicationId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""; language: string = ""; platformType: string = "ANDROID"): Recallable =
   ## gamesApplicationsGet
   ## Retrieves the metadata of the application with the given ID. If the requested application is not available for the specified platformType, the returned response will not include any instance data.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   applicationId: string (required)
-  ##                : The application ID from the Google Play developer console.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   platformType: string
-  ##               : Restrict application details returned to the specific platform.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589128 = newJObject()
-  var query_589129 = newJObject()
-  add(query_589129, "fields", newJString(fields))
-  add(query_589129, "quotaUser", newJString(quotaUser))
-  add(query_589129, "alt", newJString(alt))
-  add(query_589129, "language", newJString(language))
-  add(query_589129, "oauth_token", newJString(oauthToken))
-  add(query_589129, "userIp", newJString(userIp))
-  add(path_589128, "applicationId", newJString(applicationId))
-  add(query_589129, "key", newJString(key))
-  add(query_589129, "platformType", newJString(platformType))
-  add(query_589129, "prettyPrint", newJBool(prettyPrint))
-  result = call_589127.call(path_589128, query_589129, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   platformType: string
+  ##               : Restrict application details returned to the specific platform.
+  ##   applicationId: string (required)
+  ##                : The application ID from the Google Play developer console.
+  var path_579028 = newJObject()
+  var query_579029 = newJObject()
+  add(query_579029, "key", newJString(key))
+  add(query_579029, "prettyPrint", newJBool(prettyPrint))
+  add(query_579029, "oauth_token", newJString(oauthToken))
+  add(query_579029, "alt", newJString(alt))
+  add(query_579029, "userIp", newJString(userIp))
+  add(query_579029, "quotaUser", newJString(quotaUser))
+  add(query_579029, "fields", newJString(fields))
+  add(query_579029, "language", newJString(language))
+  add(query_579029, "platformType", newJString(platformType))
+  add(path_579028, "applicationId", newJString(applicationId))
+  result = call_579027.call(path_579028, query_579029, nil, nil, nil)
 
-var gamesApplicationsGet* = Call_GamesApplicationsGet_589113(
+var gamesApplicationsGet* = Call_GamesApplicationsGet_579013(
     name: "gamesApplicationsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/applications/{applicationId}",
-    validator: validate_GamesApplicationsGet_589114, base: "/games/v1",
-    url: url_GamesApplicationsGet_589115, schemes: {Scheme.Https})
+    validator: validate_GamesApplicationsGet_579014, base: "/games/v1",
+    url: url_GamesApplicationsGet_579015, schemes: {Scheme.Https})
 type
-  Call_GamesApplicationsVerify_589130 = ref object of OpenApiRestCall_588466
-proc url_GamesApplicationsVerify_589132(protocol: Scheme; host: string; base: string;
+  Call_GamesApplicationsVerify_579030 = ref object of OpenApiRestCall_578364
+proc url_GamesApplicationsVerify_579032(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1359,7 +1363,7 @@ proc url_GamesApplicationsVerify_589132(protocol: Scheme; host: string; base: st
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesApplicationsVerify_589131(path: JsonNode; query: JsonNode;
+proc validate_GamesApplicationsVerify_579031(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Verifies the auth token provided with this request is for the application with the specified ID, and returns the ID of the player it was granted for.
   ## 
@@ -1371,63 +1375,63 @@ proc validate_GamesApplicationsVerify_589131(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `applicationId` field"
-  var valid_589133 = path.getOrDefault("applicationId")
-  valid_589133 = validateParameter(valid_589133, JString, required = true,
+  var valid_579033 = path.getOrDefault("applicationId")
+  valid_579033 = validateParameter(valid_579033, JString, required = true,
                                  default = nil)
-  if valid_589133 != nil:
-    section.add "applicationId", valid_589133
+  if valid_579033 != nil:
+    section.add "applicationId", valid_579033
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589134 = query.getOrDefault("fields")
-  valid_589134 = validateParameter(valid_589134, JString, required = false,
+  var valid_579034 = query.getOrDefault("key")
+  valid_579034 = validateParameter(valid_579034, JString, required = false,
                                  default = nil)
-  if valid_589134 != nil:
-    section.add "fields", valid_589134
-  var valid_589135 = query.getOrDefault("quotaUser")
-  valid_589135 = validateParameter(valid_589135, JString, required = false,
-                                 default = nil)
-  if valid_589135 != nil:
-    section.add "quotaUser", valid_589135
-  var valid_589136 = query.getOrDefault("alt")
-  valid_589136 = validateParameter(valid_589136, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589136 != nil:
-    section.add "alt", valid_589136
-  var valid_589137 = query.getOrDefault("oauth_token")
-  valid_589137 = validateParameter(valid_589137, JString, required = false,
-                                 default = nil)
-  if valid_589137 != nil:
-    section.add "oauth_token", valid_589137
-  var valid_589138 = query.getOrDefault("userIp")
-  valid_589138 = validateParameter(valid_589138, JString, required = false,
-                                 default = nil)
-  if valid_589138 != nil:
-    section.add "userIp", valid_589138
-  var valid_589139 = query.getOrDefault("key")
-  valid_589139 = validateParameter(valid_589139, JString, required = false,
-                                 default = nil)
-  if valid_589139 != nil:
-    section.add "key", valid_589139
-  var valid_589140 = query.getOrDefault("prettyPrint")
-  valid_589140 = validateParameter(valid_589140, JBool, required = false,
+  if valid_579034 != nil:
+    section.add "key", valid_579034
+  var valid_579035 = query.getOrDefault("prettyPrint")
+  valid_579035 = validateParameter(valid_579035, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589140 != nil:
-    section.add "prettyPrint", valid_589140
+  if valid_579035 != nil:
+    section.add "prettyPrint", valid_579035
+  var valid_579036 = query.getOrDefault("oauth_token")
+  valid_579036 = validateParameter(valid_579036, JString, required = false,
+                                 default = nil)
+  if valid_579036 != nil:
+    section.add "oauth_token", valid_579036
+  var valid_579037 = query.getOrDefault("alt")
+  valid_579037 = validateParameter(valid_579037, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579037 != nil:
+    section.add "alt", valid_579037
+  var valid_579038 = query.getOrDefault("userIp")
+  valid_579038 = validateParameter(valid_579038, JString, required = false,
+                                 default = nil)
+  if valid_579038 != nil:
+    section.add "userIp", valid_579038
+  var valid_579039 = query.getOrDefault("quotaUser")
+  valid_579039 = validateParameter(valid_579039, JString, required = false,
+                                 default = nil)
+  if valid_579039 != nil:
+    section.add "quotaUser", valid_579039
+  var valid_579040 = query.getOrDefault("fields")
+  valid_579040 = validateParameter(valid_579040, JString, required = false,
+                                 default = nil)
+  if valid_579040 != nil:
+    section.add "fields", valid_579040
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1436,68 +1440,68 @@ proc validate_GamesApplicationsVerify_589131(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589141: Call_GamesApplicationsVerify_589130; path: JsonNode;
+proc call*(call_579041: Call_GamesApplicationsVerify_579030; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Verifies the auth token provided with this request is for the application with the specified ID, and returns the ID of the player it was granted for.
   ## 
-  let valid = call_589141.validator(path, query, header, formData, body)
-  let scheme = call_589141.pickScheme
+  let valid = call_579041.validator(path, query, header, formData, body)
+  let scheme = call_579041.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589141.url(scheme.get, call_589141.host, call_589141.base,
-                         call_589141.route, valid.getOrDefault("path"),
+  let url = call_579041.url(scheme.get, call_579041.host, call_579041.base,
+                         call_579041.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589141, url, valid)
+  result = hook(call_579041, url, valid)
 
-proc call*(call_589142: Call_GamesApplicationsVerify_589130; applicationId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579042: Call_GamesApplicationsVerify_579030; applicationId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## gamesApplicationsVerify
   ## Verifies the auth token provided with this request is for the application with the specified ID, and returns the ID of the player it was granted for.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   applicationId: string (required)
-  ##                : The application ID from the Google Play developer console.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589143 = newJObject()
-  var query_589144 = newJObject()
-  add(query_589144, "fields", newJString(fields))
-  add(query_589144, "quotaUser", newJString(quotaUser))
-  add(query_589144, "alt", newJString(alt))
-  add(query_589144, "oauth_token", newJString(oauthToken))
-  add(query_589144, "userIp", newJString(userIp))
-  add(path_589143, "applicationId", newJString(applicationId))
-  add(query_589144, "key", newJString(key))
-  add(query_589144, "prettyPrint", newJBool(prettyPrint))
-  result = call_589142.call(path_589143, query_589144, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   applicationId: string (required)
+  ##                : The application ID from the Google Play developer console.
+  var path_579043 = newJObject()
+  var query_579044 = newJObject()
+  add(query_579044, "key", newJString(key))
+  add(query_579044, "prettyPrint", newJBool(prettyPrint))
+  add(query_579044, "oauth_token", newJString(oauthToken))
+  add(query_579044, "alt", newJString(alt))
+  add(query_579044, "userIp", newJString(userIp))
+  add(query_579044, "quotaUser", newJString(quotaUser))
+  add(query_579044, "fields", newJString(fields))
+  add(path_579043, "applicationId", newJString(applicationId))
+  result = call_579042.call(path_579043, query_579044, nil, nil, nil)
 
-var gamesApplicationsVerify* = Call_GamesApplicationsVerify_589130(
+var gamesApplicationsVerify* = Call_GamesApplicationsVerify_579030(
     name: "gamesApplicationsVerify", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/applications/{applicationId}/verify",
-    validator: validate_GamesApplicationsVerify_589131, base: "/games/v1",
-    url: url_GamesApplicationsVerify_589132, schemes: {Scheme.Https})
+    validator: validate_GamesApplicationsVerify_579031, base: "/games/v1",
+    url: url_GamesApplicationsVerify_579032, schemes: {Scheme.Https})
 type
-  Call_GamesEventsListDefinitions_589145 = ref object of OpenApiRestCall_588466
-proc url_GamesEventsListDefinitions_589147(protocol: Scheme; host: string;
+  Call_GamesEventsListDefinitions_579045 = ref object of OpenApiRestCall_578364
+proc url_GamesEventsListDefinitions_579047(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesEventsListDefinitions_589146(path: JsonNode; query: JsonNode;
+proc validate_GamesEventsListDefinitions_579046(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a list of the event definitions in this application.
   ## 
@@ -1506,76 +1510,76 @@ proc validate_GamesEventsListDefinitions_589146(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of event definitions to return in the response, used for paging. For any response, the actual number of event definitions to return may be less than the specified maxResults.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of event definitions to return in the response, used for paging. For any response, the actual number of event definitions to return may be less than the specified maxResults.
   section = newJObject()
-  var valid_589148 = query.getOrDefault("fields")
-  valid_589148 = validateParameter(valid_589148, JString, required = false,
+  var valid_579048 = query.getOrDefault("key")
+  valid_579048 = validateParameter(valid_579048, JString, required = false,
                                  default = nil)
-  if valid_589148 != nil:
-    section.add "fields", valid_589148
-  var valid_589149 = query.getOrDefault("pageToken")
-  valid_589149 = validateParameter(valid_589149, JString, required = false,
-                                 default = nil)
-  if valid_589149 != nil:
-    section.add "pageToken", valid_589149
-  var valid_589150 = query.getOrDefault("quotaUser")
-  valid_589150 = validateParameter(valid_589150, JString, required = false,
-                                 default = nil)
-  if valid_589150 != nil:
-    section.add "quotaUser", valid_589150
-  var valid_589151 = query.getOrDefault("alt")
-  valid_589151 = validateParameter(valid_589151, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589151 != nil:
-    section.add "alt", valid_589151
-  var valid_589152 = query.getOrDefault("language")
-  valid_589152 = validateParameter(valid_589152, JString, required = false,
-                                 default = nil)
-  if valid_589152 != nil:
-    section.add "language", valid_589152
-  var valid_589153 = query.getOrDefault("oauth_token")
-  valid_589153 = validateParameter(valid_589153, JString, required = false,
-                                 default = nil)
-  if valid_589153 != nil:
-    section.add "oauth_token", valid_589153
-  var valid_589154 = query.getOrDefault("userIp")
-  valid_589154 = validateParameter(valid_589154, JString, required = false,
-                                 default = nil)
-  if valid_589154 != nil:
-    section.add "userIp", valid_589154
-  var valid_589155 = query.getOrDefault("maxResults")
-  valid_589155 = validateParameter(valid_589155, JInt, required = false, default = nil)
-  if valid_589155 != nil:
-    section.add "maxResults", valid_589155
-  var valid_589156 = query.getOrDefault("key")
-  valid_589156 = validateParameter(valid_589156, JString, required = false,
-                                 default = nil)
-  if valid_589156 != nil:
-    section.add "key", valid_589156
-  var valid_589157 = query.getOrDefault("prettyPrint")
-  valid_589157 = validateParameter(valid_589157, JBool, required = false,
+  if valid_579048 != nil:
+    section.add "key", valid_579048
+  var valid_579049 = query.getOrDefault("prettyPrint")
+  valid_579049 = validateParameter(valid_579049, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589157 != nil:
-    section.add "prettyPrint", valid_589157
+  if valid_579049 != nil:
+    section.add "prettyPrint", valid_579049
+  var valid_579050 = query.getOrDefault("oauth_token")
+  valid_579050 = validateParameter(valid_579050, JString, required = false,
+                                 default = nil)
+  if valid_579050 != nil:
+    section.add "oauth_token", valid_579050
+  var valid_579051 = query.getOrDefault("alt")
+  valid_579051 = validateParameter(valid_579051, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579051 != nil:
+    section.add "alt", valid_579051
+  var valid_579052 = query.getOrDefault("userIp")
+  valid_579052 = validateParameter(valid_579052, JString, required = false,
+                                 default = nil)
+  if valid_579052 != nil:
+    section.add "userIp", valid_579052
+  var valid_579053 = query.getOrDefault("quotaUser")
+  valid_579053 = validateParameter(valid_579053, JString, required = false,
+                                 default = nil)
+  if valid_579053 != nil:
+    section.add "quotaUser", valid_579053
+  var valid_579054 = query.getOrDefault("pageToken")
+  valid_579054 = validateParameter(valid_579054, JString, required = false,
+                                 default = nil)
+  if valid_579054 != nil:
+    section.add "pageToken", valid_579054
+  var valid_579055 = query.getOrDefault("fields")
+  valid_579055 = validateParameter(valid_579055, JString, required = false,
+                                 default = nil)
+  if valid_579055 != nil:
+    section.add "fields", valid_579055
+  var valid_579056 = query.getOrDefault("language")
+  valid_579056 = validateParameter(valid_579056, JString, required = false,
+                                 default = nil)
+  if valid_579056 != nil:
+    section.add "language", valid_579056
+  var valid_579057 = query.getOrDefault("maxResults")
+  valid_579057 = validateParameter(valid_579057, JInt, required = false, default = nil)
+  if valid_579057 != nil:
+    section.add "maxResults", valid_579057
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1584,74 +1588,73 @@ proc validate_GamesEventsListDefinitions_589146(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589158: Call_GamesEventsListDefinitions_589145; path: JsonNode;
+proc call*(call_579058: Call_GamesEventsListDefinitions_579045; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a list of the event definitions in this application.
   ## 
-  let valid = call_589158.validator(path, query, header, formData, body)
-  let scheme = call_589158.pickScheme
+  let valid = call_579058.validator(path, query, header, formData, body)
+  let scheme = call_579058.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589158.url(scheme.get, call_589158.host, call_589158.base,
-                         call_589158.route, valid.getOrDefault("path"),
+  let url = call_579058.url(scheme.get, call_579058.host, call_579058.base,
+                         call_579058.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589158, url, valid)
+  result = hook(call_579058, url, valid)
 
-proc call*(call_589159: Call_GamesEventsListDefinitions_589145;
-          fields: string = ""; pageToken: string = ""; quotaUser: string = "";
-          alt: string = "json"; language: string = ""; oauthToken: string = "";
-          userIp: string = ""; maxResults: int = 0; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579059: Call_GamesEventsListDefinitions_579045; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
+          fields: string = ""; language: string = ""; maxResults: int = 0): Recallable =
   ## gamesEventsListDefinitions
   ## Returns a list of the event definitions in this application.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of event definitions to return in the response, used for paging. For any response, the actual number of event definitions to return may be less than the specified maxResults.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589160 = newJObject()
-  add(query_589160, "fields", newJString(fields))
-  add(query_589160, "pageToken", newJString(pageToken))
-  add(query_589160, "quotaUser", newJString(quotaUser))
-  add(query_589160, "alt", newJString(alt))
-  add(query_589160, "language", newJString(language))
-  add(query_589160, "oauth_token", newJString(oauthToken))
-  add(query_589160, "userIp", newJString(userIp))
-  add(query_589160, "maxResults", newJInt(maxResults))
-  add(query_589160, "key", newJString(key))
-  add(query_589160, "prettyPrint", newJBool(prettyPrint))
-  result = call_589159.call(nil, query_589160, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: int
+  ##             : The maximum number of event definitions to return in the response, used for paging. For any response, the actual number of event definitions to return may be less than the specified maxResults.
+  var query_579060 = newJObject()
+  add(query_579060, "key", newJString(key))
+  add(query_579060, "prettyPrint", newJBool(prettyPrint))
+  add(query_579060, "oauth_token", newJString(oauthToken))
+  add(query_579060, "alt", newJString(alt))
+  add(query_579060, "userIp", newJString(userIp))
+  add(query_579060, "quotaUser", newJString(quotaUser))
+  add(query_579060, "pageToken", newJString(pageToken))
+  add(query_579060, "fields", newJString(fields))
+  add(query_579060, "language", newJString(language))
+  add(query_579060, "maxResults", newJInt(maxResults))
+  result = call_579059.call(nil, query_579060, nil, nil, nil)
 
-var gamesEventsListDefinitions* = Call_GamesEventsListDefinitions_589145(
+var gamesEventsListDefinitions* = Call_GamesEventsListDefinitions_579045(
     name: "gamesEventsListDefinitions", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/eventDefinitions",
-    validator: validate_GamesEventsListDefinitions_589146, base: "/games/v1",
-    url: url_GamesEventsListDefinitions_589147, schemes: {Scheme.Https})
+    validator: validate_GamesEventsListDefinitions_579046, base: "/games/v1",
+    url: url_GamesEventsListDefinitions_579047, schemes: {Scheme.Https})
 type
-  Call_GamesEventsRecord_589177 = ref object of OpenApiRestCall_588466
-proc url_GamesEventsRecord_589179(protocol: Scheme; host: string; base: string;
+  Call_GamesEventsRecord_579077 = ref object of OpenApiRestCall_578364
+proc url_GamesEventsRecord_579079(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesEventsRecord_589178(path: JsonNode; query: JsonNode;
+proc validate_GamesEventsRecord_579078(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Records a batch of changes to the number of times events have occurred for the currently authenticated user of this application.
@@ -1661,63 +1664,63 @@ proc validate_GamesEventsRecord_589178(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589180 = query.getOrDefault("fields")
-  valid_589180 = validateParameter(valid_589180, JString, required = false,
+  var valid_579080 = query.getOrDefault("key")
+  valid_579080 = validateParameter(valid_579080, JString, required = false,
                                  default = nil)
-  if valid_589180 != nil:
-    section.add "fields", valid_589180
-  var valid_589181 = query.getOrDefault("quotaUser")
-  valid_589181 = validateParameter(valid_589181, JString, required = false,
-                                 default = nil)
-  if valid_589181 != nil:
-    section.add "quotaUser", valid_589181
-  var valid_589182 = query.getOrDefault("alt")
-  valid_589182 = validateParameter(valid_589182, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589182 != nil:
-    section.add "alt", valid_589182
-  var valid_589183 = query.getOrDefault("language")
-  valid_589183 = validateParameter(valid_589183, JString, required = false,
-                                 default = nil)
-  if valid_589183 != nil:
-    section.add "language", valid_589183
-  var valid_589184 = query.getOrDefault("oauth_token")
-  valid_589184 = validateParameter(valid_589184, JString, required = false,
-                                 default = nil)
-  if valid_589184 != nil:
-    section.add "oauth_token", valid_589184
-  var valid_589185 = query.getOrDefault("userIp")
-  valid_589185 = validateParameter(valid_589185, JString, required = false,
-                                 default = nil)
-  if valid_589185 != nil:
-    section.add "userIp", valid_589185
-  var valid_589186 = query.getOrDefault("key")
-  valid_589186 = validateParameter(valid_589186, JString, required = false,
-                                 default = nil)
-  if valid_589186 != nil:
-    section.add "key", valid_589186
-  var valid_589187 = query.getOrDefault("prettyPrint")
-  valid_589187 = validateParameter(valid_589187, JBool, required = false,
+  if valid_579080 != nil:
+    section.add "key", valid_579080
+  var valid_579081 = query.getOrDefault("prettyPrint")
+  valid_579081 = validateParameter(valid_579081, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589187 != nil:
-    section.add "prettyPrint", valid_589187
+  if valid_579081 != nil:
+    section.add "prettyPrint", valid_579081
+  var valid_579082 = query.getOrDefault("oauth_token")
+  valid_579082 = validateParameter(valid_579082, JString, required = false,
+                                 default = nil)
+  if valid_579082 != nil:
+    section.add "oauth_token", valid_579082
+  var valid_579083 = query.getOrDefault("alt")
+  valid_579083 = validateParameter(valid_579083, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579083 != nil:
+    section.add "alt", valid_579083
+  var valid_579084 = query.getOrDefault("userIp")
+  valid_579084 = validateParameter(valid_579084, JString, required = false,
+                                 default = nil)
+  if valid_579084 != nil:
+    section.add "userIp", valid_579084
+  var valid_579085 = query.getOrDefault("quotaUser")
+  valid_579085 = validateParameter(valid_579085, JString, required = false,
+                                 default = nil)
+  if valid_579085 != nil:
+    section.add "quotaUser", valid_579085
+  var valid_579086 = query.getOrDefault("fields")
+  valid_579086 = validateParameter(valid_579086, JString, required = false,
+                                 default = nil)
+  if valid_579086 != nil:
+    section.add "fields", valid_579086
+  var valid_579087 = query.getOrDefault("language")
+  valid_579087 = validateParameter(valid_579087, JString, required = false,
+                                 default = nil)
+  if valid_579087 != nil:
+    section.add "language", valid_579087
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1729,63 +1732,63 @@ proc validate_GamesEventsRecord_589178(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589189: Call_GamesEventsRecord_589177; path: JsonNode;
+proc call*(call_579089: Call_GamesEventsRecord_579077; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Records a batch of changes to the number of times events have occurred for the currently authenticated user of this application.
   ## 
-  let valid = call_589189.validator(path, query, header, formData, body)
-  let scheme = call_589189.pickScheme
+  let valid = call_579089.validator(path, query, header, formData, body)
+  let scheme = call_579089.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589189.url(scheme.get, call_589189.host, call_589189.base,
-                         call_589189.route, valid.getOrDefault("path"),
+  let url = call_579089.url(scheme.get, call_579089.host, call_579089.base,
+                         call_579089.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589189, url, valid)
+  result = hook(call_579089, url, valid)
 
-proc call*(call_589190: Call_GamesEventsRecord_589177; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; language: string = "";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579090: Call_GamesEventsRecord_579077; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""; language: string = ""): Recallable =
   ## gamesEventsRecord
   ## Records a batch of changes to the number of times events have occurred for the currently authenticated user of this application.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589191 = newJObject()
-  var body_589192 = newJObject()
-  add(query_589191, "fields", newJString(fields))
-  add(query_589191, "quotaUser", newJString(quotaUser))
-  add(query_589191, "alt", newJString(alt))
-  add(query_589191, "language", newJString(language))
-  add(query_589191, "oauth_token", newJString(oauthToken))
-  add(query_589191, "userIp", newJString(userIp))
-  add(query_589191, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var query_579091 = newJObject()
+  var body_579092 = newJObject()
+  add(query_579091, "key", newJString(key))
+  add(query_579091, "prettyPrint", newJBool(prettyPrint))
+  add(query_579091, "oauth_token", newJString(oauthToken))
+  add(query_579091, "alt", newJString(alt))
+  add(query_579091, "userIp", newJString(userIp))
+  add(query_579091, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589192 = body
-  add(query_589191, "prettyPrint", newJBool(prettyPrint))
-  result = call_589190.call(nil, query_589191, nil, nil, body_589192)
+    body_579092 = body
+  add(query_579091, "fields", newJString(fields))
+  add(query_579091, "language", newJString(language))
+  result = call_579090.call(nil, query_579091, nil, nil, body_579092)
 
-var gamesEventsRecord* = Call_GamesEventsRecord_589177(name: "gamesEventsRecord",
+var gamesEventsRecord* = Call_GamesEventsRecord_579077(name: "gamesEventsRecord",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/events",
-    validator: validate_GamesEventsRecord_589178, base: "/games/v1",
-    url: url_GamesEventsRecord_589179, schemes: {Scheme.Https})
+    validator: validate_GamesEventsRecord_579078, base: "/games/v1",
+    url: url_GamesEventsRecord_579079, schemes: {Scheme.Https})
 type
-  Call_GamesEventsListByPlayer_589161 = ref object of OpenApiRestCall_588466
-proc url_GamesEventsListByPlayer_589163(protocol: Scheme; host: string; base: string;
+  Call_GamesEventsListByPlayer_579061 = ref object of OpenApiRestCall_578364
+proc url_GamesEventsListByPlayer_579063(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1793,7 +1796,7 @@ proc url_GamesEventsListByPlayer_589163(protocol: Scheme; host: string; base: st
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesEventsListByPlayer_589162(path: JsonNode; query: JsonNode;
+proc validate_GamesEventsListByPlayer_579062(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a list showing the current progress on events in this application for the currently authenticated user.
   ## 
@@ -1802,76 +1805,76 @@ proc validate_GamesEventsListByPlayer_589162(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of events to return in the response, used for paging. For any response, the actual number of events to return may be less than the specified maxResults.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of events to return in the response, used for paging. For any response, the actual number of events to return may be less than the specified maxResults.
   section = newJObject()
-  var valid_589164 = query.getOrDefault("fields")
-  valid_589164 = validateParameter(valid_589164, JString, required = false,
+  var valid_579064 = query.getOrDefault("key")
+  valid_579064 = validateParameter(valid_579064, JString, required = false,
                                  default = nil)
-  if valid_589164 != nil:
-    section.add "fields", valid_589164
-  var valid_589165 = query.getOrDefault("pageToken")
-  valid_589165 = validateParameter(valid_589165, JString, required = false,
-                                 default = nil)
-  if valid_589165 != nil:
-    section.add "pageToken", valid_589165
-  var valid_589166 = query.getOrDefault("quotaUser")
-  valid_589166 = validateParameter(valid_589166, JString, required = false,
-                                 default = nil)
-  if valid_589166 != nil:
-    section.add "quotaUser", valid_589166
-  var valid_589167 = query.getOrDefault("alt")
-  valid_589167 = validateParameter(valid_589167, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589167 != nil:
-    section.add "alt", valid_589167
-  var valid_589168 = query.getOrDefault("language")
-  valid_589168 = validateParameter(valid_589168, JString, required = false,
-                                 default = nil)
-  if valid_589168 != nil:
-    section.add "language", valid_589168
-  var valid_589169 = query.getOrDefault("oauth_token")
-  valid_589169 = validateParameter(valid_589169, JString, required = false,
-                                 default = nil)
-  if valid_589169 != nil:
-    section.add "oauth_token", valid_589169
-  var valid_589170 = query.getOrDefault("userIp")
-  valid_589170 = validateParameter(valid_589170, JString, required = false,
-                                 default = nil)
-  if valid_589170 != nil:
-    section.add "userIp", valid_589170
-  var valid_589171 = query.getOrDefault("maxResults")
-  valid_589171 = validateParameter(valid_589171, JInt, required = false, default = nil)
-  if valid_589171 != nil:
-    section.add "maxResults", valid_589171
-  var valid_589172 = query.getOrDefault("key")
-  valid_589172 = validateParameter(valid_589172, JString, required = false,
-                                 default = nil)
-  if valid_589172 != nil:
-    section.add "key", valid_589172
-  var valid_589173 = query.getOrDefault("prettyPrint")
-  valid_589173 = validateParameter(valid_589173, JBool, required = false,
+  if valid_579064 != nil:
+    section.add "key", valid_579064
+  var valid_579065 = query.getOrDefault("prettyPrint")
+  valid_579065 = validateParameter(valid_579065, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589173 != nil:
-    section.add "prettyPrint", valid_589173
+  if valid_579065 != nil:
+    section.add "prettyPrint", valid_579065
+  var valid_579066 = query.getOrDefault("oauth_token")
+  valid_579066 = validateParameter(valid_579066, JString, required = false,
+                                 default = nil)
+  if valid_579066 != nil:
+    section.add "oauth_token", valid_579066
+  var valid_579067 = query.getOrDefault("alt")
+  valid_579067 = validateParameter(valid_579067, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579067 != nil:
+    section.add "alt", valid_579067
+  var valid_579068 = query.getOrDefault("userIp")
+  valid_579068 = validateParameter(valid_579068, JString, required = false,
+                                 default = nil)
+  if valid_579068 != nil:
+    section.add "userIp", valid_579068
+  var valid_579069 = query.getOrDefault("quotaUser")
+  valid_579069 = validateParameter(valid_579069, JString, required = false,
+                                 default = nil)
+  if valid_579069 != nil:
+    section.add "quotaUser", valid_579069
+  var valid_579070 = query.getOrDefault("pageToken")
+  valid_579070 = validateParameter(valid_579070, JString, required = false,
+                                 default = nil)
+  if valid_579070 != nil:
+    section.add "pageToken", valid_579070
+  var valid_579071 = query.getOrDefault("fields")
+  valid_579071 = validateParameter(valid_579071, JString, required = false,
+                                 default = nil)
+  if valid_579071 != nil:
+    section.add "fields", valid_579071
+  var valid_579072 = query.getOrDefault("language")
+  valid_579072 = validateParameter(valid_579072, JString, required = false,
+                                 default = nil)
+  if valid_579072 != nil:
+    section.add "language", valid_579072
+  var valid_579073 = query.getOrDefault("maxResults")
+  valid_579073 = validateParameter(valid_579073, JInt, required = false, default = nil)
+  if valid_579073 != nil:
+    section.add "maxResults", valid_579073
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1880,73 +1883,73 @@ proc validate_GamesEventsListByPlayer_589162(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589174: Call_GamesEventsListByPlayer_589161; path: JsonNode;
+proc call*(call_579074: Call_GamesEventsListByPlayer_579061; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a list showing the current progress on events in this application for the currently authenticated user.
   ## 
-  let valid = call_589174.validator(path, query, header, formData, body)
-  let scheme = call_589174.pickScheme
+  let valid = call_579074.validator(path, query, header, formData, body)
+  let scheme = call_579074.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589174.url(scheme.get, call_589174.host, call_589174.base,
-                         call_589174.route, valid.getOrDefault("path"),
+  let url = call_579074.url(scheme.get, call_579074.host, call_579074.base,
+                         call_579074.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589174, url, valid)
+  result = hook(call_579074, url, valid)
 
-proc call*(call_589175: Call_GamesEventsListByPlayer_589161; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579075: Call_GamesEventsListByPlayer_579061; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
+          fields: string = ""; language: string = ""; maxResults: int = 0): Recallable =
   ## gamesEventsListByPlayer
   ## Returns a list showing the current progress on events in this application for the currently authenticated user.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of events to return in the response, used for paging. For any response, the actual number of events to return may be less than the specified maxResults.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589176 = newJObject()
-  add(query_589176, "fields", newJString(fields))
-  add(query_589176, "pageToken", newJString(pageToken))
-  add(query_589176, "quotaUser", newJString(quotaUser))
-  add(query_589176, "alt", newJString(alt))
-  add(query_589176, "language", newJString(language))
-  add(query_589176, "oauth_token", newJString(oauthToken))
-  add(query_589176, "userIp", newJString(userIp))
-  add(query_589176, "maxResults", newJInt(maxResults))
-  add(query_589176, "key", newJString(key))
-  add(query_589176, "prettyPrint", newJBool(prettyPrint))
-  result = call_589175.call(nil, query_589176, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: int
+  ##             : The maximum number of events to return in the response, used for paging. For any response, the actual number of events to return may be less than the specified maxResults.
+  var query_579076 = newJObject()
+  add(query_579076, "key", newJString(key))
+  add(query_579076, "prettyPrint", newJBool(prettyPrint))
+  add(query_579076, "oauth_token", newJString(oauthToken))
+  add(query_579076, "alt", newJString(alt))
+  add(query_579076, "userIp", newJString(userIp))
+  add(query_579076, "quotaUser", newJString(quotaUser))
+  add(query_579076, "pageToken", newJString(pageToken))
+  add(query_579076, "fields", newJString(fields))
+  add(query_579076, "language", newJString(language))
+  add(query_579076, "maxResults", newJInt(maxResults))
+  result = call_579075.call(nil, query_579076, nil, nil, nil)
 
-var gamesEventsListByPlayer* = Call_GamesEventsListByPlayer_589161(
+var gamesEventsListByPlayer* = Call_GamesEventsListByPlayer_579061(
     name: "gamesEventsListByPlayer", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/events",
-    validator: validate_GamesEventsListByPlayer_589162, base: "/games/v1",
-    url: url_GamesEventsListByPlayer_589163, schemes: {Scheme.Https})
+    validator: validate_GamesEventsListByPlayer_579062, base: "/games/v1",
+    url: url_GamesEventsListByPlayer_579063, schemes: {Scheme.Https})
 type
-  Call_GamesLeaderboardsList_589193 = ref object of OpenApiRestCall_588466
-proc url_GamesLeaderboardsList_589195(protocol: Scheme; host: string; base: string;
+  Call_GamesLeaderboardsList_579093 = ref object of OpenApiRestCall_578364
+proc url_GamesLeaderboardsList_579095(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesLeaderboardsList_589194(path: JsonNode; query: JsonNode;
+proc validate_GamesLeaderboardsList_579094(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists all the leaderboard metadata for your application.
   ## 
@@ -1955,76 +1958,76 @@ proc validate_GamesLeaderboardsList_589194(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of leaderboards to return in the response. For any response, the actual number of leaderboards returned may be less than the specified maxResults.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of leaderboards to return in the response. For any response, the actual number of leaderboards returned may be less than the specified maxResults.
   section = newJObject()
-  var valid_589196 = query.getOrDefault("fields")
-  valid_589196 = validateParameter(valid_589196, JString, required = false,
+  var valid_579096 = query.getOrDefault("key")
+  valid_579096 = validateParameter(valid_579096, JString, required = false,
                                  default = nil)
-  if valid_589196 != nil:
-    section.add "fields", valid_589196
-  var valid_589197 = query.getOrDefault("pageToken")
-  valid_589197 = validateParameter(valid_589197, JString, required = false,
-                                 default = nil)
-  if valid_589197 != nil:
-    section.add "pageToken", valid_589197
-  var valid_589198 = query.getOrDefault("quotaUser")
-  valid_589198 = validateParameter(valid_589198, JString, required = false,
-                                 default = nil)
-  if valid_589198 != nil:
-    section.add "quotaUser", valid_589198
-  var valid_589199 = query.getOrDefault("alt")
-  valid_589199 = validateParameter(valid_589199, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589199 != nil:
-    section.add "alt", valid_589199
-  var valid_589200 = query.getOrDefault("language")
-  valid_589200 = validateParameter(valid_589200, JString, required = false,
-                                 default = nil)
-  if valid_589200 != nil:
-    section.add "language", valid_589200
-  var valid_589201 = query.getOrDefault("oauth_token")
-  valid_589201 = validateParameter(valid_589201, JString, required = false,
-                                 default = nil)
-  if valid_589201 != nil:
-    section.add "oauth_token", valid_589201
-  var valid_589202 = query.getOrDefault("userIp")
-  valid_589202 = validateParameter(valid_589202, JString, required = false,
-                                 default = nil)
-  if valid_589202 != nil:
-    section.add "userIp", valid_589202
-  var valid_589203 = query.getOrDefault("maxResults")
-  valid_589203 = validateParameter(valid_589203, JInt, required = false, default = nil)
-  if valid_589203 != nil:
-    section.add "maxResults", valid_589203
-  var valid_589204 = query.getOrDefault("key")
-  valid_589204 = validateParameter(valid_589204, JString, required = false,
-                                 default = nil)
-  if valid_589204 != nil:
-    section.add "key", valid_589204
-  var valid_589205 = query.getOrDefault("prettyPrint")
-  valid_589205 = validateParameter(valid_589205, JBool, required = false,
+  if valid_579096 != nil:
+    section.add "key", valid_579096
+  var valid_579097 = query.getOrDefault("prettyPrint")
+  valid_579097 = validateParameter(valid_579097, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589205 != nil:
-    section.add "prettyPrint", valid_589205
+  if valid_579097 != nil:
+    section.add "prettyPrint", valid_579097
+  var valid_579098 = query.getOrDefault("oauth_token")
+  valid_579098 = validateParameter(valid_579098, JString, required = false,
+                                 default = nil)
+  if valid_579098 != nil:
+    section.add "oauth_token", valid_579098
+  var valid_579099 = query.getOrDefault("alt")
+  valid_579099 = validateParameter(valid_579099, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579099 != nil:
+    section.add "alt", valid_579099
+  var valid_579100 = query.getOrDefault("userIp")
+  valid_579100 = validateParameter(valid_579100, JString, required = false,
+                                 default = nil)
+  if valid_579100 != nil:
+    section.add "userIp", valid_579100
+  var valid_579101 = query.getOrDefault("quotaUser")
+  valid_579101 = validateParameter(valid_579101, JString, required = false,
+                                 default = nil)
+  if valid_579101 != nil:
+    section.add "quotaUser", valid_579101
+  var valid_579102 = query.getOrDefault("pageToken")
+  valid_579102 = validateParameter(valid_579102, JString, required = false,
+                                 default = nil)
+  if valid_579102 != nil:
+    section.add "pageToken", valid_579102
+  var valid_579103 = query.getOrDefault("fields")
+  valid_579103 = validateParameter(valid_579103, JString, required = false,
+                                 default = nil)
+  if valid_579103 != nil:
+    section.add "fields", valid_579103
+  var valid_579104 = query.getOrDefault("language")
+  valid_579104 = validateParameter(valid_579104, JString, required = false,
+                                 default = nil)
+  if valid_579104 != nil:
+    section.add "language", valid_579104
+  var valid_579105 = query.getOrDefault("maxResults")
+  valid_579105 = validateParameter(valid_579105, JInt, required = false, default = nil)
+  if valid_579105 != nil:
+    section.add "maxResults", valid_579105
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2033,73 +2036,73 @@ proc validate_GamesLeaderboardsList_589194(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589206: Call_GamesLeaderboardsList_589193; path: JsonNode;
+proc call*(call_579106: Call_GamesLeaderboardsList_579093; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists all the leaderboard metadata for your application.
   ## 
-  let valid = call_589206.validator(path, query, header, formData, body)
-  let scheme = call_589206.pickScheme
+  let valid = call_579106.validator(path, query, header, formData, body)
+  let scheme = call_579106.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589206.url(scheme.get, call_589206.host, call_589206.base,
-                         call_589206.route, valid.getOrDefault("path"),
+  let url = call_579106.url(scheme.get, call_579106.host, call_579106.base,
+                         call_579106.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589206, url, valid)
+  result = hook(call_579106, url, valid)
 
-proc call*(call_589207: Call_GamesLeaderboardsList_589193; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579107: Call_GamesLeaderboardsList_579093; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
+          fields: string = ""; language: string = ""; maxResults: int = 0): Recallable =
   ## gamesLeaderboardsList
   ## Lists all the leaderboard metadata for your application.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of leaderboards to return in the response. For any response, the actual number of leaderboards returned may be less than the specified maxResults.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589208 = newJObject()
-  add(query_589208, "fields", newJString(fields))
-  add(query_589208, "pageToken", newJString(pageToken))
-  add(query_589208, "quotaUser", newJString(quotaUser))
-  add(query_589208, "alt", newJString(alt))
-  add(query_589208, "language", newJString(language))
-  add(query_589208, "oauth_token", newJString(oauthToken))
-  add(query_589208, "userIp", newJString(userIp))
-  add(query_589208, "maxResults", newJInt(maxResults))
-  add(query_589208, "key", newJString(key))
-  add(query_589208, "prettyPrint", newJBool(prettyPrint))
-  result = call_589207.call(nil, query_589208, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: int
+  ##             : The maximum number of leaderboards to return in the response. For any response, the actual number of leaderboards returned may be less than the specified maxResults.
+  var query_579108 = newJObject()
+  add(query_579108, "key", newJString(key))
+  add(query_579108, "prettyPrint", newJBool(prettyPrint))
+  add(query_579108, "oauth_token", newJString(oauthToken))
+  add(query_579108, "alt", newJString(alt))
+  add(query_579108, "userIp", newJString(userIp))
+  add(query_579108, "quotaUser", newJString(quotaUser))
+  add(query_579108, "pageToken", newJString(pageToken))
+  add(query_579108, "fields", newJString(fields))
+  add(query_579108, "language", newJString(language))
+  add(query_579108, "maxResults", newJInt(maxResults))
+  result = call_579107.call(nil, query_579108, nil, nil, nil)
 
-var gamesLeaderboardsList* = Call_GamesLeaderboardsList_589193(
+var gamesLeaderboardsList* = Call_GamesLeaderboardsList_579093(
     name: "gamesLeaderboardsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/leaderboards",
-    validator: validate_GamesLeaderboardsList_589194, base: "/games/v1",
-    url: url_GamesLeaderboardsList_589195, schemes: {Scheme.Https})
+    validator: validate_GamesLeaderboardsList_579094, base: "/games/v1",
+    url: url_GamesLeaderboardsList_579095, schemes: {Scheme.Https})
 type
-  Call_GamesScoresSubmitMultiple_589209 = ref object of OpenApiRestCall_588466
-proc url_GamesScoresSubmitMultiple_589211(protocol: Scheme; host: string;
+  Call_GamesScoresSubmitMultiple_579109 = ref object of OpenApiRestCall_578364
+proc url_GamesScoresSubmitMultiple_579111(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesScoresSubmitMultiple_589210(path: JsonNode; query: JsonNode;
+proc validate_GamesScoresSubmitMultiple_579110(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Submits multiple scores to leaderboards.
   ## 
@@ -2108,63 +2111,63 @@ proc validate_GamesScoresSubmitMultiple_589210(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589212 = query.getOrDefault("fields")
-  valid_589212 = validateParameter(valid_589212, JString, required = false,
+  var valid_579112 = query.getOrDefault("key")
+  valid_579112 = validateParameter(valid_579112, JString, required = false,
                                  default = nil)
-  if valid_589212 != nil:
-    section.add "fields", valid_589212
-  var valid_589213 = query.getOrDefault("quotaUser")
-  valid_589213 = validateParameter(valid_589213, JString, required = false,
-                                 default = nil)
-  if valid_589213 != nil:
-    section.add "quotaUser", valid_589213
-  var valid_589214 = query.getOrDefault("alt")
-  valid_589214 = validateParameter(valid_589214, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589214 != nil:
-    section.add "alt", valid_589214
-  var valid_589215 = query.getOrDefault("language")
-  valid_589215 = validateParameter(valid_589215, JString, required = false,
-                                 default = nil)
-  if valid_589215 != nil:
-    section.add "language", valid_589215
-  var valid_589216 = query.getOrDefault("oauth_token")
-  valid_589216 = validateParameter(valid_589216, JString, required = false,
-                                 default = nil)
-  if valid_589216 != nil:
-    section.add "oauth_token", valid_589216
-  var valid_589217 = query.getOrDefault("userIp")
-  valid_589217 = validateParameter(valid_589217, JString, required = false,
-                                 default = nil)
-  if valid_589217 != nil:
-    section.add "userIp", valid_589217
-  var valid_589218 = query.getOrDefault("key")
-  valid_589218 = validateParameter(valid_589218, JString, required = false,
-                                 default = nil)
-  if valid_589218 != nil:
-    section.add "key", valid_589218
-  var valid_589219 = query.getOrDefault("prettyPrint")
-  valid_589219 = validateParameter(valid_589219, JBool, required = false,
+  if valid_579112 != nil:
+    section.add "key", valid_579112
+  var valid_579113 = query.getOrDefault("prettyPrint")
+  valid_579113 = validateParameter(valid_579113, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589219 != nil:
-    section.add "prettyPrint", valid_589219
+  if valid_579113 != nil:
+    section.add "prettyPrint", valid_579113
+  var valid_579114 = query.getOrDefault("oauth_token")
+  valid_579114 = validateParameter(valid_579114, JString, required = false,
+                                 default = nil)
+  if valid_579114 != nil:
+    section.add "oauth_token", valid_579114
+  var valid_579115 = query.getOrDefault("alt")
+  valid_579115 = validateParameter(valid_579115, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579115 != nil:
+    section.add "alt", valid_579115
+  var valid_579116 = query.getOrDefault("userIp")
+  valid_579116 = validateParameter(valid_579116, JString, required = false,
+                                 default = nil)
+  if valid_579116 != nil:
+    section.add "userIp", valid_579116
+  var valid_579117 = query.getOrDefault("quotaUser")
+  valid_579117 = validateParameter(valid_579117, JString, required = false,
+                                 default = nil)
+  if valid_579117 != nil:
+    section.add "quotaUser", valid_579117
+  var valid_579118 = query.getOrDefault("fields")
+  valid_579118 = validateParameter(valid_579118, JString, required = false,
+                                 default = nil)
+  if valid_579118 != nil:
+    section.add "fields", valid_579118
+  var valid_579119 = query.getOrDefault("language")
+  valid_579119 = validateParameter(valid_579119, JString, required = false,
+                                 default = nil)
+  if valid_579119 != nil:
+    section.add "language", valid_579119
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2176,64 +2179,64 @@ proc validate_GamesScoresSubmitMultiple_589210(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589221: Call_GamesScoresSubmitMultiple_589209; path: JsonNode;
+proc call*(call_579121: Call_GamesScoresSubmitMultiple_579109; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Submits multiple scores to leaderboards.
   ## 
-  let valid = call_589221.validator(path, query, header, formData, body)
-  let scheme = call_589221.pickScheme
+  let valid = call_579121.validator(path, query, header, formData, body)
+  let scheme = call_579121.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589221.url(scheme.get, call_589221.host, call_589221.base,
-                         call_589221.route, valid.getOrDefault("path"),
+  let url = call_579121.url(scheme.get, call_579121.host, call_579121.base,
+                         call_579121.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589221, url, valid)
+  result = hook(call_579121, url, valid)
 
-proc call*(call_589222: Call_GamesScoresSubmitMultiple_589209; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; language: string = "";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579122: Call_GamesScoresSubmitMultiple_579109; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""; language: string = ""): Recallable =
   ## gamesScoresSubmitMultiple
   ## Submits multiple scores to leaderboards.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589223 = newJObject()
-  var body_589224 = newJObject()
-  add(query_589223, "fields", newJString(fields))
-  add(query_589223, "quotaUser", newJString(quotaUser))
-  add(query_589223, "alt", newJString(alt))
-  add(query_589223, "language", newJString(language))
-  add(query_589223, "oauth_token", newJString(oauthToken))
-  add(query_589223, "userIp", newJString(userIp))
-  add(query_589223, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var query_579123 = newJObject()
+  var body_579124 = newJObject()
+  add(query_579123, "key", newJString(key))
+  add(query_579123, "prettyPrint", newJBool(prettyPrint))
+  add(query_579123, "oauth_token", newJString(oauthToken))
+  add(query_579123, "alt", newJString(alt))
+  add(query_579123, "userIp", newJString(userIp))
+  add(query_579123, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589224 = body
-  add(query_589223, "prettyPrint", newJBool(prettyPrint))
-  result = call_589222.call(nil, query_589223, nil, nil, body_589224)
+    body_579124 = body
+  add(query_579123, "fields", newJString(fields))
+  add(query_579123, "language", newJString(language))
+  result = call_579122.call(nil, query_579123, nil, nil, body_579124)
 
-var gamesScoresSubmitMultiple* = Call_GamesScoresSubmitMultiple_589209(
+var gamesScoresSubmitMultiple* = Call_GamesScoresSubmitMultiple_579109(
     name: "gamesScoresSubmitMultiple", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/leaderboards/scores",
-    validator: validate_GamesScoresSubmitMultiple_589210, base: "/games/v1",
-    url: url_GamesScoresSubmitMultiple_589211, schemes: {Scheme.Https})
+    validator: validate_GamesScoresSubmitMultiple_579110, base: "/games/v1",
+    url: url_GamesScoresSubmitMultiple_579111, schemes: {Scheme.Https})
 type
-  Call_GamesLeaderboardsGet_589225 = ref object of OpenApiRestCall_588466
-proc url_GamesLeaderboardsGet_589227(protocol: Scheme; host: string; base: string;
+  Call_GamesLeaderboardsGet_579125 = ref object of OpenApiRestCall_578364
+proc url_GamesLeaderboardsGet_579127(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2248,7 +2251,7 @@ proc url_GamesLeaderboardsGet_589227(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesLeaderboardsGet_589226(path: JsonNode; query: JsonNode;
+proc validate_GamesLeaderboardsGet_579126(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the metadata of the leaderboard with the given ID.
   ## 
@@ -2260,70 +2263,70 @@ proc validate_GamesLeaderboardsGet_589226(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `leaderboardId` field"
-  var valid_589228 = path.getOrDefault("leaderboardId")
-  valid_589228 = validateParameter(valid_589228, JString, required = true,
+  var valid_579128 = path.getOrDefault("leaderboardId")
+  valid_579128 = validateParameter(valid_579128, JString, required = true,
                                  default = nil)
-  if valid_589228 != nil:
-    section.add "leaderboardId", valid_589228
+  if valid_579128 != nil:
+    section.add "leaderboardId", valid_579128
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589229 = query.getOrDefault("fields")
-  valid_589229 = validateParameter(valid_589229, JString, required = false,
+  var valid_579129 = query.getOrDefault("key")
+  valid_579129 = validateParameter(valid_579129, JString, required = false,
                                  default = nil)
-  if valid_589229 != nil:
-    section.add "fields", valid_589229
-  var valid_589230 = query.getOrDefault("quotaUser")
-  valid_589230 = validateParameter(valid_589230, JString, required = false,
-                                 default = nil)
-  if valid_589230 != nil:
-    section.add "quotaUser", valid_589230
-  var valid_589231 = query.getOrDefault("alt")
-  valid_589231 = validateParameter(valid_589231, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589231 != nil:
-    section.add "alt", valid_589231
-  var valid_589232 = query.getOrDefault("language")
-  valid_589232 = validateParameter(valid_589232, JString, required = false,
-                                 default = nil)
-  if valid_589232 != nil:
-    section.add "language", valid_589232
-  var valid_589233 = query.getOrDefault("oauth_token")
-  valid_589233 = validateParameter(valid_589233, JString, required = false,
-                                 default = nil)
-  if valid_589233 != nil:
-    section.add "oauth_token", valid_589233
-  var valid_589234 = query.getOrDefault("userIp")
-  valid_589234 = validateParameter(valid_589234, JString, required = false,
-                                 default = nil)
-  if valid_589234 != nil:
-    section.add "userIp", valid_589234
-  var valid_589235 = query.getOrDefault("key")
-  valid_589235 = validateParameter(valid_589235, JString, required = false,
-                                 default = nil)
-  if valid_589235 != nil:
-    section.add "key", valid_589235
-  var valid_589236 = query.getOrDefault("prettyPrint")
-  valid_589236 = validateParameter(valid_589236, JBool, required = false,
+  if valid_579129 != nil:
+    section.add "key", valid_579129
+  var valid_579130 = query.getOrDefault("prettyPrint")
+  valid_579130 = validateParameter(valid_579130, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589236 != nil:
-    section.add "prettyPrint", valid_589236
+  if valid_579130 != nil:
+    section.add "prettyPrint", valid_579130
+  var valid_579131 = query.getOrDefault("oauth_token")
+  valid_579131 = validateParameter(valid_579131, JString, required = false,
+                                 default = nil)
+  if valid_579131 != nil:
+    section.add "oauth_token", valid_579131
+  var valid_579132 = query.getOrDefault("alt")
+  valid_579132 = validateParameter(valid_579132, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579132 != nil:
+    section.add "alt", valid_579132
+  var valid_579133 = query.getOrDefault("userIp")
+  valid_579133 = validateParameter(valid_579133, JString, required = false,
+                                 default = nil)
+  if valid_579133 != nil:
+    section.add "userIp", valid_579133
+  var valid_579134 = query.getOrDefault("quotaUser")
+  valid_579134 = validateParameter(valid_579134, JString, required = false,
+                                 default = nil)
+  if valid_579134 != nil:
+    section.add "quotaUser", valid_579134
+  var valid_579135 = query.getOrDefault("fields")
+  valid_579135 = validateParameter(valid_579135, JString, required = false,
+                                 default = nil)
+  if valid_579135 != nil:
+    section.add "fields", valid_579135
+  var valid_579136 = query.getOrDefault("language")
+  valid_579136 = validateParameter(valid_579136, JString, required = false,
+                                 default = nil)
+  if valid_579136 != nil:
+    section.add "language", valid_579136
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2332,64 +2335,64 @@ proc validate_GamesLeaderboardsGet_589226(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589237: Call_GamesLeaderboardsGet_589225; path: JsonNode;
+proc call*(call_579137: Call_GamesLeaderboardsGet_579125; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the metadata of the leaderboard with the given ID.
   ## 
-  let valid = call_589237.validator(path, query, header, formData, body)
-  let scheme = call_589237.pickScheme
+  let valid = call_579137.validator(path, query, header, formData, body)
+  let scheme = call_579137.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589237.url(scheme.get, call_589237.host, call_589237.base,
-                         call_589237.route, valid.getOrDefault("path"),
+  let url = call_579137.url(scheme.get, call_579137.host, call_579137.base,
+                         call_579137.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589237, url, valid)
+  result = hook(call_579137, url, valid)
 
-proc call*(call_589238: Call_GamesLeaderboardsGet_589225; leaderboardId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579138: Call_GamesLeaderboardsGet_579125; leaderboardId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""; language: string = ""): Recallable =
   ## gamesLeaderboardsGet
   ## Retrieves the metadata of the leaderboard with the given ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   leaderboardId: string (required)
-  ##                : The ID of the leaderboard.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589239 = newJObject()
-  var query_589240 = newJObject()
-  add(query_589240, "fields", newJString(fields))
-  add(query_589240, "quotaUser", newJString(quotaUser))
-  add(query_589240, "alt", newJString(alt))
-  add(query_589240, "language", newJString(language))
-  add(path_589239, "leaderboardId", newJString(leaderboardId))
-  add(query_589240, "oauth_token", newJString(oauthToken))
-  add(query_589240, "userIp", newJString(userIp))
-  add(query_589240, "key", newJString(key))
-  add(query_589240, "prettyPrint", newJBool(prettyPrint))
-  result = call_589238.call(path_589239, query_589240, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   leaderboardId: string (required)
+  ##                : The ID of the leaderboard.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579139 = newJObject()
+  var query_579140 = newJObject()
+  add(query_579140, "key", newJString(key))
+  add(query_579140, "prettyPrint", newJBool(prettyPrint))
+  add(query_579140, "oauth_token", newJString(oauthToken))
+  add(query_579140, "alt", newJString(alt))
+  add(query_579140, "userIp", newJString(userIp))
+  add(query_579140, "quotaUser", newJString(quotaUser))
+  add(query_579140, "fields", newJString(fields))
+  add(path_579139, "leaderboardId", newJString(leaderboardId))
+  add(query_579140, "language", newJString(language))
+  result = call_579138.call(path_579139, query_579140, nil, nil, nil)
 
-var gamesLeaderboardsGet* = Call_GamesLeaderboardsGet_589225(
+var gamesLeaderboardsGet* = Call_GamesLeaderboardsGet_579125(
     name: "gamesLeaderboardsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/leaderboards/{leaderboardId}",
-    validator: validate_GamesLeaderboardsGet_589226, base: "/games/v1",
-    url: url_GamesLeaderboardsGet_589227, schemes: {Scheme.Https})
+    validator: validate_GamesLeaderboardsGet_579126, base: "/games/v1",
+    url: url_GamesLeaderboardsGet_579127, schemes: {Scheme.Https})
 type
-  Call_GamesScoresSubmit_589241 = ref object of OpenApiRestCall_588466
-proc url_GamesScoresSubmit_589243(protocol: Scheme; host: string; base: string;
+  Call_GamesScoresSubmit_579141 = ref object of OpenApiRestCall_578364
+proc url_GamesScoresSubmit_579143(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2405,7 +2408,7 @@ proc url_GamesScoresSubmit_589243(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesScoresSubmit_589242(path: JsonNode; query: JsonNode;
+proc validate_GamesScoresSubmit_579142(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Submits a score to the specified leaderboard.
@@ -2418,85 +2421,85 @@ proc validate_GamesScoresSubmit_589242(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `leaderboardId` field"
-  var valid_589244 = path.getOrDefault("leaderboardId")
-  valid_589244 = validateParameter(valid_589244, JString, required = true,
+  var valid_579144 = path.getOrDefault("leaderboardId")
+  valid_579144 = validateParameter(valid_579144, JString, required = true,
                                  default = nil)
-  if valid_589244 != nil:
-    section.add "leaderboardId", valid_589244
+  if valid_579144 != nil:
+    section.add "leaderboardId", valid_579144
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   scoreTag: JString
   ##           : Additional information about the score you're submitting. Values must contain no more than 64 URI-safe characters as defined by section 2.3 of RFC 3986.
-  ##   score: JString (required)
-  ##        : The score you're submitting. The submitted score is ignored if it is worse than a previously submitted score, where worse depends on the leaderboard sort order. The meaning of the score value depends on the leaderboard format type. For fixed-point, the score represents the raw value. For time, the score represents elapsed time in milliseconds. For currency, the score represents a value in micro units.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   score: JString (required)
+  ##        : The score you're submitting. The submitted score is ignored if it is worse than a previously submitted score, where worse depends on the leaderboard sort order. The meaning of the score value depends on the leaderboard format type. For fixed-point, the score represents the raw value. For time, the score represents elapsed time in milliseconds. For currency, the score represents a value in micro units.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589245 = query.getOrDefault("fields")
-  valid_589245 = validateParameter(valid_589245, JString, required = false,
+  var valid_579145 = query.getOrDefault("key")
+  valid_579145 = validateParameter(valid_579145, JString, required = false,
                                  default = nil)
-  if valid_589245 != nil:
-    section.add "fields", valid_589245
-  var valid_589246 = query.getOrDefault("quotaUser")
-  valid_589246 = validateParameter(valid_589246, JString, required = false,
+  if valid_579145 != nil:
+    section.add "key", valid_579145
+  var valid_579146 = query.getOrDefault("scoreTag")
+  valid_579146 = validateParameter(valid_579146, JString, required = false,
                                  default = nil)
-  if valid_589246 != nil:
-    section.add "quotaUser", valid_589246
-  var valid_589247 = query.getOrDefault("alt")
-  valid_589247 = validateParameter(valid_589247, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589247 != nil:
-    section.add "alt", valid_589247
-  var valid_589248 = query.getOrDefault("language")
-  valid_589248 = validateParameter(valid_589248, JString, required = false,
-                                 default = nil)
-  if valid_589248 != nil:
-    section.add "language", valid_589248
-  var valid_589249 = query.getOrDefault("oauth_token")
-  valid_589249 = validateParameter(valid_589249, JString, required = false,
-                                 default = nil)
-  if valid_589249 != nil:
-    section.add "oauth_token", valid_589249
-  var valid_589250 = query.getOrDefault("userIp")
-  valid_589250 = validateParameter(valid_589250, JString, required = false,
-                                 default = nil)
-  if valid_589250 != nil:
-    section.add "userIp", valid_589250
-  var valid_589251 = query.getOrDefault("key")
-  valid_589251 = validateParameter(valid_589251, JString, required = false,
-                                 default = nil)
-  if valid_589251 != nil:
-    section.add "key", valid_589251
-  var valid_589252 = query.getOrDefault("scoreTag")
-  valid_589252 = validateParameter(valid_589252, JString, required = false,
-                                 default = nil)
-  if valid_589252 != nil:
-    section.add "scoreTag", valid_589252
-  assert query != nil, "query argument is necessary due to required `score` field"
-  var valid_589253 = query.getOrDefault("score")
-  valid_589253 = validateParameter(valid_589253, JString, required = true,
-                                 default = nil)
-  if valid_589253 != nil:
-    section.add "score", valid_589253
-  var valid_589254 = query.getOrDefault("prettyPrint")
-  valid_589254 = validateParameter(valid_589254, JBool, required = false,
+  if valid_579146 != nil:
+    section.add "scoreTag", valid_579146
+  var valid_579147 = query.getOrDefault("prettyPrint")
+  valid_579147 = validateParameter(valid_579147, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589254 != nil:
-    section.add "prettyPrint", valid_589254
+  if valid_579147 != nil:
+    section.add "prettyPrint", valid_579147
+  var valid_579148 = query.getOrDefault("oauth_token")
+  valid_579148 = validateParameter(valid_579148, JString, required = false,
+                                 default = nil)
+  if valid_579148 != nil:
+    section.add "oauth_token", valid_579148
+  var valid_579149 = query.getOrDefault("alt")
+  valid_579149 = validateParameter(valid_579149, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579149 != nil:
+    section.add "alt", valid_579149
+  var valid_579150 = query.getOrDefault("userIp")
+  valid_579150 = validateParameter(valid_579150, JString, required = false,
+                                 default = nil)
+  if valid_579150 != nil:
+    section.add "userIp", valid_579150
+  var valid_579151 = query.getOrDefault("quotaUser")
+  valid_579151 = validateParameter(valid_579151, JString, required = false,
+                                 default = nil)
+  if valid_579151 != nil:
+    section.add "quotaUser", valid_579151
+  assert query != nil, "query argument is necessary due to required `score` field"
+  var valid_579152 = query.getOrDefault("score")
+  valid_579152 = validateParameter(valid_579152, JString, required = true,
+                                 default = nil)
+  if valid_579152 != nil:
+    section.add "score", valid_579152
+  var valid_579153 = query.getOrDefault("fields")
+  valid_579153 = validateParameter(valid_579153, JString, required = false,
+                                 default = nil)
+  if valid_579153 != nil:
+    section.add "fields", valid_579153
+  var valid_579154 = query.getOrDefault("language")
+  valid_579154 = validateParameter(valid_579154, JString, required = false,
+                                 default = nil)
+  if valid_579154 != nil:
+    section.add "language", valid_579154
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2505,71 +2508,71 @@ proc validate_GamesScoresSubmit_589242(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589255: Call_GamesScoresSubmit_589241; path: JsonNode;
+proc call*(call_579155: Call_GamesScoresSubmit_579141; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Submits a score to the specified leaderboard.
   ## 
-  let valid = call_589255.validator(path, query, header, formData, body)
-  let scheme = call_589255.pickScheme
+  let valid = call_579155.validator(path, query, header, formData, body)
+  let scheme = call_579155.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589255.url(scheme.get, call_589255.host, call_589255.base,
-                         call_589255.route, valid.getOrDefault("path"),
+  let url = call_579155.url(scheme.get, call_579155.host, call_579155.base,
+                         call_579155.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589255, url, valid)
+  result = hook(call_579155, url, valid)
 
-proc call*(call_589256: Call_GamesScoresSubmit_589241; leaderboardId: string;
-          score: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; language: string = ""; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; scoreTag: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579156: Call_GamesScoresSubmit_579141; score: string;
+          leaderboardId: string; key: string = ""; scoreTag: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = "";
+          language: string = ""): Recallable =
   ## gamesScoresSubmit
   ## Submits a score to the specified leaderboard.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   leaderboardId: string (required)
-  ##                : The ID of the leaderboard.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   scoreTag: string
   ##           : Additional information about the score you're submitting. Values must contain no more than 64 URI-safe characters as defined by section 2.3 of RFC 3986.
-  ##   score: string (required)
-  ##        : The score you're submitting. The submitted score is ignored if it is worse than a previously submitted score, where worse depends on the leaderboard sort order. The meaning of the score value depends on the leaderboard format type. For fixed-point, the score represents the raw value. For time, the score represents elapsed time in milliseconds. For currency, the score represents a value in micro units.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589257 = newJObject()
-  var query_589258 = newJObject()
-  add(query_589258, "fields", newJString(fields))
-  add(query_589258, "quotaUser", newJString(quotaUser))
-  add(query_589258, "alt", newJString(alt))
-  add(query_589258, "language", newJString(language))
-  add(path_589257, "leaderboardId", newJString(leaderboardId))
-  add(query_589258, "oauth_token", newJString(oauthToken))
-  add(query_589258, "userIp", newJString(userIp))
-  add(query_589258, "key", newJString(key))
-  add(query_589258, "scoreTag", newJString(scoreTag))
-  add(query_589258, "score", newJString(score))
-  add(query_589258, "prettyPrint", newJBool(prettyPrint))
-  result = call_589256.call(path_589257, query_589258, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   score: string (required)
+  ##        : The score you're submitting. The submitted score is ignored if it is worse than a previously submitted score, where worse depends on the leaderboard sort order. The meaning of the score value depends on the leaderboard format type. For fixed-point, the score represents the raw value. For time, the score represents elapsed time in milliseconds. For currency, the score represents a value in micro units.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   leaderboardId: string (required)
+  ##                : The ID of the leaderboard.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579157 = newJObject()
+  var query_579158 = newJObject()
+  add(query_579158, "key", newJString(key))
+  add(query_579158, "scoreTag", newJString(scoreTag))
+  add(query_579158, "prettyPrint", newJBool(prettyPrint))
+  add(query_579158, "oauth_token", newJString(oauthToken))
+  add(query_579158, "alt", newJString(alt))
+  add(query_579158, "userIp", newJString(userIp))
+  add(query_579158, "quotaUser", newJString(quotaUser))
+  add(query_579158, "score", newJString(score))
+  add(query_579158, "fields", newJString(fields))
+  add(path_579157, "leaderboardId", newJString(leaderboardId))
+  add(query_579158, "language", newJString(language))
+  result = call_579156.call(path_579157, query_579158, nil, nil, nil)
 
-var gamesScoresSubmit* = Call_GamesScoresSubmit_589241(name: "gamesScoresSubmit",
+var gamesScoresSubmit* = Call_GamesScoresSubmit_579141(name: "gamesScoresSubmit",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/leaderboards/{leaderboardId}/scores",
-    validator: validate_GamesScoresSubmit_589242, base: "/games/v1",
-    url: url_GamesScoresSubmit_589243, schemes: {Scheme.Https})
+    validator: validate_GamesScoresSubmit_579142, base: "/games/v1",
+    url: url_GamesScoresSubmit_579143, schemes: {Scheme.Https})
 type
-  Call_GamesScoresList_589259 = ref object of OpenApiRestCall_588466
-proc url_GamesScoresList_589261(protocol: Scheme; host: string; base: string;
+  Call_GamesScoresList_579159 = ref object of OpenApiRestCall_578364
+proc url_GamesScoresList_579161(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2587,7 +2590,7 @@ proc url_GamesScoresList_589261(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesScoresList_589260(path: JsonNode; query: JsonNode;
+proc validate_GamesScoresList_579160(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Lists the scores in a leaderboard, starting from the top.
@@ -2602,97 +2605,97 @@ proc validate_GamesScoresList_589260(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `leaderboardId` field"
-  var valid_589262 = path.getOrDefault("leaderboardId")
-  valid_589262 = validateParameter(valid_589262, JString, required = true,
+  var valid_579162 = path.getOrDefault("leaderboardId")
+  valid_579162 = validateParameter(valid_579162, JString, required = true,
                                  default = nil)
-  if valid_589262 != nil:
-    section.add "leaderboardId", valid_589262
-  var valid_589263 = path.getOrDefault("collection")
-  valid_589263 = validateParameter(valid_589263, JString, required = true,
+  if valid_579162 != nil:
+    section.add "leaderboardId", valid_579162
+  var valid_579163 = path.getOrDefault("collection")
+  valid_579163 = validateParameter(valid_579163, JString, required = true,
                                  default = newJString("PUBLIC"))
-  if valid_589263 != nil:
-    section.add "collection", valid_589263
+  if valid_579163 != nil:
+    section.add "collection", valid_579163
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of leaderboard scores to return in the response. For any response, the actual number of leaderboard scores returned may be less than the specified maxResults.
-  ##   timeSpan: JString (required)
-  ##           : The time span for the scores and ranks you're requesting.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   timeSpan: JString (required)
+  ##           : The time span for the scores and ranks you're requesting.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of leaderboard scores to return in the response. For any response, the actual number of leaderboard scores returned may be less than the specified maxResults.
   section = newJObject()
-  var valid_589264 = query.getOrDefault("fields")
-  valid_589264 = validateParameter(valid_589264, JString, required = false,
+  var valid_579164 = query.getOrDefault("key")
+  valid_579164 = validateParameter(valid_579164, JString, required = false,
                                  default = nil)
-  if valid_589264 != nil:
-    section.add "fields", valid_589264
-  var valid_589265 = query.getOrDefault("pageToken")
-  valid_589265 = validateParameter(valid_589265, JString, required = false,
+  if valid_579164 != nil:
+    section.add "key", valid_579164
+  var valid_579165 = query.getOrDefault("prettyPrint")
+  valid_579165 = validateParameter(valid_579165, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_579165 != nil:
+    section.add "prettyPrint", valid_579165
+  var valid_579166 = query.getOrDefault("oauth_token")
+  valid_579166 = validateParameter(valid_579166, JString, required = false,
                                  default = nil)
-  if valid_589265 != nil:
-    section.add "pageToken", valid_589265
-  var valid_589266 = query.getOrDefault("quotaUser")
-  valid_589266 = validateParameter(valid_589266, JString, required = false,
-                                 default = nil)
-  if valid_589266 != nil:
-    section.add "quotaUser", valid_589266
-  var valid_589267 = query.getOrDefault("alt")
-  valid_589267 = validateParameter(valid_589267, JString, required = false,
+  if valid_579166 != nil:
+    section.add "oauth_token", valid_579166
+  var valid_579167 = query.getOrDefault("alt")
+  valid_579167 = validateParameter(valid_579167, JString, required = false,
                                  default = newJString("json"))
-  if valid_589267 != nil:
-    section.add "alt", valid_589267
-  var valid_589268 = query.getOrDefault("language")
-  valid_589268 = validateParameter(valid_589268, JString, required = false,
+  if valid_579167 != nil:
+    section.add "alt", valid_579167
+  var valid_579168 = query.getOrDefault("userIp")
+  valid_579168 = validateParameter(valid_579168, JString, required = false,
                                  default = nil)
-  if valid_589268 != nil:
-    section.add "language", valid_589268
-  var valid_589269 = query.getOrDefault("oauth_token")
-  valid_589269 = validateParameter(valid_589269, JString, required = false,
+  if valid_579168 != nil:
+    section.add "userIp", valid_579168
+  var valid_579169 = query.getOrDefault("quotaUser")
+  valid_579169 = validateParameter(valid_579169, JString, required = false,
                                  default = nil)
-  if valid_589269 != nil:
-    section.add "oauth_token", valid_589269
-  var valid_589270 = query.getOrDefault("userIp")
-  valid_589270 = validateParameter(valid_589270, JString, required = false,
+  if valid_579169 != nil:
+    section.add "quotaUser", valid_579169
+  var valid_579170 = query.getOrDefault("pageToken")
+  valid_579170 = validateParameter(valid_579170, JString, required = false,
                                  default = nil)
-  if valid_589270 != nil:
-    section.add "userIp", valid_589270
-  var valid_589271 = query.getOrDefault("maxResults")
-  valid_589271 = validateParameter(valid_589271, JInt, required = false, default = nil)
-  if valid_589271 != nil:
-    section.add "maxResults", valid_589271
+  if valid_579170 != nil:
+    section.add "pageToken", valid_579170
+  var valid_579171 = query.getOrDefault("fields")
+  valid_579171 = validateParameter(valid_579171, JString, required = false,
+                                 default = nil)
+  if valid_579171 != nil:
+    section.add "fields", valid_579171
   assert query != nil,
         "query argument is necessary due to required `timeSpan` field"
-  var valid_589272 = query.getOrDefault("timeSpan")
-  valid_589272 = validateParameter(valid_589272, JString, required = true,
+  var valid_579172 = query.getOrDefault("timeSpan")
+  valid_579172 = validateParameter(valid_579172, JString, required = true,
                                  default = newJString("ALL_TIME"))
-  if valid_589272 != nil:
-    section.add "timeSpan", valid_589272
-  var valid_589273 = query.getOrDefault("key")
-  valid_589273 = validateParameter(valid_589273, JString, required = false,
+  if valid_579172 != nil:
+    section.add "timeSpan", valid_579172
+  var valid_579173 = query.getOrDefault("language")
+  valid_579173 = validateParameter(valid_579173, JString, required = false,
                                  default = nil)
-  if valid_589273 != nil:
-    section.add "key", valid_589273
-  var valid_589274 = query.getOrDefault("prettyPrint")
-  valid_589274 = validateParameter(valid_589274, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_589274 != nil:
-    section.add "prettyPrint", valid_589274
+  if valid_579173 != nil:
+    section.add "language", valid_579173
+  var valid_579174 = query.getOrDefault("maxResults")
+  valid_579174 = validateParameter(valid_579174, JInt, required = false, default = nil)
+  if valid_579174 != nil:
+    section.add "maxResults", valid_579174
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2701,77 +2704,77 @@ proc validate_GamesScoresList_589260(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589275: Call_GamesScoresList_589259; path: JsonNode; query: JsonNode;
+proc call*(call_579175: Call_GamesScoresList_579159; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the scores in a leaderboard, starting from the top.
   ## 
-  let valid = call_589275.validator(path, query, header, formData, body)
-  let scheme = call_589275.pickScheme
+  let valid = call_579175.validator(path, query, header, formData, body)
+  let scheme = call_579175.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589275.url(scheme.get, call_589275.host, call_589275.base,
-                         call_589275.route, valid.getOrDefault("path"),
+  let url = call_579175.url(scheme.get, call_579175.host, call_579175.base,
+                         call_579175.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589275, url, valid)
+  result = hook(call_579175, url, valid)
 
-proc call*(call_589276: Call_GamesScoresList_589259; leaderboardId: string;
-          fields: string = ""; pageToken: string = ""; quotaUser: string = "";
-          alt: string = "json"; language: string = ""; oauthToken: string = "";
-          collection: string = "PUBLIC"; userIp: string = ""; maxResults: int = 0;
-          timeSpan: string = "ALL_TIME"; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579176: Call_GamesScoresList_579159; leaderboardId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          pageToken: string = ""; fields: string = ""; timeSpan: string = "ALL_TIME";
+          collection: string = "PUBLIC"; language: string = ""; maxResults: int = 0): Recallable =
   ## gamesScoresList
   ## Lists the scores in a leaderboard, starting from the top.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   leaderboardId: string (required)
-  ##                : The ID of the leaderboard.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   collection: string (required)
-  ##             : The collection of scores you're requesting.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of leaderboard scores to return in the response. For any response, the actual number of leaderboard scores returned may be less than the specified maxResults.
-  ##   timeSpan: string (required)
-  ##           : The time span for the scores and ranks you're requesting.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589277 = newJObject()
-  var query_589278 = newJObject()
-  add(query_589278, "fields", newJString(fields))
-  add(query_589278, "pageToken", newJString(pageToken))
-  add(query_589278, "quotaUser", newJString(quotaUser))
-  add(query_589278, "alt", newJString(alt))
-  add(query_589278, "language", newJString(language))
-  add(path_589277, "leaderboardId", newJString(leaderboardId))
-  add(query_589278, "oauth_token", newJString(oauthToken))
-  add(path_589277, "collection", newJString(collection))
-  add(query_589278, "userIp", newJString(userIp))
-  add(query_589278, "maxResults", newJInt(maxResults))
-  add(query_589278, "timeSpan", newJString(timeSpan))
-  add(query_589278, "key", newJString(key))
-  add(query_589278, "prettyPrint", newJBool(prettyPrint))
-  result = call_589276.call(path_589277, query_589278, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   leaderboardId: string (required)
+  ##                : The ID of the leaderboard.
+  ##   timeSpan: string (required)
+  ##           : The time span for the scores and ranks you're requesting.
+  ##   collection: string (required)
+  ##             : The collection of scores you're requesting.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: int
+  ##             : The maximum number of leaderboard scores to return in the response. For any response, the actual number of leaderboard scores returned may be less than the specified maxResults.
+  var path_579177 = newJObject()
+  var query_579178 = newJObject()
+  add(query_579178, "key", newJString(key))
+  add(query_579178, "prettyPrint", newJBool(prettyPrint))
+  add(query_579178, "oauth_token", newJString(oauthToken))
+  add(query_579178, "alt", newJString(alt))
+  add(query_579178, "userIp", newJString(userIp))
+  add(query_579178, "quotaUser", newJString(quotaUser))
+  add(query_579178, "pageToken", newJString(pageToken))
+  add(query_579178, "fields", newJString(fields))
+  add(path_579177, "leaderboardId", newJString(leaderboardId))
+  add(query_579178, "timeSpan", newJString(timeSpan))
+  add(path_579177, "collection", newJString(collection))
+  add(query_579178, "language", newJString(language))
+  add(query_579178, "maxResults", newJInt(maxResults))
+  result = call_579176.call(path_579177, query_579178, nil, nil, nil)
 
-var gamesScoresList* = Call_GamesScoresList_589259(name: "gamesScoresList",
+var gamesScoresList* = Call_GamesScoresList_579159(name: "gamesScoresList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/leaderboards/{leaderboardId}/scores/{collection}",
-    validator: validate_GamesScoresList_589260, base: "/games/v1",
-    url: url_GamesScoresList_589261, schemes: {Scheme.Https})
+    validator: validate_GamesScoresList_579160, base: "/games/v1",
+    url: url_GamesScoresList_579161, schemes: {Scheme.Https})
 type
-  Call_GamesScoresListWindow_589279 = ref object of OpenApiRestCall_588466
-proc url_GamesScoresListWindow_589281(protocol: Scheme; host: string; base: string;
+  Call_GamesScoresListWindow_579179 = ref object of OpenApiRestCall_578364
+proc url_GamesScoresListWindow_579181(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2789,7 +2792,7 @@ proc url_GamesScoresListWindow_589281(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesScoresListWindow_589280(path: JsonNode; query: JsonNode;
+proc validate_GamesScoresListWindow_579180(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the scores in a leaderboard around (and including) a player's score.
   ## 
@@ -2803,109 +2806,109 @@ proc validate_GamesScoresListWindow_589280(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `leaderboardId` field"
-  var valid_589282 = path.getOrDefault("leaderboardId")
-  valid_589282 = validateParameter(valid_589282, JString, required = true,
+  var valid_579182 = path.getOrDefault("leaderboardId")
+  valid_579182 = validateParameter(valid_579182, JString, required = true,
                                  default = nil)
-  if valid_589282 != nil:
-    section.add "leaderboardId", valid_589282
-  var valid_589283 = path.getOrDefault("collection")
-  valid_589283 = validateParameter(valid_589283, JString, required = true,
+  if valid_579182 != nil:
+    section.add "leaderboardId", valid_579182
+  var valid_579183 = path.getOrDefault("collection")
+  valid_579183 = validateParameter(valid_579183, JString, required = true,
                                  default = newJString("PUBLIC"))
-  if valid_589283 != nil:
-    section.add "collection", valid_589283
+  if valid_579183 != nil:
+    section.add "collection", valid_579183
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   resultsAbove: JInt
-  ##               : The preferred number of scores to return above the player's score. More scores may be returned if the player is at the bottom of the leaderboard; fewer may be returned if the player is at the top. Must be less than or equal to maxResults.
-  ##   maxResults: JInt
-  ##             : The maximum number of leaderboard scores to return in the response. For any response, the actual number of leaderboard scores returned may be less than the specified maxResults.
-  ##   timeSpan: JString (required)
-  ##           : The time span for the scores and ranks you're requesting.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   resultsAbove: JInt
+  ##               : The preferred number of scores to return above the player's score. More scores may be returned if the player is at the bottom of the leaderboard; fewer may be returned if the player is at the top. Must be less than or equal to maxResults.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
   ##   returnTopIfAbsent: JBool
   ##                    : True if the top scores should be returned when the player is not in the leaderboard. Defaults to true.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   timeSpan: JString (required)
+  ##           : The time span for the scores and ranks you're requesting.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of leaderboard scores to return in the response. For any response, the actual number of leaderboard scores returned may be less than the specified maxResults.
   section = newJObject()
-  var valid_589284 = query.getOrDefault("fields")
-  valid_589284 = validateParameter(valid_589284, JString, required = false,
+  var valid_579184 = query.getOrDefault("key")
+  valid_579184 = validateParameter(valid_579184, JString, required = false,
                                  default = nil)
-  if valid_589284 != nil:
-    section.add "fields", valid_589284
-  var valid_589285 = query.getOrDefault("pageToken")
-  valid_589285 = validateParameter(valid_589285, JString, required = false,
+  if valid_579184 != nil:
+    section.add "key", valid_579184
+  var valid_579185 = query.getOrDefault("prettyPrint")
+  valid_579185 = validateParameter(valid_579185, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_579185 != nil:
+    section.add "prettyPrint", valid_579185
+  var valid_579186 = query.getOrDefault("oauth_token")
+  valid_579186 = validateParameter(valid_579186, JString, required = false,
                                  default = nil)
-  if valid_589285 != nil:
-    section.add "pageToken", valid_589285
-  var valid_589286 = query.getOrDefault("quotaUser")
-  valid_589286 = validateParameter(valid_589286, JString, required = false,
-                                 default = nil)
-  if valid_589286 != nil:
-    section.add "quotaUser", valid_589286
-  var valid_589287 = query.getOrDefault("alt")
-  valid_589287 = validateParameter(valid_589287, JString, required = false,
+  if valid_579186 != nil:
+    section.add "oauth_token", valid_579186
+  var valid_579187 = query.getOrDefault("resultsAbove")
+  valid_579187 = validateParameter(valid_579187, JInt, required = false, default = nil)
+  if valid_579187 != nil:
+    section.add "resultsAbove", valid_579187
+  var valid_579188 = query.getOrDefault("alt")
+  valid_579188 = validateParameter(valid_579188, JString, required = false,
                                  default = newJString("json"))
-  if valid_589287 != nil:
-    section.add "alt", valid_589287
-  var valid_589288 = query.getOrDefault("language")
-  valid_589288 = validateParameter(valid_589288, JString, required = false,
+  if valid_579188 != nil:
+    section.add "alt", valid_579188
+  var valid_579189 = query.getOrDefault("userIp")
+  valid_579189 = validateParameter(valid_579189, JString, required = false,
                                  default = nil)
-  if valid_589288 != nil:
-    section.add "language", valid_589288
-  var valid_589289 = query.getOrDefault("oauth_token")
-  valid_589289 = validateParameter(valid_589289, JString, required = false,
+  if valid_579189 != nil:
+    section.add "userIp", valid_579189
+  var valid_579190 = query.getOrDefault("quotaUser")
+  valid_579190 = validateParameter(valid_579190, JString, required = false,
                                  default = nil)
-  if valid_589289 != nil:
-    section.add "oauth_token", valid_589289
-  var valid_589290 = query.getOrDefault("userIp")
-  valid_589290 = validateParameter(valid_589290, JString, required = false,
+  if valid_579190 != nil:
+    section.add "quotaUser", valid_579190
+  var valid_579191 = query.getOrDefault("pageToken")
+  valid_579191 = validateParameter(valid_579191, JString, required = false,
                                  default = nil)
-  if valid_589290 != nil:
-    section.add "userIp", valid_589290
-  var valid_589291 = query.getOrDefault("resultsAbove")
-  valid_589291 = validateParameter(valid_589291, JInt, required = false, default = nil)
-  if valid_589291 != nil:
-    section.add "resultsAbove", valid_589291
-  var valid_589292 = query.getOrDefault("maxResults")
-  valid_589292 = validateParameter(valid_589292, JInt, required = false, default = nil)
-  if valid_589292 != nil:
-    section.add "maxResults", valid_589292
+  if valid_579191 != nil:
+    section.add "pageToken", valid_579191
+  var valid_579192 = query.getOrDefault("returnTopIfAbsent")
+  valid_579192 = validateParameter(valid_579192, JBool, required = false, default = nil)
+  if valid_579192 != nil:
+    section.add "returnTopIfAbsent", valid_579192
+  var valid_579193 = query.getOrDefault("fields")
+  valid_579193 = validateParameter(valid_579193, JString, required = false,
+                                 default = nil)
+  if valid_579193 != nil:
+    section.add "fields", valid_579193
   assert query != nil,
         "query argument is necessary due to required `timeSpan` field"
-  var valid_589293 = query.getOrDefault("timeSpan")
-  valid_589293 = validateParameter(valid_589293, JString, required = true,
+  var valid_579194 = query.getOrDefault("timeSpan")
+  valid_579194 = validateParameter(valid_579194, JString, required = true,
                                  default = newJString("ALL_TIME"))
-  if valid_589293 != nil:
-    section.add "timeSpan", valid_589293
-  var valid_589294 = query.getOrDefault("key")
-  valid_589294 = validateParameter(valid_589294, JString, required = false,
+  if valid_579194 != nil:
+    section.add "timeSpan", valid_579194
+  var valid_579195 = query.getOrDefault("language")
+  valid_579195 = validateParameter(valid_579195, JString, required = false,
                                  default = nil)
-  if valid_589294 != nil:
-    section.add "key", valid_589294
-  var valid_589295 = query.getOrDefault("prettyPrint")
-  valid_589295 = validateParameter(valid_589295, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_589295 != nil:
-    section.add "prettyPrint", valid_589295
-  var valid_589296 = query.getOrDefault("returnTopIfAbsent")
-  valid_589296 = validateParameter(valid_589296, JBool, required = false, default = nil)
-  if valid_589296 != nil:
-    section.add "returnTopIfAbsent", valid_589296
+  if valid_579195 != nil:
+    section.add "language", valid_579195
+  var valid_579196 = query.getOrDefault("maxResults")
+  valid_579196 = validateParameter(valid_579196, JInt, required = false, default = nil)
+  if valid_579196 != nil:
+    section.add "maxResults", valid_579196
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2914,92 +2917,93 @@ proc validate_GamesScoresListWindow_589280(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589297: Call_GamesScoresListWindow_589279; path: JsonNode;
+proc call*(call_579197: Call_GamesScoresListWindow_579179; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the scores in a leaderboard around (and including) a player's score.
   ## 
-  let valid = call_589297.validator(path, query, header, formData, body)
-  let scheme = call_589297.pickScheme
+  let valid = call_579197.validator(path, query, header, formData, body)
+  let scheme = call_579197.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589297.url(scheme.get, call_589297.host, call_589297.base,
-                         call_589297.route, valid.getOrDefault("path"),
+  let url = call_579197.url(scheme.get, call_579197.host, call_579197.base,
+                         call_579197.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589297, url, valid)
+  result = hook(call_579197, url, valid)
 
-proc call*(call_589298: Call_GamesScoresListWindow_589279; leaderboardId: string;
-          fields: string = ""; pageToken: string = ""; quotaUser: string = "";
-          alt: string = "json"; language: string = ""; oauthToken: string = "";
-          collection: string = "PUBLIC"; userIp: string = ""; resultsAbove: int = 0;
-          maxResults: int = 0; timeSpan: string = "ALL_TIME"; key: string = "";
-          prettyPrint: bool = true; returnTopIfAbsent: bool = false): Recallable =
+proc call*(call_579198: Call_GamesScoresListWindow_579179; leaderboardId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          resultsAbove: int = 0; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; pageToken: string = "";
+          returnTopIfAbsent: bool = false; fields: string = "";
+          timeSpan: string = "ALL_TIME"; collection: string = "PUBLIC";
+          language: string = ""; maxResults: int = 0): Recallable =
   ## gamesScoresListWindow
   ## Lists the scores in a leaderboard around (and including) a player's score.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   leaderboardId: string (required)
-  ##                : The ID of the leaderboard.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   collection: string (required)
-  ##             : The collection of scores you're requesting.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   resultsAbove: int
-  ##               : The preferred number of scores to return above the player's score. More scores may be returned if the player is at the bottom of the leaderboard; fewer may be returned if the player is at the top. Must be less than or equal to maxResults.
-  ##   maxResults: int
-  ##             : The maximum number of leaderboard scores to return in the response. For any response, the actual number of leaderboard scores returned may be less than the specified maxResults.
-  ##   timeSpan: string (required)
-  ##           : The time span for the scores and ranks you're requesting.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   resultsAbove: int
+  ##               : The preferred number of scores to return above the player's score. More scores may be returned if the player is at the bottom of the leaderboard; fewer may be returned if the player is at the top. Must be less than or equal to maxResults.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
   ##   returnTopIfAbsent: bool
   ##                    : True if the top scores should be returned when the player is not in the leaderboard. Defaults to true.
-  var path_589299 = newJObject()
-  var query_589300 = newJObject()
-  add(query_589300, "fields", newJString(fields))
-  add(query_589300, "pageToken", newJString(pageToken))
-  add(query_589300, "quotaUser", newJString(quotaUser))
-  add(query_589300, "alt", newJString(alt))
-  add(query_589300, "language", newJString(language))
-  add(path_589299, "leaderboardId", newJString(leaderboardId))
-  add(query_589300, "oauth_token", newJString(oauthToken))
-  add(path_589299, "collection", newJString(collection))
-  add(query_589300, "userIp", newJString(userIp))
-  add(query_589300, "resultsAbove", newJInt(resultsAbove))
-  add(query_589300, "maxResults", newJInt(maxResults))
-  add(query_589300, "timeSpan", newJString(timeSpan))
-  add(query_589300, "key", newJString(key))
-  add(query_589300, "prettyPrint", newJBool(prettyPrint))
-  add(query_589300, "returnTopIfAbsent", newJBool(returnTopIfAbsent))
-  result = call_589298.call(path_589299, query_589300, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   leaderboardId: string (required)
+  ##                : The ID of the leaderboard.
+  ##   timeSpan: string (required)
+  ##           : The time span for the scores and ranks you're requesting.
+  ##   collection: string (required)
+  ##             : The collection of scores you're requesting.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: int
+  ##             : The maximum number of leaderboard scores to return in the response. For any response, the actual number of leaderboard scores returned may be less than the specified maxResults.
+  var path_579199 = newJObject()
+  var query_579200 = newJObject()
+  add(query_579200, "key", newJString(key))
+  add(query_579200, "prettyPrint", newJBool(prettyPrint))
+  add(query_579200, "oauth_token", newJString(oauthToken))
+  add(query_579200, "resultsAbove", newJInt(resultsAbove))
+  add(query_579200, "alt", newJString(alt))
+  add(query_579200, "userIp", newJString(userIp))
+  add(query_579200, "quotaUser", newJString(quotaUser))
+  add(query_579200, "pageToken", newJString(pageToken))
+  add(query_579200, "returnTopIfAbsent", newJBool(returnTopIfAbsent))
+  add(query_579200, "fields", newJString(fields))
+  add(path_579199, "leaderboardId", newJString(leaderboardId))
+  add(query_579200, "timeSpan", newJString(timeSpan))
+  add(path_579199, "collection", newJString(collection))
+  add(query_579200, "language", newJString(language))
+  add(query_579200, "maxResults", newJInt(maxResults))
+  result = call_579198.call(path_579199, query_579200, nil, nil, nil)
 
-var gamesScoresListWindow* = Call_GamesScoresListWindow_589279(
+var gamesScoresListWindow* = Call_GamesScoresListWindow_579179(
     name: "gamesScoresListWindow", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/leaderboards/{leaderboardId}/window/{collection}",
-    validator: validate_GamesScoresListWindow_589280, base: "/games/v1",
-    url: url_GamesScoresListWindow_589281, schemes: {Scheme.Https})
+    validator: validate_GamesScoresListWindow_579180, base: "/games/v1",
+    url: url_GamesScoresListWindow_579181, schemes: {Scheme.Https})
 type
-  Call_GamesMetagameGetMetagameConfig_589301 = ref object of OpenApiRestCall_588466
-proc url_GamesMetagameGetMetagameConfig_589303(protocol: Scheme; host: string;
+  Call_GamesMetagameGetMetagameConfig_579201 = ref object of OpenApiRestCall_578364
+proc url_GamesMetagameGetMetagameConfig_579203(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesMetagameGetMetagameConfig_589302(path: JsonNode;
+proc validate_GamesMetagameGetMetagameConfig_579202(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Return the metagame configuration data for the calling application.
   ## 
@@ -3008,56 +3012,56 @@ proc validate_GamesMetagameGetMetagameConfig_589302(path: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589304 = query.getOrDefault("fields")
-  valid_589304 = validateParameter(valid_589304, JString, required = false,
+  var valid_579204 = query.getOrDefault("key")
+  valid_579204 = validateParameter(valid_579204, JString, required = false,
                                  default = nil)
-  if valid_589304 != nil:
-    section.add "fields", valid_589304
-  var valid_589305 = query.getOrDefault("quotaUser")
-  valid_589305 = validateParameter(valid_589305, JString, required = false,
-                                 default = nil)
-  if valid_589305 != nil:
-    section.add "quotaUser", valid_589305
-  var valid_589306 = query.getOrDefault("alt")
-  valid_589306 = validateParameter(valid_589306, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589306 != nil:
-    section.add "alt", valid_589306
-  var valid_589307 = query.getOrDefault("oauth_token")
-  valid_589307 = validateParameter(valid_589307, JString, required = false,
-                                 default = nil)
-  if valid_589307 != nil:
-    section.add "oauth_token", valid_589307
-  var valid_589308 = query.getOrDefault("userIp")
-  valid_589308 = validateParameter(valid_589308, JString, required = false,
-                                 default = nil)
-  if valid_589308 != nil:
-    section.add "userIp", valid_589308
-  var valid_589309 = query.getOrDefault("key")
-  valid_589309 = validateParameter(valid_589309, JString, required = false,
-                                 default = nil)
-  if valid_589309 != nil:
-    section.add "key", valid_589309
-  var valid_589310 = query.getOrDefault("prettyPrint")
-  valid_589310 = validateParameter(valid_589310, JBool, required = false,
+  if valid_579204 != nil:
+    section.add "key", valid_579204
+  var valid_579205 = query.getOrDefault("prettyPrint")
+  valid_579205 = validateParameter(valid_579205, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589310 != nil:
-    section.add "prettyPrint", valid_589310
+  if valid_579205 != nil:
+    section.add "prettyPrint", valid_579205
+  var valid_579206 = query.getOrDefault("oauth_token")
+  valid_579206 = validateParameter(valid_579206, JString, required = false,
+                                 default = nil)
+  if valid_579206 != nil:
+    section.add "oauth_token", valid_579206
+  var valid_579207 = query.getOrDefault("alt")
+  valid_579207 = validateParameter(valid_579207, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579207 != nil:
+    section.add "alt", valid_579207
+  var valid_579208 = query.getOrDefault("userIp")
+  valid_579208 = validateParameter(valid_579208, JString, required = false,
+                                 default = nil)
+  if valid_579208 != nil:
+    section.add "userIp", valid_579208
+  var valid_579209 = query.getOrDefault("quotaUser")
+  valid_579209 = validateParameter(valid_579209, JString, required = false,
+                                 default = nil)
+  if valid_579209 != nil:
+    section.add "quotaUser", valid_579209
+  var valid_579210 = query.getOrDefault("fields")
+  valid_579210 = validateParameter(valid_579210, JString, required = false,
+                                 default = nil)
+  if valid_579210 != nil:
+    section.add "fields", valid_579210
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3066,57 +3070,57 @@ proc validate_GamesMetagameGetMetagameConfig_589302(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589311: Call_GamesMetagameGetMetagameConfig_589301; path: JsonNode;
+proc call*(call_579211: Call_GamesMetagameGetMetagameConfig_579201; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Return the metagame configuration data for the calling application.
   ## 
-  let valid = call_589311.validator(path, query, header, formData, body)
-  let scheme = call_589311.pickScheme
+  let valid = call_579211.validator(path, query, header, formData, body)
+  let scheme = call_579211.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589311.url(scheme.get, call_589311.host, call_589311.base,
-                         call_589311.route, valid.getOrDefault("path"),
+  let url = call_579211.url(scheme.get, call_579211.host, call_579211.base,
+                         call_579211.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589311, url, valid)
+  result = hook(call_579211, url, valid)
 
-proc call*(call_589312: Call_GamesMetagameGetMetagameConfig_589301;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579212: Call_GamesMetagameGetMetagameConfig_579201;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## gamesMetagameGetMetagameConfig
   ## Return the metagame configuration data for the calling application.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589313 = newJObject()
-  add(query_589313, "fields", newJString(fields))
-  add(query_589313, "quotaUser", newJString(quotaUser))
-  add(query_589313, "alt", newJString(alt))
-  add(query_589313, "oauth_token", newJString(oauthToken))
-  add(query_589313, "userIp", newJString(userIp))
-  add(query_589313, "key", newJString(key))
-  add(query_589313, "prettyPrint", newJBool(prettyPrint))
-  result = call_589312.call(nil, query_589313, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_579213 = newJObject()
+  add(query_579213, "key", newJString(key))
+  add(query_579213, "prettyPrint", newJBool(prettyPrint))
+  add(query_579213, "oauth_token", newJString(oauthToken))
+  add(query_579213, "alt", newJString(alt))
+  add(query_579213, "userIp", newJString(userIp))
+  add(query_579213, "quotaUser", newJString(quotaUser))
+  add(query_579213, "fields", newJString(fields))
+  result = call_579212.call(nil, query_579213, nil, nil, nil)
 
-var gamesMetagameGetMetagameConfig* = Call_GamesMetagameGetMetagameConfig_589301(
+var gamesMetagameGetMetagameConfig* = Call_GamesMetagameGetMetagameConfig_579201(
     name: "gamesMetagameGetMetagameConfig", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/metagameConfig",
-    validator: validate_GamesMetagameGetMetagameConfig_589302, base: "/games/v1",
-    url: url_GamesMetagameGetMetagameConfig_589303, schemes: {Scheme.Https})
+    validator: validate_GamesMetagameGetMetagameConfig_579202, base: "/games/v1",
+    url: url_GamesMetagameGetMetagameConfig_579203, schemes: {Scheme.Https})
 type
-  Call_GamesPlayersList_589314 = ref object of OpenApiRestCall_588466
-proc url_GamesPlayersList_589316(protocol: Scheme; host: string; base: string;
+  Call_GamesPlayersList_579214 = ref object of OpenApiRestCall_578364
+proc url_GamesPlayersList_579216(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3131,7 +3135,7 @@ proc url_GamesPlayersList_589316(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesPlayersList_589315(path: JsonNode; query: JsonNode;
+proc validate_GamesPlayersList_579215(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Get the collection of players for the currently authenticated user.
@@ -3144,83 +3148,83 @@ proc validate_GamesPlayersList_589315(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `collection` field"
-  var valid_589317 = path.getOrDefault("collection")
-  valid_589317 = validateParameter(valid_589317, JString, required = true,
+  var valid_579217 = path.getOrDefault("collection")
+  valid_579217 = validateParameter(valid_579217, JString, required = true,
                                  default = newJString("connected"))
-  if valid_589317 != nil:
-    section.add "collection", valid_589317
+  if valid_579217 != nil:
+    section.add "collection", valid_579217
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of player resources to return in the response, used for paging. For any response, the actual number of player resources returned may be less than the specified maxResults.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of player resources to return in the response, used for paging. For any response, the actual number of player resources returned may be less than the specified maxResults.
   section = newJObject()
-  var valid_589318 = query.getOrDefault("fields")
-  valid_589318 = validateParameter(valid_589318, JString, required = false,
+  var valid_579218 = query.getOrDefault("key")
+  valid_579218 = validateParameter(valid_579218, JString, required = false,
                                  default = nil)
-  if valid_589318 != nil:
-    section.add "fields", valid_589318
-  var valid_589319 = query.getOrDefault("pageToken")
-  valid_589319 = validateParameter(valid_589319, JString, required = false,
-                                 default = nil)
-  if valid_589319 != nil:
-    section.add "pageToken", valid_589319
-  var valid_589320 = query.getOrDefault("quotaUser")
-  valid_589320 = validateParameter(valid_589320, JString, required = false,
-                                 default = nil)
-  if valid_589320 != nil:
-    section.add "quotaUser", valid_589320
-  var valid_589321 = query.getOrDefault("alt")
-  valid_589321 = validateParameter(valid_589321, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589321 != nil:
-    section.add "alt", valid_589321
-  var valid_589322 = query.getOrDefault("language")
-  valid_589322 = validateParameter(valid_589322, JString, required = false,
-                                 default = nil)
-  if valid_589322 != nil:
-    section.add "language", valid_589322
-  var valid_589323 = query.getOrDefault("oauth_token")
-  valid_589323 = validateParameter(valid_589323, JString, required = false,
-                                 default = nil)
-  if valid_589323 != nil:
-    section.add "oauth_token", valid_589323
-  var valid_589324 = query.getOrDefault("userIp")
-  valid_589324 = validateParameter(valid_589324, JString, required = false,
-                                 default = nil)
-  if valid_589324 != nil:
-    section.add "userIp", valid_589324
-  var valid_589325 = query.getOrDefault("maxResults")
-  valid_589325 = validateParameter(valid_589325, JInt, required = false, default = nil)
-  if valid_589325 != nil:
-    section.add "maxResults", valid_589325
-  var valid_589326 = query.getOrDefault("key")
-  valid_589326 = validateParameter(valid_589326, JString, required = false,
-                                 default = nil)
-  if valid_589326 != nil:
-    section.add "key", valid_589326
-  var valid_589327 = query.getOrDefault("prettyPrint")
-  valid_589327 = validateParameter(valid_589327, JBool, required = false,
+  if valid_579218 != nil:
+    section.add "key", valid_579218
+  var valid_579219 = query.getOrDefault("prettyPrint")
+  valid_579219 = validateParameter(valid_579219, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589327 != nil:
-    section.add "prettyPrint", valid_589327
+  if valid_579219 != nil:
+    section.add "prettyPrint", valid_579219
+  var valid_579220 = query.getOrDefault("oauth_token")
+  valid_579220 = validateParameter(valid_579220, JString, required = false,
+                                 default = nil)
+  if valid_579220 != nil:
+    section.add "oauth_token", valid_579220
+  var valid_579221 = query.getOrDefault("alt")
+  valid_579221 = validateParameter(valid_579221, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579221 != nil:
+    section.add "alt", valid_579221
+  var valid_579222 = query.getOrDefault("userIp")
+  valid_579222 = validateParameter(valid_579222, JString, required = false,
+                                 default = nil)
+  if valid_579222 != nil:
+    section.add "userIp", valid_579222
+  var valid_579223 = query.getOrDefault("quotaUser")
+  valid_579223 = validateParameter(valid_579223, JString, required = false,
+                                 default = nil)
+  if valid_579223 != nil:
+    section.add "quotaUser", valid_579223
+  var valid_579224 = query.getOrDefault("pageToken")
+  valid_579224 = validateParameter(valid_579224, JString, required = false,
+                                 default = nil)
+  if valid_579224 != nil:
+    section.add "pageToken", valid_579224
+  var valid_579225 = query.getOrDefault("fields")
+  valid_579225 = validateParameter(valid_579225, JString, required = false,
+                                 default = nil)
+  if valid_579225 != nil:
+    section.add "fields", valid_579225
+  var valid_579226 = query.getOrDefault("language")
+  valid_579226 = validateParameter(valid_579226, JString, required = false,
+                                 default = nil)
+  if valid_579226 != nil:
+    section.add "language", valid_579226
+  var valid_579227 = query.getOrDefault("maxResults")
+  valid_579227 = validateParameter(valid_579227, JInt, required = false, default = nil)
+  if valid_579227 != nil:
+    section.add "maxResults", valid_579227
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3229,71 +3233,71 @@ proc validate_GamesPlayersList_589315(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589328: Call_GamesPlayersList_589314; path: JsonNode;
+proc call*(call_579228: Call_GamesPlayersList_579214; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get the collection of players for the currently authenticated user.
   ## 
-  let valid = call_589328.validator(path, query, header, formData, body)
-  let scheme = call_589328.pickScheme
+  let valid = call_579228.validator(path, query, header, formData, body)
+  let scheme = call_579228.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589328.url(scheme.get, call_589328.host, call_589328.base,
-                         call_589328.route, valid.getOrDefault("path"),
+  let url = call_579228.url(scheme.get, call_579228.host, call_579228.base,
+                         call_579228.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589328, url, valid)
+  result = hook(call_579228, url, valid)
 
-proc call*(call_589329: Call_GamesPlayersList_589314; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = "";
-          collection: string = "connected"; userIp: string = ""; maxResults: int = 0;
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579229: Call_GamesPlayersList_579214; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
+          fields: string = ""; collection: string = "connected"; language: string = "";
+          maxResults: int = 0): Recallable =
   ## gamesPlayersList
   ## Get the collection of players for the currently authenticated user.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   collection: string (required)
-  ##             : Collection of players being retrieved
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of player resources to return in the response, used for paging. For any response, the actual number of player resources returned may be less than the specified maxResults.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589330 = newJObject()
-  var query_589331 = newJObject()
-  add(query_589331, "fields", newJString(fields))
-  add(query_589331, "pageToken", newJString(pageToken))
-  add(query_589331, "quotaUser", newJString(quotaUser))
-  add(query_589331, "alt", newJString(alt))
-  add(query_589331, "language", newJString(language))
-  add(query_589331, "oauth_token", newJString(oauthToken))
-  add(path_589330, "collection", newJString(collection))
-  add(query_589331, "userIp", newJString(userIp))
-  add(query_589331, "maxResults", newJInt(maxResults))
-  add(query_589331, "key", newJString(key))
-  add(query_589331, "prettyPrint", newJBool(prettyPrint))
-  result = call_589329.call(path_589330, query_589331, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   collection: string (required)
+  ##             : Collection of players being retrieved
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: int
+  ##             : The maximum number of player resources to return in the response, used for paging. For any response, the actual number of player resources returned may be less than the specified maxResults.
+  var path_579230 = newJObject()
+  var query_579231 = newJObject()
+  add(query_579231, "key", newJString(key))
+  add(query_579231, "prettyPrint", newJBool(prettyPrint))
+  add(query_579231, "oauth_token", newJString(oauthToken))
+  add(query_579231, "alt", newJString(alt))
+  add(query_579231, "userIp", newJString(userIp))
+  add(query_579231, "quotaUser", newJString(quotaUser))
+  add(query_579231, "pageToken", newJString(pageToken))
+  add(query_579231, "fields", newJString(fields))
+  add(path_579230, "collection", newJString(collection))
+  add(query_579231, "language", newJString(language))
+  add(query_579231, "maxResults", newJInt(maxResults))
+  result = call_579229.call(path_579230, query_579231, nil, nil, nil)
 
-var gamesPlayersList* = Call_GamesPlayersList_589314(name: "gamesPlayersList",
+var gamesPlayersList* = Call_GamesPlayersList_579214(name: "gamesPlayersList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/players/me/players/{collection}",
-    validator: validate_GamesPlayersList_589315, base: "/games/v1",
-    url: url_GamesPlayersList_589316, schemes: {Scheme.Https})
+    validator: validate_GamesPlayersList_579215, base: "/games/v1",
+    url: url_GamesPlayersList_579216, schemes: {Scheme.Https})
 type
-  Call_GamesPlayersGet_589332 = ref object of OpenApiRestCall_588466
-proc url_GamesPlayersGet_589334(protocol: Scheme; host: string; base: string;
+  Call_GamesPlayersGet_579232 = ref object of OpenApiRestCall_578364
+proc url_GamesPlayersGet_579234(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3308,7 +3312,7 @@ proc url_GamesPlayersGet_589334(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesPlayersGet_589333(path: JsonNode; query: JsonNode;
+proc validate_GamesPlayersGet_579233(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Retrieves the Player resource with the given ID. To retrieve the player for the currently authenticated user, set playerId to me.
@@ -3320,70 +3324,70 @@ proc validate_GamesPlayersGet_589333(path: JsonNode; query: JsonNode;
   ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `playerId` field"
-  var valid_589335 = path.getOrDefault("playerId")
-  valid_589335 = validateParameter(valid_589335, JString, required = true,
+  var valid_579235 = path.getOrDefault("playerId")
+  valid_579235 = validateParameter(valid_579235, JString, required = true,
                                  default = nil)
-  if valid_589335 != nil:
-    section.add "playerId", valid_589335
+  if valid_579235 != nil:
+    section.add "playerId", valid_579235
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589336 = query.getOrDefault("fields")
-  valid_589336 = validateParameter(valid_589336, JString, required = false,
+  var valid_579236 = query.getOrDefault("key")
+  valid_579236 = validateParameter(valid_579236, JString, required = false,
                                  default = nil)
-  if valid_589336 != nil:
-    section.add "fields", valid_589336
-  var valid_589337 = query.getOrDefault("quotaUser")
-  valid_589337 = validateParameter(valid_589337, JString, required = false,
-                                 default = nil)
-  if valid_589337 != nil:
-    section.add "quotaUser", valid_589337
-  var valid_589338 = query.getOrDefault("alt")
-  valid_589338 = validateParameter(valid_589338, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589338 != nil:
-    section.add "alt", valid_589338
-  var valid_589339 = query.getOrDefault("language")
-  valid_589339 = validateParameter(valid_589339, JString, required = false,
-                                 default = nil)
-  if valid_589339 != nil:
-    section.add "language", valid_589339
-  var valid_589340 = query.getOrDefault("oauth_token")
-  valid_589340 = validateParameter(valid_589340, JString, required = false,
-                                 default = nil)
-  if valid_589340 != nil:
-    section.add "oauth_token", valid_589340
-  var valid_589341 = query.getOrDefault("userIp")
-  valid_589341 = validateParameter(valid_589341, JString, required = false,
-                                 default = nil)
-  if valid_589341 != nil:
-    section.add "userIp", valid_589341
-  var valid_589342 = query.getOrDefault("key")
-  valid_589342 = validateParameter(valid_589342, JString, required = false,
-                                 default = nil)
-  if valid_589342 != nil:
-    section.add "key", valid_589342
-  var valid_589343 = query.getOrDefault("prettyPrint")
-  valid_589343 = validateParameter(valid_589343, JBool, required = false,
+  if valid_579236 != nil:
+    section.add "key", valid_579236
+  var valid_579237 = query.getOrDefault("prettyPrint")
+  valid_579237 = validateParameter(valid_579237, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589343 != nil:
-    section.add "prettyPrint", valid_589343
+  if valid_579237 != nil:
+    section.add "prettyPrint", valid_579237
+  var valid_579238 = query.getOrDefault("oauth_token")
+  valid_579238 = validateParameter(valid_579238, JString, required = false,
+                                 default = nil)
+  if valid_579238 != nil:
+    section.add "oauth_token", valid_579238
+  var valid_579239 = query.getOrDefault("alt")
+  valid_579239 = validateParameter(valid_579239, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579239 != nil:
+    section.add "alt", valid_579239
+  var valid_579240 = query.getOrDefault("userIp")
+  valid_579240 = validateParameter(valid_579240, JString, required = false,
+                                 default = nil)
+  if valid_579240 != nil:
+    section.add "userIp", valid_579240
+  var valid_579241 = query.getOrDefault("quotaUser")
+  valid_579241 = validateParameter(valid_579241, JString, required = false,
+                                 default = nil)
+  if valid_579241 != nil:
+    section.add "quotaUser", valid_579241
+  var valid_579242 = query.getOrDefault("fields")
+  valid_579242 = validateParameter(valid_579242, JString, required = false,
+                                 default = nil)
+  if valid_579242 != nil:
+    section.add "fields", valid_579242
+  var valid_579243 = query.getOrDefault("language")
+  valid_579243 = validateParameter(valid_579243, JString, required = false,
+                                 default = nil)
+  if valid_579243 != nil:
+    section.add "language", valid_579243
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3392,63 +3396,63 @@ proc validate_GamesPlayersGet_589333(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589344: Call_GamesPlayersGet_589332; path: JsonNode; query: JsonNode;
+proc call*(call_579244: Call_GamesPlayersGet_579232; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the Player resource with the given ID. To retrieve the player for the currently authenticated user, set playerId to me.
   ## 
-  let valid = call_589344.validator(path, query, header, formData, body)
-  let scheme = call_589344.pickScheme
+  let valid = call_579244.validator(path, query, header, formData, body)
+  let scheme = call_579244.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589344.url(scheme.get, call_589344.host, call_589344.base,
-                         call_589344.route, valid.getOrDefault("path"),
+  let url = call_579244.url(scheme.get, call_579244.host, call_579244.base,
+                         call_579244.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589344, url, valid)
+  result = hook(call_579244, url, valid)
 
-proc call*(call_589345: Call_GamesPlayersGet_589332; playerId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579245: Call_GamesPlayersGet_579232; playerId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""; language: string = ""): Recallable =
   ## gamesPlayersGet
   ## Retrieves the Player resource with the given ID. To retrieve the player for the currently authenticated user, set playerId to me.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   playerId: string (required)
-  ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589346 = newJObject()
-  var query_589347 = newJObject()
-  add(query_589347, "fields", newJString(fields))
-  add(query_589347, "quotaUser", newJString(quotaUser))
-  add(query_589347, "alt", newJString(alt))
-  add(query_589347, "language", newJString(language))
-  add(query_589347, "oauth_token", newJString(oauthToken))
-  add(path_589346, "playerId", newJString(playerId))
-  add(query_589347, "userIp", newJString(userIp))
-  add(query_589347, "key", newJString(key))
-  add(query_589347, "prettyPrint", newJBool(prettyPrint))
-  result = call_589345.call(path_589346, query_589347, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   playerId: string (required)
+  ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579246 = newJObject()
+  var query_579247 = newJObject()
+  add(query_579247, "key", newJString(key))
+  add(query_579247, "prettyPrint", newJBool(prettyPrint))
+  add(query_579247, "oauth_token", newJString(oauthToken))
+  add(path_579246, "playerId", newJString(playerId))
+  add(query_579247, "alt", newJString(alt))
+  add(query_579247, "userIp", newJString(userIp))
+  add(query_579247, "quotaUser", newJString(quotaUser))
+  add(query_579247, "fields", newJString(fields))
+  add(query_579247, "language", newJString(language))
+  result = call_579245.call(path_579246, query_579247, nil, nil, nil)
 
-var gamesPlayersGet* = Call_GamesPlayersGet_589332(name: "gamesPlayersGet",
+var gamesPlayersGet* = Call_GamesPlayersGet_579232(name: "gamesPlayersGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/players/{playerId}", validator: validate_GamesPlayersGet_589333,
-    base: "/games/v1", url: url_GamesPlayersGet_589334, schemes: {Scheme.Https})
+    route: "/players/{playerId}", validator: validate_GamesPlayersGet_579233,
+    base: "/games/v1", url: url_GamesPlayersGet_579234, schemes: {Scheme.Https})
 type
-  Call_GamesAchievementsList_589348 = ref object of OpenApiRestCall_588466
-proc url_GamesAchievementsList_589350(protocol: Scheme; host: string; base: string;
+  Call_GamesAchievementsList_579248 = ref object of OpenApiRestCall_578364
+proc url_GamesAchievementsList_579250(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3464,7 +3468,7 @@ proc url_GamesAchievementsList_589350(protocol: Scheme; host: string; base: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesAchievementsList_589349(path: JsonNode; query: JsonNode;
+proc validate_GamesAchievementsList_579249(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the progress for all your application's achievements for the currently authenticated player.
   ## 
@@ -3475,90 +3479,90 @@ proc validate_GamesAchievementsList_589349(path: JsonNode; query: JsonNode;
   ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `playerId` field"
-  var valid_589351 = path.getOrDefault("playerId")
-  valid_589351 = validateParameter(valid_589351, JString, required = true,
+  var valid_579251 = path.getOrDefault("playerId")
+  valid_579251 = validateParameter(valid_579251, JString, required = true,
                                  default = nil)
-  if valid_589351 != nil:
-    section.add "playerId", valid_589351
+  if valid_579251 != nil:
+    section.add "playerId", valid_579251
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of achievement resources to return in the response, used for paging. For any response, the actual number of achievement resources returned may be less than the specified maxResults.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
   ##   state: JString
   ##        : Tells the server to return only achievements with the specified state. If this parameter isn't specified, all achievements are returned.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of achievement resources to return in the response, used for paging. For any response, the actual number of achievement resources returned may be less than the specified maxResults.
   section = newJObject()
-  var valid_589352 = query.getOrDefault("fields")
-  valid_589352 = validateParameter(valid_589352, JString, required = false,
+  var valid_579252 = query.getOrDefault("key")
+  valid_579252 = validateParameter(valid_579252, JString, required = false,
                                  default = nil)
-  if valid_589352 != nil:
-    section.add "fields", valid_589352
-  var valid_589353 = query.getOrDefault("pageToken")
-  valid_589353 = validateParameter(valid_589353, JString, required = false,
-                                 default = nil)
-  if valid_589353 != nil:
-    section.add "pageToken", valid_589353
-  var valid_589354 = query.getOrDefault("quotaUser")
-  valid_589354 = validateParameter(valid_589354, JString, required = false,
-                                 default = nil)
-  if valid_589354 != nil:
-    section.add "quotaUser", valid_589354
-  var valid_589355 = query.getOrDefault("alt")
-  valid_589355 = validateParameter(valid_589355, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589355 != nil:
-    section.add "alt", valid_589355
-  var valid_589356 = query.getOrDefault("language")
-  valid_589356 = validateParameter(valid_589356, JString, required = false,
-                                 default = nil)
-  if valid_589356 != nil:
-    section.add "language", valid_589356
-  var valid_589357 = query.getOrDefault("oauth_token")
-  valid_589357 = validateParameter(valid_589357, JString, required = false,
-                                 default = nil)
-  if valid_589357 != nil:
-    section.add "oauth_token", valid_589357
-  var valid_589358 = query.getOrDefault("userIp")
-  valid_589358 = validateParameter(valid_589358, JString, required = false,
-                                 default = nil)
-  if valid_589358 != nil:
-    section.add "userIp", valid_589358
-  var valid_589359 = query.getOrDefault("maxResults")
-  valid_589359 = validateParameter(valid_589359, JInt, required = false, default = nil)
-  if valid_589359 != nil:
-    section.add "maxResults", valid_589359
-  var valid_589360 = query.getOrDefault("key")
-  valid_589360 = validateParameter(valid_589360, JString, required = false,
-                                 default = nil)
-  if valid_589360 != nil:
-    section.add "key", valid_589360
-  var valid_589361 = query.getOrDefault("prettyPrint")
-  valid_589361 = validateParameter(valid_589361, JBool, required = false,
+  if valid_579252 != nil:
+    section.add "key", valid_579252
+  var valid_579253 = query.getOrDefault("prettyPrint")
+  valid_579253 = validateParameter(valid_579253, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589361 != nil:
-    section.add "prettyPrint", valid_589361
-  var valid_589362 = query.getOrDefault("state")
-  valid_589362 = validateParameter(valid_589362, JString, required = false,
+  if valid_579253 != nil:
+    section.add "prettyPrint", valid_579253
+  var valid_579254 = query.getOrDefault("oauth_token")
+  valid_579254 = validateParameter(valid_579254, JString, required = false,
+                                 default = nil)
+  if valid_579254 != nil:
+    section.add "oauth_token", valid_579254
+  var valid_579255 = query.getOrDefault("state")
+  valid_579255 = validateParameter(valid_579255, JString, required = false,
                                  default = newJString("ALL"))
-  if valid_589362 != nil:
-    section.add "state", valid_589362
+  if valid_579255 != nil:
+    section.add "state", valid_579255
+  var valid_579256 = query.getOrDefault("alt")
+  valid_579256 = validateParameter(valid_579256, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579256 != nil:
+    section.add "alt", valid_579256
+  var valid_579257 = query.getOrDefault("userIp")
+  valid_579257 = validateParameter(valid_579257, JString, required = false,
+                                 default = nil)
+  if valid_579257 != nil:
+    section.add "userIp", valid_579257
+  var valid_579258 = query.getOrDefault("quotaUser")
+  valid_579258 = validateParameter(valid_579258, JString, required = false,
+                                 default = nil)
+  if valid_579258 != nil:
+    section.add "quotaUser", valid_579258
+  var valid_579259 = query.getOrDefault("pageToken")
+  valid_579259 = validateParameter(valid_579259, JString, required = false,
+                                 default = nil)
+  if valid_579259 != nil:
+    section.add "pageToken", valid_579259
+  var valid_579260 = query.getOrDefault("fields")
+  valid_579260 = validateParameter(valid_579260, JString, required = false,
+                                 default = nil)
+  if valid_579260 != nil:
+    section.add "fields", valid_579260
+  var valid_579261 = query.getOrDefault("language")
+  valid_579261 = validateParameter(valid_579261, JString, required = false,
+                                 default = nil)
+  if valid_579261 != nil:
+    section.add "language", valid_579261
+  var valid_579262 = query.getOrDefault("maxResults")
+  valid_579262 = validateParameter(valid_579262, JInt, required = false, default = nil)
+  if valid_579262 != nil:
+    section.add "maxResults", valid_579262
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3567,74 +3571,74 @@ proc validate_GamesAchievementsList_589349(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589363: Call_GamesAchievementsList_589348; path: JsonNode;
+proc call*(call_579263: Call_GamesAchievementsList_579248; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists the progress for all your application's achievements for the currently authenticated player.
   ## 
-  let valid = call_589363.validator(path, query, header, formData, body)
-  let scheme = call_589363.pickScheme
+  let valid = call_579263.validator(path, query, header, formData, body)
+  let scheme = call_579263.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589363.url(scheme.get, call_589363.host, call_589363.base,
-                         call_589363.route, valid.getOrDefault("path"),
+  let url = call_579263.url(scheme.get, call_579263.host, call_579263.base,
+                         call_579263.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589363, url, valid)
+  result = hook(call_579263, url, valid)
 
-proc call*(call_589364: Call_GamesAchievementsList_589348; playerId: string;
-          fields: string = ""; pageToken: string = ""; quotaUser: string = "";
-          alt: string = "json"; language: string = ""; oauthToken: string = "";
-          userIp: string = ""; maxResults: int = 0; key: string = "";
-          prettyPrint: bool = true; state: string = "ALL"): Recallable =
+proc call*(call_579264: Call_GamesAchievementsList_579248; playerId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          state: string = "ALL"; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; pageToken: string = ""; fields: string = "";
+          language: string = ""; maxResults: int = 0): Recallable =
   ## gamesAchievementsList
   ## Lists the progress for all your application's achievements for the currently authenticated player.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   playerId: string (required)
-  ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of achievement resources to return in the response, used for paging. For any response, the actual number of achievement resources returned may be less than the specified maxResults.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   state: string
   ##        : Tells the server to return only achievements with the specified state. If this parameter isn't specified, all achievements are returned.
-  var path_589365 = newJObject()
-  var query_589366 = newJObject()
-  add(query_589366, "fields", newJString(fields))
-  add(query_589366, "pageToken", newJString(pageToken))
-  add(query_589366, "quotaUser", newJString(quotaUser))
-  add(query_589366, "alt", newJString(alt))
-  add(query_589366, "language", newJString(language))
-  add(query_589366, "oauth_token", newJString(oauthToken))
-  add(path_589365, "playerId", newJString(playerId))
-  add(query_589366, "userIp", newJString(userIp))
-  add(query_589366, "maxResults", newJInt(maxResults))
-  add(query_589366, "key", newJString(key))
-  add(query_589366, "prettyPrint", newJBool(prettyPrint))
-  add(query_589366, "state", newJString(state))
-  result = call_589364.call(path_589365, query_589366, nil, nil, nil)
+  ##   playerId: string (required)
+  ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: int
+  ##             : The maximum number of achievement resources to return in the response, used for paging. For any response, the actual number of achievement resources returned may be less than the specified maxResults.
+  var path_579265 = newJObject()
+  var query_579266 = newJObject()
+  add(query_579266, "key", newJString(key))
+  add(query_579266, "prettyPrint", newJBool(prettyPrint))
+  add(query_579266, "oauth_token", newJString(oauthToken))
+  add(query_579266, "state", newJString(state))
+  add(path_579265, "playerId", newJString(playerId))
+  add(query_579266, "alt", newJString(alt))
+  add(query_579266, "userIp", newJString(userIp))
+  add(query_579266, "quotaUser", newJString(quotaUser))
+  add(query_579266, "pageToken", newJString(pageToken))
+  add(query_579266, "fields", newJString(fields))
+  add(query_579266, "language", newJString(language))
+  add(query_579266, "maxResults", newJInt(maxResults))
+  result = call_579264.call(path_579265, query_579266, nil, nil, nil)
 
-var gamesAchievementsList* = Call_GamesAchievementsList_589348(
+var gamesAchievementsList* = Call_GamesAchievementsList_579248(
     name: "gamesAchievementsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/players/{playerId}/achievements",
-    validator: validate_GamesAchievementsList_589349, base: "/games/v1",
-    url: url_GamesAchievementsList_589350, schemes: {Scheme.Https})
+    validator: validate_GamesAchievementsList_579249, base: "/games/v1",
+    url: url_GamesAchievementsList_579250, schemes: {Scheme.Https})
 type
-  Call_GamesMetagameListCategoriesByPlayer_589367 = ref object of OpenApiRestCall_588466
-proc url_GamesMetagameListCategoriesByPlayer_589369(protocol: Scheme; host: string;
+  Call_GamesMetagameListCategoriesByPlayer_579267 = ref object of OpenApiRestCall_578364
+proc url_GamesMetagameListCategoriesByPlayer_579269(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3652,102 +3656,101 @@ proc url_GamesMetagameListCategoriesByPlayer_589369(protocol: Scheme; host: stri
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesMetagameListCategoriesByPlayer_589368(path: JsonNode;
+proc validate_GamesMetagameListCategoriesByPlayer_579268(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List play data aggregated per category for the player corresponding to playerId.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   collection: JString (required)
-  ##             : The collection of categories for which data will be returned.
   ##   playerId: JString (required)
   ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
+  ##   collection: JString (required)
+  ##             : The collection of categories for which data will be returned.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `collection` field"
-  var valid_589370 = path.getOrDefault("collection")
-  valid_589370 = validateParameter(valid_589370, JString, required = true,
-                                 default = newJString("all"))
-  if valid_589370 != nil:
-    section.add "collection", valid_589370
-  var valid_589371 = path.getOrDefault("playerId")
-  valid_589371 = validateParameter(valid_589371, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `playerId` field"
+  var valid_579270 = path.getOrDefault("playerId")
+  valid_579270 = validateParameter(valid_579270, JString, required = true,
                                  default = nil)
-  if valid_589371 != nil:
-    section.add "playerId", valid_589371
+  if valid_579270 != nil:
+    section.add "playerId", valid_579270
+  var valid_579271 = path.getOrDefault("collection")
+  valid_579271 = validateParameter(valid_579271, JString, required = true,
+                                 default = newJString("all"))
+  if valid_579271 != nil:
+    section.add "collection", valid_579271
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of category resources to return in the response, used for paging. For any response, the actual number of category resources returned may be less than the specified maxResults.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of category resources to return in the response, used for paging. For any response, the actual number of category resources returned may be less than the specified maxResults.
   section = newJObject()
-  var valid_589372 = query.getOrDefault("fields")
-  valid_589372 = validateParameter(valid_589372, JString, required = false,
+  var valid_579272 = query.getOrDefault("key")
+  valid_579272 = validateParameter(valid_579272, JString, required = false,
                                  default = nil)
-  if valid_589372 != nil:
-    section.add "fields", valid_589372
-  var valid_589373 = query.getOrDefault("pageToken")
-  valid_589373 = validateParameter(valid_589373, JString, required = false,
-                                 default = nil)
-  if valid_589373 != nil:
-    section.add "pageToken", valid_589373
-  var valid_589374 = query.getOrDefault("quotaUser")
-  valid_589374 = validateParameter(valid_589374, JString, required = false,
-                                 default = nil)
-  if valid_589374 != nil:
-    section.add "quotaUser", valid_589374
-  var valid_589375 = query.getOrDefault("alt")
-  valid_589375 = validateParameter(valid_589375, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589375 != nil:
-    section.add "alt", valid_589375
-  var valid_589376 = query.getOrDefault("language")
-  valid_589376 = validateParameter(valid_589376, JString, required = false,
-                                 default = nil)
-  if valid_589376 != nil:
-    section.add "language", valid_589376
-  var valid_589377 = query.getOrDefault("oauth_token")
-  valid_589377 = validateParameter(valid_589377, JString, required = false,
-                                 default = nil)
-  if valid_589377 != nil:
-    section.add "oauth_token", valid_589377
-  var valid_589378 = query.getOrDefault("userIp")
-  valid_589378 = validateParameter(valid_589378, JString, required = false,
-                                 default = nil)
-  if valid_589378 != nil:
-    section.add "userIp", valid_589378
-  var valid_589379 = query.getOrDefault("maxResults")
-  valid_589379 = validateParameter(valid_589379, JInt, required = false, default = nil)
-  if valid_589379 != nil:
-    section.add "maxResults", valid_589379
-  var valid_589380 = query.getOrDefault("key")
-  valid_589380 = validateParameter(valid_589380, JString, required = false,
-                                 default = nil)
-  if valid_589380 != nil:
-    section.add "key", valid_589380
-  var valid_589381 = query.getOrDefault("prettyPrint")
-  valid_589381 = validateParameter(valid_589381, JBool, required = false,
+  if valid_579272 != nil:
+    section.add "key", valid_579272
+  var valid_579273 = query.getOrDefault("prettyPrint")
+  valid_579273 = validateParameter(valid_579273, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589381 != nil:
-    section.add "prettyPrint", valid_589381
+  if valid_579273 != nil:
+    section.add "prettyPrint", valid_579273
+  var valid_579274 = query.getOrDefault("oauth_token")
+  valid_579274 = validateParameter(valid_579274, JString, required = false,
+                                 default = nil)
+  if valid_579274 != nil:
+    section.add "oauth_token", valid_579274
+  var valid_579275 = query.getOrDefault("alt")
+  valid_579275 = validateParameter(valid_579275, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579275 != nil:
+    section.add "alt", valid_579275
+  var valid_579276 = query.getOrDefault("userIp")
+  valid_579276 = validateParameter(valid_579276, JString, required = false,
+                                 default = nil)
+  if valid_579276 != nil:
+    section.add "userIp", valid_579276
+  var valid_579277 = query.getOrDefault("quotaUser")
+  valid_579277 = validateParameter(valid_579277, JString, required = false,
+                                 default = nil)
+  if valid_579277 != nil:
+    section.add "quotaUser", valid_579277
+  var valid_579278 = query.getOrDefault("pageToken")
+  valid_579278 = validateParameter(valid_579278, JString, required = false,
+                                 default = nil)
+  if valid_579278 != nil:
+    section.add "pageToken", valid_579278
+  var valid_579279 = query.getOrDefault("fields")
+  valid_579279 = validateParameter(valid_579279, JString, required = false,
+                                 default = nil)
+  if valid_579279 != nil:
+    section.add "fields", valid_579279
+  var valid_579280 = query.getOrDefault("language")
+  valid_579280 = validateParameter(valid_579280, JString, required = false,
+                                 default = nil)
+  if valid_579280 != nil:
+    section.add "language", valid_579280
+  var valid_579281 = query.getOrDefault("maxResults")
+  valid_579281 = validateParameter(valid_579281, JInt, required = false, default = nil)
+  if valid_579281 != nil:
+    section.add "maxResults", valid_579281
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3756,77 +3759,77 @@ proc validate_GamesMetagameListCategoriesByPlayer_589368(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589382: Call_GamesMetagameListCategoriesByPlayer_589367;
+proc call*(call_579282: Call_GamesMetagameListCategoriesByPlayer_579267;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List play data aggregated per category for the player corresponding to playerId.
   ## 
-  let valid = call_589382.validator(path, query, header, formData, body)
-  let scheme = call_589382.pickScheme
+  let valid = call_579282.validator(path, query, header, formData, body)
+  let scheme = call_579282.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589382.url(scheme.get, call_589382.host, call_589382.base,
-                         call_589382.route, valid.getOrDefault("path"),
+  let url = call_579282.url(scheme.get, call_579282.host, call_579282.base,
+                         call_579282.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589382, url, valid)
+  result = hook(call_579282, url, valid)
 
-proc call*(call_589383: Call_GamesMetagameListCategoriesByPlayer_589367;
-          playerId: string; fields: string = ""; pageToken: string = "";
-          quotaUser: string = ""; alt: string = "json"; language: string = "";
-          oauthToken: string = ""; collection: string = "all"; userIp: string = "";
-          maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579283: Call_GamesMetagameListCategoriesByPlayer_579267;
+          playerId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; pageToken: string = ""; fields: string = "";
+          collection: string = "all"; language: string = ""; maxResults: int = 0): Recallable =
   ## gamesMetagameListCategoriesByPlayer
   ## List play data aggregated per category for the player corresponding to playerId.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   collection: string (required)
-  ##             : The collection of categories for which data will be returned.
-  ##   playerId: string (required)
-  ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of category resources to return in the response, used for paging. For any response, the actual number of category resources returned may be less than the specified maxResults.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589384 = newJObject()
-  var query_589385 = newJObject()
-  add(query_589385, "fields", newJString(fields))
-  add(query_589385, "pageToken", newJString(pageToken))
-  add(query_589385, "quotaUser", newJString(quotaUser))
-  add(query_589385, "alt", newJString(alt))
-  add(query_589385, "language", newJString(language))
-  add(query_589385, "oauth_token", newJString(oauthToken))
-  add(path_589384, "collection", newJString(collection))
-  add(path_589384, "playerId", newJString(playerId))
-  add(query_589385, "userIp", newJString(userIp))
-  add(query_589385, "maxResults", newJInt(maxResults))
-  add(query_589385, "key", newJString(key))
-  add(query_589385, "prettyPrint", newJBool(prettyPrint))
-  result = call_589383.call(path_589384, query_589385, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   playerId: string (required)
+  ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   collection: string (required)
+  ##             : The collection of categories for which data will be returned.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: int
+  ##             : The maximum number of category resources to return in the response, used for paging. For any response, the actual number of category resources returned may be less than the specified maxResults.
+  var path_579284 = newJObject()
+  var query_579285 = newJObject()
+  add(query_579285, "key", newJString(key))
+  add(query_579285, "prettyPrint", newJBool(prettyPrint))
+  add(query_579285, "oauth_token", newJString(oauthToken))
+  add(path_579284, "playerId", newJString(playerId))
+  add(query_579285, "alt", newJString(alt))
+  add(query_579285, "userIp", newJString(userIp))
+  add(query_579285, "quotaUser", newJString(quotaUser))
+  add(query_579285, "pageToken", newJString(pageToken))
+  add(query_579285, "fields", newJString(fields))
+  add(path_579284, "collection", newJString(collection))
+  add(query_579285, "language", newJString(language))
+  add(query_579285, "maxResults", newJInt(maxResults))
+  result = call_579283.call(path_579284, query_579285, nil, nil, nil)
 
-var gamesMetagameListCategoriesByPlayer* = Call_GamesMetagameListCategoriesByPlayer_589367(
+var gamesMetagameListCategoriesByPlayer* = Call_GamesMetagameListCategoriesByPlayer_579267(
     name: "gamesMetagameListCategoriesByPlayer", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/players/{playerId}/categories/{collection}",
-    validator: validate_GamesMetagameListCategoriesByPlayer_589368,
-    base: "/games/v1", url: url_GamesMetagameListCategoriesByPlayer_589369,
+    validator: validate_GamesMetagameListCategoriesByPlayer_579268,
+    base: "/games/v1", url: url_GamesMetagameListCategoriesByPlayer_579269,
     schemes: {Scheme.Https})
 type
-  Call_GamesScoresGet_589386 = ref object of OpenApiRestCall_588466
-proc url_GamesScoresGet_589388(protocol: Scheme; host: string; base: string;
+  Call_GamesScoresGet_579286 = ref object of OpenApiRestCall_578364
+proc url_GamesScoresGet_579288(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3847,7 +3850,7 @@ proc url_GamesScoresGet_589388(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesScoresGet_589387(path: JsonNode; query: JsonNode;
+proc validate_GamesScoresGet_579287(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Get high scores, and optionally ranks, in leaderboards for the currently authenticated player. For a specific time span, leaderboardId can be set to ALL to retrieve data for all leaderboards in a given time span.
@@ -3856,108 +3859,108 @@ proc validate_GamesScoresGet_589387(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
+  ##   playerId: JString (required)
+  ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
   ##   timeSpan: JString (required)
   ##           : The time span for the scores and ranks you're requesting.
   ##   leaderboardId: JString (required)
   ##                : The ID of the leaderboard. Can be set to 'ALL' to retrieve data for all leaderboards for this application.
-  ##   playerId: JString (required)
-  ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `timeSpan` field"
-  var valid_589389 = path.getOrDefault("timeSpan")
-  valid_589389 = validateParameter(valid_589389, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `playerId` field"
+  var valid_579289 = path.getOrDefault("playerId")
+  valid_579289 = validateParameter(valid_579289, JString, required = true,
+                                 default = nil)
+  if valid_579289 != nil:
+    section.add "playerId", valid_579289
+  var valid_579290 = path.getOrDefault("timeSpan")
+  valid_579290 = validateParameter(valid_579290, JString, required = true,
                                  default = newJString("ALL"))
-  if valid_589389 != nil:
-    section.add "timeSpan", valid_589389
-  var valid_589390 = path.getOrDefault("leaderboardId")
-  valid_589390 = validateParameter(valid_589390, JString, required = true,
+  if valid_579290 != nil:
+    section.add "timeSpan", valid_579290
+  var valid_579291 = path.getOrDefault("leaderboardId")
+  valid_579291 = validateParameter(valid_579291, JString, required = true,
                                  default = nil)
-  if valid_589390 != nil:
-    section.add "leaderboardId", valid_589390
-  var valid_589391 = path.getOrDefault("playerId")
-  valid_589391 = validateParameter(valid_589391, JString, required = true,
-                                 default = nil)
-  if valid_589391 != nil:
-    section.add "playerId", valid_589391
+  if valid_579291 != nil:
+    section.add "leaderboardId", valid_579291
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   includeRankType: JString
-  ##                  : The types of ranks to return. If the parameter is omitted, no ranks will be returned.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of leaderboard scores to return in the response. For any response, the actual number of leaderboard scores returned may be less than the specified maxResults.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   includeRankType: JString
+  ##                  : The types of ranks to return. If the parameter is omitted, no ranks will be returned.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of leaderboard scores to return in the response. For any response, the actual number of leaderboard scores returned may be less than the specified maxResults.
   section = newJObject()
-  var valid_589392 = query.getOrDefault("fields")
-  valid_589392 = validateParameter(valid_589392, JString, required = false,
+  var valid_579292 = query.getOrDefault("key")
+  valid_579292 = validateParameter(valid_579292, JString, required = false,
                                  default = nil)
-  if valid_589392 != nil:
-    section.add "fields", valid_589392
-  var valid_589393 = query.getOrDefault("pageToken")
-  valid_589393 = validateParameter(valid_589393, JString, required = false,
-                                 default = nil)
-  if valid_589393 != nil:
-    section.add "pageToken", valid_589393
-  var valid_589394 = query.getOrDefault("quotaUser")
-  valid_589394 = validateParameter(valid_589394, JString, required = false,
-                                 default = nil)
-  if valid_589394 != nil:
-    section.add "quotaUser", valid_589394
-  var valid_589395 = query.getOrDefault("alt")
-  valid_589395 = validateParameter(valid_589395, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589395 != nil:
-    section.add "alt", valid_589395
-  var valid_589396 = query.getOrDefault("language")
-  valid_589396 = validateParameter(valid_589396, JString, required = false,
-                                 default = nil)
-  if valid_589396 != nil:
-    section.add "language", valid_589396
-  var valid_589397 = query.getOrDefault("includeRankType")
-  valid_589397 = validateParameter(valid_589397, JString, required = false,
-                                 default = newJString("ALL"))
-  if valid_589397 != nil:
-    section.add "includeRankType", valid_589397
-  var valid_589398 = query.getOrDefault("oauth_token")
-  valid_589398 = validateParameter(valid_589398, JString, required = false,
-                                 default = nil)
-  if valid_589398 != nil:
-    section.add "oauth_token", valid_589398
-  var valid_589399 = query.getOrDefault("userIp")
-  valid_589399 = validateParameter(valid_589399, JString, required = false,
-                                 default = nil)
-  if valid_589399 != nil:
-    section.add "userIp", valid_589399
-  var valid_589400 = query.getOrDefault("maxResults")
-  valid_589400 = validateParameter(valid_589400, JInt, required = false, default = nil)
-  if valid_589400 != nil:
-    section.add "maxResults", valid_589400
-  var valid_589401 = query.getOrDefault("key")
-  valid_589401 = validateParameter(valid_589401, JString, required = false,
-                                 default = nil)
-  if valid_589401 != nil:
-    section.add "key", valid_589401
-  var valid_589402 = query.getOrDefault("prettyPrint")
-  valid_589402 = validateParameter(valid_589402, JBool, required = false,
+  if valid_579292 != nil:
+    section.add "key", valid_579292
+  var valid_579293 = query.getOrDefault("prettyPrint")
+  valid_579293 = validateParameter(valid_579293, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589402 != nil:
-    section.add "prettyPrint", valid_589402
+  if valid_579293 != nil:
+    section.add "prettyPrint", valid_579293
+  var valid_579294 = query.getOrDefault("oauth_token")
+  valid_579294 = validateParameter(valid_579294, JString, required = false,
+                                 default = nil)
+  if valid_579294 != nil:
+    section.add "oauth_token", valid_579294
+  var valid_579295 = query.getOrDefault("alt")
+  valid_579295 = validateParameter(valid_579295, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579295 != nil:
+    section.add "alt", valid_579295
+  var valid_579296 = query.getOrDefault("userIp")
+  valid_579296 = validateParameter(valid_579296, JString, required = false,
+                                 default = nil)
+  if valid_579296 != nil:
+    section.add "userIp", valid_579296
+  var valid_579297 = query.getOrDefault("quotaUser")
+  valid_579297 = validateParameter(valid_579297, JString, required = false,
+                                 default = nil)
+  if valid_579297 != nil:
+    section.add "quotaUser", valid_579297
+  var valid_579298 = query.getOrDefault("includeRankType")
+  valid_579298 = validateParameter(valid_579298, JString, required = false,
+                                 default = newJString("ALL"))
+  if valid_579298 != nil:
+    section.add "includeRankType", valid_579298
+  var valid_579299 = query.getOrDefault("pageToken")
+  valid_579299 = validateParameter(valid_579299, JString, required = false,
+                                 default = nil)
+  if valid_579299 != nil:
+    section.add "pageToken", valid_579299
+  var valid_579300 = query.getOrDefault("fields")
+  valid_579300 = validateParameter(valid_579300, JString, required = false,
+                                 default = nil)
+  if valid_579300 != nil:
+    section.add "fields", valid_579300
+  var valid_579301 = query.getOrDefault("language")
+  valid_579301 = validateParameter(valid_579301, JString, required = false,
+                                 default = nil)
+  if valid_579301 != nil:
+    section.add "language", valid_579301
+  var valid_579302 = query.getOrDefault("maxResults")
+  valid_579302 = validateParameter(valid_579302, JInt, required = false, default = nil)
+  if valid_579302 != nil:
+    section.add "maxResults", valid_579302
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3966,82 +3969,82 @@ proc validate_GamesScoresGet_589387(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589403: Call_GamesScoresGet_589386; path: JsonNode; query: JsonNode;
+proc call*(call_579303: Call_GamesScoresGet_579286; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get high scores, and optionally ranks, in leaderboards for the currently authenticated player. For a specific time span, leaderboardId can be set to ALL to retrieve data for all leaderboards in a given time span.
   ## NOTE: You cannot ask for 'ALL' leaderboards and 'ALL' timeSpans in the same request; only one parameter may be set to 'ALL'.
   ## 
-  let valid = call_589403.validator(path, query, header, formData, body)
-  let scheme = call_589403.pickScheme
+  let valid = call_579303.validator(path, query, header, formData, body)
+  let scheme = call_579303.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589403.url(scheme.get, call_589403.host, call_589403.base,
-                         call_589403.route, valid.getOrDefault("path"),
+  let url = call_579303.url(scheme.get, call_579303.host, call_579303.base,
+                         call_579303.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589403, url, valid)
+  result = hook(call_579303, url, valid)
 
-proc call*(call_589404: Call_GamesScoresGet_589386; leaderboardId: string;
-          playerId: string; timeSpan: string = "ALL"; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; includeRankType: string = "ALL";
-          oauthToken: string = ""; userIp: string = ""; maxResults: int = 0;
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579304: Call_GamesScoresGet_579286; playerId: string;
+          leaderboardId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          timeSpan: string = "ALL"; quotaUser: string = "";
+          includeRankType: string = "ALL"; pageToken: string = ""; fields: string = "";
+          language: string = ""; maxResults: int = 0): Recallable =
   ## gamesScoresGet
   ## Get high scores, and optionally ranks, in leaderboards for the currently authenticated player. For a specific time span, leaderboardId can be set to ALL to retrieve data for all leaderboards in a given time span.
   ## NOTE: You cannot ask for 'ALL' leaderboards and 'ALL' timeSpans in the same request; only one parameter may be set to 'ALL'.
-  ##   timeSpan: string (required)
-  ##           : The time span for the scores and ranks you're requesting.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   includeRankType: string
-  ##                  : The types of ranks to return. If the parameter is omitted, no ranks will be returned.
-  ##   leaderboardId: string (required)
-  ##                : The ID of the leaderboard. Can be set to 'ALL' to retrieve data for all leaderboards for this application.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   playerId: string (required)
-  ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of leaderboard scores to return in the response. For any response, the actual number of leaderboard scores returned may be less than the specified maxResults.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589405 = newJObject()
-  var query_589406 = newJObject()
-  add(path_589405, "timeSpan", newJString(timeSpan))
-  add(query_589406, "fields", newJString(fields))
-  add(query_589406, "pageToken", newJString(pageToken))
-  add(query_589406, "quotaUser", newJString(quotaUser))
-  add(query_589406, "alt", newJString(alt))
-  add(query_589406, "language", newJString(language))
-  add(query_589406, "includeRankType", newJString(includeRankType))
-  add(path_589405, "leaderboardId", newJString(leaderboardId))
-  add(query_589406, "oauth_token", newJString(oauthToken))
-  add(path_589405, "playerId", newJString(playerId))
-  add(query_589406, "userIp", newJString(userIp))
-  add(query_589406, "maxResults", newJInt(maxResults))
-  add(query_589406, "key", newJString(key))
-  add(query_589406, "prettyPrint", newJBool(prettyPrint))
-  result = call_589404.call(path_589405, query_589406, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   playerId: string (required)
+  ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   timeSpan: string (required)
+  ##           : The time span for the scores and ranks you're requesting.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   includeRankType: string
+  ##                  : The types of ranks to return. If the parameter is omitted, no ranks will be returned.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   leaderboardId: string (required)
+  ##                : The ID of the leaderboard. Can be set to 'ALL' to retrieve data for all leaderboards for this application.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: int
+  ##             : The maximum number of leaderboard scores to return in the response. For any response, the actual number of leaderboard scores returned may be less than the specified maxResults.
+  var path_579305 = newJObject()
+  var query_579306 = newJObject()
+  add(query_579306, "key", newJString(key))
+  add(query_579306, "prettyPrint", newJBool(prettyPrint))
+  add(query_579306, "oauth_token", newJString(oauthToken))
+  add(path_579305, "playerId", newJString(playerId))
+  add(query_579306, "alt", newJString(alt))
+  add(query_579306, "userIp", newJString(userIp))
+  add(path_579305, "timeSpan", newJString(timeSpan))
+  add(query_579306, "quotaUser", newJString(quotaUser))
+  add(query_579306, "includeRankType", newJString(includeRankType))
+  add(query_579306, "pageToken", newJString(pageToken))
+  add(query_579306, "fields", newJString(fields))
+  add(path_579305, "leaderboardId", newJString(leaderboardId))
+  add(query_579306, "language", newJString(language))
+  add(query_579306, "maxResults", newJInt(maxResults))
+  result = call_579304.call(path_579305, query_579306, nil, nil, nil)
 
-var gamesScoresGet* = Call_GamesScoresGet_589386(name: "gamesScoresGet",
+var gamesScoresGet* = Call_GamesScoresGet_579286(name: "gamesScoresGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/players/{playerId}/leaderboards/{leaderboardId}/scores/{timeSpan}",
-    validator: validate_GamesScoresGet_589387, base: "/games/v1",
-    url: url_GamesScoresGet_589388, schemes: {Scheme.Https})
+    validator: validate_GamesScoresGet_579287, base: "/games/v1",
+    url: url_GamesScoresGet_579288, schemes: {Scheme.Https})
 type
-  Call_GamesQuestsList_589407 = ref object of OpenApiRestCall_588466
-proc url_GamesQuestsList_589409(protocol: Scheme; host: string; base: string;
+  Call_GamesQuestsList_579307 = ref object of OpenApiRestCall_578364
+proc url_GamesQuestsList_579309(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4057,7 +4060,7 @@ proc url_GamesQuestsList_589409(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesQuestsList_589408(path: JsonNode; query: JsonNode;
+proc validate_GamesQuestsList_579308(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Get a list of quests for your application and the currently authenticated player.
@@ -4069,83 +4072,83 @@ proc validate_GamesQuestsList_589408(path: JsonNode; query: JsonNode;
   ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `playerId` field"
-  var valid_589410 = path.getOrDefault("playerId")
-  valid_589410 = validateParameter(valid_589410, JString, required = true,
+  var valid_579310 = path.getOrDefault("playerId")
+  valid_579310 = validateParameter(valid_579310, JString, required = true,
                                  default = nil)
-  if valid_589410 != nil:
-    section.add "playerId", valid_589410
+  if valid_579310 != nil:
+    section.add "playerId", valid_579310
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of quest resources to return in the response, used for paging. For any response, the actual number of quest resources returned may be less than the specified maxResults. Acceptable values are 1 to 50, inclusive. (Default: 50).
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of quest resources to return in the response, used for paging. For any response, the actual number of quest resources returned may be less than the specified maxResults. Acceptable values are 1 to 50, inclusive. (Default: 50).
   section = newJObject()
-  var valid_589411 = query.getOrDefault("fields")
-  valid_589411 = validateParameter(valid_589411, JString, required = false,
+  var valid_579311 = query.getOrDefault("key")
+  valid_579311 = validateParameter(valid_579311, JString, required = false,
                                  default = nil)
-  if valid_589411 != nil:
-    section.add "fields", valid_589411
-  var valid_589412 = query.getOrDefault("pageToken")
-  valid_589412 = validateParameter(valid_589412, JString, required = false,
-                                 default = nil)
-  if valid_589412 != nil:
-    section.add "pageToken", valid_589412
-  var valid_589413 = query.getOrDefault("quotaUser")
-  valid_589413 = validateParameter(valid_589413, JString, required = false,
-                                 default = nil)
-  if valid_589413 != nil:
-    section.add "quotaUser", valid_589413
-  var valid_589414 = query.getOrDefault("alt")
-  valid_589414 = validateParameter(valid_589414, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589414 != nil:
-    section.add "alt", valid_589414
-  var valid_589415 = query.getOrDefault("language")
-  valid_589415 = validateParameter(valid_589415, JString, required = false,
-                                 default = nil)
-  if valid_589415 != nil:
-    section.add "language", valid_589415
-  var valid_589416 = query.getOrDefault("oauth_token")
-  valid_589416 = validateParameter(valid_589416, JString, required = false,
-                                 default = nil)
-  if valid_589416 != nil:
-    section.add "oauth_token", valid_589416
-  var valid_589417 = query.getOrDefault("userIp")
-  valid_589417 = validateParameter(valid_589417, JString, required = false,
-                                 default = nil)
-  if valid_589417 != nil:
-    section.add "userIp", valid_589417
-  var valid_589418 = query.getOrDefault("maxResults")
-  valid_589418 = validateParameter(valid_589418, JInt, required = false, default = nil)
-  if valid_589418 != nil:
-    section.add "maxResults", valid_589418
-  var valid_589419 = query.getOrDefault("key")
-  valid_589419 = validateParameter(valid_589419, JString, required = false,
-                                 default = nil)
-  if valid_589419 != nil:
-    section.add "key", valid_589419
-  var valid_589420 = query.getOrDefault("prettyPrint")
-  valid_589420 = validateParameter(valid_589420, JBool, required = false,
+  if valid_579311 != nil:
+    section.add "key", valid_579311
+  var valid_579312 = query.getOrDefault("prettyPrint")
+  valid_579312 = validateParameter(valid_579312, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589420 != nil:
-    section.add "prettyPrint", valid_589420
+  if valid_579312 != nil:
+    section.add "prettyPrint", valid_579312
+  var valid_579313 = query.getOrDefault("oauth_token")
+  valid_579313 = validateParameter(valid_579313, JString, required = false,
+                                 default = nil)
+  if valid_579313 != nil:
+    section.add "oauth_token", valid_579313
+  var valid_579314 = query.getOrDefault("alt")
+  valid_579314 = validateParameter(valid_579314, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579314 != nil:
+    section.add "alt", valid_579314
+  var valid_579315 = query.getOrDefault("userIp")
+  valid_579315 = validateParameter(valid_579315, JString, required = false,
+                                 default = nil)
+  if valid_579315 != nil:
+    section.add "userIp", valid_579315
+  var valid_579316 = query.getOrDefault("quotaUser")
+  valid_579316 = validateParameter(valid_579316, JString, required = false,
+                                 default = nil)
+  if valid_579316 != nil:
+    section.add "quotaUser", valid_579316
+  var valid_579317 = query.getOrDefault("pageToken")
+  valid_579317 = validateParameter(valid_579317, JString, required = false,
+                                 default = nil)
+  if valid_579317 != nil:
+    section.add "pageToken", valid_579317
+  var valid_579318 = query.getOrDefault("fields")
+  valid_579318 = validateParameter(valid_579318, JString, required = false,
+                                 default = nil)
+  if valid_579318 != nil:
+    section.add "fields", valid_579318
+  var valid_579319 = query.getOrDefault("language")
+  valid_579319 = validateParameter(valid_579319, JString, required = false,
+                                 default = nil)
+  if valid_579319 != nil:
+    section.add "language", valid_579319
+  var valid_579320 = query.getOrDefault("maxResults")
+  valid_579320 = validateParameter(valid_579320, JInt, required = false, default = nil)
+  if valid_579320 != nil:
+    section.add "maxResults", valid_579320
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4154,70 +4157,70 @@ proc validate_GamesQuestsList_589408(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589421: Call_GamesQuestsList_589407; path: JsonNode; query: JsonNode;
+proc call*(call_579321: Call_GamesQuestsList_579307; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get a list of quests for your application and the currently authenticated player.
   ## 
-  let valid = call_589421.validator(path, query, header, formData, body)
-  let scheme = call_589421.pickScheme
+  let valid = call_579321.validator(path, query, header, formData, body)
+  let scheme = call_579321.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589421.url(scheme.get, call_589421.host, call_589421.base,
-                         call_589421.route, valid.getOrDefault("path"),
+  let url = call_579321.url(scheme.get, call_579321.host, call_579321.base,
+                         call_579321.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589421, url, valid)
+  result = hook(call_579321, url, valid)
 
-proc call*(call_589422: Call_GamesQuestsList_589407; playerId: string;
-          fields: string = ""; pageToken: string = ""; quotaUser: string = "";
-          alt: string = "json"; language: string = ""; oauthToken: string = "";
-          userIp: string = ""; maxResults: int = 0; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579322: Call_GamesQuestsList_579307; playerId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          pageToken: string = ""; fields: string = ""; language: string = "";
+          maxResults: int = 0): Recallable =
   ## gamesQuestsList
   ## Get a list of quests for your application and the currently authenticated player.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   playerId: string (required)
-  ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of quest resources to return in the response, used for paging. For any response, the actual number of quest resources returned may be less than the specified maxResults. Acceptable values are 1 to 50, inclusive. (Default: 50).
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589423 = newJObject()
-  var query_589424 = newJObject()
-  add(query_589424, "fields", newJString(fields))
-  add(query_589424, "pageToken", newJString(pageToken))
-  add(query_589424, "quotaUser", newJString(quotaUser))
-  add(query_589424, "alt", newJString(alt))
-  add(query_589424, "language", newJString(language))
-  add(query_589424, "oauth_token", newJString(oauthToken))
-  add(path_589423, "playerId", newJString(playerId))
-  add(query_589424, "userIp", newJString(userIp))
-  add(query_589424, "maxResults", newJInt(maxResults))
-  add(query_589424, "key", newJString(key))
-  add(query_589424, "prettyPrint", newJBool(prettyPrint))
-  result = call_589422.call(path_589423, query_589424, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   playerId: string (required)
+  ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: int
+  ##             : The maximum number of quest resources to return in the response, used for paging. For any response, the actual number of quest resources returned may be less than the specified maxResults. Acceptable values are 1 to 50, inclusive. (Default: 50).
+  var path_579323 = newJObject()
+  var query_579324 = newJObject()
+  add(query_579324, "key", newJString(key))
+  add(query_579324, "prettyPrint", newJBool(prettyPrint))
+  add(query_579324, "oauth_token", newJString(oauthToken))
+  add(path_579323, "playerId", newJString(playerId))
+  add(query_579324, "alt", newJString(alt))
+  add(query_579324, "userIp", newJString(userIp))
+  add(query_579324, "quotaUser", newJString(quotaUser))
+  add(query_579324, "pageToken", newJString(pageToken))
+  add(query_579324, "fields", newJString(fields))
+  add(query_579324, "language", newJString(language))
+  add(query_579324, "maxResults", newJInt(maxResults))
+  result = call_579322.call(path_579323, query_579324, nil, nil, nil)
 
-var gamesQuestsList* = Call_GamesQuestsList_589407(name: "gamesQuestsList",
+var gamesQuestsList* = Call_GamesQuestsList_579307(name: "gamesQuestsList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/players/{playerId}/quests", validator: validate_GamesQuestsList_589408,
-    base: "/games/v1", url: url_GamesQuestsList_589409, schemes: {Scheme.Https})
+    route: "/players/{playerId}/quests", validator: validate_GamesQuestsList_579308,
+    base: "/games/v1", url: url_GamesQuestsList_579309, schemes: {Scheme.Https})
 type
-  Call_GamesSnapshotsList_589425 = ref object of OpenApiRestCall_588466
-proc url_GamesSnapshotsList_589427(protocol: Scheme; host: string; base: string;
+  Call_GamesSnapshotsList_579325 = ref object of OpenApiRestCall_578364
+proc url_GamesSnapshotsList_579327(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4233,7 +4236,7 @@ proc url_GamesSnapshotsList_589427(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesSnapshotsList_589426(path: JsonNode; query: JsonNode;
+proc validate_GamesSnapshotsList_579326(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Retrieves a list of snapshots created by your application for the player corresponding to the player ID.
@@ -4245,83 +4248,83 @@ proc validate_GamesSnapshotsList_589426(path: JsonNode; query: JsonNode;
   ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `playerId` field"
-  var valid_589428 = path.getOrDefault("playerId")
-  valid_589428 = validateParameter(valid_589428, JString, required = true,
+  var valid_579328 = path.getOrDefault("playerId")
+  valid_579328 = validateParameter(valid_579328, JString, required = true,
                                  default = nil)
-  if valid_589428 != nil:
-    section.add "playerId", valid_589428
+  if valid_579328 != nil:
+    section.add "playerId", valid_579328
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of snapshot resources to return in the response, used for paging. For any response, the actual number of snapshot resources returned may be less than the specified maxResults.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of snapshot resources to return in the response, used for paging. For any response, the actual number of snapshot resources returned may be less than the specified maxResults.
   section = newJObject()
-  var valid_589429 = query.getOrDefault("fields")
-  valid_589429 = validateParameter(valid_589429, JString, required = false,
+  var valid_579329 = query.getOrDefault("key")
+  valid_579329 = validateParameter(valid_579329, JString, required = false,
                                  default = nil)
-  if valid_589429 != nil:
-    section.add "fields", valid_589429
-  var valid_589430 = query.getOrDefault("pageToken")
-  valid_589430 = validateParameter(valid_589430, JString, required = false,
-                                 default = nil)
-  if valid_589430 != nil:
-    section.add "pageToken", valid_589430
-  var valid_589431 = query.getOrDefault("quotaUser")
-  valid_589431 = validateParameter(valid_589431, JString, required = false,
-                                 default = nil)
-  if valid_589431 != nil:
-    section.add "quotaUser", valid_589431
-  var valid_589432 = query.getOrDefault("alt")
-  valid_589432 = validateParameter(valid_589432, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589432 != nil:
-    section.add "alt", valid_589432
-  var valid_589433 = query.getOrDefault("language")
-  valid_589433 = validateParameter(valid_589433, JString, required = false,
-                                 default = nil)
-  if valid_589433 != nil:
-    section.add "language", valid_589433
-  var valid_589434 = query.getOrDefault("oauth_token")
-  valid_589434 = validateParameter(valid_589434, JString, required = false,
-                                 default = nil)
-  if valid_589434 != nil:
-    section.add "oauth_token", valid_589434
-  var valid_589435 = query.getOrDefault("userIp")
-  valid_589435 = validateParameter(valid_589435, JString, required = false,
-                                 default = nil)
-  if valid_589435 != nil:
-    section.add "userIp", valid_589435
-  var valid_589436 = query.getOrDefault("maxResults")
-  valid_589436 = validateParameter(valid_589436, JInt, required = false, default = nil)
-  if valid_589436 != nil:
-    section.add "maxResults", valid_589436
-  var valid_589437 = query.getOrDefault("key")
-  valid_589437 = validateParameter(valid_589437, JString, required = false,
-                                 default = nil)
-  if valid_589437 != nil:
-    section.add "key", valid_589437
-  var valid_589438 = query.getOrDefault("prettyPrint")
-  valid_589438 = validateParameter(valid_589438, JBool, required = false,
+  if valid_579329 != nil:
+    section.add "key", valid_579329
+  var valid_579330 = query.getOrDefault("prettyPrint")
+  valid_579330 = validateParameter(valid_579330, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589438 != nil:
-    section.add "prettyPrint", valid_589438
+  if valid_579330 != nil:
+    section.add "prettyPrint", valid_579330
+  var valid_579331 = query.getOrDefault("oauth_token")
+  valid_579331 = validateParameter(valid_579331, JString, required = false,
+                                 default = nil)
+  if valid_579331 != nil:
+    section.add "oauth_token", valid_579331
+  var valid_579332 = query.getOrDefault("alt")
+  valid_579332 = validateParameter(valid_579332, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579332 != nil:
+    section.add "alt", valid_579332
+  var valid_579333 = query.getOrDefault("userIp")
+  valid_579333 = validateParameter(valid_579333, JString, required = false,
+                                 default = nil)
+  if valid_579333 != nil:
+    section.add "userIp", valid_579333
+  var valid_579334 = query.getOrDefault("quotaUser")
+  valid_579334 = validateParameter(valid_579334, JString, required = false,
+                                 default = nil)
+  if valid_579334 != nil:
+    section.add "quotaUser", valid_579334
+  var valid_579335 = query.getOrDefault("pageToken")
+  valid_579335 = validateParameter(valid_579335, JString, required = false,
+                                 default = nil)
+  if valid_579335 != nil:
+    section.add "pageToken", valid_579335
+  var valid_579336 = query.getOrDefault("fields")
+  valid_579336 = validateParameter(valid_579336, JString, required = false,
+                                 default = nil)
+  if valid_579336 != nil:
+    section.add "fields", valid_579336
+  var valid_579337 = query.getOrDefault("language")
+  valid_579337 = validateParameter(valid_579337, JString, required = false,
+                                 default = nil)
+  if valid_579337 != nil:
+    section.add "language", valid_579337
+  var valid_579338 = query.getOrDefault("maxResults")
+  valid_579338 = validateParameter(valid_579338, JInt, required = false, default = nil)
+  if valid_579338 != nil:
+    section.add "maxResults", valid_579338
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4330,78 +4333,78 @@ proc validate_GamesSnapshotsList_589426(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589439: Call_GamesSnapshotsList_589425; path: JsonNode;
+proc call*(call_579339: Call_GamesSnapshotsList_579325; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of snapshots created by your application for the player corresponding to the player ID.
   ## 
-  let valid = call_589439.validator(path, query, header, formData, body)
-  let scheme = call_589439.pickScheme
+  let valid = call_579339.validator(path, query, header, formData, body)
+  let scheme = call_579339.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589439.url(scheme.get, call_589439.host, call_589439.base,
-                         call_589439.route, valid.getOrDefault("path"),
+  let url = call_579339.url(scheme.get, call_579339.host, call_579339.base,
+                         call_579339.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589439, url, valid)
+  result = hook(call_579339, url, valid)
 
-proc call*(call_589440: Call_GamesSnapshotsList_589425; playerId: string;
-          fields: string = ""; pageToken: string = ""; quotaUser: string = "";
-          alt: string = "json"; language: string = ""; oauthToken: string = "";
-          userIp: string = ""; maxResults: int = 0; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579340: Call_GamesSnapshotsList_579325; playerId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          pageToken: string = ""; fields: string = ""; language: string = "";
+          maxResults: int = 0): Recallable =
   ## gamesSnapshotsList
   ## Retrieves a list of snapshots created by your application for the player corresponding to the player ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
+  ##   key: string
+  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
   ##             : OAuth 2.0 token for the current user.
   ##   playerId: string (required)
   ##           : A player ID. A value of me may be used in place of the authenticated player's ID.
+  ##   alt: string
+  ##      : Data format for the response.
   ##   userIp: string
   ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
   ##   maxResults: int
   ##             : The maximum number of snapshot resources to return in the response, used for paging. For any response, the actual number of snapshot resources returned may be less than the specified maxResults.
-  ##   key: string
-  ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var path_589441 = newJObject()
-  var query_589442 = newJObject()
-  add(query_589442, "fields", newJString(fields))
-  add(query_589442, "pageToken", newJString(pageToken))
-  add(query_589442, "quotaUser", newJString(quotaUser))
-  add(query_589442, "alt", newJString(alt))
-  add(query_589442, "language", newJString(language))
-  add(query_589442, "oauth_token", newJString(oauthToken))
-  add(path_589441, "playerId", newJString(playerId))
-  add(query_589442, "userIp", newJString(userIp))
-  add(query_589442, "maxResults", newJInt(maxResults))
-  add(query_589442, "key", newJString(key))
-  add(query_589442, "prettyPrint", newJBool(prettyPrint))
-  result = call_589440.call(path_589441, query_589442, nil, nil, nil)
+  var path_579341 = newJObject()
+  var query_579342 = newJObject()
+  add(query_579342, "key", newJString(key))
+  add(query_579342, "prettyPrint", newJBool(prettyPrint))
+  add(query_579342, "oauth_token", newJString(oauthToken))
+  add(path_579341, "playerId", newJString(playerId))
+  add(query_579342, "alt", newJString(alt))
+  add(query_579342, "userIp", newJString(userIp))
+  add(query_579342, "quotaUser", newJString(quotaUser))
+  add(query_579342, "pageToken", newJString(pageToken))
+  add(query_579342, "fields", newJString(fields))
+  add(query_579342, "language", newJString(language))
+  add(query_579342, "maxResults", newJInt(maxResults))
+  result = call_579340.call(path_579341, query_579342, nil, nil, nil)
 
-var gamesSnapshotsList* = Call_GamesSnapshotsList_589425(
+var gamesSnapshotsList* = Call_GamesSnapshotsList_579325(
     name: "gamesSnapshotsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/players/{playerId}/snapshots",
-    validator: validate_GamesSnapshotsList_589426, base: "/games/v1",
-    url: url_GamesSnapshotsList_589427, schemes: {Scheme.Https})
+    validator: validate_GamesSnapshotsList_579326, base: "/games/v1",
+    url: url_GamesSnapshotsList_579327, schemes: {Scheme.Https})
 type
-  Call_GamesPushtokensUpdate_589443 = ref object of OpenApiRestCall_588466
-proc url_GamesPushtokensUpdate_589445(protocol: Scheme; host: string; base: string;
+  Call_GamesPushtokensUpdate_579343 = ref object of OpenApiRestCall_578364
+proc url_GamesPushtokensUpdate_579345(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesPushtokensUpdate_589444(path: JsonNode; query: JsonNode;
+proc validate_GamesPushtokensUpdate_579344(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Registers a push token for the current user and application.
   ## 
@@ -4410,56 +4413,56 @@ proc validate_GamesPushtokensUpdate_589444(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589446 = query.getOrDefault("fields")
-  valid_589446 = validateParameter(valid_589446, JString, required = false,
+  var valid_579346 = query.getOrDefault("key")
+  valid_579346 = validateParameter(valid_579346, JString, required = false,
                                  default = nil)
-  if valid_589446 != nil:
-    section.add "fields", valid_589446
-  var valid_589447 = query.getOrDefault("quotaUser")
-  valid_589447 = validateParameter(valid_589447, JString, required = false,
-                                 default = nil)
-  if valid_589447 != nil:
-    section.add "quotaUser", valid_589447
-  var valid_589448 = query.getOrDefault("alt")
-  valid_589448 = validateParameter(valid_589448, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589448 != nil:
-    section.add "alt", valid_589448
-  var valid_589449 = query.getOrDefault("oauth_token")
-  valid_589449 = validateParameter(valid_589449, JString, required = false,
-                                 default = nil)
-  if valid_589449 != nil:
-    section.add "oauth_token", valid_589449
-  var valid_589450 = query.getOrDefault("userIp")
-  valid_589450 = validateParameter(valid_589450, JString, required = false,
-                                 default = nil)
-  if valid_589450 != nil:
-    section.add "userIp", valid_589450
-  var valid_589451 = query.getOrDefault("key")
-  valid_589451 = validateParameter(valid_589451, JString, required = false,
-                                 default = nil)
-  if valid_589451 != nil:
-    section.add "key", valid_589451
-  var valid_589452 = query.getOrDefault("prettyPrint")
-  valid_589452 = validateParameter(valid_589452, JBool, required = false,
+  if valid_579346 != nil:
+    section.add "key", valid_579346
+  var valid_579347 = query.getOrDefault("prettyPrint")
+  valid_579347 = validateParameter(valid_579347, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589452 != nil:
-    section.add "prettyPrint", valid_589452
+  if valid_579347 != nil:
+    section.add "prettyPrint", valid_579347
+  var valid_579348 = query.getOrDefault("oauth_token")
+  valid_579348 = validateParameter(valid_579348, JString, required = false,
+                                 default = nil)
+  if valid_579348 != nil:
+    section.add "oauth_token", valid_579348
+  var valid_579349 = query.getOrDefault("alt")
+  valid_579349 = validateParameter(valid_579349, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579349 != nil:
+    section.add "alt", valid_579349
+  var valid_579350 = query.getOrDefault("userIp")
+  valid_579350 = validateParameter(valid_579350, JString, required = false,
+                                 default = nil)
+  if valid_579350 != nil:
+    section.add "userIp", valid_579350
+  var valid_579351 = query.getOrDefault("quotaUser")
+  valid_579351 = validateParameter(valid_579351, JString, required = false,
+                                 default = nil)
+  if valid_579351 != nil:
+    section.add "quotaUser", valid_579351
+  var valid_579352 = query.getOrDefault("fields")
+  valid_579352 = validateParameter(valid_579352, JString, required = false,
+                                 default = nil)
+  if valid_579352 != nil:
+    section.add "fields", valid_579352
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4471,68 +4474,68 @@ proc validate_GamesPushtokensUpdate_589444(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589454: Call_GamesPushtokensUpdate_589443; path: JsonNode;
+proc call*(call_579354: Call_GamesPushtokensUpdate_579343; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Registers a push token for the current user and application.
   ## 
-  let valid = call_589454.validator(path, query, header, formData, body)
-  let scheme = call_589454.pickScheme
+  let valid = call_579354.validator(path, query, header, formData, body)
+  let scheme = call_579354.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589454.url(scheme.get, call_589454.host, call_589454.base,
-                         call_589454.route, valid.getOrDefault("path"),
+  let url = call_579354.url(scheme.get, call_579354.host, call_579354.base,
+                         call_579354.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589454, url, valid)
+  result = hook(call_579354, url, valid)
 
-proc call*(call_589455: Call_GamesPushtokensUpdate_589443; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579355: Call_GamesPushtokensUpdate_579343; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## gamesPushtokensUpdate
   ## Registers a push token for the current user and application.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589456 = newJObject()
-  var body_589457 = newJObject()
-  add(query_589456, "fields", newJString(fields))
-  add(query_589456, "quotaUser", newJString(quotaUser))
-  add(query_589456, "alt", newJString(alt))
-  add(query_589456, "oauth_token", newJString(oauthToken))
-  add(query_589456, "userIp", newJString(userIp))
-  add(query_589456, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_579356 = newJObject()
+  var body_579357 = newJObject()
+  add(query_579356, "key", newJString(key))
+  add(query_579356, "prettyPrint", newJBool(prettyPrint))
+  add(query_579356, "oauth_token", newJString(oauthToken))
+  add(query_579356, "alt", newJString(alt))
+  add(query_579356, "userIp", newJString(userIp))
+  add(query_579356, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589457 = body
-  add(query_589456, "prettyPrint", newJBool(prettyPrint))
-  result = call_589455.call(nil, query_589456, nil, nil, body_589457)
+    body_579357 = body
+  add(query_579356, "fields", newJString(fields))
+  result = call_579355.call(nil, query_579356, nil, nil, body_579357)
 
-var gamesPushtokensUpdate* = Call_GamesPushtokensUpdate_589443(
+var gamesPushtokensUpdate* = Call_GamesPushtokensUpdate_579343(
     name: "gamesPushtokensUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/pushtokens",
-    validator: validate_GamesPushtokensUpdate_589444, base: "/games/v1",
-    url: url_GamesPushtokensUpdate_589445, schemes: {Scheme.Https})
+    validator: validate_GamesPushtokensUpdate_579344, base: "/games/v1",
+    url: url_GamesPushtokensUpdate_579345, schemes: {Scheme.Https})
 type
-  Call_GamesPushtokensRemove_589458 = ref object of OpenApiRestCall_588466
-proc url_GamesPushtokensRemove_589460(protocol: Scheme; host: string; base: string;
+  Call_GamesPushtokensRemove_579358 = ref object of OpenApiRestCall_578364
+proc url_GamesPushtokensRemove_579360(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesPushtokensRemove_589459(path: JsonNode; query: JsonNode;
+proc validate_GamesPushtokensRemove_579359(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Removes a push token for the current user and application. Removing a non-existent push token will report success.
   ## 
@@ -4541,56 +4544,56 @@ proc validate_GamesPushtokensRemove_589459(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589461 = query.getOrDefault("fields")
-  valid_589461 = validateParameter(valid_589461, JString, required = false,
+  var valid_579361 = query.getOrDefault("key")
+  valid_579361 = validateParameter(valid_579361, JString, required = false,
                                  default = nil)
-  if valid_589461 != nil:
-    section.add "fields", valid_589461
-  var valid_589462 = query.getOrDefault("quotaUser")
-  valid_589462 = validateParameter(valid_589462, JString, required = false,
-                                 default = nil)
-  if valid_589462 != nil:
-    section.add "quotaUser", valid_589462
-  var valid_589463 = query.getOrDefault("alt")
-  valid_589463 = validateParameter(valid_589463, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589463 != nil:
-    section.add "alt", valid_589463
-  var valid_589464 = query.getOrDefault("oauth_token")
-  valid_589464 = validateParameter(valid_589464, JString, required = false,
-                                 default = nil)
-  if valid_589464 != nil:
-    section.add "oauth_token", valid_589464
-  var valid_589465 = query.getOrDefault("userIp")
-  valid_589465 = validateParameter(valid_589465, JString, required = false,
-                                 default = nil)
-  if valid_589465 != nil:
-    section.add "userIp", valid_589465
-  var valid_589466 = query.getOrDefault("key")
-  valid_589466 = validateParameter(valid_589466, JString, required = false,
-                                 default = nil)
-  if valid_589466 != nil:
-    section.add "key", valid_589466
-  var valid_589467 = query.getOrDefault("prettyPrint")
-  valid_589467 = validateParameter(valid_589467, JBool, required = false,
+  if valid_579361 != nil:
+    section.add "key", valid_579361
+  var valid_579362 = query.getOrDefault("prettyPrint")
+  valid_579362 = validateParameter(valid_579362, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589467 != nil:
-    section.add "prettyPrint", valid_589467
+  if valid_579362 != nil:
+    section.add "prettyPrint", valid_579362
+  var valid_579363 = query.getOrDefault("oauth_token")
+  valid_579363 = validateParameter(valid_579363, JString, required = false,
+                                 default = nil)
+  if valid_579363 != nil:
+    section.add "oauth_token", valid_579363
+  var valid_579364 = query.getOrDefault("alt")
+  valid_579364 = validateParameter(valid_579364, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579364 != nil:
+    section.add "alt", valid_579364
+  var valid_579365 = query.getOrDefault("userIp")
+  valid_579365 = validateParameter(valid_579365, JString, required = false,
+                                 default = nil)
+  if valid_579365 != nil:
+    section.add "userIp", valid_579365
+  var valid_579366 = query.getOrDefault("quotaUser")
+  valid_579366 = validateParameter(valid_579366, JString, required = false,
+                                 default = nil)
+  if valid_579366 != nil:
+    section.add "quotaUser", valid_579366
+  var valid_579367 = query.getOrDefault("fields")
+  valid_579367 = validateParameter(valid_579367, JString, required = false,
+                                 default = nil)
+  if valid_579367 != nil:
+    section.add "fields", valid_579367
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4602,61 +4605,61 @@ proc validate_GamesPushtokensRemove_589459(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589469: Call_GamesPushtokensRemove_589458; path: JsonNode;
+proc call*(call_579369: Call_GamesPushtokensRemove_579358; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Removes a push token for the current user and application. Removing a non-existent push token will report success.
   ## 
-  let valid = call_589469.validator(path, query, header, formData, body)
-  let scheme = call_589469.pickScheme
+  let valid = call_579369.validator(path, query, header, formData, body)
+  let scheme = call_579369.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589469.url(scheme.get, call_589469.host, call_589469.base,
-                         call_589469.route, valid.getOrDefault("path"),
+  let url = call_579369.url(scheme.get, call_579369.host, call_579369.base,
+                         call_579369.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589469, url, valid)
+  result = hook(call_579369, url, valid)
 
-proc call*(call_589470: Call_GamesPushtokensRemove_589458; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579370: Call_GamesPushtokensRemove_579358; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## gamesPushtokensRemove
   ## Removes a push token for the current user and application. Removing a non-existent push token will report success.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589471 = newJObject()
-  var body_589472 = newJObject()
-  add(query_589471, "fields", newJString(fields))
-  add(query_589471, "quotaUser", newJString(quotaUser))
-  add(query_589471, "alt", newJString(alt))
-  add(query_589471, "oauth_token", newJString(oauthToken))
-  add(query_589471, "userIp", newJString(userIp))
-  add(query_589471, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_579371 = newJObject()
+  var body_579372 = newJObject()
+  add(query_579371, "key", newJString(key))
+  add(query_579371, "prettyPrint", newJBool(prettyPrint))
+  add(query_579371, "oauth_token", newJString(oauthToken))
+  add(query_579371, "alt", newJString(alt))
+  add(query_579371, "userIp", newJString(userIp))
+  add(query_579371, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589472 = body
-  add(query_589471, "prettyPrint", newJBool(prettyPrint))
-  result = call_589470.call(nil, query_589471, nil, nil, body_589472)
+    body_579372 = body
+  add(query_579371, "fields", newJString(fields))
+  result = call_579370.call(nil, query_579371, nil, nil, body_579372)
 
-var gamesPushtokensRemove* = Call_GamesPushtokensRemove_589458(
+var gamesPushtokensRemove* = Call_GamesPushtokensRemove_579358(
     name: "gamesPushtokensRemove", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/pushtokens/remove",
-    validator: validate_GamesPushtokensRemove_589459, base: "/games/v1",
-    url: url_GamesPushtokensRemove_589460, schemes: {Scheme.Https})
+    validator: validate_GamesPushtokensRemove_579359, base: "/games/v1",
+    url: url_GamesPushtokensRemove_579360, schemes: {Scheme.Https})
 type
-  Call_GamesQuestsAccept_589473 = ref object of OpenApiRestCall_588466
-proc url_GamesQuestsAccept_589475(protocol: Scheme; host: string; base: string;
+  Call_GamesQuestsAccept_579373 = ref object of OpenApiRestCall_578364
+proc url_GamesQuestsAccept_579375(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4672,7 +4675,7 @@ proc url_GamesQuestsAccept_589475(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesQuestsAccept_589474(path: JsonNode; query: JsonNode;
+proc validate_GamesQuestsAccept_579374(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Indicates that the currently authorized user will participate in the quest.
@@ -4684,70 +4687,70 @@ proc validate_GamesQuestsAccept_589474(path: JsonNode; query: JsonNode;
   ##          : The ID of the quest.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `questId` field"
-  var valid_589476 = path.getOrDefault("questId")
-  valid_589476 = validateParameter(valid_589476, JString, required = true,
+  var valid_579376 = path.getOrDefault("questId")
+  valid_579376 = validateParameter(valid_579376, JString, required = true,
                                  default = nil)
-  if valid_589476 != nil:
-    section.add "questId", valid_589476
+  if valid_579376 != nil:
+    section.add "questId", valid_579376
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589477 = query.getOrDefault("fields")
-  valid_589477 = validateParameter(valid_589477, JString, required = false,
+  var valid_579377 = query.getOrDefault("key")
+  valid_579377 = validateParameter(valid_579377, JString, required = false,
                                  default = nil)
-  if valid_589477 != nil:
-    section.add "fields", valid_589477
-  var valid_589478 = query.getOrDefault("quotaUser")
-  valid_589478 = validateParameter(valid_589478, JString, required = false,
-                                 default = nil)
-  if valid_589478 != nil:
-    section.add "quotaUser", valid_589478
-  var valid_589479 = query.getOrDefault("alt")
-  valid_589479 = validateParameter(valid_589479, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589479 != nil:
-    section.add "alt", valid_589479
-  var valid_589480 = query.getOrDefault("language")
-  valid_589480 = validateParameter(valid_589480, JString, required = false,
-                                 default = nil)
-  if valid_589480 != nil:
-    section.add "language", valid_589480
-  var valid_589481 = query.getOrDefault("oauth_token")
-  valid_589481 = validateParameter(valid_589481, JString, required = false,
-                                 default = nil)
-  if valid_589481 != nil:
-    section.add "oauth_token", valid_589481
-  var valid_589482 = query.getOrDefault("userIp")
-  valid_589482 = validateParameter(valid_589482, JString, required = false,
-                                 default = nil)
-  if valid_589482 != nil:
-    section.add "userIp", valid_589482
-  var valid_589483 = query.getOrDefault("key")
-  valid_589483 = validateParameter(valid_589483, JString, required = false,
-                                 default = nil)
-  if valid_589483 != nil:
-    section.add "key", valid_589483
-  var valid_589484 = query.getOrDefault("prettyPrint")
-  valid_589484 = validateParameter(valid_589484, JBool, required = false,
+  if valid_579377 != nil:
+    section.add "key", valid_579377
+  var valid_579378 = query.getOrDefault("prettyPrint")
+  valid_579378 = validateParameter(valid_579378, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589484 != nil:
-    section.add "prettyPrint", valid_589484
+  if valid_579378 != nil:
+    section.add "prettyPrint", valid_579378
+  var valid_579379 = query.getOrDefault("oauth_token")
+  valid_579379 = validateParameter(valid_579379, JString, required = false,
+                                 default = nil)
+  if valid_579379 != nil:
+    section.add "oauth_token", valid_579379
+  var valid_579380 = query.getOrDefault("alt")
+  valid_579380 = validateParameter(valid_579380, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579380 != nil:
+    section.add "alt", valid_579380
+  var valid_579381 = query.getOrDefault("userIp")
+  valid_579381 = validateParameter(valid_579381, JString, required = false,
+                                 default = nil)
+  if valid_579381 != nil:
+    section.add "userIp", valid_579381
+  var valid_579382 = query.getOrDefault("quotaUser")
+  valid_579382 = validateParameter(valid_579382, JString, required = false,
+                                 default = nil)
+  if valid_579382 != nil:
+    section.add "quotaUser", valid_579382
+  var valid_579383 = query.getOrDefault("fields")
+  valid_579383 = validateParameter(valid_579383, JString, required = false,
+                                 default = nil)
+  if valid_579383 != nil:
+    section.add "fields", valid_579383
+  var valid_579384 = query.getOrDefault("language")
+  valid_579384 = validateParameter(valid_579384, JString, required = false,
+                                 default = nil)
+  if valid_579384 != nil:
+    section.add "language", valid_579384
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4756,63 +4759,63 @@ proc validate_GamesQuestsAccept_589474(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589485: Call_GamesQuestsAccept_589473; path: JsonNode;
+proc call*(call_579385: Call_GamesQuestsAccept_579373; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Indicates that the currently authorized user will participate in the quest.
   ## 
-  let valid = call_589485.validator(path, query, header, formData, body)
-  let scheme = call_589485.pickScheme
+  let valid = call_579385.validator(path, query, header, formData, body)
+  let scheme = call_579385.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589485.url(scheme.get, call_589485.host, call_589485.base,
-                         call_589485.route, valid.getOrDefault("path"),
+  let url = call_579385.url(scheme.get, call_579385.host, call_579385.base,
+                         call_579385.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589485, url, valid)
+  result = hook(call_579385, url, valid)
 
-proc call*(call_589486: Call_GamesQuestsAccept_589473; questId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579386: Call_GamesQuestsAccept_579373; questId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""; language: string = ""): Recallable =
   ## gamesQuestsAccept
   ## Indicates that the currently authorized user will participate in the quest.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   questId: string (required)
-  ##          : The ID of the quest.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589487 = newJObject()
-  var query_589488 = newJObject()
-  add(query_589488, "fields", newJString(fields))
-  add(query_589488, "quotaUser", newJString(quotaUser))
-  add(query_589488, "alt", newJString(alt))
-  add(query_589488, "language", newJString(language))
-  add(query_589488, "oauth_token", newJString(oauthToken))
-  add(query_589488, "userIp", newJString(userIp))
-  add(query_589488, "key", newJString(key))
-  add(path_589487, "questId", newJString(questId))
-  add(query_589488, "prettyPrint", newJBool(prettyPrint))
-  result = call_589486.call(path_589487, query_589488, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   questId: string (required)
+  ##          : The ID of the quest.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579387 = newJObject()
+  var query_579388 = newJObject()
+  add(query_579388, "key", newJString(key))
+  add(query_579388, "prettyPrint", newJBool(prettyPrint))
+  add(query_579388, "oauth_token", newJString(oauthToken))
+  add(path_579387, "questId", newJString(questId))
+  add(query_579388, "alt", newJString(alt))
+  add(query_579388, "userIp", newJString(userIp))
+  add(query_579388, "quotaUser", newJString(quotaUser))
+  add(query_579388, "fields", newJString(fields))
+  add(query_579388, "language", newJString(language))
+  result = call_579386.call(path_579387, query_579388, nil, nil, nil)
 
-var gamesQuestsAccept* = Call_GamesQuestsAccept_589473(name: "gamesQuestsAccept",
+var gamesQuestsAccept* = Call_GamesQuestsAccept_579373(name: "gamesQuestsAccept",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/quests/{questId}/accept", validator: validate_GamesQuestsAccept_589474,
-    base: "/games/v1", url: url_GamesQuestsAccept_589475, schemes: {Scheme.Https})
+    route: "/quests/{questId}/accept", validator: validate_GamesQuestsAccept_579374,
+    base: "/games/v1", url: url_GamesQuestsAccept_579375, schemes: {Scheme.Https})
 type
-  Call_GamesQuestMilestonesClaim_589489 = ref object of OpenApiRestCall_588466
-proc url_GamesQuestMilestonesClaim_589491(protocol: Scheme; host: string;
+  Call_GamesQuestMilestonesClaim_579389 = ref object of OpenApiRestCall_578364
+proc url_GamesQuestMilestonesClaim_579391(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4831,91 +4834,90 @@ proc url_GamesQuestMilestonesClaim_589491(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesQuestMilestonesClaim_589490(path: JsonNode; query: JsonNode;
+proc validate_GamesQuestMilestonesClaim_579390(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Report that a reward for the milestone corresponding to milestoneId for the quest corresponding to questId has been claimed by the currently authorized user.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   milestoneId: JString (required)
-  ##              : The ID of the milestone.
   ##   questId: JString (required)
   ##          : The ID of the quest.
+  ##   milestoneId: JString (required)
+  ##              : The ID of the milestone.
   section = newJObject()
-  assert path != nil,
-        "path argument is necessary due to required `milestoneId` field"
-  var valid_589492 = path.getOrDefault("milestoneId")
-  valid_589492 = validateParameter(valid_589492, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `questId` field"
+  var valid_579392 = path.getOrDefault("questId")
+  valid_579392 = validateParameter(valid_579392, JString, required = true,
                                  default = nil)
-  if valid_589492 != nil:
-    section.add "milestoneId", valid_589492
-  var valid_589493 = path.getOrDefault("questId")
-  valid_589493 = validateParameter(valid_589493, JString, required = true,
+  if valid_579392 != nil:
+    section.add "questId", valid_579392
+  var valid_579393 = path.getOrDefault("milestoneId")
+  valid_579393 = validateParameter(valid_579393, JString, required = true,
                                  default = nil)
-  if valid_589493 != nil:
-    section.add "questId", valid_589493
+  if valid_579393 != nil:
+    section.add "milestoneId", valid_579393
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   requestId: JString (required)
-  ##            : A numeric ID to ensure that the request is handled correctly across retries. Your client application must generate this ID randomly.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   requestId: JString (required)
+  ##            : A numeric ID to ensure that the request is handled correctly across retries. Your client application must generate this ID randomly.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589494 = query.getOrDefault("fields")
-  valid_589494 = validateParameter(valid_589494, JString, required = false,
+  var valid_579394 = query.getOrDefault("key")
+  valid_579394 = validateParameter(valid_579394, JString, required = false,
                                  default = nil)
-  if valid_589494 != nil:
-    section.add "fields", valid_589494
+  if valid_579394 != nil:
+    section.add "key", valid_579394
+  var valid_579395 = query.getOrDefault("prettyPrint")
+  valid_579395 = validateParameter(valid_579395, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_579395 != nil:
+    section.add "prettyPrint", valid_579395
+  var valid_579396 = query.getOrDefault("oauth_token")
+  valid_579396 = validateParameter(valid_579396, JString, required = false,
+                                 default = nil)
+  if valid_579396 != nil:
+    section.add "oauth_token", valid_579396
+  var valid_579397 = query.getOrDefault("alt")
+  valid_579397 = validateParameter(valid_579397, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579397 != nil:
+    section.add "alt", valid_579397
+  var valid_579398 = query.getOrDefault("userIp")
+  valid_579398 = validateParameter(valid_579398, JString, required = false,
+                                 default = nil)
+  if valid_579398 != nil:
+    section.add "userIp", valid_579398
+  var valid_579399 = query.getOrDefault("quotaUser")
+  valid_579399 = validateParameter(valid_579399, JString, required = false,
+                                 default = nil)
+  if valid_579399 != nil:
+    section.add "quotaUser", valid_579399
   assert query != nil,
         "query argument is necessary due to required `requestId` field"
-  var valid_589495 = query.getOrDefault("requestId")
-  valid_589495 = validateParameter(valid_589495, JString, required = true,
+  var valid_579400 = query.getOrDefault("requestId")
+  valid_579400 = validateParameter(valid_579400, JString, required = true,
                                  default = nil)
-  if valid_589495 != nil:
-    section.add "requestId", valid_589495
-  var valid_589496 = query.getOrDefault("quotaUser")
-  valid_589496 = validateParameter(valid_589496, JString, required = false,
+  if valid_579400 != nil:
+    section.add "requestId", valid_579400
+  var valid_579401 = query.getOrDefault("fields")
+  valid_579401 = validateParameter(valid_579401, JString, required = false,
                                  default = nil)
-  if valid_589496 != nil:
-    section.add "quotaUser", valid_589496
-  var valid_589497 = query.getOrDefault("alt")
-  valid_589497 = validateParameter(valid_589497, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589497 != nil:
-    section.add "alt", valid_589497
-  var valid_589498 = query.getOrDefault("oauth_token")
-  valid_589498 = validateParameter(valid_589498, JString, required = false,
-                                 default = nil)
-  if valid_589498 != nil:
-    section.add "oauth_token", valid_589498
-  var valid_589499 = query.getOrDefault("userIp")
-  valid_589499 = validateParameter(valid_589499, JString, required = false,
-                                 default = nil)
-  if valid_589499 != nil:
-    section.add "userIp", valid_589499
-  var valid_589500 = query.getOrDefault("key")
-  valid_589500 = validateParameter(valid_589500, JString, required = false,
-                                 default = nil)
-  if valid_589500 != nil:
-    section.add "key", valid_589500
-  var valid_589501 = query.getOrDefault("prettyPrint")
-  valid_589501 = validateParameter(valid_589501, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_589501 != nil:
-    section.add "prettyPrint", valid_589501
+  if valid_579401 != nil:
+    section.add "fields", valid_579401
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4924,75 +4926,75 @@ proc validate_GamesQuestMilestonesClaim_589490(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589502: Call_GamesQuestMilestonesClaim_589489; path: JsonNode;
+proc call*(call_579402: Call_GamesQuestMilestonesClaim_579389; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Report that a reward for the milestone corresponding to milestoneId for the quest corresponding to questId has been claimed by the currently authorized user.
   ## 
-  let valid = call_589502.validator(path, query, header, formData, body)
-  let scheme = call_589502.pickScheme
+  let valid = call_579402.validator(path, query, header, formData, body)
+  let scheme = call_579402.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589502.url(scheme.get, call_589502.host, call_589502.base,
-                         call_589502.route, valid.getOrDefault("path"),
+  let url = call_579402.url(scheme.get, call_579402.host, call_579402.base,
+                         call_579402.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589502, url, valid)
+  result = hook(call_579402, url, valid)
 
-proc call*(call_589503: Call_GamesQuestMilestonesClaim_589489; requestId: string;
-          milestoneId: string; questId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579403: Call_GamesQuestMilestonesClaim_579389; questId: string;
+          milestoneId: string; requestId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## gamesQuestMilestonesClaim
   ## Report that a reward for the milestone corresponding to milestoneId for the quest corresponding to questId has been claimed by the currently authorized user.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   requestId: string (required)
-  ##            : A numeric ID to ensure that the request is handled correctly across retries. Your client application must generate this ID randomly.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   milestoneId: string (required)
-  ##              : The ID of the milestone.
-  ##   questId: string (required)
-  ##          : The ID of the quest.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589504 = newJObject()
-  var query_589505 = newJObject()
-  add(query_589505, "fields", newJString(fields))
-  add(query_589505, "requestId", newJString(requestId))
-  add(query_589505, "quotaUser", newJString(quotaUser))
-  add(query_589505, "alt", newJString(alt))
-  add(query_589505, "oauth_token", newJString(oauthToken))
-  add(query_589505, "userIp", newJString(userIp))
-  add(query_589505, "key", newJString(key))
-  add(path_589504, "milestoneId", newJString(milestoneId))
-  add(path_589504, "questId", newJString(questId))
-  add(query_589505, "prettyPrint", newJBool(prettyPrint))
-  result = call_589503.call(path_589504, query_589505, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   questId: string (required)
+  ##          : The ID of the quest.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   milestoneId: string (required)
+  ##              : The ID of the milestone.
+  ##   requestId: string (required)
+  ##            : A numeric ID to ensure that the request is handled correctly across retries. Your client application must generate this ID randomly.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579404 = newJObject()
+  var query_579405 = newJObject()
+  add(query_579405, "key", newJString(key))
+  add(query_579405, "prettyPrint", newJBool(prettyPrint))
+  add(query_579405, "oauth_token", newJString(oauthToken))
+  add(path_579404, "questId", newJString(questId))
+  add(query_579405, "alt", newJString(alt))
+  add(query_579405, "userIp", newJString(userIp))
+  add(query_579405, "quotaUser", newJString(quotaUser))
+  add(path_579404, "milestoneId", newJString(milestoneId))
+  add(query_579405, "requestId", newJString(requestId))
+  add(query_579405, "fields", newJString(fields))
+  result = call_579403.call(path_579404, query_579405, nil, nil, nil)
 
-var gamesQuestMilestonesClaim* = Call_GamesQuestMilestonesClaim_589489(
+var gamesQuestMilestonesClaim* = Call_GamesQuestMilestonesClaim_579389(
     name: "gamesQuestMilestonesClaim", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/quests/{questId}/milestones/{milestoneId}/claim",
-    validator: validate_GamesQuestMilestonesClaim_589490, base: "/games/v1",
-    url: url_GamesQuestMilestonesClaim_589491, schemes: {Scheme.Https})
+    validator: validate_GamesQuestMilestonesClaim_579390, base: "/games/v1",
+    url: url_GamesQuestMilestonesClaim_579391, schemes: {Scheme.Https})
 type
-  Call_GamesRevisionsCheck_589506 = ref object of OpenApiRestCall_588466
-proc url_GamesRevisionsCheck_589508(protocol: Scheme; host: string; base: string;
+  Call_GamesRevisionsCheck_579406 = ref object of OpenApiRestCall_578364
+proc url_GamesRevisionsCheck_579408(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesRevisionsCheck_589507(path: JsonNode; query: JsonNode;
+proc validate_GamesRevisionsCheck_579407(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Checks whether the games client is out of date.
@@ -5002,18 +5004,12 @@ proc validate_GamesRevisionsCheck_589507(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
   ##   clientRevision: JString (required)
   ##                 : The revision of the client SDK used by your application. Format:
   ## [PLATFORM_TYPE]:[VERSION_NUMBER]. Possible values of PLATFORM_TYPE are:
@@ -5021,51 +5017,57 @@ proc validate_GamesRevisionsCheck_589507(path: JsonNode; query: JsonNode;
   ## - "ANDROID" - Client is running the Android SDK. 
   ## - "IOS" - Client is running the iOS SDK. 
   ## - "WEB_APP" - Client is running as a Web App.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589509 = query.getOrDefault("fields")
-  valid_589509 = validateParameter(valid_589509, JString, required = false,
+  var valid_579409 = query.getOrDefault("key")
+  valid_579409 = validateParameter(valid_579409, JString, required = false,
                                  default = nil)
-  if valid_589509 != nil:
-    section.add "fields", valid_589509
-  var valid_589510 = query.getOrDefault("quotaUser")
-  valid_589510 = validateParameter(valid_589510, JString, required = false,
+  if valid_579409 != nil:
+    section.add "key", valid_579409
+  var valid_579410 = query.getOrDefault("prettyPrint")
+  valid_579410 = validateParameter(valid_579410, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_579410 != nil:
+    section.add "prettyPrint", valid_579410
+  var valid_579411 = query.getOrDefault("oauth_token")
+  valid_579411 = validateParameter(valid_579411, JString, required = false,
                                  default = nil)
-  if valid_589510 != nil:
-    section.add "quotaUser", valid_589510
-  var valid_589511 = query.getOrDefault("alt")
-  valid_589511 = validateParameter(valid_589511, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589511 != nil:
-    section.add "alt", valid_589511
-  var valid_589512 = query.getOrDefault("oauth_token")
-  valid_589512 = validateParameter(valid_589512, JString, required = false,
-                                 default = nil)
-  if valid_589512 != nil:
-    section.add "oauth_token", valid_589512
-  var valid_589513 = query.getOrDefault("userIp")
-  valid_589513 = validateParameter(valid_589513, JString, required = false,
-                                 default = nil)
-  if valid_589513 != nil:
-    section.add "userIp", valid_589513
-  var valid_589514 = query.getOrDefault("key")
-  valid_589514 = validateParameter(valid_589514, JString, required = false,
-                                 default = nil)
-  if valid_589514 != nil:
-    section.add "key", valid_589514
+  if valid_579411 != nil:
+    section.add "oauth_token", valid_579411
   assert query != nil,
         "query argument is necessary due to required `clientRevision` field"
-  var valid_589515 = query.getOrDefault("clientRevision")
-  valid_589515 = validateParameter(valid_589515, JString, required = true,
+  var valid_579412 = query.getOrDefault("clientRevision")
+  valid_579412 = validateParameter(valid_579412, JString, required = true,
                                  default = nil)
-  if valid_589515 != nil:
-    section.add "clientRevision", valid_589515
-  var valid_589516 = query.getOrDefault("prettyPrint")
-  valid_589516 = validateParameter(valid_589516, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_589516 != nil:
-    section.add "prettyPrint", valid_589516
+  if valid_579412 != nil:
+    section.add "clientRevision", valid_579412
+  var valid_579413 = query.getOrDefault("alt")
+  valid_579413 = validateParameter(valid_579413, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579413 != nil:
+    section.add "alt", valid_579413
+  var valid_579414 = query.getOrDefault("userIp")
+  valid_579414 = validateParameter(valid_579414, JString, required = false,
+                                 default = nil)
+  if valid_579414 != nil:
+    section.add "userIp", valid_579414
+  var valid_579415 = query.getOrDefault("quotaUser")
+  valid_579415 = validateParameter(valid_579415, JString, required = false,
+                                 default = nil)
+  if valid_579415 != nil:
+    section.add "quotaUser", valid_579415
+  var valid_579416 = query.getOrDefault("fields")
+  valid_579416 = validateParameter(valid_579416, JString, required = false,
+                                 default = nil)
+  if valid_579416 != nil:
+    section.add "fields", valid_579416
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5074,37 +5076,31 @@ proc validate_GamesRevisionsCheck_589507(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589517: Call_GamesRevisionsCheck_589506; path: JsonNode;
+proc call*(call_579417: Call_GamesRevisionsCheck_579406; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Checks whether the games client is out of date.
   ## 
-  let valid = call_589517.validator(path, query, header, formData, body)
-  let scheme = call_589517.pickScheme
+  let valid = call_579417.validator(path, query, header, formData, body)
+  let scheme = call_579417.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589517.url(scheme.get, call_589517.host, call_589517.base,
-                         call_589517.route, valid.getOrDefault("path"),
+  let url = call_579417.url(scheme.get, call_579417.host, call_579417.base,
+                         call_579417.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589517, url, valid)
+  result = hook(call_579417, url, valid)
 
-proc call*(call_589518: Call_GamesRevisionsCheck_589506; clientRevision: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579418: Call_GamesRevisionsCheck_579406; clientRevision: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## gamesRevisionsCheck
   ## Checks whether the games client is out of date.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
   ##   clientRevision: string (required)
   ##                 : The revision of the client SDK used by your application. Format:
   ## [PLATFORM_TYPE]:[VERSION_NUMBER]. Possible values of PLATFORM_TYPE are:
@@ -5112,34 +5108,40 @@ proc call*(call_589518: Call_GamesRevisionsCheck_589506; clientRevision: string;
   ## - "ANDROID" - Client is running the Android SDK. 
   ## - "IOS" - Client is running the iOS SDK. 
   ## - "WEB_APP" - Client is running as a Web App.
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  var query_589519 = newJObject()
-  add(query_589519, "fields", newJString(fields))
-  add(query_589519, "quotaUser", newJString(quotaUser))
-  add(query_589519, "alt", newJString(alt))
-  add(query_589519, "oauth_token", newJString(oauthToken))
-  add(query_589519, "userIp", newJString(userIp))
-  add(query_589519, "key", newJString(key))
-  add(query_589519, "clientRevision", newJString(clientRevision))
-  add(query_589519, "prettyPrint", newJBool(prettyPrint))
-  result = call_589518.call(nil, query_589519, nil, nil, nil)
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var query_579419 = newJObject()
+  add(query_579419, "key", newJString(key))
+  add(query_579419, "prettyPrint", newJBool(prettyPrint))
+  add(query_579419, "oauth_token", newJString(oauthToken))
+  add(query_579419, "clientRevision", newJString(clientRevision))
+  add(query_579419, "alt", newJString(alt))
+  add(query_579419, "userIp", newJString(userIp))
+  add(query_579419, "quotaUser", newJString(quotaUser))
+  add(query_579419, "fields", newJString(fields))
+  result = call_579418.call(nil, query_579419, nil, nil, nil)
 
-var gamesRevisionsCheck* = Call_GamesRevisionsCheck_589506(
+var gamesRevisionsCheck* = Call_GamesRevisionsCheck_579406(
     name: "gamesRevisionsCheck", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/revisions/check",
-    validator: validate_GamesRevisionsCheck_589507, base: "/games/v1",
-    url: url_GamesRevisionsCheck_589508, schemes: {Scheme.Https})
+    validator: validate_GamesRevisionsCheck_579407, base: "/games/v1",
+    url: url_GamesRevisionsCheck_579408, schemes: {Scheme.Https})
 type
-  Call_GamesRoomsList_589520 = ref object of OpenApiRestCall_588466
-proc url_GamesRoomsList_589522(protocol: Scheme; host: string; base: string;
+  Call_GamesRoomsList_579420 = ref object of OpenApiRestCall_578364
+proc url_GamesRoomsList_579422(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesRoomsList_589521(path: JsonNode; query: JsonNode;
+proc validate_GamesRoomsList_579421(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Returns invitations to join rooms.
@@ -5149,76 +5151,76 @@ proc validate_GamesRoomsList_589521(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of rooms to return in the response, used for paging. For any response, the actual number of rooms to return may be less than the specified maxResults.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of rooms to return in the response, used for paging. For any response, the actual number of rooms to return may be less than the specified maxResults.
   section = newJObject()
-  var valid_589523 = query.getOrDefault("fields")
-  valid_589523 = validateParameter(valid_589523, JString, required = false,
+  var valid_579423 = query.getOrDefault("key")
+  valid_579423 = validateParameter(valid_579423, JString, required = false,
                                  default = nil)
-  if valid_589523 != nil:
-    section.add "fields", valid_589523
-  var valid_589524 = query.getOrDefault("pageToken")
-  valid_589524 = validateParameter(valid_589524, JString, required = false,
-                                 default = nil)
-  if valid_589524 != nil:
-    section.add "pageToken", valid_589524
-  var valid_589525 = query.getOrDefault("quotaUser")
-  valid_589525 = validateParameter(valid_589525, JString, required = false,
-                                 default = nil)
-  if valid_589525 != nil:
-    section.add "quotaUser", valid_589525
-  var valid_589526 = query.getOrDefault("alt")
-  valid_589526 = validateParameter(valid_589526, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589526 != nil:
-    section.add "alt", valid_589526
-  var valid_589527 = query.getOrDefault("language")
-  valid_589527 = validateParameter(valid_589527, JString, required = false,
-                                 default = nil)
-  if valid_589527 != nil:
-    section.add "language", valid_589527
-  var valid_589528 = query.getOrDefault("oauth_token")
-  valid_589528 = validateParameter(valid_589528, JString, required = false,
-                                 default = nil)
-  if valid_589528 != nil:
-    section.add "oauth_token", valid_589528
-  var valid_589529 = query.getOrDefault("userIp")
-  valid_589529 = validateParameter(valid_589529, JString, required = false,
-                                 default = nil)
-  if valid_589529 != nil:
-    section.add "userIp", valid_589529
-  var valid_589530 = query.getOrDefault("maxResults")
-  valid_589530 = validateParameter(valid_589530, JInt, required = false, default = nil)
-  if valid_589530 != nil:
-    section.add "maxResults", valid_589530
-  var valid_589531 = query.getOrDefault("key")
-  valid_589531 = validateParameter(valid_589531, JString, required = false,
-                                 default = nil)
-  if valid_589531 != nil:
-    section.add "key", valid_589531
-  var valid_589532 = query.getOrDefault("prettyPrint")
-  valid_589532 = validateParameter(valid_589532, JBool, required = false,
+  if valid_579423 != nil:
+    section.add "key", valid_579423
+  var valid_579424 = query.getOrDefault("prettyPrint")
+  valid_579424 = validateParameter(valid_579424, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589532 != nil:
-    section.add "prettyPrint", valid_589532
+  if valid_579424 != nil:
+    section.add "prettyPrint", valid_579424
+  var valid_579425 = query.getOrDefault("oauth_token")
+  valid_579425 = validateParameter(valid_579425, JString, required = false,
+                                 default = nil)
+  if valid_579425 != nil:
+    section.add "oauth_token", valid_579425
+  var valid_579426 = query.getOrDefault("alt")
+  valid_579426 = validateParameter(valid_579426, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579426 != nil:
+    section.add "alt", valid_579426
+  var valid_579427 = query.getOrDefault("userIp")
+  valid_579427 = validateParameter(valid_579427, JString, required = false,
+                                 default = nil)
+  if valid_579427 != nil:
+    section.add "userIp", valid_579427
+  var valid_579428 = query.getOrDefault("quotaUser")
+  valid_579428 = validateParameter(valid_579428, JString, required = false,
+                                 default = nil)
+  if valid_579428 != nil:
+    section.add "quotaUser", valid_579428
+  var valid_579429 = query.getOrDefault("pageToken")
+  valid_579429 = validateParameter(valid_579429, JString, required = false,
+                                 default = nil)
+  if valid_579429 != nil:
+    section.add "pageToken", valid_579429
+  var valid_579430 = query.getOrDefault("fields")
+  valid_579430 = validateParameter(valid_579430, JString, required = false,
+                                 default = nil)
+  if valid_579430 != nil:
+    section.add "fields", valid_579430
+  var valid_579431 = query.getOrDefault("language")
+  valid_579431 = validateParameter(valid_579431, JString, required = false,
+                                 default = nil)
+  if valid_579431 != nil:
+    section.add "language", valid_579431
+  var valid_579432 = query.getOrDefault("maxResults")
+  valid_579432 = validateParameter(valid_579432, JInt, required = false, default = nil)
+  if valid_579432 != nil:
+    section.add "maxResults", valid_579432
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5227,72 +5229,72 @@ proc validate_GamesRoomsList_589521(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589533: Call_GamesRoomsList_589520; path: JsonNode; query: JsonNode;
+proc call*(call_579433: Call_GamesRoomsList_579420; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns invitations to join rooms.
   ## 
-  let valid = call_589533.validator(path, query, header, formData, body)
-  let scheme = call_589533.pickScheme
+  let valid = call_579433.validator(path, query, header, formData, body)
+  let scheme = call_579433.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589533.url(scheme.get, call_589533.host, call_589533.base,
-                         call_589533.route, valid.getOrDefault("path"),
+  let url = call_579433.url(scheme.get, call_579433.host, call_579433.base,
+                         call_579433.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589533, url, valid)
+  result = hook(call_579433, url, valid)
 
-proc call*(call_589534: Call_GamesRoomsList_589520; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579434: Call_GamesRoomsList_579420; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
+          fields: string = ""; language: string = ""; maxResults: int = 0): Recallable =
   ## gamesRoomsList
   ## Returns invitations to join rooms.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of rooms to return in the response, used for paging. For any response, the actual number of rooms to return may be less than the specified maxResults.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589535 = newJObject()
-  add(query_589535, "fields", newJString(fields))
-  add(query_589535, "pageToken", newJString(pageToken))
-  add(query_589535, "quotaUser", newJString(quotaUser))
-  add(query_589535, "alt", newJString(alt))
-  add(query_589535, "language", newJString(language))
-  add(query_589535, "oauth_token", newJString(oauthToken))
-  add(query_589535, "userIp", newJString(userIp))
-  add(query_589535, "maxResults", newJInt(maxResults))
-  add(query_589535, "key", newJString(key))
-  add(query_589535, "prettyPrint", newJBool(prettyPrint))
-  result = call_589534.call(nil, query_589535, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: int
+  ##             : The maximum number of rooms to return in the response, used for paging. For any response, the actual number of rooms to return may be less than the specified maxResults.
+  var query_579435 = newJObject()
+  add(query_579435, "key", newJString(key))
+  add(query_579435, "prettyPrint", newJBool(prettyPrint))
+  add(query_579435, "oauth_token", newJString(oauthToken))
+  add(query_579435, "alt", newJString(alt))
+  add(query_579435, "userIp", newJString(userIp))
+  add(query_579435, "quotaUser", newJString(quotaUser))
+  add(query_579435, "pageToken", newJString(pageToken))
+  add(query_579435, "fields", newJString(fields))
+  add(query_579435, "language", newJString(language))
+  add(query_579435, "maxResults", newJInt(maxResults))
+  result = call_579434.call(nil, query_579435, nil, nil, nil)
 
-var gamesRoomsList* = Call_GamesRoomsList_589520(name: "gamesRoomsList",
+var gamesRoomsList* = Call_GamesRoomsList_579420(name: "gamesRoomsList",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/rooms",
-    validator: validate_GamesRoomsList_589521, base: "/games/v1",
-    url: url_GamesRoomsList_589522, schemes: {Scheme.Https})
+    validator: validate_GamesRoomsList_579421, base: "/games/v1",
+    url: url_GamesRoomsList_579422, schemes: {Scheme.Https})
 type
-  Call_GamesRoomsCreate_589536 = ref object of OpenApiRestCall_588466
-proc url_GamesRoomsCreate_589538(protocol: Scheme; host: string; base: string;
+  Call_GamesRoomsCreate_579436 = ref object of OpenApiRestCall_578364
+proc url_GamesRoomsCreate_579438(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesRoomsCreate_589537(path: JsonNode; query: JsonNode;
+proc validate_GamesRoomsCreate_579437(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Create a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
@@ -5302,63 +5304,63 @@ proc validate_GamesRoomsCreate_589537(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589539 = query.getOrDefault("fields")
-  valid_589539 = validateParameter(valid_589539, JString, required = false,
+  var valid_579439 = query.getOrDefault("key")
+  valid_579439 = validateParameter(valid_579439, JString, required = false,
                                  default = nil)
-  if valid_589539 != nil:
-    section.add "fields", valid_589539
-  var valid_589540 = query.getOrDefault("quotaUser")
-  valid_589540 = validateParameter(valid_589540, JString, required = false,
-                                 default = nil)
-  if valid_589540 != nil:
-    section.add "quotaUser", valid_589540
-  var valid_589541 = query.getOrDefault("alt")
-  valid_589541 = validateParameter(valid_589541, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589541 != nil:
-    section.add "alt", valid_589541
-  var valid_589542 = query.getOrDefault("language")
-  valid_589542 = validateParameter(valid_589542, JString, required = false,
-                                 default = nil)
-  if valid_589542 != nil:
-    section.add "language", valid_589542
-  var valid_589543 = query.getOrDefault("oauth_token")
-  valid_589543 = validateParameter(valid_589543, JString, required = false,
-                                 default = nil)
-  if valid_589543 != nil:
-    section.add "oauth_token", valid_589543
-  var valid_589544 = query.getOrDefault("userIp")
-  valid_589544 = validateParameter(valid_589544, JString, required = false,
-                                 default = nil)
-  if valid_589544 != nil:
-    section.add "userIp", valid_589544
-  var valid_589545 = query.getOrDefault("key")
-  valid_589545 = validateParameter(valid_589545, JString, required = false,
-                                 default = nil)
-  if valid_589545 != nil:
-    section.add "key", valid_589545
-  var valid_589546 = query.getOrDefault("prettyPrint")
-  valid_589546 = validateParameter(valid_589546, JBool, required = false,
+  if valid_579439 != nil:
+    section.add "key", valid_579439
+  var valid_579440 = query.getOrDefault("prettyPrint")
+  valid_579440 = validateParameter(valid_579440, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589546 != nil:
-    section.add "prettyPrint", valid_589546
+  if valid_579440 != nil:
+    section.add "prettyPrint", valid_579440
+  var valid_579441 = query.getOrDefault("oauth_token")
+  valid_579441 = validateParameter(valid_579441, JString, required = false,
+                                 default = nil)
+  if valid_579441 != nil:
+    section.add "oauth_token", valid_579441
+  var valid_579442 = query.getOrDefault("alt")
+  valid_579442 = validateParameter(valid_579442, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579442 != nil:
+    section.add "alt", valid_579442
+  var valid_579443 = query.getOrDefault("userIp")
+  valid_579443 = validateParameter(valid_579443, JString, required = false,
+                                 default = nil)
+  if valid_579443 != nil:
+    section.add "userIp", valid_579443
+  var valid_579444 = query.getOrDefault("quotaUser")
+  valid_579444 = validateParameter(valid_579444, JString, required = false,
+                                 default = nil)
+  if valid_579444 != nil:
+    section.add "quotaUser", valid_579444
+  var valid_579445 = query.getOrDefault("fields")
+  valid_579445 = validateParameter(valid_579445, JString, required = false,
+                                 default = nil)
+  if valid_579445 != nil:
+    section.add "fields", valid_579445
+  var valid_579446 = query.getOrDefault("language")
+  valid_579446 = validateParameter(valid_579446, JString, required = false,
+                                 default = nil)
+  if valid_579446 != nil:
+    section.add "language", valid_579446
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5370,63 +5372,63 @@ proc validate_GamesRoomsCreate_589537(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589548: Call_GamesRoomsCreate_589536; path: JsonNode;
+proc call*(call_579448: Call_GamesRoomsCreate_579436; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Create a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
   ## 
-  let valid = call_589548.validator(path, query, header, formData, body)
-  let scheme = call_589548.pickScheme
+  let valid = call_579448.validator(path, query, header, formData, body)
+  let scheme = call_579448.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589548.url(scheme.get, call_589548.host, call_589548.base,
-                         call_589548.route, valid.getOrDefault("path"),
+  let url = call_579448.url(scheme.get, call_579448.host, call_579448.base,
+                         call_579448.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589548, url, valid)
+  result = hook(call_579448, url, valid)
 
-proc call*(call_589549: Call_GamesRoomsCreate_589536; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; language: string = "";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579449: Call_GamesRoomsCreate_579436; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""; language: string = ""): Recallable =
   ## gamesRoomsCreate
   ## Create a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589550 = newJObject()
-  var body_589551 = newJObject()
-  add(query_589550, "fields", newJString(fields))
-  add(query_589550, "quotaUser", newJString(quotaUser))
-  add(query_589550, "alt", newJString(alt))
-  add(query_589550, "language", newJString(language))
-  add(query_589550, "oauth_token", newJString(oauthToken))
-  add(query_589550, "userIp", newJString(userIp))
-  add(query_589550, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var query_579450 = newJObject()
+  var body_579451 = newJObject()
+  add(query_579450, "key", newJString(key))
+  add(query_579450, "prettyPrint", newJBool(prettyPrint))
+  add(query_579450, "oauth_token", newJString(oauthToken))
+  add(query_579450, "alt", newJString(alt))
+  add(query_579450, "userIp", newJString(userIp))
+  add(query_579450, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589551 = body
-  add(query_589550, "prettyPrint", newJBool(prettyPrint))
-  result = call_589549.call(nil, query_589550, nil, nil, body_589551)
+    body_579451 = body
+  add(query_579450, "fields", newJString(fields))
+  add(query_579450, "language", newJString(language))
+  result = call_579449.call(nil, query_579450, nil, nil, body_579451)
 
-var gamesRoomsCreate* = Call_GamesRoomsCreate_589536(name: "gamesRoomsCreate",
+var gamesRoomsCreate* = Call_GamesRoomsCreate_579436(name: "gamesRoomsCreate",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com", route: "/rooms/create",
-    validator: validate_GamesRoomsCreate_589537, base: "/games/v1",
-    url: url_GamesRoomsCreate_589538, schemes: {Scheme.Https})
+    validator: validate_GamesRoomsCreate_579437, base: "/games/v1",
+    url: url_GamesRoomsCreate_579438, schemes: {Scheme.Https})
 type
-  Call_GamesRoomsGet_589552 = ref object of OpenApiRestCall_588466
-proc url_GamesRoomsGet_589554(protocol: Scheme; host: string; base: string;
+  Call_GamesRoomsGet_579452 = ref object of OpenApiRestCall_578364
+proc url_GamesRoomsGet_579454(protocol: Scheme; host: string; base: string;
                              route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5441,7 +5443,7 @@ proc url_GamesRoomsGet_589554(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesRoomsGet_589553(path: JsonNode; query: JsonNode; header: JsonNode;
+proc validate_GamesRoomsGet_579453(path: JsonNode; query: JsonNode; header: JsonNode;
                                   formData: JsonNode; body: JsonNode): JsonNode =
   ## Get the data for a room.
   ## 
@@ -5452,70 +5454,70 @@ proc validate_GamesRoomsGet_589553(path: JsonNode; query: JsonNode; header: Json
   ##         : The ID of the room.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `roomId` field"
-  var valid_589555 = path.getOrDefault("roomId")
-  valid_589555 = validateParameter(valid_589555, JString, required = true,
+  var valid_579455 = path.getOrDefault("roomId")
+  valid_579455 = validateParameter(valid_579455, JString, required = true,
                                  default = nil)
-  if valid_589555 != nil:
-    section.add "roomId", valid_589555
+  if valid_579455 != nil:
+    section.add "roomId", valid_579455
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589556 = query.getOrDefault("fields")
-  valid_589556 = validateParameter(valid_589556, JString, required = false,
+  var valid_579456 = query.getOrDefault("key")
+  valid_579456 = validateParameter(valid_579456, JString, required = false,
                                  default = nil)
-  if valid_589556 != nil:
-    section.add "fields", valid_589556
-  var valid_589557 = query.getOrDefault("quotaUser")
-  valid_589557 = validateParameter(valid_589557, JString, required = false,
-                                 default = nil)
-  if valid_589557 != nil:
-    section.add "quotaUser", valid_589557
-  var valid_589558 = query.getOrDefault("alt")
-  valid_589558 = validateParameter(valid_589558, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589558 != nil:
-    section.add "alt", valid_589558
-  var valid_589559 = query.getOrDefault("language")
-  valid_589559 = validateParameter(valid_589559, JString, required = false,
-                                 default = nil)
-  if valid_589559 != nil:
-    section.add "language", valid_589559
-  var valid_589560 = query.getOrDefault("oauth_token")
-  valid_589560 = validateParameter(valid_589560, JString, required = false,
-                                 default = nil)
-  if valid_589560 != nil:
-    section.add "oauth_token", valid_589560
-  var valid_589561 = query.getOrDefault("userIp")
-  valid_589561 = validateParameter(valid_589561, JString, required = false,
-                                 default = nil)
-  if valid_589561 != nil:
-    section.add "userIp", valid_589561
-  var valid_589562 = query.getOrDefault("key")
-  valid_589562 = validateParameter(valid_589562, JString, required = false,
-                                 default = nil)
-  if valid_589562 != nil:
-    section.add "key", valid_589562
-  var valid_589563 = query.getOrDefault("prettyPrint")
-  valid_589563 = validateParameter(valid_589563, JBool, required = false,
+  if valid_579456 != nil:
+    section.add "key", valid_579456
+  var valid_579457 = query.getOrDefault("prettyPrint")
+  valid_579457 = validateParameter(valid_579457, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589563 != nil:
-    section.add "prettyPrint", valid_589563
+  if valid_579457 != nil:
+    section.add "prettyPrint", valid_579457
+  var valid_579458 = query.getOrDefault("oauth_token")
+  valid_579458 = validateParameter(valid_579458, JString, required = false,
+                                 default = nil)
+  if valid_579458 != nil:
+    section.add "oauth_token", valid_579458
+  var valid_579459 = query.getOrDefault("alt")
+  valid_579459 = validateParameter(valid_579459, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579459 != nil:
+    section.add "alt", valid_579459
+  var valid_579460 = query.getOrDefault("userIp")
+  valid_579460 = validateParameter(valid_579460, JString, required = false,
+                                 default = nil)
+  if valid_579460 != nil:
+    section.add "userIp", valid_579460
+  var valid_579461 = query.getOrDefault("quotaUser")
+  valid_579461 = validateParameter(valid_579461, JString, required = false,
+                                 default = nil)
+  if valid_579461 != nil:
+    section.add "quotaUser", valid_579461
+  var valid_579462 = query.getOrDefault("fields")
+  valid_579462 = validateParameter(valid_579462, JString, required = false,
+                                 default = nil)
+  if valid_579462 != nil:
+    section.add "fields", valid_579462
+  var valid_579463 = query.getOrDefault("language")
+  valid_579463 = validateParameter(valid_579463, JString, required = false,
+                                 default = nil)
+  if valid_579463 != nil:
+    section.add "language", valid_579463
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5524,63 +5526,63 @@ proc validate_GamesRoomsGet_589553(path: JsonNode; query: JsonNode; header: Json
   if body != nil:
     result.add "body", body
 
-proc call*(call_589564: Call_GamesRoomsGet_589552; path: JsonNode; query: JsonNode;
+proc call*(call_579464: Call_GamesRoomsGet_579452; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get the data for a room.
   ## 
-  let valid = call_589564.validator(path, query, header, formData, body)
-  let scheme = call_589564.pickScheme
+  let valid = call_579464.validator(path, query, header, formData, body)
+  let scheme = call_579464.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589564.url(scheme.get, call_589564.host, call_589564.base,
-                         call_589564.route, valid.getOrDefault("path"),
+  let url = call_579464.url(scheme.get, call_579464.host, call_579464.base,
+                         call_579464.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589564, url, valid)
+  result = hook(call_579464, url, valid)
 
-proc call*(call_589565: Call_GamesRoomsGet_589552; roomId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579465: Call_GamesRoomsGet_579452; roomId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = "";
+          language: string = ""): Recallable =
   ## gamesRoomsGet
   ## Get the data for a room.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   roomId: string (required)
   ##         : The ID of the room.
-  var path_589566 = newJObject()
-  var query_589567 = newJObject()
-  add(query_589567, "fields", newJString(fields))
-  add(query_589567, "quotaUser", newJString(quotaUser))
-  add(query_589567, "alt", newJString(alt))
-  add(query_589567, "language", newJString(language))
-  add(query_589567, "oauth_token", newJString(oauthToken))
-  add(query_589567, "userIp", newJString(userIp))
-  add(query_589567, "key", newJString(key))
-  add(query_589567, "prettyPrint", newJBool(prettyPrint))
-  add(path_589566, "roomId", newJString(roomId))
-  result = call_589565.call(path_589566, query_589567, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579466 = newJObject()
+  var query_579467 = newJObject()
+  add(query_579467, "key", newJString(key))
+  add(query_579467, "prettyPrint", newJBool(prettyPrint))
+  add(query_579467, "oauth_token", newJString(oauthToken))
+  add(query_579467, "alt", newJString(alt))
+  add(query_579467, "userIp", newJString(userIp))
+  add(query_579467, "quotaUser", newJString(quotaUser))
+  add(path_579466, "roomId", newJString(roomId))
+  add(query_579467, "fields", newJString(fields))
+  add(query_579467, "language", newJString(language))
+  result = call_579465.call(path_579466, query_579467, nil, nil, nil)
 
-var gamesRoomsGet* = Call_GamesRoomsGet_589552(name: "gamesRoomsGet",
+var gamesRoomsGet* = Call_GamesRoomsGet_579452(name: "gamesRoomsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/rooms/{roomId}",
-    validator: validate_GamesRoomsGet_589553, base: "/games/v1",
-    url: url_GamesRoomsGet_589554, schemes: {Scheme.Https})
+    validator: validate_GamesRoomsGet_579453, base: "/games/v1",
+    url: url_GamesRoomsGet_579454, schemes: {Scheme.Https})
 type
-  Call_GamesRoomsDecline_589568 = ref object of OpenApiRestCall_588466
-proc url_GamesRoomsDecline_589570(protocol: Scheme; host: string; base: string;
+  Call_GamesRoomsDecline_579468 = ref object of OpenApiRestCall_578364
+proc url_GamesRoomsDecline_579470(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5596,7 +5598,7 @@ proc url_GamesRoomsDecline_589570(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesRoomsDecline_589569(path: JsonNode; query: JsonNode;
+proc validate_GamesRoomsDecline_579469(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Decline an invitation to join a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
@@ -5608,70 +5610,70 @@ proc validate_GamesRoomsDecline_589569(path: JsonNode; query: JsonNode;
   ##         : The ID of the room.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `roomId` field"
-  var valid_589571 = path.getOrDefault("roomId")
-  valid_589571 = validateParameter(valid_589571, JString, required = true,
+  var valid_579471 = path.getOrDefault("roomId")
+  valid_579471 = validateParameter(valid_579471, JString, required = true,
                                  default = nil)
-  if valid_589571 != nil:
-    section.add "roomId", valid_589571
+  if valid_579471 != nil:
+    section.add "roomId", valid_579471
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589572 = query.getOrDefault("fields")
-  valid_589572 = validateParameter(valid_589572, JString, required = false,
+  var valid_579472 = query.getOrDefault("key")
+  valid_579472 = validateParameter(valid_579472, JString, required = false,
                                  default = nil)
-  if valid_589572 != nil:
-    section.add "fields", valid_589572
-  var valid_589573 = query.getOrDefault("quotaUser")
-  valid_589573 = validateParameter(valid_589573, JString, required = false,
-                                 default = nil)
-  if valid_589573 != nil:
-    section.add "quotaUser", valid_589573
-  var valid_589574 = query.getOrDefault("alt")
-  valid_589574 = validateParameter(valid_589574, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589574 != nil:
-    section.add "alt", valid_589574
-  var valid_589575 = query.getOrDefault("language")
-  valid_589575 = validateParameter(valid_589575, JString, required = false,
-                                 default = nil)
-  if valid_589575 != nil:
-    section.add "language", valid_589575
-  var valid_589576 = query.getOrDefault("oauth_token")
-  valid_589576 = validateParameter(valid_589576, JString, required = false,
-                                 default = nil)
-  if valid_589576 != nil:
-    section.add "oauth_token", valid_589576
-  var valid_589577 = query.getOrDefault("userIp")
-  valid_589577 = validateParameter(valid_589577, JString, required = false,
-                                 default = nil)
-  if valid_589577 != nil:
-    section.add "userIp", valid_589577
-  var valid_589578 = query.getOrDefault("key")
-  valid_589578 = validateParameter(valid_589578, JString, required = false,
-                                 default = nil)
-  if valid_589578 != nil:
-    section.add "key", valid_589578
-  var valid_589579 = query.getOrDefault("prettyPrint")
-  valid_589579 = validateParameter(valid_589579, JBool, required = false,
+  if valid_579472 != nil:
+    section.add "key", valid_579472
+  var valid_579473 = query.getOrDefault("prettyPrint")
+  valid_579473 = validateParameter(valid_579473, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589579 != nil:
-    section.add "prettyPrint", valid_589579
+  if valid_579473 != nil:
+    section.add "prettyPrint", valid_579473
+  var valid_579474 = query.getOrDefault("oauth_token")
+  valid_579474 = validateParameter(valid_579474, JString, required = false,
+                                 default = nil)
+  if valid_579474 != nil:
+    section.add "oauth_token", valid_579474
+  var valid_579475 = query.getOrDefault("alt")
+  valid_579475 = validateParameter(valid_579475, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579475 != nil:
+    section.add "alt", valid_579475
+  var valid_579476 = query.getOrDefault("userIp")
+  valid_579476 = validateParameter(valid_579476, JString, required = false,
+                                 default = nil)
+  if valid_579476 != nil:
+    section.add "userIp", valid_579476
+  var valid_579477 = query.getOrDefault("quotaUser")
+  valid_579477 = validateParameter(valid_579477, JString, required = false,
+                                 default = nil)
+  if valid_579477 != nil:
+    section.add "quotaUser", valid_579477
+  var valid_579478 = query.getOrDefault("fields")
+  valid_579478 = validateParameter(valid_579478, JString, required = false,
+                                 default = nil)
+  if valid_579478 != nil:
+    section.add "fields", valid_579478
+  var valid_579479 = query.getOrDefault("language")
+  valid_579479 = validateParameter(valid_579479, JString, required = false,
+                                 default = nil)
+  if valid_579479 != nil:
+    section.add "language", valid_579479
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5680,63 +5682,63 @@ proc validate_GamesRoomsDecline_589569(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589580: Call_GamesRoomsDecline_589568; path: JsonNode;
+proc call*(call_579480: Call_GamesRoomsDecline_579468; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Decline an invitation to join a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
   ## 
-  let valid = call_589580.validator(path, query, header, formData, body)
-  let scheme = call_589580.pickScheme
+  let valid = call_579480.validator(path, query, header, formData, body)
+  let scheme = call_579480.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589580.url(scheme.get, call_589580.host, call_589580.base,
-                         call_589580.route, valid.getOrDefault("path"),
+  let url = call_579480.url(scheme.get, call_579480.host, call_579480.base,
+                         call_579480.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589580, url, valid)
+  result = hook(call_579480, url, valid)
 
-proc call*(call_589581: Call_GamesRoomsDecline_589568; roomId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579481: Call_GamesRoomsDecline_579468; roomId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""; language: string = ""): Recallable =
   ## gamesRoomsDecline
   ## Decline an invitation to join a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   roomId: string (required)
   ##         : The ID of the room.
-  var path_589582 = newJObject()
-  var query_589583 = newJObject()
-  add(query_589583, "fields", newJString(fields))
-  add(query_589583, "quotaUser", newJString(quotaUser))
-  add(query_589583, "alt", newJString(alt))
-  add(query_589583, "language", newJString(language))
-  add(query_589583, "oauth_token", newJString(oauthToken))
-  add(query_589583, "userIp", newJString(userIp))
-  add(query_589583, "key", newJString(key))
-  add(query_589583, "prettyPrint", newJBool(prettyPrint))
-  add(path_589582, "roomId", newJString(roomId))
-  result = call_589581.call(path_589582, query_589583, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579482 = newJObject()
+  var query_579483 = newJObject()
+  add(query_579483, "key", newJString(key))
+  add(query_579483, "prettyPrint", newJBool(prettyPrint))
+  add(query_579483, "oauth_token", newJString(oauthToken))
+  add(query_579483, "alt", newJString(alt))
+  add(query_579483, "userIp", newJString(userIp))
+  add(query_579483, "quotaUser", newJString(quotaUser))
+  add(path_579482, "roomId", newJString(roomId))
+  add(query_579483, "fields", newJString(fields))
+  add(query_579483, "language", newJString(language))
+  result = call_579481.call(path_579482, query_579483, nil, nil, nil)
 
-var gamesRoomsDecline* = Call_GamesRoomsDecline_589568(name: "gamesRoomsDecline",
+var gamesRoomsDecline* = Call_GamesRoomsDecline_579468(name: "gamesRoomsDecline",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/rooms/{roomId}/decline", validator: validate_GamesRoomsDecline_589569,
-    base: "/games/v1", url: url_GamesRoomsDecline_589570, schemes: {Scheme.Https})
+    route: "/rooms/{roomId}/decline", validator: validate_GamesRoomsDecline_579469,
+    base: "/games/v1", url: url_GamesRoomsDecline_579470, schemes: {Scheme.Https})
 type
-  Call_GamesRoomsDismiss_589584 = ref object of OpenApiRestCall_588466
-proc url_GamesRoomsDismiss_589586(protocol: Scheme; host: string; base: string;
+  Call_GamesRoomsDismiss_579484 = ref object of OpenApiRestCall_578364
+proc url_GamesRoomsDismiss_579486(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5752,7 +5754,7 @@ proc url_GamesRoomsDismiss_589586(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesRoomsDismiss_589585(path: JsonNode; query: JsonNode;
+proc validate_GamesRoomsDismiss_579485(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Dismiss an invitation to join a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
@@ -5764,63 +5766,63 @@ proc validate_GamesRoomsDismiss_589585(path: JsonNode; query: JsonNode;
   ##         : The ID of the room.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `roomId` field"
-  var valid_589587 = path.getOrDefault("roomId")
-  valid_589587 = validateParameter(valid_589587, JString, required = true,
+  var valid_579487 = path.getOrDefault("roomId")
+  valid_579487 = validateParameter(valid_579487, JString, required = true,
                                  default = nil)
-  if valid_589587 != nil:
-    section.add "roomId", valid_589587
+  if valid_579487 != nil:
+    section.add "roomId", valid_579487
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589588 = query.getOrDefault("fields")
-  valid_589588 = validateParameter(valid_589588, JString, required = false,
+  var valid_579488 = query.getOrDefault("key")
+  valid_579488 = validateParameter(valid_579488, JString, required = false,
                                  default = nil)
-  if valid_589588 != nil:
-    section.add "fields", valid_589588
-  var valid_589589 = query.getOrDefault("quotaUser")
-  valid_589589 = validateParameter(valid_589589, JString, required = false,
-                                 default = nil)
-  if valid_589589 != nil:
-    section.add "quotaUser", valid_589589
-  var valid_589590 = query.getOrDefault("alt")
-  valid_589590 = validateParameter(valid_589590, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589590 != nil:
-    section.add "alt", valid_589590
-  var valid_589591 = query.getOrDefault("oauth_token")
-  valid_589591 = validateParameter(valid_589591, JString, required = false,
-                                 default = nil)
-  if valid_589591 != nil:
-    section.add "oauth_token", valid_589591
-  var valid_589592 = query.getOrDefault("userIp")
-  valid_589592 = validateParameter(valid_589592, JString, required = false,
-                                 default = nil)
-  if valid_589592 != nil:
-    section.add "userIp", valid_589592
-  var valid_589593 = query.getOrDefault("key")
-  valid_589593 = validateParameter(valid_589593, JString, required = false,
-                                 default = nil)
-  if valid_589593 != nil:
-    section.add "key", valid_589593
-  var valid_589594 = query.getOrDefault("prettyPrint")
-  valid_589594 = validateParameter(valid_589594, JBool, required = false,
+  if valid_579488 != nil:
+    section.add "key", valid_579488
+  var valid_579489 = query.getOrDefault("prettyPrint")
+  valid_579489 = validateParameter(valid_579489, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589594 != nil:
-    section.add "prettyPrint", valid_589594
+  if valid_579489 != nil:
+    section.add "prettyPrint", valid_579489
+  var valid_579490 = query.getOrDefault("oauth_token")
+  valid_579490 = validateParameter(valid_579490, JString, required = false,
+                                 default = nil)
+  if valid_579490 != nil:
+    section.add "oauth_token", valid_579490
+  var valid_579491 = query.getOrDefault("alt")
+  valid_579491 = validateParameter(valid_579491, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579491 != nil:
+    section.add "alt", valid_579491
+  var valid_579492 = query.getOrDefault("userIp")
+  valid_579492 = validateParameter(valid_579492, JString, required = false,
+                                 default = nil)
+  if valid_579492 != nil:
+    section.add "userIp", valid_579492
+  var valid_579493 = query.getOrDefault("quotaUser")
+  valid_579493 = validateParameter(valid_579493, JString, required = false,
+                                 default = nil)
+  if valid_579493 != nil:
+    section.add "quotaUser", valid_579493
+  var valid_579494 = query.getOrDefault("fields")
+  valid_579494 = validateParameter(valid_579494, JString, required = false,
+                                 default = nil)
+  if valid_579494 != nil:
+    section.add "fields", valid_579494
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5829,60 +5831,60 @@ proc validate_GamesRoomsDismiss_589585(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589595: Call_GamesRoomsDismiss_589584; path: JsonNode;
+proc call*(call_579495: Call_GamesRoomsDismiss_579484; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Dismiss an invitation to join a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
   ## 
-  let valid = call_589595.validator(path, query, header, formData, body)
-  let scheme = call_589595.pickScheme
+  let valid = call_579495.validator(path, query, header, formData, body)
+  let scheme = call_579495.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589595.url(scheme.get, call_589595.host, call_589595.base,
-                         call_589595.route, valid.getOrDefault("path"),
+  let url = call_579495.url(scheme.get, call_579495.host, call_579495.base,
+                         call_579495.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589595, url, valid)
+  result = hook(call_579495, url, valid)
 
-proc call*(call_589596: Call_GamesRoomsDismiss_589584; roomId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579496: Call_GamesRoomsDismiss_579484; roomId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## gamesRoomsDismiss
   ## Dismiss an invitation to join a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   roomId: string (required)
   ##         : The ID of the room.
-  var path_589597 = newJObject()
-  var query_589598 = newJObject()
-  add(query_589598, "fields", newJString(fields))
-  add(query_589598, "quotaUser", newJString(quotaUser))
-  add(query_589598, "alt", newJString(alt))
-  add(query_589598, "oauth_token", newJString(oauthToken))
-  add(query_589598, "userIp", newJString(userIp))
-  add(query_589598, "key", newJString(key))
-  add(query_589598, "prettyPrint", newJBool(prettyPrint))
-  add(path_589597, "roomId", newJString(roomId))
-  result = call_589596.call(path_589597, query_589598, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_579497 = newJObject()
+  var query_579498 = newJObject()
+  add(query_579498, "key", newJString(key))
+  add(query_579498, "prettyPrint", newJBool(prettyPrint))
+  add(query_579498, "oauth_token", newJString(oauthToken))
+  add(query_579498, "alt", newJString(alt))
+  add(query_579498, "userIp", newJString(userIp))
+  add(query_579498, "quotaUser", newJString(quotaUser))
+  add(path_579497, "roomId", newJString(roomId))
+  add(query_579498, "fields", newJString(fields))
+  result = call_579496.call(path_579497, query_579498, nil, nil, nil)
 
-var gamesRoomsDismiss* = Call_GamesRoomsDismiss_589584(name: "gamesRoomsDismiss",
+var gamesRoomsDismiss* = Call_GamesRoomsDismiss_579484(name: "gamesRoomsDismiss",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/rooms/{roomId}/dismiss", validator: validate_GamesRoomsDismiss_589585,
-    base: "/games/v1", url: url_GamesRoomsDismiss_589586, schemes: {Scheme.Https})
+    route: "/rooms/{roomId}/dismiss", validator: validate_GamesRoomsDismiss_579485,
+    base: "/games/v1", url: url_GamesRoomsDismiss_579486, schemes: {Scheme.Https})
 type
-  Call_GamesRoomsJoin_589599 = ref object of OpenApiRestCall_588466
-proc url_GamesRoomsJoin_589601(protocol: Scheme; host: string; base: string;
+  Call_GamesRoomsJoin_579499 = ref object of OpenApiRestCall_578364
+proc url_GamesRoomsJoin_579501(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5898,7 +5900,7 @@ proc url_GamesRoomsJoin_589601(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesRoomsJoin_589600(path: JsonNode; query: JsonNode;
+proc validate_GamesRoomsJoin_579500(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Join a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
@@ -5910,70 +5912,70 @@ proc validate_GamesRoomsJoin_589600(path: JsonNode; query: JsonNode;
   ##         : The ID of the room.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `roomId` field"
-  var valid_589602 = path.getOrDefault("roomId")
-  valid_589602 = validateParameter(valid_589602, JString, required = true,
+  var valid_579502 = path.getOrDefault("roomId")
+  valid_579502 = validateParameter(valid_579502, JString, required = true,
                                  default = nil)
-  if valid_589602 != nil:
-    section.add "roomId", valid_589602
+  if valid_579502 != nil:
+    section.add "roomId", valid_579502
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589603 = query.getOrDefault("fields")
-  valid_589603 = validateParameter(valid_589603, JString, required = false,
+  var valid_579503 = query.getOrDefault("key")
+  valid_579503 = validateParameter(valid_579503, JString, required = false,
                                  default = nil)
-  if valid_589603 != nil:
-    section.add "fields", valid_589603
-  var valid_589604 = query.getOrDefault("quotaUser")
-  valid_589604 = validateParameter(valid_589604, JString, required = false,
-                                 default = nil)
-  if valid_589604 != nil:
-    section.add "quotaUser", valid_589604
-  var valid_589605 = query.getOrDefault("alt")
-  valid_589605 = validateParameter(valid_589605, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589605 != nil:
-    section.add "alt", valid_589605
-  var valid_589606 = query.getOrDefault("language")
-  valid_589606 = validateParameter(valid_589606, JString, required = false,
-                                 default = nil)
-  if valid_589606 != nil:
-    section.add "language", valid_589606
-  var valid_589607 = query.getOrDefault("oauth_token")
-  valid_589607 = validateParameter(valid_589607, JString, required = false,
-                                 default = nil)
-  if valid_589607 != nil:
-    section.add "oauth_token", valid_589607
-  var valid_589608 = query.getOrDefault("userIp")
-  valid_589608 = validateParameter(valid_589608, JString, required = false,
-                                 default = nil)
-  if valid_589608 != nil:
-    section.add "userIp", valid_589608
-  var valid_589609 = query.getOrDefault("key")
-  valid_589609 = validateParameter(valid_589609, JString, required = false,
-                                 default = nil)
-  if valid_589609 != nil:
-    section.add "key", valid_589609
-  var valid_589610 = query.getOrDefault("prettyPrint")
-  valid_589610 = validateParameter(valid_589610, JBool, required = false,
+  if valid_579503 != nil:
+    section.add "key", valid_579503
+  var valid_579504 = query.getOrDefault("prettyPrint")
+  valid_579504 = validateParameter(valid_579504, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589610 != nil:
-    section.add "prettyPrint", valid_589610
+  if valid_579504 != nil:
+    section.add "prettyPrint", valid_579504
+  var valid_579505 = query.getOrDefault("oauth_token")
+  valid_579505 = validateParameter(valid_579505, JString, required = false,
+                                 default = nil)
+  if valid_579505 != nil:
+    section.add "oauth_token", valid_579505
+  var valid_579506 = query.getOrDefault("alt")
+  valid_579506 = validateParameter(valid_579506, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579506 != nil:
+    section.add "alt", valid_579506
+  var valid_579507 = query.getOrDefault("userIp")
+  valid_579507 = validateParameter(valid_579507, JString, required = false,
+                                 default = nil)
+  if valid_579507 != nil:
+    section.add "userIp", valid_579507
+  var valid_579508 = query.getOrDefault("quotaUser")
+  valid_579508 = validateParameter(valid_579508, JString, required = false,
+                                 default = nil)
+  if valid_579508 != nil:
+    section.add "quotaUser", valid_579508
+  var valid_579509 = query.getOrDefault("fields")
+  valid_579509 = validateParameter(valid_579509, JString, required = false,
+                                 default = nil)
+  if valid_579509 != nil:
+    section.add "fields", valid_579509
+  var valid_579510 = query.getOrDefault("language")
+  valid_579510 = validateParameter(valid_579510, JString, required = false,
+                                 default = nil)
+  if valid_579510 != nil:
+    section.add "language", valid_579510
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5985,67 +5987,67 @@ proc validate_GamesRoomsJoin_589600(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589612: Call_GamesRoomsJoin_589599; path: JsonNode; query: JsonNode;
+proc call*(call_579512: Call_GamesRoomsJoin_579499; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Join a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
   ## 
-  let valid = call_589612.validator(path, query, header, formData, body)
-  let scheme = call_589612.pickScheme
+  let valid = call_579512.validator(path, query, header, formData, body)
+  let scheme = call_579512.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589612.url(scheme.get, call_589612.host, call_589612.base,
-                         call_589612.route, valid.getOrDefault("path"),
+  let url = call_579512.url(scheme.get, call_579512.host, call_579512.base,
+                         call_579512.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589612, url, valid)
+  result = hook(call_579512, url, valid)
 
-proc call*(call_589613: Call_GamesRoomsJoin_589599; roomId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579513: Call_GamesRoomsJoin_579499; roomId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""; language: string = ""): Recallable =
   ## gamesRoomsJoin
   ## Join a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
   ##   roomId: string (required)
   ##         : The ID of the room.
-  var path_589614 = newJObject()
-  var query_589615 = newJObject()
-  var body_589616 = newJObject()
-  add(query_589615, "fields", newJString(fields))
-  add(query_589615, "quotaUser", newJString(quotaUser))
-  add(query_589615, "alt", newJString(alt))
-  add(query_589615, "language", newJString(language))
-  add(query_589615, "oauth_token", newJString(oauthToken))
-  add(query_589615, "userIp", newJString(userIp))
-  add(query_589615, "key", newJString(key))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579514 = newJObject()
+  var query_579515 = newJObject()
+  var body_579516 = newJObject()
+  add(query_579515, "key", newJString(key))
+  add(query_579515, "prettyPrint", newJBool(prettyPrint))
+  add(query_579515, "oauth_token", newJString(oauthToken))
+  add(query_579515, "alt", newJString(alt))
+  add(query_579515, "userIp", newJString(userIp))
+  add(query_579515, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589616 = body
-  add(query_589615, "prettyPrint", newJBool(prettyPrint))
-  add(path_589614, "roomId", newJString(roomId))
-  result = call_589613.call(path_589614, query_589615, nil, nil, body_589616)
+    body_579516 = body
+  add(path_579514, "roomId", newJString(roomId))
+  add(query_579515, "fields", newJString(fields))
+  add(query_579515, "language", newJString(language))
+  result = call_579513.call(path_579514, query_579515, nil, nil, body_579516)
 
-var gamesRoomsJoin* = Call_GamesRoomsJoin_589599(name: "gamesRoomsJoin",
+var gamesRoomsJoin* = Call_GamesRoomsJoin_579499(name: "gamesRoomsJoin",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/rooms/{roomId}/join", validator: validate_GamesRoomsJoin_589600,
-    base: "/games/v1", url: url_GamesRoomsJoin_589601, schemes: {Scheme.Https})
+    route: "/rooms/{roomId}/join", validator: validate_GamesRoomsJoin_579500,
+    base: "/games/v1", url: url_GamesRoomsJoin_579501, schemes: {Scheme.Https})
 type
-  Call_GamesRoomsLeave_589617 = ref object of OpenApiRestCall_588466
-proc url_GamesRoomsLeave_589619(protocol: Scheme; host: string; base: string;
+  Call_GamesRoomsLeave_579517 = ref object of OpenApiRestCall_578364
+proc url_GamesRoomsLeave_579519(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6061,7 +6063,7 @@ proc url_GamesRoomsLeave_589619(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesRoomsLeave_589618(path: JsonNode; query: JsonNode;
+proc validate_GamesRoomsLeave_579518(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Leave a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
@@ -6073,70 +6075,70 @@ proc validate_GamesRoomsLeave_589618(path: JsonNode; query: JsonNode;
   ##         : The ID of the room.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `roomId` field"
-  var valid_589620 = path.getOrDefault("roomId")
-  valid_589620 = validateParameter(valid_589620, JString, required = true,
+  var valid_579520 = path.getOrDefault("roomId")
+  valid_579520 = validateParameter(valid_579520, JString, required = true,
                                  default = nil)
-  if valid_589620 != nil:
-    section.add "roomId", valid_589620
+  if valid_579520 != nil:
+    section.add "roomId", valid_579520
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589621 = query.getOrDefault("fields")
-  valid_589621 = validateParameter(valid_589621, JString, required = false,
+  var valid_579521 = query.getOrDefault("key")
+  valid_579521 = validateParameter(valid_579521, JString, required = false,
                                  default = nil)
-  if valid_589621 != nil:
-    section.add "fields", valid_589621
-  var valid_589622 = query.getOrDefault("quotaUser")
-  valid_589622 = validateParameter(valid_589622, JString, required = false,
-                                 default = nil)
-  if valid_589622 != nil:
-    section.add "quotaUser", valid_589622
-  var valid_589623 = query.getOrDefault("alt")
-  valid_589623 = validateParameter(valid_589623, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589623 != nil:
-    section.add "alt", valid_589623
-  var valid_589624 = query.getOrDefault("language")
-  valid_589624 = validateParameter(valid_589624, JString, required = false,
-                                 default = nil)
-  if valid_589624 != nil:
-    section.add "language", valid_589624
-  var valid_589625 = query.getOrDefault("oauth_token")
-  valid_589625 = validateParameter(valid_589625, JString, required = false,
-                                 default = nil)
-  if valid_589625 != nil:
-    section.add "oauth_token", valid_589625
-  var valid_589626 = query.getOrDefault("userIp")
-  valid_589626 = validateParameter(valid_589626, JString, required = false,
-                                 default = nil)
-  if valid_589626 != nil:
-    section.add "userIp", valid_589626
-  var valid_589627 = query.getOrDefault("key")
-  valid_589627 = validateParameter(valid_589627, JString, required = false,
-                                 default = nil)
-  if valid_589627 != nil:
-    section.add "key", valid_589627
-  var valid_589628 = query.getOrDefault("prettyPrint")
-  valid_589628 = validateParameter(valid_589628, JBool, required = false,
+  if valid_579521 != nil:
+    section.add "key", valid_579521
+  var valid_579522 = query.getOrDefault("prettyPrint")
+  valid_579522 = validateParameter(valid_579522, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589628 != nil:
-    section.add "prettyPrint", valid_589628
+  if valid_579522 != nil:
+    section.add "prettyPrint", valid_579522
+  var valid_579523 = query.getOrDefault("oauth_token")
+  valid_579523 = validateParameter(valid_579523, JString, required = false,
+                                 default = nil)
+  if valid_579523 != nil:
+    section.add "oauth_token", valid_579523
+  var valid_579524 = query.getOrDefault("alt")
+  valid_579524 = validateParameter(valid_579524, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579524 != nil:
+    section.add "alt", valid_579524
+  var valid_579525 = query.getOrDefault("userIp")
+  valid_579525 = validateParameter(valid_579525, JString, required = false,
+                                 default = nil)
+  if valid_579525 != nil:
+    section.add "userIp", valid_579525
+  var valid_579526 = query.getOrDefault("quotaUser")
+  valid_579526 = validateParameter(valid_579526, JString, required = false,
+                                 default = nil)
+  if valid_579526 != nil:
+    section.add "quotaUser", valid_579526
+  var valid_579527 = query.getOrDefault("fields")
+  valid_579527 = validateParameter(valid_579527, JString, required = false,
+                                 default = nil)
+  if valid_579527 != nil:
+    section.add "fields", valid_579527
+  var valid_579528 = query.getOrDefault("language")
+  valid_579528 = validateParameter(valid_579528, JString, required = false,
+                                 default = nil)
+  if valid_579528 != nil:
+    section.add "language", valid_579528
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6148,67 +6150,67 @@ proc validate_GamesRoomsLeave_589618(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589630: Call_GamesRoomsLeave_589617; path: JsonNode; query: JsonNode;
+proc call*(call_579530: Call_GamesRoomsLeave_579517; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Leave a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
   ## 
-  let valid = call_589630.validator(path, query, header, formData, body)
-  let scheme = call_589630.pickScheme
+  let valid = call_579530.validator(path, query, header, formData, body)
+  let scheme = call_579530.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589630.url(scheme.get, call_589630.host, call_589630.base,
-                         call_589630.route, valid.getOrDefault("path"),
+  let url = call_579530.url(scheme.get, call_579530.host, call_579530.base,
+                         call_579530.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589630, url, valid)
+  result = hook(call_579530, url, valid)
 
-proc call*(call_589631: Call_GamesRoomsLeave_589617; roomId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579531: Call_GamesRoomsLeave_579517; roomId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""; language: string = ""): Recallable =
   ## gamesRoomsLeave
   ## Leave a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
   ##   roomId: string (required)
   ##         : The ID of the room.
-  var path_589632 = newJObject()
-  var query_589633 = newJObject()
-  var body_589634 = newJObject()
-  add(query_589633, "fields", newJString(fields))
-  add(query_589633, "quotaUser", newJString(quotaUser))
-  add(query_589633, "alt", newJString(alt))
-  add(query_589633, "language", newJString(language))
-  add(query_589633, "oauth_token", newJString(oauthToken))
-  add(query_589633, "userIp", newJString(userIp))
-  add(query_589633, "key", newJString(key))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579532 = newJObject()
+  var query_579533 = newJObject()
+  var body_579534 = newJObject()
+  add(query_579533, "key", newJString(key))
+  add(query_579533, "prettyPrint", newJBool(prettyPrint))
+  add(query_579533, "oauth_token", newJString(oauthToken))
+  add(query_579533, "alt", newJString(alt))
+  add(query_579533, "userIp", newJString(userIp))
+  add(query_579533, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589634 = body
-  add(query_589633, "prettyPrint", newJBool(prettyPrint))
-  add(path_589632, "roomId", newJString(roomId))
-  result = call_589631.call(path_589632, query_589633, nil, nil, body_589634)
+    body_579534 = body
+  add(path_579532, "roomId", newJString(roomId))
+  add(query_579533, "fields", newJString(fields))
+  add(query_579533, "language", newJString(language))
+  result = call_579531.call(path_579532, query_579533, nil, nil, body_579534)
 
-var gamesRoomsLeave* = Call_GamesRoomsLeave_589617(name: "gamesRoomsLeave",
+var gamesRoomsLeave* = Call_GamesRoomsLeave_579517(name: "gamesRoomsLeave",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
-    route: "/rooms/{roomId}/leave", validator: validate_GamesRoomsLeave_589618,
-    base: "/games/v1", url: url_GamesRoomsLeave_589619, schemes: {Scheme.Https})
+    route: "/rooms/{roomId}/leave", validator: validate_GamesRoomsLeave_579518,
+    base: "/games/v1", url: url_GamesRoomsLeave_579519, schemes: {Scheme.Https})
 type
-  Call_GamesRoomsReportStatus_589635 = ref object of OpenApiRestCall_588466
-proc url_GamesRoomsReportStatus_589637(protocol: Scheme; host: string; base: string;
+  Call_GamesRoomsReportStatus_579535 = ref object of OpenApiRestCall_578364
+proc url_GamesRoomsReportStatus_579537(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6224,7 +6226,7 @@ proc url_GamesRoomsReportStatus_589637(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesRoomsReportStatus_589636(path: JsonNode; query: JsonNode;
+proc validate_GamesRoomsReportStatus_579536(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates sent by a client reporting the status of peers in a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
   ## 
@@ -6235,70 +6237,70 @@ proc validate_GamesRoomsReportStatus_589636(path: JsonNode; query: JsonNode;
   ##         : The ID of the room.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `roomId` field"
-  var valid_589638 = path.getOrDefault("roomId")
-  valid_589638 = validateParameter(valid_589638, JString, required = true,
+  var valid_579538 = path.getOrDefault("roomId")
+  valid_579538 = validateParameter(valid_579538, JString, required = true,
                                  default = nil)
-  if valid_589638 != nil:
-    section.add "roomId", valid_589638
+  if valid_579538 != nil:
+    section.add "roomId", valid_579538
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589639 = query.getOrDefault("fields")
-  valid_589639 = validateParameter(valid_589639, JString, required = false,
+  var valid_579539 = query.getOrDefault("key")
+  valid_579539 = validateParameter(valid_579539, JString, required = false,
                                  default = nil)
-  if valid_589639 != nil:
-    section.add "fields", valid_589639
-  var valid_589640 = query.getOrDefault("quotaUser")
-  valid_589640 = validateParameter(valid_589640, JString, required = false,
-                                 default = nil)
-  if valid_589640 != nil:
-    section.add "quotaUser", valid_589640
-  var valid_589641 = query.getOrDefault("alt")
-  valid_589641 = validateParameter(valid_589641, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589641 != nil:
-    section.add "alt", valid_589641
-  var valid_589642 = query.getOrDefault("language")
-  valid_589642 = validateParameter(valid_589642, JString, required = false,
-                                 default = nil)
-  if valid_589642 != nil:
-    section.add "language", valid_589642
-  var valid_589643 = query.getOrDefault("oauth_token")
-  valid_589643 = validateParameter(valid_589643, JString, required = false,
-                                 default = nil)
-  if valid_589643 != nil:
-    section.add "oauth_token", valid_589643
-  var valid_589644 = query.getOrDefault("userIp")
-  valid_589644 = validateParameter(valid_589644, JString, required = false,
-                                 default = nil)
-  if valid_589644 != nil:
-    section.add "userIp", valid_589644
-  var valid_589645 = query.getOrDefault("key")
-  valid_589645 = validateParameter(valid_589645, JString, required = false,
-                                 default = nil)
-  if valid_589645 != nil:
-    section.add "key", valid_589645
-  var valid_589646 = query.getOrDefault("prettyPrint")
-  valid_589646 = validateParameter(valid_589646, JBool, required = false,
+  if valid_579539 != nil:
+    section.add "key", valid_579539
+  var valid_579540 = query.getOrDefault("prettyPrint")
+  valid_579540 = validateParameter(valid_579540, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589646 != nil:
-    section.add "prettyPrint", valid_589646
+  if valid_579540 != nil:
+    section.add "prettyPrint", valid_579540
+  var valid_579541 = query.getOrDefault("oauth_token")
+  valid_579541 = validateParameter(valid_579541, JString, required = false,
+                                 default = nil)
+  if valid_579541 != nil:
+    section.add "oauth_token", valid_579541
+  var valid_579542 = query.getOrDefault("alt")
+  valid_579542 = validateParameter(valid_579542, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579542 != nil:
+    section.add "alt", valid_579542
+  var valid_579543 = query.getOrDefault("userIp")
+  valid_579543 = validateParameter(valid_579543, JString, required = false,
+                                 default = nil)
+  if valid_579543 != nil:
+    section.add "userIp", valid_579543
+  var valid_579544 = query.getOrDefault("quotaUser")
+  valid_579544 = validateParameter(valid_579544, JString, required = false,
+                                 default = nil)
+  if valid_579544 != nil:
+    section.add "quotaUser", valid_579544
+  var valid_579545 = query.getOrDefault("fields")
+  valid_579545 = validateParameter(valid_579545, JString, required = false,
+                                 default = nil)
+  if valid_579545 != nil:
+    section.add "fields", valid_579545
+  var valid_579546 = query.getOrDefault("language")
+  valid_579546 = validateParameter(valid_579546, JString, required = false,
+                                 default = nil)
+  if valid_579546 != nil:
+    section.add "language", valid_579546
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6310,68 +6312,68 @@ proc validate_GamesRoomsReportStatus_589636(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589648: Call_GamesRoomsReportStatus_589635; path: JsonNode;
+proc call*(call_579548: Call_GamesRoomsReportStatus_579535; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates sent by a client reporting the status of peers in a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
   ## 
-  let valid = call_589648.validator(path, query, header, formData, body)
-  let scheme = call_589648.pickScheme
+  let valid = call_579548.validator(path, query, header, formData, body)
+  let scheme = call_579548.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589648.url(scheme.get, call_589648.host, call_589648.base,
-                         call_589648.route, valid.getOrDefault("path"),
+  let url = call_579548.url(scheme.get, call_579548.host, call_579548.base,
+                         call_579548.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589648, url, valid)
+  result = hook(call_579548, url, valid)
 
-proc call*(call_589649: Call_GamesRoomsReportStatus_589635; roomId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579549: Call_GamesRoomsReportStatus_579535; roomId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""; language: string = ""): Recallable =
   ## gamesRoomsReportStatus
   ## Updates sent by a client reporting the status of peers in a room. For internal use by the Games SDK only. Calling this method directly is unsupported.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
   ##   roomId: string (required)
   ##         : The ID of the room.
-  var path_589650 = newJObject()
-  var query_589651 = newJObject()
-  var body_589652 = newJObject()
-  add(query_589651, "fields", newJString(fields))
-  add(query_589651, "quotaUser", newJString(quotaUser))
-  add(query_589651, "alt", newJString(alt))
-  add(query_589651, "language", newJString(language))
-  add(query_589651, "oauth_token", newJString(oauthToken))
-  add(query_589651, "userIp", newJString(userIp))
-  add(query_589651, "key", newJString(key))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579550 = newJObject()
+  var query_579551 = newJObject()
+  var body_579552 = newJObject()
+  add(query_579551, "key", newJString(key))
+  add(query_579551, "prettyPrint", newJBool(prettyPrint))
+  add(query_579551, "oauth_token", newJString(oauthToken))
+  add(query_579551, "alt", newJString(alt))
+  add(query_579551, "userIp", newJString(userIp))
+  add(query_579551, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589652 = body
-  add(query_589651, "prettyPrint", newJBool(prettyPrint))
-  add(path_589650, "roomId", newJString(roomId))
-  result = call_589649.call(path_589650, query_589651, nil, nil, body_589652)
+    body_579552 = body
+  add(path_579550, "roomId", newJString(roomId))
+  add(query_579551, "fields", newJString(fields))
+  add(query_579551, "language", newJString(language))
+  result = call_579549.call(path_579550, query_579551, nil, nil, body_579552)
 
-var gamesRoomsReportStatus* = Call_GamesRoomsReportStatus_589635(
+var gamesRoomsReportStatus* = Call_GamesRoomsReportStatus_579535(
     name: "gamesRoomsReportStatus", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/rooms/{roomId}/reportstatus",
-    validator: validate_GamesRoomsReportStatus_589636, base: "/games/v1",
-    url: url_GamesRoomsReportStatus_589637, schemes: {Scheme.Https})
+    validator: validate_GamesRoomsReportStatus_579536, base: "/games/v1",
+    url: url_GamesRoomsReportStatus_579537, schemes: {Scheme.Https})
 type
-  Call_GamesSnapshotsGet_589653 = ref object of OpenApiRestCall_588466
-proc url_GamesSnapshotsGet_589655(protocol: Scheme; host: string; base: string;
+  Call_GamesSnapshotsGet_579553 = ref object of OpenApiRestCall_578364
+proc url_GamesSnapshotsGet_579555(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6386,7 +6388,7 @@ proc url_GamesSnapshotsGet_589655(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesSnapshotsGet_589654(path: JsonNode; query: JsonNode;
+proc validate_GamesSnapshotsGet_579554(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Retrieves the metadata for a given snapshot ID.
@@ -6399,70 +6401,70 @@ proc validate_GamesSnapshotsGet_589654(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `snapshotId` field"
-  var valid_589656 = path.getOrDefault("snapshotId")
-  valid_589656 = validateParameter(valid_589656, JString, required = true,
+  var valid_579556 = path.getOrDefault("snapshotId")
+  valid_579556 = validateParameter(valid_579556, JString, required = true,
                                  default = nil)
-  if valid_589656 != nil:
-    section.add "snapshotId", valid_589656
+  if valid_579556 != nil:
+    section.add "snapshotId", valid_579556
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589657 = query.getOrDefault("fields")
-  valid_589657 = validateParameter(valid_589657, JString, required = false,
+  var valid_579557 = query.getOrDefault("key")
+  valid_579557 = validateParameter(valid_579557, JString, required = false,
                                  default = nil)
-  if valid_589657 != nil:
-    section.add "fields", valid_589657
-  var valid_589658 = query.getOrDefault("quotaUser")
-  valid_589658 = validateParameter(valid_589658, JString, required = false,
-                                 default = nil)
-  if valid_589658 != nil:
-    section.add "quotaUser", valid_589658
-  var valid_589659 = query.getOrDefault("alt")
-  valid_589659 = validateParameter(valid_589659, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589659 != nil:
-    section.add "alt", valid_589659
-  var valid_589660 = query.getOrDefault("language")
-  valid_589660 = validateParameter(valid_589660, JString, required = false,
-                                 default = nil)
-  if valid_589660 != nil:
-    section.add "language", valid_589660
-  var valid_589661 = query.getOrDefault("oauth_token")
-  valid_589661 = validateParameter(valid_589661, JString, required = false,
-                                 default = nil)
-  if valid_589661 != nil:
-    section.add "oauth_token", valid_589661
-  var valid_589662 = query.getOrDefault("userIp")
-  valid_589662 = validateParameter(valid_589662, JString, required = false,
-                                 default = nil)
-  if valid_589662 != nil:
-    section.add "userIp", valid_589662
-  var valid_589663 = query.getOrDefault("key")
-  valid_589663 = validateParameter(valid_589663, JString, required = false,
-                                 default = nil)
-  if valid_589663 != nil:
-    section.add "key", valid_589663
-  var valid_589664 = query.getOrDefault("prettyPrint")
-  valid_589664 = validateParameter(valid_589664, JBool, required = false,
+  if valid_579557 != nil:
+    section.add "key", valid_579557
+  var valid_579558 = query.getOrDefault("prettyPrint")
+  valid_579558 = validateParameter(valid_579558, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589664 != nil:
-    section.add "prettyPrint", valid_589664
+  if valid_579558 != nil:
+    section.add "prettyPrint", valid_579558
+  var valid_579559 = query.getOrDefault("oauth_token")
+  valid_579559 = validateParameter(valid_579559, JString, required = false,
+                                 default = nil)
+  if valid_579559 != nil:
+    section.add "oauth_token", valid_579559
+  var valid_579560 = query.getOrDefault("alt")
+  valid_579560 = validateParameter(valid_579560, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579560 != nil:
+    section.add "alt", valid_579560
+  var valid_579561 = query.getOrDefault("userIp")
+  valid_579561 = validateParameter(valid_579561, JString, required = false,
+                                 default = nil)
+  if valid_579561 != nil:
+    section.add "userIp", valid_579561
+  var valid_579562 = query.getOrDefault("quotaUser")
+  valid_579562 = validateParameter(valid_579562, JString, required = false,
+                                 default = nil)
+  if valid_579562 != nil:
+    section.add "quotaUser", valid_579562
+  var valid_579563 = query.getOrDefault("fields")
+  valid_579563 = validateParameter(valid_579563, JString, required = false,
+                                 default = nil)
+  if valid_579563 != nil:
+    section.add "fields", valid_579563
+  var valid_579564 = query.getOrDefault("language")
+  valid_579564 = validateParameter(valid_579564, JString, required = false,
+                                 default = nil)
+  if valid_579564 != nil:
+    section.add "language", valid_579564
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6471,70 +6473,70 @@ proc validate_GamesSnapshotsGet_589654(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589665: Call_GamesSnapshotsGet_589653; path: JsonNode;
+proc call*(call_579565: Call_GamesSnapshotsGet_579553; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the metadata for a given snapshot ID.
   ## 
-  let valid = call_589665.validator(path, query, header, formData, body)
-  let scheme = call_589665.pickScheme
+  let valid = call_579565.validator(path, query, header, formData, body)
+  let scheme = call_579565.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589665.url(scheme.get, call_589665.host, call_589665.base,
-                         call_589665.route, valid.getOrDefault("path"),
+  let url = call_579565.url(scheme.get, call_579565.host, call_579565.base,
+                         call_579565.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589665, url, valid)
+  result = hook(call_579565, url, valid)
 
-proc call*(call_589666: Call_GamesSnapshotsGet_589653; snapshotId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579566: Call_GamesSnapshotsGet_579553; snapshotId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""; language: string = ""): Recallable =
   ## gamesSnapshotsGet
   ## Retrieves the metadata for a given snapshot ID.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   snapshotId: string (required)
-  ##             : The ID of the snapshot.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589667 = newJObject()
-  var query_589668 = newJObject()
-  add(query_589668, "fields", newJString(fields))
-  add(query_589668, "quotaUser", newJString(quotaUser))
-  add(query_589668, "alt", newJString(alt))
-  add(query_589668, "language", newJString(language))
-  add(path_589667, "snapshotId", newJString(snapshotId))
-  add(query_589668, "oauth_token", newJString(oauthToken))
-  add(query_589668, "userIp", newJString(userIp))
-  add(query_589668, "key", newJString(key))
-  add(query_589668, "prettyPrint", newJBool(prettyPrint))
-  result = call_589666.call(path_589667, query_589668, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   snapshotId: string (required)
+  ##             : The ID of the snapshot.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579567 = newJObject()
+  var query_579568 = newJObject()
+  add(query_579568, "key", newJString(key))
+  add(query_579568, "prettyPrint", newJBool(prettyPrint))
+  add(query_579568, "oauth_token", newJString(oauthToken))
+  add(path_579567, "snapshotId", newJString(snapshotId))
+  add(query_579568, "alt", newJString(alt))
+  add(query_579568, "userIp", newJString(userIp))
+  add(query_579568, "quotaUser", newJString(quotaUser))
+  add(query_579568, "fields", newJString(fields))
+  add(query_579568, "language", newJString(language))
+  result = call_579566.call(path_579567, query_579568, nil, nil, nil)
 
-var gamesSnapshotsGet* = Call_GamesSnapshotsGet_589653(name: "gamesSnapshotsGet",
+var gamesSnapshotsGet* = Call_GamesSnapshotsGet_579553(name: "gamesSnapshotsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/snapshots/{snapshotId}", validator: validate_GamesSnapshotsGet_589654,
-    base: "/games/v1", url: url_GamesSnapshotsGet_589655, schemes: {Scheme.Https})
+    route: "/snapshots/{snapshotId}", validator: validate_GamesSnapshotsGet_579554,
+    base: "/games/v1", url: url_GamesSnapshotsGet_579555, schemes: {Scheme.Https})
 type
-  Call_GamesTurnBasedMatchesList_589669 = ref object of OpenApiRestCall_588466
-proc url_GamesTurnBasedMatchesList_589671(protocol: Scheme; host: string;
+  Call_GamesTurnBasedMatchesList_579569 = ref object of OpenApiRestCall_578364
+proc url_GamesTurnBasedMatchesList_579571(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesTurnBasedMatchesList_589670(path: JsonNode; query: JsonNode;
+proc validate_GamesTurnBasedMatchesList_579570(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns turn-based matches the player is or was involved in.
   ## 
@@ -6543,88 +6545,88 @@ proc validate_GamesTurnBasedMatchesList_589670(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   includeMatchData: JBool
-  ##                   : True if match data should be returned in the response. Note that not all data will necessarily be returned if include_match_data is true; the server may decide to only return data for some of the matches to limit download size for the client. The remainder of the data for these matches will be retrievable on request.
-  ##   maxCompletedMatches: JInt
-  ##                      : The maximum number of completed or canceled matches to return in the response. If not set, all matches returned could be completed or canceled.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of matches to return in the response, used for paging. For any response, the actual number of matches to return may be less than the specified maxResults.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   maxCompletedMatches: JInt
+  ##                      : The maximum number of completed or canceled matches to return in the response. If not set, all matches returned could be completed or canceled.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   includeMatchData: JBool
+  ##                   : True if match data should be returned in the response. Note that not all data will necessarily be returned if include_match_data is true; the server may decide to only return data for some of the matches to limit download size for the client. The remainder of the data for these matches will be retrievable on request.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of matches to return in the response, used for paging. For any response, the actual number of matches to return may be less than the specified maxResults.
   section = newJObject()
-  var valid_589672 = query.getOrDefault("fields")
-  valid_589672 = validateParameter(valid_589672, JString, required = false,
+  var valid_579572 = query.getOrDefault("key")
+  valid_579572 = validateParameter(valid_579572, JString, required = false,
                                  default = nil)
-  if valid_589672 != nil:
-    section.add "fields", valid_589672
-  var valid_589673 = query.getOrDefault("pageToken")
-  valid_589673 = validateParameter(valid_589673, JString, required = false,
-                                 default = nil)
-  if valid_589673 != nil:
-    section.add "pageToken", valid_589673
-  var valid_589674 = query.getOrDefault("quotaUser")
-  valid_589674 = validateParameter(valid_589674, JString, required = false,
-                                 default = nil)
-  if valid_589674 != nil:
-    section.add "quotaUser", valid_589674
-  var valid_589675 = query.getOrDefault("alt")
-  valid_589675 = validateParameter(valid_589675, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589675 != nil:
-    section.add "alt", valid_589675
-  var valid_589676 = query.getOrDefault("language")
-  valid_589676 = validateParameter(valid_589676, JString, required = false,
-                                 default = nil)
-  if valid_589676 != nil:
-    section.add "language", valid_589676
-  var valid_589677 = query.getOrDefault("includeMatchData")
-  valid_589677 = validateParameter(valid_589677, JBool, required = false, default = nil)
-  if valid_589677 != nil:
-    section.add "includeMatchData", valid_589677
-  var valid_589678 = query.getOrDefault("maxCompletedMatches")
-  valid_589678 = validateParameter(valid_589678, JInt, required = false, default = nil)
-  if valid_589678 != nil:
-    section.add "maxCompletedMatches", valid_589678
-  var valid_589679 = query.getOrDefault("oauth_token")
-  valid_589679 = validateParameter(valid_589679, JString, required = false,
-                                 default = nil)
-  if valid_589679 != nil:
-    section.add "oauth_token", valid_589679
-  var valid_589680 = query.getOrDefault("userIp")
-  valid_589680 = validateParameter(valid_589680, JString, required = false,
-                                 default = nil)
-  if valid_589680 != nil:
-    section.add "userIp", valid_589680
-  var valid_589681 = query.getOrDefault("maxResults")
-  valid_589681 = validateParameter(valid_589681, JInt, required = false, default = nil)
-  if valid_589681 != nil:
-    section.add "maxResults", valid_589681
-  var valid_589682 = query.getOrDefault("key")
-  valid_589682 = validateParameter(valid_589682, JString, required = false,
-                                 default = nil)
-  if valid_589682 != nil:
-    section.add "key", valid_589682
-  var valid_589683 = query.getOrDefault("prettyPrint")
-  valid_589683 = validateParameter(valid_589683, JBool, required = false,
+  if valid_579572 != nil:
+    section.add "key", valid_579572
+  var valid_579573 = query.getOrDefault("maxCompletedMatches")
+  valid_579573 = validateParameter(valid_579573, JInt, required = false, default = nil)
+  if valid_579573 != nil:
+    section.add "maxCompletedMatches", valid_579573
+  var valid_579574 = query.getOrDefault("prettyPrint")
+  valid_579574 = validateParameter(valid_579574, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589683 != nil:
-    section.add "prettyPrint", valid_589683
+  if valid_579574 != nil:
+    section.add "prettyPrint", valid_579574
+  var valid_579575 = query.getOrDefault("oauth_token")
+  valid_579575 = validateParameter(valid_579575, JString, required = false,
+                                 default = nil)
+  if valid_579575 != nil:
+    section.add "oauth_token", valid_579575
+  var valid_579576 = query.getOrDefault("includeMatchData")
+  valid_579576 = validateParameter(valid_579576, JBool, required = false, default = nil)
+  if valid_579576 != nil:
+    section.add "includeMatchData", valid_579576
+  var valid_579577 = query.getOrDefault("alt")
+  valid_579577 = validateParameter(valid_579577, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579577 != nil:
+    section.add "alt", valid_579577
+  var valid_579578 = query.getOrDefault("userIp")
+  valid_579578 = validateParameter(valid_579578, JString, required = false,
+                                 default = nil)
+  if valid_579578 != nil:
+    section.add "userIp", valid_579578
+  var valid_579579 = query.getOrDefault("quotaUser")
+  valid_579579 = validateParameter(valid_579579, JString, required = false,
+                                 default = nil)
+  if valid_579579 != nil:
+    section.add "quotaUser", valid_579579
+  var valid_579580 = query.getOrDefault("pageToken")
+  valid_579580 = validateParameter(valid_579580, JString, required = false,
+                                 default = nil)
+  if valid_579580 != nil:
+    section.add "pageToken", valid_579580
+  var valid_579581 = query.getOrDefault("fields")
+  valid_579581 = validateParameter(valid_579581, JString, required = false,
+                                 default = nil)
+  if valid_579581 != nil:
+    section.add "fields", valid_579581
+  var valid_579582 = query.getOrDefault("language")
+  valid_579582 = validateParameter(valid_579582, JString, required = false,
+                                 default = nil)
+  if valid_579582 != nil:
+    section.add "language", valid_579582
+  var valid_579583 = query.getOrDefault("maxResults")
+  valid_579583 = validateParameter(valid_579583, JInt, required = false, default = nil)
+  if valid_579583 != nil:
+    section.add "maxResults", valid_579583
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6633,80 +6635,80 @@ proc validate_GamesTurnBasedMatchesList_589670(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589684: Call_GamesTurnBasedMatchesList_589669; path: JsonNode;
+proc call*(call_579584: Call_GamesTurnBasedMatchesList_579569; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns turn-based matches the player is or was involved in.
   ## 
-  let valid = call_589684.validator(path, query, header, formData, body)
-  let scheme = call_589684.pickScheme
+  let valid = call_579584.validator(path, query, header, formData, body)
+  let scheme = call_579584.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589684.url(scheme.get, call_589684.host, call_589684.base,
-                         call_589684.route, valid.getOrDefault("path"),
+  let url = call_579584.url(scheme.get, call_579584.host, call_579584.base,
+                         call_579584.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589684, url, valid)
+  result = hook(call_579584, url, valid)
 
-proc call*(call_589685: Call_GamesTurnBasedMatchesList_589669; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; includeMatchData: bool = false;
-          maxCompletedMatches: int = 0; oauthToken: string = ""; userIp: string = "";
-          maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579585: Call_GamesTurnBasedMatchesList_579569; key: string = "";
+          maxCompletedMatches: int = 0; prettyPrint: bool = true;
+          oauthToken: string = ""; includeMatchData: bool = false; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
+          fields: string = ""; language: string = ""; maxResults: int = 0): Recallable =
   ## gamesTurnBasedMatchesList
   ## Returns turn-based matches the player is or was involved in.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   includeMatchData: bool
-  ##                   : True if match data should be returned in the response. Note that not all data will necessarily be returned if include_match_data is true; the server may decide to only return data for some of the matches to limit download size for the client. The remainder of the data for these matches will be retrievable on request.
-  ##   maxCompletedMatches: int
-  ##                      : The maximum number of completed or canceled matches to return in the response. If not set, all matches returned could be completed or canceled.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of matches to return in the response, used for paging. For any response, the actual number of matches to return may be less than the specified maxResults.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   maxCompletedMatches: int
+  ##                      : The maximum number of completed or canceled matches to return in the response. If not set, all matches returned could be completed or canceled.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589686 = newJObject()
-  add(query_589686, "fields", newJString(fields))
-  add(query_589686, "pageToken", newJString(pageToken))
-  add(query_589686, "quotaUser", newJString(quotaUser))
-  add(query_589686, "alt", newJString(alt))
-  add(query_589686, "language", newJString(language))
-  add(query_589686, "includeMatchData", newJBool(includeMatchData))
-  add(query_589686, "maxCompletedMatches", newJInt(maxCompletedMatches))
-  add(query_589686, "oauth_token", newJString(oauthToken))
-  add(query_589686, "userIp", newJString(userIp))
-  add(query_589686, "maxResults", newJInt(maxResults))
-  add(query_589686, "key", newJString(key))
-  add(query_589686, "prettyPrint", newJBool(prettyPrint))
-  result = call_589685.call(nil, query_589686, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   includeMatchData: bool
+  ##                   : True if match data should be returned in the response. Note that not all data will necessarily be returned if include_match_data is true; the server may decide to only return data for some of the matches to limit download size for the client. The remainder of the data for these matches will be retrievable on request.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: int
+  ##             : The maximum number of matches to return in the response, used for paging. For any response, the actual number of matches to return may be less than the specified maxResults.
+  var query_579586 = newJObject()
+  add(query_579586, "key", newJString(key))
+  add(query_579586, "maxCompletedMatches", newJInt(maxCompletedMatches))
+  add(query_579586, "prettyPrint", newJBool(prettyPrint))
+  add(query_579586, "oauth_token", newJString(oauthToken))
+  add(query_579586, "includeMatchData", newJBool(includeMatchData))
+  add(query_579586, "alt", newJString(alt))
+  add(query_579586, "userIp", newJString(userIp))
+  add(query_579586, "quotaUser", newJString(quotaUser))
+  add(query_579586, "pageToken", newJString(pageToken))
+  add(query_579586, "fields", newJString(fields))
+  add(query_579586, "language", newJString(language))
+  add(query_579586, "maxResults", newJInt(maxResults))
+  result = call_579585.call(nil, query_579586, nil, nil, nil)
 
-var gamesTurnBasedMatchesList* = Call_GamesTurnBasedMatchesList_589669(
+var gamesTurnBasedMatchesList* = Call_GamesTurnBasedMatchesList_579569(
     name: "gamesTurnBasedMatchesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/turnbasedmatches",
-    validator: validate_GamesTurnBasedMatchesList_589670, base: "/games/v1",
-    url: url_GamesTurnBasedMatchesList_589671, schemes: {Scheme.Https})
+    validator: validate_GamesTurnBasedMatchesList_579570, base: "/games/v1",
+    url: url_GamesTurnBasedMatchesList_579571, schemes: {Scheme.Https})
 type
-  Call_GamesTurnBasedMatchesCreate_589687 = ref object of OpenApiRestCall_588466
-proc url_GamesTurnBasedMatchesCreate_589689(protocol: Scheme; host: string;
+  Call_GamesTurnBasedMatchesCreate_579587 = ref object of OpenApiRestCall_578364
+proc url_GamesTurnBasedMatchesCreate_579589(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesTurnBasedMatchesCreate_589688(path: JsonNode; query: JsonNode;
+proc validate_GamesTurnBasedMatchesCreate_579588(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Create a turn-based match.
   ## 
@@ -6715,63 +6717,63 @@ proc validate_GamesTurnBasedMatchesCreate_589688(path: JsonNode; query: JsonNode
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589690 = query.getOrDefault("fields")
-  valid_589690 = validateParameter(valid_589690, JString, required = false,
+  var valid_579590 = query.getOrDefault("key")
+  valid_579590 = validateParameter(valid_579590, JString, required = false,
                                  default = nil)
-  if valid_589690 != nil:
-    section.add "fields", valid_589690
-  var valid_589691 = query.getOrDefault("quotaUser")
-  valid_589691 = validateParameter(valid_589691, JString, required = false,
-                                 default = nil)
-  if valid_589691 != nil:
-    section.add "quotaUser", valid_589691
-  var valid_589692 = query.getOrDefault("alt")
-  valid_589692 = validateParameter(valid_589692, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589692 != nil:
-    section.add "alt", valid_589692
-  var valid_589693 = query.getOrDefault("language")
-  valid_589693 = validateParameter(valid_589693, JString, required = false,
-                                 default = nil)
-  if valid_589693 != nil:
-    section.add "language", valid_589693
-  var valid_589694 = query.getOrDefault("oauth_token")
-  valid_589694 = validateParameter(valid_589694, JString, required = false,
-                                 default = nil)
-  if valid_589694 != nil:
-    section.add "oauth_token", valid_589694
-  var valid_589695 = query.getOrDefault("userIp")
-  valid_589695 = validateParameter(valid_589695, JString, required = false,
-                                 default = nil)
-  if valid_589695 != nil:
-    section.add "userIp", valid_589695
-  var valid_589696 = query.getOrDefault("key")
-  valid_589696 = validateParameter(valid_589696, JString, required = false,
-                                 default = nil)
-  if valid_589696 != nil:
-    section.add "key", valid_589696
-  var valid_589697 = query.getOrDefault("prettyPrint")
-  valid_589697 = validateParameter(valid_589697, JBool, required = false,
+  if valid_579590 != nil:
+    section.add "key", valid_579590
+  var valid_579591 = query.getOrDefault("prettyPrint")
+  valid_579591 = validateParameter(valid_579591, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589697 != nil:
-    section.add "prettyPrint", valid_589697
+  if valid_579591 != nil:
+    section.add "prettyPrint", valid_579591
+  var valid_579592 = query.getOrDefault("oauth_token")
+  valid_579592 = validateParameter(valid_579592, JString, required = false,
+                                 default = nil)
+  if valid_579592 != nil:
+    section.add "oauth_token", valid_579592
+  var valid_579593 = query.getOrDefault("alt")
+  valid_579593 = validateParameter(valid_579593, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579593 != nil:
+    section.add "alt", valid_579593
+  var valid_579594 = query.getOrDefault("userIp")
+  valid_579594 = validateParameter(valid_579594, JString, required = false,
+                                 default = nil)
+  if valid_579594 != nil:
+    section.add "userIp", valid_579594
+  var valid_579595 = query.getOrDefault("quotaUser")
+  valid_579595 = validateParameter(valid_579595, JString, required = false,
+                                 default = nil)
+  if valid_579595 != nil:
+    section.add "quotaUser", valid_579595
+  var valid_579596 = query.getOrDefault("fields")
+  valid_579596 = validateParameter(valid_579596, JString, required = false,
+                                 default = nil)
+  if valid_579596 != nil:
+    section.add "fields", valid_579596
+  var valid_579597 = query.getOrDefault("language")
+  valid_579597 = validateParameter(valid_579597, JString, required = false,
+                                 default = nil)
+  if valid_579597 != nil:
+    section.add "language", valid_579597
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6783,71 +6785,71 @@ proc validate_GamesTurnBasedMatchesCreate_589688(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_589699: Call_GamesTurnBasedMatchesCreate_589687; path: JsonNode;
+proc call*(call_579599: Call_GamesTurnBasedMatchesCreate_579587; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Create a turn-based match.
   ## 
-  let valid = call_589699.validator(path, query, header, formData, body)
-  let scheme = call_589699.pickScheme
+  let valid = call_579599.validator(path, query, header, formData, body)
+  let scheme = call_579599.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589699.url(scheme.get, call_589699.host, call_589699.base,
-                         call_589699.route, valid.getOrDefault("path"),
+  let url = call_579599.url(scheme.get, call_579599.host, call_579599.base,
+                         call_579599.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589699, url, valid)
+  result = hook(call_579599, url, valid)
 
-proc call*(call_589700: Call_GamesTurnBasedMatchesCreate_589687;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579600: Call_GamesTurnBasedMatchesCreate_579587; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""; language: string = ""): Recallable =
   ## gamesTurnBasedMatchesCreate
   ## Create a turn-based match.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589701 = newJObject()
-  var body_589702 = newJObject()
-  add(query_589701, "fields", newJString(fields))
-  add(query_589701, "quotaUser", newJString(quotaUser))
-  add(query_589701, "alt", newJString(alt))
-  add(query_589701, "language", newJString(language))
-  add(query_589701, "oauth_token", newJString(oauthToken))
-  add(query_589701, "userIp", newJString(userIp))
-  add(query_589701, "key", newJString(key))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var query_579601 = newJObject()
+  var body_579602 = newJObject()
+  add(query_579601, "key", newJString(key))
+  add(query_579601, "prettyPrint", newJBool(prettyPrint))
+  add(query_579601, "oauth_token", newJString(oauthToken))
+  add(query_579601, "alt", newJString(alt))
+  add(query_579601, "userIp", newJString(userIp))
+  add(query_579601, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589702 = body
-  add(query_589701, "prettyPrint", newJBool(prettyPrint))
-  result = call_589700.call(nil, query_589701, nil, nil, body_589702)
+    body_579602 = body
+  add(query_579601, "fields", newJString(fields))
+  add(query_579601, "language", newJString(language))
+  result = call_579600.call(nil, query_579601, nil, nil, body_579602)
 
-var gamesTurnBasedMatchesCreate* = Call_GamesTurnBasedMatchesCreate_589687(
+var gamesTurnBasedMatchesCreate* = Call_GamesTurnBasedMatchesCreate_579587(
     name: "gamesTurnBasedMatchesCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/turnbasedmatches/create",
-    validator: validate_GamesTurnBasedMatchesCreate_589688, base: "/games/v1",
-    url: url_GamesTurnBasedMatchesCreate_589689, schemes: {Scheme.Https})
+    validator: validate_GamesTurnBasedMatchesCreate_579588, base: "/games/v1",
+    url: url_GamesTurnBasedMatchesCreate_579589, schemes: {Scheme.Https})
 type
-  Call_GamesTurnBasedMatchesSync_589703 = ref object of OpenApiRestCall_588466
-proc url_GamesTurnBasedMatchesSync_589705(protocol: Scheme; host: string;
+  Call_GamesTurnBasedMatchesSync_579603 = ref object of OpenApiRestCall_578364
+proc url_GamesTurnBasedMatchesSync_579605(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
   result.path = base & route
 
-proc validate_GamesTurnBasedMatchesSync_589704(path: JsonNode; query: JsonNode;
+proc validate_GamesTurnBasedMatchesSync_579604(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns turn-based matches the player is or was involved in that changed since the last sync call, with the least recent changes coming first. Matches that should be removed from the local cache will have a status of MATCH_DELETED.
   ## 
@@ -6856,88 +6858,88 @@ proc validate_GamesTurnBasedMatchesSync_589704(path: JsonNode; query: JsonNode;
   section = newJObject()
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : The token returned by the previous request.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   includeMatchData: JBool
-  ##                   : True if match data should be returned in the response. Note that not all data will necessarily be returned if include_match_data is true; the server may decide to only return data for some of the matches to limit download size for the client. The remainder of the data for these matches will be retrievable on request.
-  ##   maxCompletedMatches: JInt
-  ##                      : The maximum number of completed or canceled matches to return in the response. If not set, all matches returned could be completed or canceled.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : The maximum number of matches to return in the response, used for paging. For any response, the actual number of matches to return may be less than the specified maxResults.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   maxCompletedMatches: JInt
+  ##                      : The maximum number of completed or canceled matches to return in the response. If not set, all matches returned could be completed or canceled.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   includeMatchData: JBool
+  ##                   : True if match data should be returned in the response. Note that not all data will necessarily be returned if include_match_data is true; the server may decide to only return data for some of the matches to limit download size for the client. The remainder of the data for these matches will be retrievable on request.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : The token returned by the previous request.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: JInt
+  ##             : The maximum number of matches to return in the response, used for paging. For any response, the actual number of matches to return may be less than the specified maxResults.
   section = newJObject()
-  var valid_589706 = query.getOrDefault("fields")
-  valid_589706 = validateParameter(valid_589706, JString, required = false,
+  var valid_579606 = query.getOrDefault("key")
+  valid_579606 = validateParameter(valid_579606, JString, required = false,
                                  default = nil)
-  if valid_589706 != nil:
-    section.add "fields", valid_589706
-  var valid_589707 = query.getOrDefault("pageToken")
-  valid_589707 = validateParameter(valid_589707, JString, required = false,
-                                 default = nil)
-  if valid_589707 != nil:
-    section.add "pageToken", valid_589707
-  var valid_589708 = query.getOrDefault("quotaUser")
-  valid_589708 = validateParameter(valid_589708, JString, required = false,
-                                 default = nil)
-  if valid_589708 != nil:
-    section.add "quotaUser", valid_589708
-  var valid_589709 = query.getOrDefault("alt")
-  valid_589709 = validateParameter(valid_589709, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589709 != nil:
-    section.add "alt", valid_589709
-  var valid_589710 = query.getOrDefault("language")
-  valid_589710 = validateParameter(valid_589710, JString, required = false,
-                                 default = nil)
-  if valid_589710 != nil:
-    section.add "language", valid_589710
-  var valid_589711 = query.getOrDefault("includeMatchData")
-  valid_589711 = validateParameter(valid_589711, JBool, required = false, default = nil)
-  if valid_589711 != nil:
-    section.add "includeMatchData", valid_589711
-  var valid_589712 = query.getOrDefault("maxCompletedMatches")
-  valid_589712 = validateParameter(valid_589712, JInt, required = false, default = nil)
-  if valid_589712 != nil:
-    section.add "maxCompletedMatches", valid_589712
-  var valid_589713 = query.getOrDefault("oauth_token")
-  valid_589713 = validateParameter(valid_589713, JString, required = false,
-                                 default = nil)
-  if valid_589713 != nil:
-    section.add "oauth_token", valid_589713
-  var valid_589714 = query.getOrDefault("userIp")
-  valid_589714 = validateParameter(valid_589714, JString, required = false,
-                                 default = nil)
-  if valid_589714 != nil:
-    section.add "userIp", valid_589714
-  var valid_589715 = query.getOrDefault("maxResults")
-  valid_589715 = validateParameter(valid_589715, JInt, required = false, default = nil)
-  if valid_589715 != nil:
-    section.add "maxResults", valid_589715
-  var valid_589716 = query.getOrDefault("key")
-  valid_589716 = validateParameter(valid_589716, JString, required = false,
-                                 default = nil)
-  if valid_589716 != nil:
-    section.add "key", valid_589716
-  var valid_589717 = query.getOrDefault("prettyPrint")
-  valid_589717 = validateParameter(valid_589717, JBool, required = false,
+  if valid_579606 != nil:
+    section.add "key", valid_579606
+  var valid_579607 = query.getOrDefault("maxCompletedMatches")
+  valid_579607 = validateParameter(valid_579607, JInt, required = false, default = nil)
+  if valid_579607 != nil:
+    section.add "maxCompletedMatches", valid_579607
+  var valid_579608 = query.getOrDefault("prettyPrint")
+  valid_579608 = validateParameter(valid_579608, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589717 != nil:
-    section.add "prettyPrint", valid_589717
+  if valid_579608 != nil:
+    section.add "prettyPrint", valid_579608
+  var valid_579609 = query.getOrDefault("oauth_token")
+  valid_579609 = validateParameter(valid_579609, JString, required = false,
+                                 default = nil)
+  if valid_579609 != nil:
+    section.add "oauth_token", valid_579609
+  var valid_579610 = query.getOrDefault("includeMatchData")
+  valid_579610 = validateParameter(valid_579610, JBool, required = false, default = nil)
+  if valid_579610 != nil:
+    section.add "includeMatchData", valid_579610
+  var valid_579611 = query.getOrDefault("alt")
+  valid_579611 = validateParameter(valid_579611, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579611 != nil:
+    section.add "alt", valid_579611
+  var valid_579612 = query.getOrDefault("userIp")
+  valid_579612 = validateParameter(valid_579612, JString, required = false,
+                                 default = nil)
+  if valid_579612 != nil:
+    section.add "userIp", valid_579612
+  var valid_579613 = query.getOrDefault("quotaUser")
+  valid_579613 = validateParameter(valid_579613, JString, required = false,
+                                 default = nil)
+  if valid_579613 != nil:
+    section.add "quotaUser", valid_579613
+  var valid_579614 = query.getOrDefault("pageToken")
+  valid_579614 = validateParameter(valid_579614, JString, required = false,
+                                 default = nil)
+  if valid_579614 != nil:
+    section.add "pageToken", valid_579614
+  var valid_579615 = query.getOrDefault("fields")
+  valid_579615 = validateParameter(valid_579615, JString, required = false,
+                                 default = nil)
+  if valid_579615 != nil:
+    section.add "fields", valid_579615
+  var valid_579616 = query.getOrDefault("language")
+  valid_579616 = validateParameter(valid_579616, JString, required = false,
+                                 default = nil)
+  if valid_579616 != nil:
+    section.add "language", valid_579616
+  var valid_579617 = query.getOrDefault("maxResults")
+  valid_579617 = validateParameter(valid_579617, JInt, required = false, default = nil)
+  if valid_579617 != nil:
+    section.add "maxResults", valid_579617
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6946,73 +6948,73 @@ proc validate_GamesTurnBasedMatchesSync_589704(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589718: Call_GamesTurnBasedMatchesSync_589703; path: JsonNode;
+proc call*(call_579618: Call_GamesTurnBasedMatchesSync_579603; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns turn-based matches the player is or was involved in that changed since the last sync call, with the least recent changes coming first. Matches that should be removed from the local cache will have a status of MATCH_DELETED.
   ## 
-  let valid = call_589718.validator(path, query, header, formData, body)
-  let scheme = call_589718.pickScheme
+  let valid = call_579618.validator(path, query, header, formData, body)
+  let scheme = call_579618.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589718.url(scheme.get, call_589718.host, call_589718.base,
-                         call_589718.route, valid.getOrDefault("path"),
+  let url = call_579618.url(scheme.get, call_579618.host, call_579618.base,
+                         call_579618.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589718, url, valid)
+  result = hook(call_579618, url, valid)
 
-proc call*(call_589719: Call_GamesTurnBasedMatchesSync_589703; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; includeMatchData: bool = false;
-          maxCompletedMatches: int = 0; oauthToken: string = ""; userIp: string = "";
-          maxResults: int = 0; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579619: Call_GamesTurnBasedMatchesSync_579603; key: string = "";
+          maxCompletedMatches: int = 0; prettyPrint: bool = true;
+          oauthToken: string = ""; includeMatchData: bool = false; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
+          fields: string = ""; language: string = ""; maxResults: int = 0): Recallable =
   ## gamesTurnBasedMatchesSync
   ## Returns turn-based matches the player is or was involved in that changed since the last sync call, with the least recent changes coming first. Matches that should be removed from the local cache will have a status of MATCH_DELETED.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : The token returned by the previous request.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   includeMatchData: bool
-  ##                   : True if match data should be returned in the response. Note that not all data will necessarily be returned if include_match_data is true; the server may decide to only return data for some of the matches to limit download size for the client. The remainder of the data for these matches will be retrievable on request.
-  ##   maxCompletedMatches: int
-  ##                      : The maximum number of completed or canceled matches to return in the response. If not set, all matches returned could be completed or canceled.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : The maximum number of matches to return in the response, used for paging. For any response, the actual number of matches to return may be less than the specified maxResults.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   maxCompletedMatches: int
+  ##                      : The maximum number of completed or canceled matches to return in the response. If not set, all matches returned could be completed or canceled.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var query_589720 = newJObject()
-  add(query_589720, "fields", newJString(fields))
-  add(query_589720, "pageToken", newJString(pageToken))
-  add(query_589720, "quotaUser", newJString(quotaUser))
-  add(query_589720, "alt", newJString(alt))
-  add(query_589720, "language", newJString(language))
-  add(query_589720, "includeMatchData", newJBool(includeMatchData))
-  add(query_589720, "maxCompletedMatches", newJInt(maxCompletedMatches))
-  add(query_589720, "oauth_token", newJString(oauthToken))
-  add(query_589720, "userIp", newJString(userIp))
-  add(query_589720, "maxResults", newJInt(maxResults))
-  add(query_589720, "key", newJString(key))
-  add(query_589720, "prettyPrint", newJBool(prettyPrint))
-  result = call_589719.call(nil, query_589720, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   includeMatchData: bool
+  ##                   : True if match data should be returned in the response. Note that not all data will necessarily be returned if include_match_data is true; the server may decide to only return data for some of the matches to limit download size for the client. The remainder of the data for these matches will be retrievable on request.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : The token returned by the previous request.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  ##   maxResults: int
+  ##             : The maximum number of matches to return in the response, used for paging. For any response, the actual number of matches to return may be less than the specified maxResults.
+  var query_579620 = newJObject()
+  add(query_579620, "key", newJString(key))
+  add(query_579620, "maxCompletedMatches", newJInt(maxCompletedMatches))
+  add(query_579620, "prettyPrint", newJBool(prettyPrint))
+  add(query_579620, "oauth_token", newJString(oauthToken))
+  add(query_579620, "includeMatchData", newJBool(includeMatchData))
+  add(query_579620, "alt", newJString(alt))
+  add(query_579620, "userIp", newJString(userIp))
+  add(query_579620, "quotaUser", newJString(quotaUser))
+  add(query_579620, "pageToken", newJString(pageToken))
+  add(query_579620, "fields", newJString(fields))
+  add(query_579620, "language", newJString(language))
+  add(query_579620, "maxResults", newJInt(maxResults))
+  result = call_579619.call(nil, query_579620, nil, nil, nil)
 
-var gamesTurnBasedMatchesSync* = Call_GamesTurnBasedMatchesSync_589703(
+var gamesTurnBasedMatchesSync* = Call_GamesTurnBasedMatchesSync_579603(
     name: "gamesTurnBasedMatchesSync", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/turnbasedmatches/sync",
-    validator: validate_GamesTurnBasedMatchesSync_589704, base: "/games/v1",
-    url: url_GamesTurnBasedMatchesSync_589705, schemes: {Scheme.Https})
+    validator: validate_GamesTurnBasedMatchesSync_579604, base: "/games/v1",
+    url: url_GamesTurnBasedMatchesSync_579605, schemes: {Scheme.Https})
 type
-  Call_GamesTurnBasedMatchesGet_589721 = ref object of OpenApiRestCall_588466
-proc url_GamesTurnBasedMatchesGet_589723(protocol: Scheme; host: string;
+  Call_GamesTurnBasedMatchesGet_579621 = ref object of OpenApiRestCall_578364
+proc url_GamesTurnBasedMatchesGet_579623(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -7028,7 +7030,7 @@ proc url_GamesTurnBasedMatchesGet_589723(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesTurnBasedMatchesGet_589722(path: JsonNode; query: JsonNode;
+proc validate_GamesTurnBasedMatchesGet_579622(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get the data for a turn-based match.
   ## 
@@ -7039,76 +7041,76 @@ proc validate_GamesTurnBasedMatchesGet_589722(path: JsonNode; query: JsonNode;
   ##          : The ID of the match.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `matchId` field"
-  var valid_589724 = path.getOrDefault("matchId")
-  valid_589724 = validateParameter(valid_589724, JString, required = true,
+  var valid_579624 = path.getOrDefault("matchId")
+  valid_579624 = validateParameter(valid_579624, JString, required = true,
                                  default = nil)
-  if valid_589724 != nil:
-    section.add "matchId", valid_589724
+  if valid_579624 != nil:
+    section.add "matchId", valid_579624
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   includeMatchData: JBool
-  ##                   : Get match data along with metadata.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   includeMatchData: JBool
+  ##                   : Get match data along with metadata.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589725 = query.getOrDefault("fields")
-  valid_589725 = validateParameter(valid_589725, JString, required = false,
+  var valid_579625 = query.getOrDefault("key")
+  valid_579625 = validateParameter(valid_579625, JString, required = false,
                                  default = nil)
-  if valid_589725 != nil:
-    section.add "fields", valid_589725
-  var valid_589726 = query.getOrDefault("quotaUser")
-  valid_589726 = validateParameter(valid_589726, JString, required = false,
-                                 default = nil)
-  if valid_589726 != nil:
-    section.add "quotaUser", valid_589726
-  var valid_589727 = query.getOrDefault("alt")
-  valid_589727 = validateParameter(valid_589727, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589727 != nil:
-    section.add "alt", valid_589727
-  var valid_589728 = query.getOrDefault("language")
-  valid_589728 = validateParameter(valid_589728, JString, required = false,
-                                 default = nil)
-  if valid_589728 != nil:
-    section.add "language", valid_589728
-  var valid_589729 = query.getOrDefault("includeMatchData")
-  valid_589729 = validateParameter(valid_589729, JBool, required = false, default = nil)
-  if valid_589729 != nil:
-    section.add "includeMatchData", valid_589729
-  var valid_589730 = query.getOrDefault("oauth_token")
-  valid_589730 = validateParameter(valid_589730, JString, required = false,
-                                 default = nil)
-  if valid_589730 != nil:
-    section.add "oauth_token", valid_589730
-  var valid_589731 = query.getOrDefault("userIp")
-  valid_589731 = validateParameter(valid_589731, JString, required = false,
-                                 default = nil)
-  if valid_589731 != nil:
-    section.add "userIp", valid_589731
-  var valid_589732 = query.getOrDefault("key")
-  valid_589732 = validateParameter(valid_589732, JString, required = false,
-                                 default = nil)
-  if valid_589732 != nil:
-    section.add "key", valid_589732
-  var valid_589733 = query.getOrDefault("prettyPrint")
-  valid_589733 = validateParameter(valid_589733, JBool, required = false,
+  if valid_579625 != nil:
+    section.add "key", valid_579625
+  var valid_579626 = query.getOrDefault("prettyPrint")
+  valid_579626 = validateParameter(valid_579626, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589733 != nil:
-    section.add "prettyPrint", valid_589733
+  if valid_579626 != nil:
+    section.add "prettyPrint", valid_579626
+  var valid_579627 = query.getOrDefault("oauth_token")
+  valid_579627 = validateParameter(valid_579627, JString, required = false,
+                                 default = nil)
+  if valid_579627 != nil:
+    section.add "oauth_token", valid_579627
+  var valid_579628 = query.getOrDefault("includeMatchData")
+  valid_579628 = validateParameter(valid_579628, JBool, required = false, default = nil)
+  if valid_579628 != nil:
+    section.add "includeMatchData", valid_579628
+  var valid_579629 = query.getOrDefault("alt")
+  valid_579629 = validateParameter(valid_579629, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579629 != nil:
+    section.add "alt", valid_579629
+  var valid_579630 = query.getOrDefault("userIp")
+  valid_579630 = validateParameter(valid_579630, JString, required = false,
+                                 default = nil)
+  if valid_579630 != nil:
+    section.add "userIp", valid_579630
+  var valid_579631 = query.getOrDefault("quotaUser")
+  valid_579631 = validateParameter(valid_579631, JString, required = false,
+                                 default = nil)
+  if valid_579631 != nil:
+    section.add "quotaUser", valid_579631
+  var valid_579632 = query.getOrDefault("fields")
+  valid_579632 = validateParameter(valid_579632, JString, required = false,
+                                 default = nil)
+  if valid_579632 != nil:
+    section.add "fields", valid_579632
+  var valid_579633 = query.getOrDefault("language")
+  valid_579633 = validateParameter(valid_579633, JString, required = false,
+                                 default = nil)
+  if valid_579633 != nil:
+    section.add "language", valid_579633
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7117,68 +7119,67 @@ proc validate_GamesTurnBasedMatchesGet_589722(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589734: Call_GamesTurnBasedMatchesGet_589721; path: JsonNode;
+proc call*(call_579634: Call_GamesTurnBasedMatchesGet_579621; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get the data for a turn-based match.
   ## 
-  let valid = call_589734.validator(path, query, header, formData, body)
-  let scheme = call_589734.pickScheme
+  let valid = call_579634.validator(path, query, header, formData, body)
+  let scheme = call_579634.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589734.url(scheme.get, call_589734.host, call_589734.base,
-                         call_589734.route, valid.getOrDefault("path"),
+  let url = call_579634.url(scheme.get, call_579634.host, call_579634.base,
+                         call_579634.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589734, url, valid)
+  result = hook(call_579634, url, valid)
 
-proc call*(call_589735: Call_GamesTurnBasedMatchesGet_589721; matchId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; includeMatchData: bool = false;
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579635: Call_GamesTurnBasedMatchesGet_579621; matchId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          includeMatchData: bool = false; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; fields: string = ""; language: string = ""): Recallable =
   ## gamesTurnBasedMatchesGet
   ## Get the data for a turn-based match.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   includeMatchData: bool
-  ##                   : Get match data along with metadata.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   matchId: string (required)
-  ##          : The ID of the match.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589736 = newJObject()
-  var query_589737 = newJObject()
-  add(query_589737, "fields", newJString(fields))
-  add(query_589737, "quotaUser", newJString(quotaUser))
-  add(query_589737, "alt", newJString(alt))
-  add(query_589737, "language", newJString(language))
-  add(query_589737, "includeMatchData", newJBool(includeMatchData))
-  add(query_589737, "oauth_token", newJString(oauthToken))
-  add(query_589737, "userIp", newJString(userIp))
-  add(query_589737, "key", newJString(key))
-  add(path_589736, "matchId", newJString(matchId))
-  add(query_589737, "prettyPrint", newJBool(prettyPrint))
-  result = call_589735.call(path_589736, query_589737, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   includeMatchData: bool
+  ##                   : Get match data along with metadata.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   matchId: string (required)
+  ##          : The ID of the match.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579636 = newJObject()
+  var query_579637 = newJObject()
+  add(query_579637, "key", newJString(key))
+  add(query_579637, "prettyPrint", newJBool(prettyPrint))
+  add(query_579637, "oauth_token", newJString(oauthToken))
+  add(query_579637, "includeMatchData", newJBool(includeMatchData))
+  add(query_579637, "alt", newJString(alt))
+  add(query_579637, "userIp", newJString(userIp))
+  add(query_579637, "quotaUser", newJString(quotaUser))
+  add(query_579637, "fields", newJString(fields))
+  add(path_579636, "matchId", newJString(matchId))
+  add(query_579637, "language", newJString(language))
+  result = call_579635.call(path_579636, query_579637, nil, nil, nil)
 
-var gamesTurnBasedMatchesGet* = Call_GamesTurnBasedMatchesGet_589721(
+var gamesTurnBasedMatchesGet* = Call_GamesTurnBasedMatchesGet_579621(
     name: "gamesTurnBasedMatchesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/turnbasedmatches/{matchId}",
-    validator: validate_GamesTurnBasedMatchesGet_589722, base: "/games/v1",
-    url: url_GamesTurnBasedMatchesGet_589723, schemes: {Scheme.Https})
+    validator: validate_GamesTurnBasedMatchesGet_579622, base: "/games/v1",
+    url: url_GamesTurnBasedMatchesGet_579623, schemes: {Scheme.Https})
 type
-  Call_GamesTurnBasedMatchesCancel_589738 = ref object of OpenApiRestCall_588466
-proc url_GamesTurnBasedMatchesCancel_589740(protocol: Scheme; host: string;
+  Call_GamesTurnBasedMatchesCancel_579638 = ref object of OpenApiRestCall_578364
+proc url_GamesTurnBasedMatchesCancel_579640(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7194,7 +7195,7 @@ proc url_GamesTurnBasedMatchesCancel_589740(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesTurnBasedMatchesCancel_589739(path: JsonNode; query: JsonNode;
+proc validate_GamesTurnBasedMatchesCancel_579639(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Cancel a turn-based match.
   ## 
@@ -7205,63 +7206,63 @@ proc validate_GamesTurnBasedMatchesCancel_589739(path: JsonNode; query: JsonNode
   ##          : The ID of the match.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `matchId` field"
-  var valid_589741 = path.getOrDefault("matchId")
-  valid_589741 = validateParameter(valid_589741, JString, required = true,
+  var valid_579641 = path.getOrDefault("matchId")
+  valid_579641 = validateParameter(valid_579641, JString, required = true,
                                  default = nil)
-  if valid_589741 != nil:
-    section.add "matchId", valid_589741
+  if valid_579641 != nil:
+    section.add "matchId", valid_579641
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589742 = query.getOrDefault("fields")
-  valid_589742 = validateParameter(valid_589742, JString, required = false,
+  var valid_579642 = query.getOrDefault("key")
+  valid_579642 = validateParameter(valid_579642, JString, required = false,
                                  default = nil)
-  if valid_589742 != nil:
-    section.add "fields", valid_589742
-  var valid_589743 = query.getOrDefault("quotaUser")
-  valid_589743 = validateParameter(valid_589743, JString, required = false,
-                                 default = nil)
-  if valid_589743 != nil:
-    section.add "quotaUser", valid_589743
-  var valid_589744 = query.getOrDefault("alt")
-  valid_589744 = validateParameter(valid_589744, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589744 != nil:
-    section.add "alt", valid_589744
-  var valid_589745 = query.getOrDefault("oauth_token")
-  valid_589745 = validateParameter(valid_589745, JString, required = false,
-                                 default = nil)
-  if valid_589745 != nil:
-    section.add "oauth_token", valid_589745
-  var valid_589746 = query.getOrDefault("userIp")
-  valid_589746 = validateParameter(valid_589746, JString, required = false,
-                                 default = nil)
-  if valid_589746 != nil:
-    section.add "userIp", valid_589746
-  var valid_589747 = query.getOrDefault("key")
-  valid_589747 = validateParameter(valid_589747, JString, required = false,
-                                 default = nil)
-  if valid_589747 != nil:
-    section.add "key", valid_589747
-  var valid_589748 = query.getOrDefault("prettyPrint")
-  valid_589748 = validateParameter(valid_589748, JBool, required = false,
+  if valid_579642 != nil:
+    section.add "key", valid_579642
+  var valid_579643 = query.getOrDefault("prettyPrint")
+  valid_579643 = validateParameter(valid_579643, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589748 != nil:
-    section.add "prettyPrint", valid_589748
+  if valid_579643 != nil:
+    section.add "prettyPrint", valid_579643
+  var valid_579644 = query.getOrDefault("oauth_token")
+  valid_579644 = validateParameter(valid_579644, JString, required = false,
+                                 default = nil)
+  if valid_579644 != nil:
+    section.add "oauth_token", valid_579644
+  var valid_579645 = query.getOrDefault("alt")
+  valid_579645 = validateParameter(valid_579645, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579645 != nil:
+    section.add "alt", valid_579645
+  var valid_579646 = query.getOrDefault("userIp")
+  valid_579646 = validateParameter(valid_579646, JString, required = false,
+                                 default = nil)
+  if valid_579646 != nil:
+    section.add "userIp", valid_579646
+  var valid_579647 = query.getOrDefault("quotaUser")
+  valid_579647 = validateParameter(valid_579647, JString, required = false,
+                                 default = nil)
+  if valid_579647 != nil:
+    section.add "quotaUser", valid_579647
+  var valid_579648 = query.getOrDefault("fields")
+  valid_579648 = validateParameter(valid_579648, JString, required = false,
+                                 default = nil)
+  if valid_579648 != nil:
+    section.add "fields", valid_579648
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7270,61 +7271,61 @@ proc validate_GamesTurnBasedMatchesCancel_589739(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_589749: Call_GamesTurnBasedMatchesCancel_589738; path: JsonNode;
+proc call*(call_579649: Call_GamesTurnBasedMatchesCancel_579638; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Cancel a turn-based match.
   ## 
-  let valid = call_589749.validator(path, query, header, formData, body)
-  let scheme = call_589749.pickScheme
+  let valid = call_579649.validator(path, query, header, formData, body)
+  let scheme = call_579649.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589749.url(scheme.get, call_589749.host, call_589749.base,
-                         call_589749.route, valid.getOrDefault("path"),
+  let url = call_579649.url(scheme.get, call_579649.host, call_579649.base,
+                         call_579649.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589749, url, valid)
+  result = hook(call_579649, url, valid)
 
-proc call*(call_589750: Call_GamesTurnBasedMatchesCancel_589738; matchId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579650: Call_GamesTurnBasedMatchesCancel_579638; matchId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## gamesTurnBasedMatchesCancel
   ## Cancel a turn-based match.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   matchId: string (required)
-  ##          : The ID of the match.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589751 = newJObject()
-  var query_589752 = newJObject()
-  add(query_589752, "fields", newJString(fields))
-  add(query_589752, "quotaUser", newJString(quotaUser))
-  add(query_589752, "alt", newJString(alt))
-  add(query_589752, "oauth_token", newJString(oauthToken))
-  add(query_589752, "userIp", newJString(userIp))
-  add(query_589752, "key", newJString(key))
-  add(path_589751, "matchId", newJString(matchId))
-  add(query_589752, "prettyPrint", newJBool(prettyPrint))
-  result = call_589750.call(path_589751, query_589752, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   matchId: string (required)
+  ##          : The ID of the match.
+  var path_579651 = newJObject()
+  var query_579652 = newJObject()
+  add(query_579652, "key", newJString(key))
+  add(query_579652, "prettyPrint", newJBool(prettyPrint))
+  add(query_579652, "oauth_token", newJString(oauthToken))
+  add(query_579652, "alt", newJString(alt))
+  add(query_579652, "userIp", newJString(userIp))
+  add(query_579652, "quotaUser", newJString(quotaUser))
+  add(query_579652, "fields", newJString(fields))
+  add(path_579651, "matchId", newJString(matchId))
+  result = call_579650.call(path_579651, query_579652, nil, nil, nil)
 
-var gamesTurnBasedMatchesCancel* = Call_GamesTurnBasedMatchesCancel_589738(
+var gamesTurnBasedMatchesCancel* = Call_GamesTurnBasedMatchesCancel_579638(
     name: "gamesTurnBasedMatchesCancel", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/turnbasedmatches/{matchId}/cancel",
-    validator: validate_GamesTurnBasedMatchesCancel_589739, base: "/games/v1",
-    url: url_GamesTurnBasedMatchesCancel_589740, schemes: {Scheme.Https})
+    validator: validate_GamesTurnBasedMatchesCancel_579639, base: "/games/v1",
+    url: url_GamesTurnBasedMatchesCancel_579640, schemes: {Scheme.Https})
 type
-  Call_GamesTurnBasedMatchesDecline_589753 = ref object of OpenApiRestCall_588466
-proc url_GamesTurnBasedMatchesDecline_589755(protocol: Scheme; host: string;
+  Call_GamesTurnBasedMatchesDecline_579653 = ref object of OpenApiRestCall_578364
+proc url_GamesTurnBasedMatchesDecline_579655(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7340,7 +7341,7 @@ proc url_GamesTurnBasedMatchesDecline_589755(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesTurnBasedMatchesDecline_589754(path: JsonNode; query: JsonNode;
+proc validate_GamesTurnBasedMatchesDecline_579654(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Decline an invitation to play a turn-based match.
   ## 
@@ -7351,70 +7352,70 @@ proc validate_GamesTurnBasedMatchesDecline_589754(path: JsonNode; query: JsonNod
   ##          : The ID of the match.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `matchId` field"
-  var valid_589756 = path.getOrDefault("matchId")
-  valid_589756 = validateParameter(valid_589756, JString, required = true,
+  var valid_579656 = path.getOrDefault("matchId")
+  valid_579656 = validateParameter(valid_579656, JString, required = true,
                                  default = nil)
-  if valid_589756 != nil:
-    section.add "matchId", valid_589756
+  if valid_579656 != nil:
+    section.add "matchId", valid_579656
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589757 = query.getOrDefault("fields")
-  valid_589757 = validateParameter(valid_589757, JString, required = false,
+  var valid_579657 = query.getOrDefault("key")
+  valid_579657 = validateParameter(valid_579657, JString, required = false,
                                  default = nil)
-  if valid_589757 != nil:
-    section.add "fields", valid_589757
-  var valid_589758 = query.getOrDefault("quotaUser")
-  valid_589758 = validateParameter(valid_589758, JString, required = false,
-                                 default = nil)
-  if valid_589758 != nil:
-    section.add "quotaUser", valid_589758
-  var valid_589759 = query.getOrDefault("alt")
-  valid_589759 = validateParameter(valid_589759, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589759 != nil:
-    section.add "alt", valid_589759
-  var valid_589760 = query.getOrDefault("language")
-  valid_589760 = validateParameter(valid_589760, JString, required = false,
-                                 default = nil)
-  if valid_589760 != nil:
-    section.add "language", valid_589760
-  var valid_589761 = query.getOrDefault("oauth_token")
-  valid_589761 = validateParameter(valid_589761, JString, required = false,
-                                 default = nil)
-  if valid_589761 != nil:
-    section.add "oauth_token", valid_589761
-  var valid_589762 = query.getOrDefault("userIp")
-  valid_589762 = validateParameter(valid_589762, JString, required = false,
-                                 default = nil)
-  if valid_589762 != nil:
-    section.add "userIp", valid_589762
-  var valid_589763 = query.getOrDefault("key")
-  valid_589763 = validateParameter(valid_589763, JString, required = false,
-                                 default = nil)
-  if valid_589763 != nil:
-    section.add "key", valid_589763
-  var valid_589764 = query.getOrDefault("prettyPrint")
-  valid_589764 = validateParameter(valid_589764, JBool, required = false,
+  if valid_579657 != nil:
+    section.add "key", valid_579657
+  var valid_579658 = query.getOrDefault("prettyPrint")
+  valid_579658 = validateParameter(valid_579658, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589764 != nil:
-    section.add "prettyPrint", valid_589764
+  if valid_579658 != nil:
+    section.add "prettyPrint", valid_579658
+  var valid_579659 = query.getOrDefault("oauth_token")
+  valid_579659 = validateParameter(valid_579659, JString, required = false,
+                                 default = nil)
+  if valid_579659 != nil:
+    section.add "oauth_token", valid_579659
+  var valid_579660 = query.getOrDefault("alt")
+  valid_579660 = validateParameter(valid_579660, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579660 != nil:
+    section.add "alt", valid_579660
+  var valid_579661 = query.getOrDefault("userIp")
+  valid_579661 = validateParameter(valid_579661, JString, required = false,
+                                 default = nil)
+  if valid_579661 != nil:
+    section.add "userIp", valid_579661
+  var valid_579662 = query.getOrDefault("quotaUser")
+  valid_579662 = validateParameter(valid_579662, JString, required = false,
+                                 default = nil)
+  if valid_579662 != nil:
+    section.add "quotaUser", valid_579662
+  var valid_579663 = query.getOrDefault("fields")
+  valid_579663 = validateParameter(valid_579663, JString, required = false,
+                                 default = nil)
+  if valid_579663 != nil:
+    section.add "fields", valid_579663
+  var valid_579664 = query.getOrDefault("language")
+  valid_579664 = validateParameter(valid_579664, JString, required = false,
+                                 default = nil)
+  if valid_579664 != nil:
+    section.add "language", valid_579664
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7423,64 +7424,64 @@ proc validate_GamesTurnBasedMatchesDecline_589754(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_589765: Call_GamesTurnBasedMatchesDecline_589753; path: JsonNode;
+proc call*(call_579665: Call_GamesTurnBasedMatchesDecline_579653; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Decline an invitation to play a turn-based match.
   ## 
-  let valid = call_589765.validator(path, query, header, formData, body)
-  let scheme = call_589765.pickScheme
+  let valid = call_579665.validator(path, query, header, formData, body)
+  let scheme = call_579665.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589765.url(scheme.get, call_589765.host, call_589765.base,
-                         call_589765.route, valid.getOrDefault("path"),
+  let url = call_579665.url(scheme.get, call_579665.host, call_579665.base,
+                         call_579665.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589765, url, valid)
+  result = hook(call_579665, url, valid)
 
-proc call*(call_589766: Call_GamesTurnBasedMatchesDecline_589753; matchId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579666: Call_GamesTurnBasedMatchesDecline_579653; matchId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""; language: string = ""): Recallable =
   ## gamesTurnBasedMatchesDecline
   ## Decline an invitation to play a turn-based match.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   matchId: string (required)
-  ##          : The ID of the match.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589767 = newJObject()
-  var query_589768 = newJObject()
-  add(query_589768, "fields", newJString(fields))
-  add(query_589768, "quotaUser", newJString(quotaUser))
-  add(query_589768, "alt", newJString(alt))
-  add(query_589768, "language", newJString(language))
-  add(query_589768, "oauth_token", newJString(oauthToken))
-  add(query_589768, "userIp", newJString(userIp))
-  add(query_589768, "key", newJString(key))
-  add(path_589767, "matchId", newJString(matchId))
-  add(query_589768, "prettyPrint", newJBool(prettyPrint))
-  result = call_589766.call(path_589767, query_589768, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   matchId: string (required)
+  ##          : The ID of the match.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579667 = newJObject()
+  var query_579668 = newJObject()
+  add(query_579668, "key", newJString(key))
+  add(query_579668, "prettyPrint", newJBool(prettyPrint))
+  add(query_579668, "oauth_token", newJString(oauthToken))
+  add(query_579668, "alt", newJString(alt))
+  add(query_579668, "userIp", newJString(userIp))
+  add(query_579668, "quotaUser", newJString(quotaUser))
+  add(query_579668, "fields", newJString(fields))
+  add(path_579667, "matchId", newJString(matchId))
+  add(query_579668, "language", newJString(language))
+  result = call_579666.call(path_579667, query_579668, nil, nil, nil)
 
-var gamesTurnBasedMatchesDecline* = Call_GamesTurnBasedMatchesDecline_589753(
+var gamesTurnBasedMatchesDecline* = Call_GamesTurnBasedMatchesDecline_579653(
     name: "gamesTurnBasedMatchesDecline", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/turnbasedmatches/{matchId}/decline",
-    validator: validate_GamesTurnBasedMatchesDecline_589754, base: "/games/v1",
-    url: url_GamesTurnBasedMatchesDecline_589755, schemes: {Scheme.Https})
+    validator: validate_GamesTurnBasedMatchesDecline_579654, base: "/games/v1",
+    url: url_GamesTurnBasedMatchesDecline_579655, schemes: {Scheme.Https})
 type
-  Call_GamesTurnBasedMatchesDismiss_589769 = ref object of OpenApiRestCall_588466
-proc url_GamesTurnBasedMatchesDismiss_589771(protocol: Scheme; host: string;
+  Call_GamesTurnBasedMatchesDismiss_579669 = ref object of OpenApiRestCall_578364
+proc url_GamesTurnBasedMatchesDismiss_579671(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7496,7 +7497,7 @@ proc url_GamesTurnBasedMatchesDismiss_589771(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesTurnBasedMatchesDismiss_589770(path: JsonNode; query: JsonNode;
+proc validate_GamesTurnBasedMatchesDismiss_579670(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Dismiss a turn-based match from the match list. The match will no longer show up in the list and will not generate notifications.
   ## 
@@ -7507,63 +7508,63 @@ proc validate_GamesTurnBasedMatchesDismiss_589770(path: JsonNode; query: JsonNod
   ##          : The ID of the match.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `matchId` field"
-  var valid_589772 = path.getOrDefault("matchId")
-  valid_589772 = validateParameter(valid_589772, JString, required = true,
+  var valid_579672 = path.getOrDefault("matchId")
+  valid_579672 = validateParameter(valid_579672, JString, required = true,
                                  default = nil)
-  if valid_589772 != nil:
-    section.add "matchId", valid_589772
+  if valid_579672 != nil:
+    section.add "matchId", valid_579672
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589773 = query.getOrDefault("fields")
-  valid_589773 = validateParameter(valid_589773, JString, required = false,
+  var valid_579673 = query.getOrDefault("key")
+  valid_579673 = validateParameter(valid_579673, JString, required = false,
                                  default = nil)
-  if valid_589773 != nil:
-    section.add "fields", valid_589773
-  var valid_589774 = query.getOrDefault("quotaUser")
-  valid_589774 = validateParameter(valid_589774, JString, required = false,
-                                 default = nil)
-  if valid_589774 != nil:
-    section.add "quotaUser", valid_589774
-  var valid_589775 = query.getOrDefault("alt")
-  valid_589775 = validateParameter(valid_589775, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589775 != nil:
-    section.add "alt", valid_589775
-  var valid_589776 = query.getOrDefault("oauth_token")
-  valid_589776 = validateParameter(valid_589776, JString, required = false,
-                                 default = nil)
-  if valid_589776 != nil:
-    section.add "oauth_token", valid_589776
-  var valid_589777 = query.getOrDefault("userIp")
-  valid_589777 = validateParameter(valid_589777, JString, required = false,
-                                 default = nil)
-  if valid_589777 != nil:
-    section.add "userIp", valid_589777
-  var valid_589778 = query.getOrDefault("key")
-  valid_589778 = validateParameter(valid_589778, JString, required = false,
-                                 default = nil)
-  if valid_589778 != nil:
-    section.add "key", valid_589778
-  var valid_589779 = query.getOrDefault("prettyPrint")
-  valid_589779 = validateParameter(valid_589779, JBool, required = false,
+  if valid_579673 != nil:
+    section.add "key", valid_579673
+  var valid_579674 = query.getOrDefault("prettyPrint")
+  valid_579674 = validateParameter(valid_579674, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589779 != nil:
-    section.add "prettyPrint", valid_589779
+  if valid_579674 != nil:
+    section.add "prettyPrint", valid_579674
+  var valid_579675 = query.getOrDefault("oauth_token")
+  valid_579675 = validateParameter(valid_579675, JString, required = false,
+                                 default = nil)
+  if valid_579675 != nil:
+    section.add "oauth_token", valid_579675
+  var valid_579676 = query.getOrDefault("alt")
+  valid_579676 = validateParameter(valid_579676, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579676 != nil:
+    section.add "alt", valid_579676
+  var valid_579677 = query.getOrDefault("userIp")
+  valid_579677 = validateParameter(valid_579677, JString, required = false,
+                                 default = nil)
+  if valid_579677 != nil:
+    section.add "userIp", valid_579677
+  var valid_579678 = query.getOrDefault("quotaUser")
+  valid_579678 = validateParameter(valid_579678, JString, required = false,
+                                 default = nil)
+  if valid_579678 != nil:
+    section.add "quotaUser", valid_579678
+  var valid_579679 = query.getOrDefault("fields")
+  valid_579679 = validateParameter(valid_579679, JString, required = false,
+                                 default = nil)
+  if valid_579679 != nil:
+    section.add "fields", valid_579679
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7572,61 +7573,61 @@ proc validate_GamesTurnBasedMatchesDismiss_589770(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_589780: Call_GamesTurnBasedMatchesDismiss_589769; path: JsonNode;
+proc call*(call_579680: Call_GamesTurnBasedMatchesDismiss_579669; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Dismiss a turn-based match from the match list. The match will no longer show up in the list and will not generate notifications.
   ## 
-  let valid = call_589780.validator(path, query, header, formData, body)
-  let scheme = call_589780.pickScheme
+  let valid = call_579680.validator(path, query, header, formData, body)
+  let scheme = call_579680.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589780.url(scheme.get, call_589780.host, call_589780.base,
-                         call_589780.route, valid.getOrDefault("path"),
+  let url = call_579680.url(scheme.get, call_579680.host, call_579680.base,
+                         call_579680.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589780, url, valid)
+  result = hook(call_579680, url, valid)
 
-proc call*(call_589781: Call_GamesTurnBasedMatchesDismiss_589769; matchId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true): Recallable =
+proc call*(call_579681: Call_GamesTurnBasedMatchesDismiss_579669; matchId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""): Recallable =
   ## gamesTurnBasedMatchesDismiss
   ## Dismiss a turn-based match from the match list. The match will no longer show up in the list and will not generate notifications.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   matchId: string (required)
-  ##          : The ID of the match.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589782 = newJObject()
-  var query_589783 = newJObject()
-  add(query_589783, "fields", newJString(fields))
-  add(query_589783, "quotaUser", newJString(quotaUser))
-  add(query_589783, "alt", newJString(alt))
-  add(query_589783, "oauth_token", newJString(oauthToken))
-  add(query_589783, "userIp", newJString(userIp))
-  add(query_589783, "key", newJString(key))
-  add(path_589782, "matchId", newJString(matchId))
-  add(query_589783, "prettyPrint", newJBool(prettyPrint))
-  result = call_589781.call(path_589782, query_589783, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   matchId: string (required)
+  ##          : The ID of the match.
+  var path_579682 = newJObject()
+  var query_579683 = newJObject()
+  add(query_579683, "key", newJString(key))
+  add(query_579683, "prettyPrint", newJBool(prettyPrint))
+  add(query_579683, "oauth_token", newJString(oauthToken))
+  add(query_579683, "alt", newJString(alt))
+  add(query_579683, "userIp", newJString(userIp))
+  add(query_579683, "quotaUser", newJString(quotaUser))
+  add(query_579683, "fields", newJString(fields))
+  add(path_579682, "matchId", newJString(matchId))
+  result = call_579681.call(path_579682, query_579683, nil, nil, nil)
 
-var gamesTurnBasedMatchesDismiss* = Call_GamesTurnBasedMatchesDismiss_589769(
+var gamesTurnBasedMatchesDismiss* = Call_GamesTurnBasedMatchesDismiss_579669(
     name: "gamesTurnBasedMatchesDismiss", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/turnbasedmatches/{matchId}/dismiss",
-    validator: validate_GamesTurnBasedMatchesDismiss_589770, base: "/games/v1",
-    url: url_GamesTurnBasedMatchesDismiss_589771, schemes: {Scheme.Https})
+    validator: validate_GamesTurnBasedMatchesDismiss_579670, base: "/games/v1",
+    url: url_GamesTurnBasedMatchesDismiss_579671, schemes: {Scheme.Https})
 type
-  Call_GamesTurnBasedMatchesFinish_589784 = ref object of OpenApiRestCall_588466
-proc url_GamesTurnBasedMatchesFinish_589786(protocol: Scheme; host: string;
+  Call_GamesTurnBasedMatchesFinish_579684 = ref object of OpenApiRestCall_578364
+proc url_GamesTurnBasedMatchesFinish_579686(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7642,7 +7643,7 @@ proc url_GamesTurnBasedMatchesFinish_589786(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesTurnBasedMatchesFinish_589785(path: JsonNode; query: JsonNode;
+proc validate_GamesTurnBasedMatchesFinish_579685(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Finish a turn-based match. Each player should make this call once, after all results are in. Only the player whose turn it is may make the first call to Finish, and can pass in the final match state.
   ## 
@@ -7653,70 +7654,70 @@ proc validate_GamesTurnBasedMatchesFinish_589785(path: JsonNode; query: JsonNode
   ##          : The ID of the match.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `matchId` field"
-  var valid_589787 = path.getOrDefault("matchId")
-  valid_589787 = validateParameter(valid_589787, JString, required = true,
+  var valid_579687 = path.getOrDefault("matchId")
+  valid_579687 = validateParameter(valid_579687, JString, required = true,
                                  default = nil)
-  if valid_589787 != nil:
-    section.add "matchId", valid_589787
+  if valid_579687 != nil:
+    section.add "matchId", valid_579687
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589788 = query.getOrDefault("fields")
-  valid_589788 = validateParameter(valid_589788, JString, required = false,
+  var valid_579688 = query.getOrDefault("key")
+  valid_579688 = validateParameter(valid_579688, JString, required = false,
                                  default = nil)
-  if valid_589788 != nil:
-    section.add "fields", valid_589788
-  var valid_589789 = query.getOrDefault("quotaUser")
-  valid_589789 = validateParameter(valid_589789, JString, required = false,
-                                 default = nil)
-  if valid_589789 != nil:
-    section.add "quotaUser", valid_589789
-  var valid_589790 = query.getOrDefault("alt")
-  valid_589790 = validateParameter(valid_589790, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589790 != nil:
-    section.add "alt", valid_589790
-  var valid_589791 = query.getOrDefault("language")
-  valid_589791 = validateParameter(valid_589791, JString, required = false,
-                                 default = nil)
-  if valid_589791 != nil:
-    section.add "language", valid_589791
-  var valid_589792 = query.getOrDefault("oauth_token")
-  valid_589792 = validateParameter(valid_589792, JString, required = false,
-                                 default = nil)
-  if valid_589792 != nil:
-    section.add "oauth_token", valid_589792
-  var valid_589793 = query.getOrDefault("userIp")
-  valid_589793 = validateParameter(valid_589793, JString, required = false,
-                                 default = nil)
-  if valid_589793 != nil:
-    section.add "userIp", valid_589793
-  var valid_589794 = query.getOrDefault("key")
-  valid_589794 = validateParameter(valid_589794, JString, required = false,
-                                 default = nil)
-  if valid_589794 != nil:
-    section.add "key", valid_589794
-  var valid_589795 = query.getOrDefault("prettyPrint")
-  valid_589795 = validateParameter(valid_589795, JBool, required = false,
+  if valid_579688 != nil:
+    section.add "key", valid_579688
+  var valid_579689 = query.getOrDefault("prettyPrint")
+  valid_579689 = validateParameter(valid_579689, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589795 != nil:
-    section.add "prettyPrint", valid_589795
+  if valid_579689 != nil:
+    section.add "prettyPrint", valid_579689
+  var valid_579690 = query.getOrDefault("oauth_token")
+  valid_579690 = validateParameter(valid_579690, JString, required = false,
+                                 default = nil)
+  if valid_579690 != nil:
+    section.add "oauth_token", valid_579690
+  var valid_579691 = query.getOrDefault("alt")
+  valid_579691 = validateParameter(valid_579691, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579691 != nil:
+    section.add "alt", valid_579691
+  var valid_579692 = query.getOrDefault("userIp")
+  valid_579692 = validateParameter(valid_579692, JString, required = false,
+                                 default = nil)
+  if valid_579692 != nil:
+    section.add "userIp", valid_579692
+  var valid_579693 = query.getOrDefault("quotaUser")
+  valid_579693 = validateParameter(valid_579693, JString, required = false,
+                                 default = nil)
+  if valid_579693 != nil:
+    section.add "quotaUser", valid_579693
+  var valid_579694 = query.getOrDefault("fields")
+  valid_579694 = validateParameter(valid_579694, JString, required = false,
+                                 default = nil)
+  if valid_579694 != nil:
+    section.add "fields", valid_579694
+  var valid_579695 = query.getOrDefault("language")
+  valid_579695 = validateParameter(valid_579695, JString, required = false,
+                                 default = nil)
+  if valid_579695 != nil:
+    section.add "language", valid_579695
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7728,68 +7729,68 @@ proc validate_GamesTurnBasedMatchesFinish_589785(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_589797: Call_GamesTurnBasedMatchesFinish_589784; path: JsonNode;
+proc call*(call_579697: Call_GamesTurnBasedMatchesFinish_579684; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Finish a turn-based match. Each player should make this call once, after all results are in. Only the player whose turn it is may make the first call to Finish, and can pass in the final match state.
   ## 
-  let valid = call_589797.validator(path, query, header, formData, body)
-  let scheme = call_589797.pickScheme
+  let valid = call_579697.validator(path, query, header, formData, body)
+  let scheme = call_579697.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589797.url(scheme.get, call_589797.host, call_589797.base,
-                         call_589797.route, valid.getOrDefault("path"),
+  let url = call_579697.url(scheme.get, call_579697.host, call_579697.base,
+                         call_579697.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589797, url, valid)
+  result = hook(call_579697, url, valid)
 
-proc call*(call_589798: Call_GamesTurnBasedMatchesFinish_589784; matchId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579698: Call_GamesTurnBasedMatchesFinish_579684; matchId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""; language: string = ""): Recallable =
   ## gamesTurnBasedMatchesFinish
   ## Finish a turn-based match. Each player should make this call once, after all results are in. Only the player whose turn it is may make the first call to Finish, and can pass in the final match state.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   matchId: string (required)
-  ##          : The ID of the match.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589799 = newJObject()
-  var query_589800 = newJObject()
-  var body_589801 = newJObject()
-  add(query_589800, "fields", newJString(fields))
-  add(query_589800, "quotaUser", newJString(quotaUser))
-  add(query_589800, "alt", newJString(alt))
-  add(query_589800, "language", newJString(language))
-  add(query_589800, "oauth_token", newJString(oauthToken))
-  add(query_589800, "userIp", newJString(userIp))
-  add(query_589800, "key", newJString(key))
-  add(path_589799, "matchId", newJString(matchId))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   matchId: string (required)
+  ##          : The ID of the match.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579699 = newJObject()
+  var query_579700 = newJObject()
+  var body_579701 = newJObject()
+  add(query_579700, "key", newJString(key))
+  add(query_579700, "prettyPrint", newJBool(prettyPrint))
+  add(query_579700, "oauth_token", newJString(oauthToken))
+  add(query_579700, "alt", newJString(alt))
+  add(query_579700, "userIp", newJString(userIp))
+  add(query_579700, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589801 = body
-  add(query_589800, "prettyPrint", newJBool(prettyPrint))
-  result = call_589798.call(path_589799, query_589800, nil, nil, body_589801)
+    body_579701 = body
+  add(query_579700, "fields", newJString(fields))
+  add(path_579699, "matchId", newJString(matchId))
+  add(query_579700, "language", newJString(language))
+  result = call_579698.call(path_579699, query_579700, nil, nil, body_579701)
 
-var gamesTurnBasedMatchesFinish* = Call_GamesTurnBasedMatchesFinish_589784(
+var gamesTurnBasedMatchesFinish* = Call_GamesTurnBasedMatchesFinish_579684(
     name: "gamesTurnBasedMatchesFinish", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/turnbasedmatches/{matchId}/finish",
-    validator: validate_GamesTurnBasedMatchesFinish_589785, base: "/games/v1",
-    url: url_GamesTurnBasedMatchesFinish_589786, schemes: {Scheme.Https})
+    validator: validate_GamesTurnBasedMatchesFinish_579685, base: "/games/v1",
+    url: url_GamesTurnBasedMatchesFinish_579686, schemes: {Scheme.Https})
 type
-  Call_GamesTurnBasedMatchesJoin_589802 = ref object of OpenApiRestCall_588466
-proc url_GamesTurnBasedMatchesJoin_589804(protocol: Scheme; host: string;
+  Call_GamesTurnBasedMatchesJoin_579702 = ref object of OpenApiRestCall_578364
+proc url_GamesTurnBasedMatchesJoin_579704(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7805,7 +7806,7 @@ proc url_GamesTurnBasedMatchesJoin_589804(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesTurnBasedMatchesJoin_589803(path: JsonNode; query: JsonNode;
+proc validate_GamesTurnBasedMatchesJoin_579703(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Join a turn-based match.
   ## 
@@ -7816,70 +7817,70 @@ proc validate_GamesTurnBasedMatchesJoin_589803(path: JsonNode; query: JsonNode;
   ##          : The ID of the match.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `matchId` field"
-  var valid_589805 = path.getOrDefault("matchId")
-  valid_589805 = validateParameter(valid_589805, JString, required = true,
+  var valid_579705 = path.getOrDefault("matchId")
+  valid_579705 = validateParameter(valid_579705, JString, required = true,
                                  default = nil)
-  if valid_589805 != nil:
-    section.add "matchId", valid_589805
+  if valid_579705 != nil:
+    section.add "matchId", valid_579705
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589806 = query.getOrDefault("fields")
-  valid_589806 = validateParameter(valid_589806, JString, required = false,
+  var valid_579706 = query.getOrDefault("key")
+  valid_579706 = validateParameter(valid_579706, JString, required = false,
                                  default = nil)
-  if valid_589806 != nil:
-    section.add "fields", valid_589806
-  var valid_589807 = query.getOrDefault("quotaUser")
-  valid_589807 = validateParameter(valid_589807, JString, required = false,
-                                 default = nil)
-  if valid_589807 != nil:
-    section.add "quotaUser", valid_589807
-  var valid_589808 = query.getOrDefault("alt")
-  valid_589808 = validateParameter(valid_589808, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589808 != nil:
-    section.add "alt", valid_589808
-  var valid_589809 = query.getOrDefault("language")
-  valid_589809 = validateParameter(valid_589809, JString, required = false,
-                                 default = nil)
-  if valid_589809 != nil:
-    section.add "language", valid_589809
-  var valid_589810 = query.getOrDefault("oauth_token")
-  valid_589810 = validateParameter(valid_589810, JString, required = false,
-                                 default = nil)
-  if valid_589810 != nil:
-    section.add "oauth_token", valid_589810
-  var valid_589811 = query.getOrDefault("userIp")
-  valid_589811 = validateParameter(valid_589811, JString, required = false,
-                                 default = nil)
-  if valid_589811 != nil:
-    section.add "userIp", valid_589811
-  var valid_589812 = query.getOrDefault("key")
-  valid_589812 = validateParameter(valid_589812, JString, required = false,
-                                 default = nil)
-  if valid_589812 != nil:
-    section.add "key", valid_589812
-  var valid_589813 = query.getOrDefault("prettyPrint")
-  valid_589813 = validateParameter(valid_589813, JBool, required = false,
+  if valid_579706 != nil:
+    section.add "key", valid_579706
+  var valid_579707 = query.getOrDefault("prettyPrint")
+  valid_579707 = validateParameter(valid_579707, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589813 != nil:
-    section.add "prettyPrint", valid_589813
+  if valid_579707 != nil:
+    section.add "prettyPrint", valid_579707
+  var valid_579708 = query.getOrDefault("oauth_token")
+  valid_579708 = validateParameter(valid_579708, JString, required = false,
+                                 default = nil)
+  if valid_579708 != nil:
+    section.add "oauth_token", valid_579708
+  var valid_579709 = query.getOrDefault("alt")
+  valid_579709 = validateParameter(valid_579709, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579709 != nil:
+    section.add "alt", valid_579709
+  var valid_579710 = query.getOrDefault("userIp")
+  valid_579710 = validateParameter(valid_579710, JString, required = false,
+                                 default = nil)
+  if valid_579710 != nil:
+    section.add "userIp", valid_579710
+  var valid_579711 = query.getOrDefault("quotaUser")
+  valid_579711 = validateParameter(valid_579711, JString, required = false,
+                                 default = nil)
+  if valid_579711 != nil:
+    section.add "quotaUser", valid_579711
+  var valid_579712 = query.getOrDefault("fields")
+  valid_579712 = validateParameter(valid_579712, JString, required = false,
+                                 default = nil)
+  if valid_579712 != nil:
+    section.add "fields", valid_579712
+  var valid_579713 = query.getOrDefault("language")
+  valid_579713 = validateParameter(valid_579713, JString, required = false,
+                                 default = nil)
+  if valid_579713 != nil:
+    section.add "language", valid_579713
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7888,64 +7889,64 @@ proc validate_GamesTurnBasedMatchesJoin_589803(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589814: Call_GamesTurnBasedMatchesJoin_589802; path: JsonNode;
+proc call*(call_579714: Call_GamesTurnBasedMatchesJoin_579702; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Join a turn-based match.
   ## 
-  let valid = call_589814.validator(path, query, header, formData, body)
-  let scheme = call_589814.pickScheme
+  let valid = call_579714.validator(path, query, header, formData, body)
+  let scheme = call_579714.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589814.url(scheme.get, call_589814.host, call_589814.base,
-                         call_589814.route, valid.getOrDefault("path"),
+  let url = call_579714.url(scheme.get, call_579714.host, call_579714.base,
+                         call_579714.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589814, url, valid)
+  result = hook(call_579714, url, valid)
 
-proc call*(call_589815: Call_GamesTurnBasedMatchesJoin_589802; matchId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579715: Call_GamesTurnBasedMatchesJoin_579702; matchId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""; language: string = ""): Recallable =
   ## gamesTurnBasedMatchesJoin
   ## Join a turn-based match.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   matchId: string (required)
-  ##          : The ID of the match.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589816 = newJObject()
-  var query_589817 = newJObject()
-  add(query_589817, "fields", newJString(fields))
-  add(query_589817, "quotaUser", newJString(quotaUser))
-  add(query_589817, "alt", newJString(alt))
-  add(query_589817, "language", newJString(language))
-  add(query_589817, "oauth_token", newJString(oauthToken))
-  add(query_589817, "userIp", newJString(userIp))
-  add(query_589817, "key", newJString(key))
-  add(path_589816, "matchId", newJString(matchId))
-  add(query_589817, "prettyPrint", newJBool(prettyPrint))
-  result = call_589815.call(path_589816, query_589817, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   matchId: string (required)
+  ##          : The ID of the match.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579716 = newJObject()
+  var query_579717 = newJObject()
+  add(query_579717, "key", newJString(key))
+  add(query_579717, "prettyPrint", newJBool(prettyPrint))
+  add(query_579717, "oauth_token", newJString(oauthToken))
+  add(query_579717, "alt", newJString(alt))
+  add(query_579717, "userIp", newJString(userIp))
+  add(query_579717, "quotaUser", newJString(quotaUser))
+  add(query_579717, "fields", newJString(fields))
+  add(path_579716, "matchId", newJString(matchId))
+  add(query_579717, "language", newJString(language))
+  result = call_579715.call(path_579716, query_579717, nil, nil, nil)
 
-var gamesTurnBasedMatchesJoin* = Call_GamesTurnBasedMatchesJoin_589802(
+var gamesTurnBasedMatchesJoin* = Call_GamesTurnBasedMatchesJoin_579702(
     name: "gamesTurnBasedMatchesJoin", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/turnbasedmatches/{matchId}/join",
-    validator: validate_GamesTurnBasedMatchesJoin_589803, base: "/games/v1",
-    url: url_GamesTurnBasedMatchesJoin_589804, schemes: {Scheme.Https})
+    validator: validate_GamesTurnBasedMatchesJoin_579703, base: "/games/v1",
+    url: url_GamesTurnBasedMatchesJoin_579704, schemes: {Scheme.Https})
 type
-  Call_GamesTurnBasedMatchesLeave_589818 = ref object of OpenApiRestCall_588466
-proc url_GamesTurnBasedMatchesLeave_589820(protocol: Scheme; host: string;
+  Call_GamesTurnBasedMatchesLeave_579718 = ref object of OpenApiRestCall_578364
+proc url_GamesTurnBasedMatchesLeave_579720(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7961,7 +7962,7 @@ proc url_GamesTurnBasedMatchesLeave_589820(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesTurnBasedMatchesLeave_589819(path: JsonNode; query: JsonNode;
+proc validate_GamesTurnBasedMatchesLeave_579719(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Leave a turn-based match when it is not the current player's turn, without canceling the match.
   ## 
@@ -7972,70 +7973,70 @@ proc validate_GamesTurnBasedMatchesLeave_589819(path: JsonNode; query: JsonNode;
   ##          : The ID of the match.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `matchId` field"
-  var valid_589821 = path.getOrDefault("matchId")
-  valid_589821 = validateParameter(valid_589821, JString, required = true,
+  var valid_579721 = path.getOrDefault("matchId")
+  valid_579721 = validateParameter(valid_579721, JString, required = true,
                                  default = nil)
-  if valid_589821 != nil:
-    section.add "matchId", valid_589821
+  if valid_579721 != nil:
+    section.add "matchId", valid_579721
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589822 = query.getOrDefault("fields")
-  valid_589822 = validateParameter(valid_589822, JString, required = false,
+  var valid_579722 = query.getOrDefault("key")
+  valid_579722 = validateParameter(valid_579722, JString, required = false,
                                  default = nil)
-  if valid_589822 != nil:
-    section.add "fields", valid_589822
-  var valid_589823 = query.getOrDefault("quotaUser")
-  valid_589823 = validateParameter(valid_589823, JString, required = false,
-                                 default = nil)
-  if valid_589823 != nil:
-    section.add "quotaUser", valid_589823
-  var valid_589824 = query.getOrDefault("alt")
-  valid_589824 = validateParameter(valid_589824, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589824 != nil:
-    section.add "alt", valid_589824
-  var valid_589825 = query.getOrDefault("language")
-  valid_589825 = validateParameter(valid_589825, JString, required = false,
-                                 default = nil)
-  if valid_589825 != nil:
-    section.add "language", valid_589825
-  var valid_589826 = query.getOrDefault("oauth_token")
-  valid_589826 = validateParameter(valid_589826, JString, required = false,
-                                 default = nil)
-  if valid_589826 != nil:
-    section.add "oauth_token", valid_589826
-  var valid_589827 = query.getOrDefault("userIp")
-  valid_589827 = validateParameter(valid_589827, JString, required = false,
-                                 default = nil)
-  if valid_589827 != nil:
-    section.add "userIp", valid_589827
-  var valid_589828 = query.getOrDefault("key")
-  valid_589828 = validateParameter(valid_589828, JString, required = false,
-                                 default = nil)
-  if valid_589828 != nil:
-    section.add "key", valid_589828
-  var valid_589829 = query.getOrDefault("prettyPrint")
-  valid_589829 = validateParameter(valid_589829, JBool, required = false,
+  if valid_579722 != nil:
+    section.add "key", valid_579722
+  var valid_579723 = query.getOrDefault("prettyPrint")
+  valid_579723 = validateParameter(valid_579723, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589829 != nil:
-    section.add "prettyPrint", valid_589829
+  if valid_579723 != nil:
+    section.add "prettyPrint", valid_579723
+  var valid_579724 = query.getOrDefault("oauth_token")
+  valid_579724 = validateParameter(valid_579724, JString, required = false,
+                                 default = nil)
+  if valid_579724 != nil:
+    section.add "oauth_token", valid_579724
+  var valid_579725 = query.getOrDefault("alt")
+  valid_579725 = validateParameter(valid_579725, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579725 != nil:
+    section.add "alt", valid_579725
+  var valid_579726 = query.getOrDefault("userIp")
+  valid_579726 = validateParameter(valid_579726, JString, required = false,
+                                 default = nil)
+  if valid_579726 != nil:
+    section.add "userIp", valid_579726
+  var valid_579727 = query.getOrDefault("quotaUser")
+  valid_579727 = validateParameter(valid_579727, JString, required = false,
+                                 default = nil)
+  if valid_579727 != nil:
+    section.add "quotaUser", valid_579727
+  var valid_579728 = query.getOrDefault("fields")
+  valid_579728 = validateParameter(valid_579728, JString, required = false,
+                                 default = nil)
+  if valid_579728 != nil:
+    section.add "fields", valid_579728
+  var valid_579729 = query.getOrDefault("language")
+  valid_579729 = validateParameter(valid_579729, JString, required = false,
+                                 default = nil)
+  if valid_579729 != nil:
+    section.add "language", valid_579729
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8044,64 +8045,64 @@ proc validate_GamesTurnBasedMatchesLeave_589819(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589830: Call_GamesTurnBasedMatchesLeave_589818; path: JsonNode;
+proc call*(call_579730: Call_GamesTurnBasedMatchesLeave_579718; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Leave a turn-based match when it is not the current player's turn, without canceling the match.
   ## 
-  let valid = call_589830.validator(path, query, header, formData, body)
-  let scheme = call_589830.pickScheme
+  let valid = call_579730.validator(path, query, header, formData, body)
+  let scheme = call_579730.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589830.url(scheme.get, call_589830.host, call_589830.base,
-                         call_589830.route, valid.getOrDefault("path"),
+  let url = call_579730.url(scheme.get, call_579730.host, call_579730.base,
+                         call_579730.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589830, url, valid)
+  result = hook(call_579730, url, valid)
 
-proc call*(call_589831: Call_GamesTurnBasedMatchesLeave_589818; matchId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579731: Call_GamesTurnBasedMatchesLeave_579718; matchId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          fields: string = ""; language: string = ""): Recallable =
   ## gamesTurnBasedMatchesLeave
   ## Leave a turn-based match when it is not the current player's turn, without canceling the match.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   matchId: string (required)
-  ##          : The ID of the match.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589832 = newJObject()
-  var query_589833 = newJObject()
-  add(query_589833, "fields", newJString(fields))
-  add(query_589833, "quotaUser", newJString(quotaUser))
-  add(query_589833, "alt", newJString(alt))
-  add(query_589833, "language", newJString(language))
-  add(query_589833, "oauth_token", newJString(oauthToken))
-  add(query_589833, "userIp", newJString(userIp))
-  add(query_589833, "key", newJString(key))
-  add(path_589832, "matchId", newJString(matchId))
-  add(query_589833, "prettyPrint", newJBool(prettyPrint))
-  result = call_589831.call(path_589832, query_589833, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   matchId: string (required)
+  ##          : The ID of the match.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579732 = newJObject()
+  var query_579733 = newJObject()
+  add(query_579733, "key", newJString(key))
+  add(query_579733, "prettyPrint", newJBool(prettyPrint))
+  add(query_579733, "oauth_token", newJString(oauthToken))
+  add(query_579733, "alt", newJString(alt))
+  add(query_579733, "userIp", newJString(userIp))
+  add(query_579733, "quotaUser", newJString(quotaUser))
+  add(query_579733, "fields", newJString(fields))
+  add(path_579732, "matchId", newJString(matchId))
+  add(query_579733, "language", newJString(language))
+  result = call_579731.call(path_579732, query_579733, nil, nil, nil)
 
-var gamesTurnBasedMatchesLeave* = Call_GamesTurnBasedMatchesLeave_589818(
+var gamesTurnBasedMatchesLeave* = Call_GamesTurnBasedMatchesLeave_579718(
     name: "gamesTurnBasedMatchesLeave", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/turnbasedmatches/{matchId}/leave",
-    validator: validate_GamesTurnBasedMatchesLeave_589819, base: "/games/v1",
-    url: url_GamesTurnBasedMatchesLeave_589820, schemes: {Scheme.Https})
+    validator: validate_GamesTurnBasedMatchesLeave_579719, base: "/games/v1",
+    url: url_GamesTurnBasedMatchesLeave_579720, schemes: {Scheme.Https})
 type
-  Call_GamesTurnBasedMatchesLeaveTurn_589834 = ref object of OpenApiRestCall_588466
-proc url_GamesTurnBasedMatchesLeaveTurn_589836(protocol: Scheme; host: string;
+  Call_GamesTurnBasedMatchesLeaveTurn_579734 = ref object of OpenApiRestCall_578364
+proc url_GamesTurnBasedMatchesLeaveTurn_579736(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8117,7 +8118,7 @@ proc url_GamesTurnBasedMatchesLeaveTurn_589836(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesTurnBasedMatchesLeaveTurn_589835(path: JsonNode;
+proc validate_GamesTurnBasedMatchesLeaveTurn_579735(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Leave a turn-based match during the current player's turn, without canceling the match.
   ## 
@@ -8128,85 +8129,85 @@ proc validate_GamesTurnBasedMatchesLeaveTurn_589835(path: JsonNode;
   ##          : The ID of the match.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `matchId` field"
-  var valid_589837 = path.getOrDefault("matchId")
-  valid_589837 = validateParameter(valid_589837, JString, required = true,
+  var valid_579737 = path.getOrDefault("matchId")
+  valid_579737 = validateParameter(valid_579737, JString, required = true,
                                  default = nil)
-  if valid_589837 != nil:
-    section.add "matchId", valid_589837
+  if valid_579737 != nil:
+    section.add "matchId", valid_579737
   result.add "path", section
   ## parameters in `query` object:
-  ##   matchVersion: JInt (required)
-  ##               : The version of the match being updated.
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   matchVersion: JInt (required)
+  ##               : The version of the match being updated.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
   ##   pendingParticipantId: JString
   ##                       : The ID of another participant who should take their turn next. If not set, the match will wait for other player(s) to join via automatching; this is only valid if automatch criteria is set on the match with remaining slots for automatched players.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
+  var valid_579738 = query.getOrDefault("key")
+  valid_579738 = validateParameter(valid_579738, JString, required = false,
+                                 default = nil)
+  if valid_579738 != nil:
+    section.add "key", valid_579738
+  var valid_579739 = query.getOrDefault("prettyPrint")
+  valid_579739 = validateParameter(valid_579739, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_579739 != nil:
+    section.add "prettyPrint", valid_579739
+  var valid_579740 = query.getOrDefault("oauth_token")
+  valid_579740 = validateParameter(valid_579740, JString, required = false,
+                                 default = nil)
+  if valid_579740 != nil:
+    section.add "oauth_token", valid_579740
   assert query != nil,
         "query argument is necessary due to required `matchVersion` field"
-  var valid_589838 = query.getOrDefault("matchVersion")
-  valid_589838 = validateParameter(valid_589838, JInt, required = true, default = nil)
-  if valid_589838 != nil:
-    section.add "matchVersion", valid_589838
-  var valid_589839 = query.getOrDefault("fields")
-  valid_589839 = validateParameter(valid_589839, JString, required = false,
-                                 default = nil)
-  if valid_589839 != nil:
-    section.add "fields", valid_589839
-  var valid_589840 = query.getOrDefault("quotaUser")
-  valid_589840 = validateParameter(valid_589840, JString, required = false,
-                                 default = nil)
-  if valid_589840 != nil:
-    section.add "quotaUser", valid_589840
-  var valid_589841 = query.getOrDefault("alt")
-  valid_589841 = validateParameter(valid_589841, JString, required = false,
+  var valid_579741 = query.getOrDefault("matchVersion")
+  valid_579741 = validateParameter(valid_579741, JInt, required = true, default = nil)
+  if valid_579741 != nil:
+    section.add "matchVersion", valid_579741
+  var valid_579742 = query.getOrDefault("alt")
+  valid_579742 = validateParameter(valid_579742, JString, required = false,
                                  default = newJString("json"))
-  if valid_589841 != nil:
-    section.add "alt", valid_589841
-  var valid_589842 = query.getOrDefault("language")
-  valid_589842 = validateParameter(valid_589842, JString, required = false,
+  if valid_579742 != nil:
+    section.add "alt", valid_579742
+  var valid_579743 = query.getOrDefault("userIp")
+  valid_579743 = validateParameter(valid_579743, JString, required = false,
                                  default = nil)
-  if valid_589842 != nil:
-    section.add "language", valid_589842
-  var valid_589843 = query.getOrDefault("oauth_token")
-  valid_589843 = validateParameter(valid_589843, JString, required = false,
+  if valid_579743 != nil:
+    section.add "userIp", valid_579743
+  var valid_579744 = query.getOrDefault("pendingParticipantId")
+  valid_579744 = validateParameter(valid_579744, JString, required = false,
                                  default = nil)
-  if valid_589843 != nil:
-    section.add "oauth_token", valid_589843
-  var valid_589844 = query.getOrDefault("userIp")
-  valid_589844 = validateParameter(valid_589844, JString, required = false,
+  if valid_579744 != nil:
+    section.add "pendingParticipantId", valid_579744
+  var valid_579745 = query.getOrDefault("quotaUser")
+  valid_579745 = validateParameter(valid_579745, JString, required = false,
                                  default = nil)
-  if valid_589844 != nil:
-    section.add "userIp", valid_589844
-  var valid_589845 = query.getOrDefault("key")
-  valid_589845 = validateParameter(valid_589845, JString, required = false,
+  if valid_579745 != nil:
+    section.add "quotaUser", valid_579745
+  var valid_579746 = query.getOrDefault("fields")
+  valid_579746 = validateParameter(valid_579746, JString, required = false,
                                  default = nil)
-  if valid_589845 != nil:
-    section.add "key", valid_589845
-  var valid_589846 = query.getOrDefault("prettyPrint")
-  valid_589846 = validateParameter(valid_589846, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_589846 != nil:
-    section.add "prettyPrint", valid_589846
-  var valid_589847 = query.getOrDefault("pendingParticipantId")
-  valid_589847 = validateParameter(valid_589847, JString, required = false,
+  if valid_579746 != nil:
+    section.add "fields", valid_579746
+  var valid_579747 = query.getOrDefault("language")
+  valid_579747 = validateParameter(valid_579747, JString, required = false,
                                  default = nil)
-  if valid_589847 != nil:
-    section.add "pendingParticipantId", valid_589847
+  if valid_579747 != nil:
+    section.add "language", valid_579747
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8215,71 +8216,71 @@ proc validate_GamesTurnBasedMatchesLeaveTurn_589835(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589848: Call_GamesTurnBasedMatchesLeaveTurn_589834; path: JsonNode;
+proc call*(call_579748: Call_GamesTurnBasedMatchesLeaveTurn_579734; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Leave a turn-based match during the current player's turn, without canceling the match.
   ## 
-  let valid = call_589848.validator(path, query, header, formData, body)
-  let scheme = call_589848.pickScheme
+  let valid = call_579748.validator(path, query, header, formData, body)
+  let scheme = call_579748.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589848.url(scheme.get, call_589848.host, call_589848.base,
-                         call_589848.route, valid.getOrDefault("path"),
+  let url = call_579748.url(scheme.get, call_579748.host, call_579748.base,
+                         call_579748.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589848, url, valid)
+  result = hook(call_579748, url, valid)
 
-proc call*(call_589849: Call_GamesTurnBasedMatchesLeaveTurn_589834;
-          matchVersion: int; matchId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; language: string = "";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          prettyPrint: bool = true; pendingParticipantId: string = ""): Recallable =
+proc call*(call_579749: Call_GamesTurnBasedMatchesLeaveTurn_579734;
+          matchVersion: int; matchId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; pendingParticipantId: string = "";
+          quotaUser: string = ""; fields: string = ""; language: string = ""): Recallable =
   ## gamesTurnBasedMatchesLeaveTurn
   ## Leave a turn-based match during the current player's turn, without canceling the match.
-  ##   matchVersion: int (required)
-  ##               : The version of the match being updated.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   matchId: string (required)
-  ##          : The ID of the match.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   matchVersion: int (required)
+  ##               : The version of the match being updated.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
   ##   pendingParticipantId: string
   ##                       : The ID of another participant who should take their turn next. If not set, the match will wait for other player(s) to join via automatching; this is only valid if automatch criteria is set on the match with remaining slots for automatched players.
-  var path_589850 = newJObject()
-  var query_589851 = newJObject()
-  add(query_589851, "matchVersion", newJInt(matchVersion))
-  add(query_589851, "fields", newJString(fields))
-  add(query_589851, "quotaUser", newJString(quotaUser))
-  add(query_589851, "alt", newJString(alt))
-  add(query_589851, "language", newJString(language))
-  add(query_589851, "oauth_token", newJString(oauthToken))
-  add(query_589851, "userIp", newJString(userIp))
-  add(query_589851, "key", newJString(key))
-  add(path_589850, "matchId", newJString(matchId))
-  add(query_589851, "prettyPrint", newJBool(prettyPrint))
-  add(query_589851, "pendingParticipantId", newJString(pendingParticipantId))
-  result = call_589849.call(path_589850, query_589851, nil, nil, nil)
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   matchId: string (required)
+  ##          : The ID of the match.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579750 = newJObject()
+  var query_579751 = newJObject()
+  add(query_579751, "key", newJString(key))
+  add(query_579751, "prettyPrint", newJBool(prettyPrint))
+  add(query_579751, "oauth_token", newJString(oauthToken))
+  add(query_579751, "matchVersion", newJInt(matchVersion))
+  add(query_579751, "alt", newJString(alt))
+  add(query_579751, "userIp", newJString(userIp))
+  add(query_579751, "pendingParticipantId", newJString(pendingParticipantId))
+  add(query_579751, "quotaUser", newJString(quotaUser))
+  add(query_579751, "fields", newJString(fields))
+  add(path_579750, "matchId", newJString(matchId))
+  add(query_579751, "language", newJString(language))
+  result = call_579749.call(path_579750, query_579751, nil, nil, nil)
 
-var gamesTurnBasedMatchesLeaveTurn* = Call_GamesTurnBasedMatchesLeaveTurn_589834(
+var gamesTurnBasedMatchesLeaveTurn* = Call_GamesTurnBasedMatchesLeaveTurn_579734(
     name: "gamesTurnBasedMatchesLeaveTurn", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/turnbasedmatches/{matchId}/leaveTurn",
-    validator: validate_GamesTurnBasedMatchesLeaveTurn_589835, base: "/games/v1",
-    url: url_GamesTurnBasedMatchesLeaveTurn_589836, schemes: {Scheme.Https})
+    validator: validate_GamesTurnBasedMatchesLeaveTurn_579735, base: "/games/v1",
+    url: url_GamesTurnBasedMatchesLeaveTurn_579736, schemes: {Scheme.Https})
 type
-  Call_GamesTurnBasedMatchesRematch_589852 = ref object of OpenApiRestCall_588466
-proc url_GamesTurnBasedMatchesRematch_589854(protocol: Scheme; host: string;
+  Call_GamesTurnBasedMatchesRematch_579752 = ref object of OpenApiRestCall_578364
+proc url_GamesTurnBasedMatchesRematch_579754(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8295,7 +8296,7 @@ proc url_GamesTurnBasedMatchesRematch_589854(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesTurnBasedMatchesRematch_589853(path: JsonNode; query: JsonNode;
+proc validate_GamesTurnBasedMatchesRematch_579753(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Create a rematch of a match that was previously completed, with the same participants. This can be called by only one player on a match still in their list; the player must have called Finish first. Returns the newly created match; it will be the caller's turn.
   ## 
@@ -8306,77 +8307,77 @@ proc validate_GamesTurnBasedMatchesRematch_589853(path: JsonNode; query: JsonNod
   ##          : The ID of the match.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `matchId` field"
-  var valid_589855 = path.getOrDefault("matchId")
-  valid_589855 = validateParameter(valid_589855, JString, required = true,
+  var valid_579755 = path.getOrDefault("matchId")
+  valid_579755 = validateParameter(valid_579755, JString, required = true,
                                  default = nil)
-  if valid_589855 != nil:
-    section.add "matchId", valid_589855
+  if valid_579755 != nil:
+    section.add "matchId", valid_579755
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   requestId: JString
-  ##            : A randomly generated numeric ID for each request specified by the caller. This number is used at the server to ensure that the request is handled correctly across retries.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   requestId: JString
+  ##            : A randomly generated numeric ID for each request specified by the caller. This number is used at the server to ensure that the request is handled correctly across retries.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589856 = query.getOrDefault("fields")
-  valid_589856 = validateParameter(valid_589856, JString, required = false,
+  var valid_579756 = query.getOrDefault("key")
+  valid_579756 = validateParameter(valid_579756, JString, required = false,
                                  default = nil)
-  if valid_589856 != nil:
-    section.add "fields", valid_589856
-  var valid_589857 = query.getOrDefault("requestId")
-  valid_589857 = validateParameter(valid_589857, JString, required = false,
-                                 default = nil)
-  if valid_589857 != nil:
-    section.add "requestId", valid_589857
-  var valid_589858 = query.getOrDefault("quotaUser")
-  valid_589858 = validateParameter(valid_589858, JString, required = false,
-                                 default = nil)
-  if valid_589858 != nil:
-    section.add "quotaUser", valid_589858
-  var valid_589859 = query.getOrDefault("alt")
-  valid_589859 = validateParameter(valid_589859, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589859 != nil:
-    section.add "alt", valid_589859
-  var valid_589860 = query.getOrDefault("language")
-  valid_589860 = validateParameter(valid_589860, JString, required = false,
-                                 default = nil)
-  if valid_589860 != nil:
-    section.add "language", valid_589860
-  var valid_589861 = query.getOrDefault("oauth_token")
-  valid_589861 = validateParameter(valid_589861, JString, required = false,
-                                 default = nil)
-  if valid_589861 != nil:
-    section.add "oauth_token", valid_589861
-  var valid_589862 = query.getOrDefault("userIp")
-  valid_589862 = validateParameter(valid_589862, JString, required = false,
-                                 default = nil)
-  if valid_589862 != nil:
-    section.add "userIp", valid_589862
-  var valid_589863 = query.getOrDefault("key")
-  valid_589863 = validateParameter(valid_589863, JString, required = false,
-                                 default = nil)
-  if valid_589863 != nil:
-    section.add "key", valid_589863
-  var valid_589864 = query.getOrDefault("prettyPrint")
-  valid_589864 = validateParameter(valid_589864, JBool, required = false,
+  if valid_579756 != nil:
+    section.add "key", valid_579756
+  var valid_579757 = query.getOrDefault("prettyPrint")
+  valid_579757 = validateParameter(valid_579757, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589864 != nil:
-    section.add "prettyPrint", valid_589864
+  if valid_579757 != nil:
+    section.add "prettyPrint", valid_579757
+  var valid_579758 = query.getOrDefault("oauth_token")
+  valid_579758 = validateParameter(valid_579758, JString, required = false,
+                                 default = nil)
+  if valid_579758 != nil:
+    section.add "oauth_token", valid_579758
+  var valid_579759 = query.getOrDefault("alt")
+  valid_579759 = validateParameter(valid_579759, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579759 != nil:
+    section.add "alt", valid_579759
+  var valid_579760 = query.getOrDefault("userIp")
+  valid_579760 = validateParameter(valid_579760, JString, required = false,
+                                 default = nil)
+  if valid_579760 != nil:
+    section.add "userIp", valid_579760
+  var valid_579761 = query.getOrDefault("quotaUser")
+  valid_579761 = validateParameter(valid_579761, JString, required = false,
+                                 default = nil)
+  if valid_579761 != nil:
+    section.add "quotaUser", valid_579761
+  var valid_579762 = query.getOrDefault("requestId")
+  valid_579762 = validateParameter(valid_579762, JString, required = false,
+                                 default = nil)
+  if valid_579762 != nil:
+    section.add "requestId", valid_579762
+  var valid_579763 = query.getOrDefault("fields")
+  valid_579763 = validateParameter(valid_579763, JString, required = false,
+                                 default = nil)
+  if valid_579763 != nil:
+    section.add "fields", valid_579763
+  var valid_579764 = query.getOrDefault("language")
+  valid_579764 = validateParameter(valid_579764, JString, required = false,
+                                 default = nil)
+  if valid_579764 != nil:
+    section.add "language", valid_579764
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8385,67 +8386,67 @@ proc validate_GamesTurnBasedMatchesRematch_589853(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_589865: Call_GamesTurnBasedMatchesRematch_589852; path: JsonNode;
+proc call*(call_579765: Call_GamesTurnBasedMatchesRematch_579752; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Create a rematch of a match that was previously completed, with the same participants. This can be called by only one player on a match still in their list; the player must have called Finish first. Returns the newly created match; it will be the caller's turn.
   ## 
-  let valid = call_589865.validator(path, query, header, formData, body)
-  let scheme = call_589865.pickScheme
+  let valid = call_579765.validator(path, query, header, formData, body)
+  let scheme = call_579765.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589865.url(scheme.get, call_589865.host, call_589865.base,
-                         call_589865.route, valid.getOrDefault("path"),
+  let url = call_579765.url(scheme.get, call_579765.host, call_579765.base,
+                         call_579765.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589865, url, valid)
+  result = hook(call_579765, url, valid)
 
-proc call*(call_589866: Call_GamesTurnBasedMatchesRematch_589852; matchId: string;
-          fields: string = ""; requestId: string = ""; quotaUser: string = "";
-          alt: string = "json"; language: string = ""; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579766: Call_GamesTurnBasedMatchesRematch_579752; matchId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          requestId: string = ""; fields: string = ""; language: string = ""): Recallable =
   ## gamesTurnBasedMatchesRematch
   ## Create a rematch of a match that was previously completed, with the same participants. This can be called by only one player on a match still in their list; the player must have called Finish first. Returns the newly created match; it will be the caller's turn.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   requestId: string
-  ##            : A randomly generated numeric ID for each request specified by the caller. This number is used at the server to ensure that the request is handled correctly across retries.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   matchId: string (required)
-  ##          : The ID of the match.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589867 = newJObject()
-  var query_589868 = newJObject()
-  add(query_589868, "fields", newJString(fields))
-  add(query_589868, "requestId", newJString(requestId))
-  add(query_589868, "quotaUser", newJString(quotaUser))
-  add(query_589868, "alt", newJString(alt))
-  add(query_589868, "language", newJString(language))
-  add(query_589868, "oauth_token", newJString(oauthToken))
-  add(query_589868, "userIp", newJString(userIp))
-  add(query_589868, "key", newJString(key))
-  add(path_589867, "matchId", newJString(matchId))
-  add(query_589868, "prettyPrint", newJBool(prettyPrint))
-  result = call_589866.call(path_589867, query_589868, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   requestId: string
+  ##            : A randomly generated numeric ID for each request specified by the caller. This number is used at the server to ensure that the request is handled correctly across retries.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   matchId: string (required)
+  ##          : The ID of the match.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579767 = newJObject()
+  var query_579768 = newJObject()
+  add(query_579768, "key", newJString(key))
+  add(query_579768, "prettyPrint", newJBool(prettyPrint))
+  add(query_579768, "oauth_token", newJString(oauthToken))
+  add(query_579768, "alt", newJString(alt))
+  add(query_579768, "userIp", newJString(userIp))
+  add(query_579768, "quotaUser", newJString(quotaUser))
+  add(query_579768, "requestId", newJString(requestId))
+  add(query_579768, "fields", newJString(fields))
+  add(path_579767, "matchId", newJString(matchId))
+  add(query_579768, "language", newJString(language))
+  result = call_579766.call(path_579767, query_579768, nil, nil, nil)
 
-var gamesTurnBasedMatchesRematch* = Call_GamesTurnBasedMatchesRematch_589852(
+var gamesTurnBasedMatchesRematch* = Call_GamesTurnBasedMatchesRematch_579752(
     name: "gamesTurnBasedMatchesRematch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/turnbasedmatches/{matchId}/rematch",
-    validator: validate_GamesTurnBasedMatchesRematch_589853, base: "/games/v1",
-    url: url_GamesTurnBasedMatchesRematch_589854, schemes: {Scheme.Https})
+    validator: validate_GamesTurnBasedMatchesRematch_579753, base: "/games/v1",
+    url: url_GamesTurnBasedMatchesRematch_579754, schemes: {Scheme.Https})
 type
-  Call_GamesTurnBasedMatchesTakeTurn_589869 = ref object of OpenApiRestCall_588466
-proc url_GamesTurnBasedMatchesTakeTurn_589871(protocol: Scheme; host: string;
+  Call_GamesTurnBasedMatchesTakeTurn_579769 = ref object of OpenApiRestCall_578364
+proc url_GamesTurnBasedMatchesTakeTurn_579771(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8461,7 +8462,7 @@ proc url_GamesTurnBasedMatchesTakeTurn_589871(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_GamesTurnBasedMatchesTakeTurn_589870(path: JsonNode; query: JsonNode;
+proc validate_GamesTurnBasedMatchesTakeTurn_579770(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Commit the results of a player turn.
   ## 
@@ -8472,70 +8473,70 @@ proc validate_GamesTurnBasedMatchesTakeTurn_589870(path: JsonNode; query: JsonNo
   ##          : The ID of the match.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `matchId` field"
-  var valid_589872 = path.getOrDefault("matchId")
-  valid_589872 = validateParameter(valid_589872, JString, required = true,
+  var valid_579772 = path.getOrDefault("matchId")
+  valid_579772 = validateParameter(valid_579772, JString, required = true,
                                  default = nil)
-  if valid_589872 != nil:
-    section.add "matchId", valid_589872
+  if valid_579772 != nil:
+    section.add "matchId", valid_579772
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   language: JString
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   language: JString
+  ##           : The preferred language to use for strings returned by this method.
   section = newJObject()
-  var valid_589873 = query.getOrDefault("fields")
-  valid_589873 = validateParameter(valid_589873, JString, required = false,
+  var valid_579773 = query.getOrDefault("key")
+  valid_579773 = validateParameter(valid_579773, JString, required = false,
                                  default = nil)
-  if valid_589873 != nil:
-    section.add "fields", valid_589873
-  var valid_589874 = query.getOrDefault("quotaUser")
-  valid_589874 = validateParameter(valid_589874, JString, required = false,
-                                 default = nil)
-  if valid_589874 != nil:
-    section.add "quotaUser", valid_589874
-  var valid_589875 = query.getOrDefault("alt")
-  valid_589875 = validateParameter(valid_589875, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589875 != nil:
-    section.add "alt", valid_589875
-  var valid_589876 = query.getOrDefault("language")
-  valid_589876 = validateParameter(valid_589876, JString, required = false,
-                                 default = nil)
-  if valid_589876 != nil:
-    section.add "language", valid_589876
-  var valid_589877 = query.getOrDefault("oauth_token")
-  valid_589877 = validateParameter(valid_589877, JString, required = false,
-                                 default = nil)
-  if valid_589877 != nil:
-    section.add "oauth_token", valid_589877
-  var valid_589878 = query.getOrDefault("userIp")
-  valid_589878 = validateParameter(valid_589878, JString, required = false,
-                                 default = nil)
-  if valid_589878 != nil:
-    section.add "userIp", valid_589878
-  var valid_589879 = query.getOrDefault("key")
-  valid_589879 = validateParameter(valid_589879, JString, required = false,
-                                 default = nil)
-  if valid_589879 != nil:
-    section.add "key", valid_589879
-  var valid_589880 = query.getOrDefault("prettyPrint")
-  valid_589880 = validateParameter(valid_589880, JBool, required = false,
+  if valid_579773 != nil:
+    section.add "key", valid_579773
+  var valid_579774 = query.getOrDefault("prettyPrint")
+  valid_579774 = validateParameter(valid_579774, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589880 != nil:
-    section.add "prettyPrint", valid_589880
+  if valid_579774 != nil:
+    section.add "prettyPrint", valid_579774
+  var valid_579775 = query.getOrDefault("oauth_token")
+  valid_579775 = validateParameter(valid_579775, JString, required = false,
+                                 default = nil)
+  if valid_579775 != nil:
+    section.add "oauth_token", valid_579775
+  var valid_579776 = query.getOrDefault("alt")
+  valid_579776 = validateParameter(valid_579776, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579776 != nil:
+    section.add "alt", valid_579776
+  var valid_579777 = query.getOrDefault("userIp")
+  valid_579777 = validateParameter(valid_579777, JString, required = false,
+                                 default = nil)
+  if valid_579777 != nil:
+    section.add "userIp", valid_579777
+  var valid_579778 = query.getOrDefault("quotaUser")
+  valid_579778 = validateParameter(valid_579778, JString, required = false,
+                                 default = nil)
+  if valid_579778 != nil:
+    section.add "quotaUser", valid_579778
+  var valid_579779 = query.getOrDefault("fields")
+  valid_579779 = validateParameter(valid_579779, JString, required = false,
+                                 default = nil)
+  if valid_579779 != nil:
+    section.add "fields", valid_579779
+  var valid_579780 = query.getOrDefault("language")
+  valid_579780 = validateParameter(valid_579780, JString, required = false,
+                                 default = nil)
+  if valid_579780 != nil:
+    section.add "language", valid_579780
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8547,65 +8548,65 @@ proc validate_GamesTurnBasedMatchesTakeTurn_589870(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_589882: Call_GamesTurnBasedMatchesTakeTurn_589869; path: JsonNode;
+proc call*(call_579782: Call_GamesTurnBasedMatchesTakeTurn_579769; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Commit the results of a player turn.
   ## 
-  let valid = call_589882.validator(path, query, header, formData, body)
-  let scheme = call_589882.pickScheme
+  let valid = call_579782.validator(path, query, header, formData, body)
+  let scheme = call_579782.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589882.url(scheme.get, call_589882.host, call_589882.base,
-                         call_589882.route, valid.getOrDefault("path"),
+  let url = call_579782.url(scheme.get, call_579782.host, call_579782.base,
+                         call_579782.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589882, url, valid)
+  result = hook(call_579782, url, valid)
 
-proc call*(call_589883: Call_GamesTurnBasedMatchesTakeTurn_589869; matchId: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          language: string = ""; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579783: Call_GamesTurnBasedMatchesTakeTurn_579769; matchId: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          body: JsonNode = nil; fields: string = ""; language: string = ""): Recallable =
   ## gamesTurnBasedMatchesTakeTurn
   ## Commit the results of a player turn.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   language: string
-  ##           : The preferred language to use for strings returned by this method.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   matchId: string (required)
-  ##          : The ID of the match.
-  ##   body: JObject
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589884 = newJObject()
-  var query_589885 = newJObject()
-  var body_589886 = newJObject()
-  add(query_589885, "fields", newJString(fields))
-  add(query_589885, "quotaUser", newJString(quotaUser))
-  add(query_589885, "alt", newJString(alt))
-  add(query_589885, "language", newJString(language))
-  add(query_589885, "oauth_token", newJString(oauthToken))
-  add(query_589885, "userIp", newJString(userIp))
-  add(query_589885, "key", newJString(key))
-  add(path_589884, "matchId", newJString(matchId))
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   matchId: string (required)
+  ##          : The ID of the match.
+  ##   language: string
+  ##           : The preferred language to use for strings returned by this method.
+  var path_579784 = newJObject()
+  var query_579785 = newJObject()
+  var body_579786 = newJObject()
+  add(query_579785, "key", newJString(key))
+  add(query_579785, "prettyPrint", newJBool(prettyPrint))
+  add(query_579785, "oauth_token", newJString(oauthToken))
+  add(query_579785, "alt", newJString(alt))
+  add(query_579785, "userIp", newJString(userIp))
+  add(query_579785, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_589886 = body
-  add(query_589885, "prettyPrint", newJBool(prettyPrint))
-  result = call_589883.call(path_589884, query_589885, nil, nil, body_589886)
+    body_579786 = body
+  add(query_579785, "fields", newJString(fields))
+  add(path_579784, "matchId", newJString(matchId))
+  add(query_579785, "language", newJString(language))
+  result = call_579783.call(path_579784, query_579785, nil, nil, body_579786)
 
-var gamesTurnBasedMatchesTakeTurn* = Call_GamesTurnBasedMatchesTakeTurn_589869(
+var gamesTurnBasedMatchesTakeTurn* = Call_GamesTurnBasedMatchesTakeTurn_579769(
     name: "gamesTurnBasedMatchesTakeTurn", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/turnbasedmatches/{matchId}/turn",
-    validator: validate_GamesTurnBasedMatchesTakeTurn_589870, base: "/games/v1",
-    url: url_GamesTurnBasedMatchesTakeTurn_589871, schemes: {Scheme.Https})
+    validator: validate_GamesTurnBasedMatchesTakeTurn_579770, base: "/games/v1",
+    url: url_GamesTurnBasedMatchesTakeTurn_579771, schemes: {Scheme.Https})
 export
   rest
 

@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588441 = ref object of OpenApiRestCall
+  OpenApiRestCall_578339 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588441](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588441): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,8 +112,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_TaskqueueTaskqueuesGet_588709 = ref object of OpenApiRestCall_588441
-proc url_TaskqueueTaskqueuesGet_588711(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTaskqueuesGet_578609 = ref object of OpenApiRestCall_578339
+proc url_TaskqueueTaskqueuesGet_578611(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -127,87 +131,87 @@ proc url_TaskqueueTaskqueuesGet_588711(protocol: Scheme; host: string; base: str
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTaskqueuesGet_588710(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTaskqueuesGet_578610(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get detailed information about a TaskQueue.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   project: JString (required)
-  ##          : The project under which the queue lies.
   ##   taskqueue: JString (required)
   ##            : The id of the taskqueue to get the properties of.
+  ##   project: JString (required)
+  ##          : The project under which the queue lies.
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_588837 = path.getOrDefault("project")
-  valid_588837 = validateParameter(valid_588837, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `taskqueue` field"
+  var valid_578737 = path.getOrDefault("taskqueue")
+  valid_578737 = validateParameter(valid_578737, JString, required = true,
                                  default = nil)
-  if valid_588837 != nil:
-    section.add "project", valid_588837
-  var valid_588838 = path.getOrDefault("taskqueue")
-  valid_588838 = validateParameter(valid_588838, JString, required = true,
+  if valid_578737 != nil:
+    section.add "taskqueue", valid_578737
+  var valid_578738 = path.getOrDefault("project")
+  valid_578738 = validateParameter(valid_578738, JString, required = true,
                                  default = nil)
-  if valid_588838 != nil:
-    section.add "taskqueue", valid_588838
+  if valid_578738 != nil:
+    section.add "project", valid_578738
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   getStats: JBool
-  ##           : Whether to get stats. Optional.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   getStats: JBool
+  ##           : Whether to get stats. Optional.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588839 = query.getOrDefault("fields")
-  valid_588839 = validateParameter(valid_588839, JString, required = false,
+  var valid_578739 = query.getOrDefault("key")
+  valid_578739 = validateParameter(valid_578739, JString, required = false,
                                  default = nil)
-  if valid_588839 != nil:
-    section.add "fields", valid_588839
-  var valid_588840 = query.getOrDefault("quotaUser")
-  valid_588840 = validateParameter(valid_588840, JString, required = false,
-                                 default = nil)
-  if valid_588840 != nil:
-    section.add "quotaUser", valid_588840
-  var valid_588854 = query.getOrDefault("alt")
-  valid_588854 = validateParameter(valid_588854, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588854 != nil:
-    section.add "alt", valid_588854
-  var valid_588855 = query.getOrDefault("getStats")
-  valid_588855 = validateParameter(valid_588855, JBool, required = false, default = nil)
-  if valid_588855 != nil:
-    section.add "getStats", valid_588855
-  var valid_588856 = query.getOrDefault("oauth_token")
-  valid_588856 = validateParameter(valid_588856, JString, required = false,
-                                 default = nil)
-  if valid_588856 != nil:
-    section.add "oauth_token", valid_588856
-  var valid_588857 = query.getOrDefault("userIp")
-  valid_588857 = validateParameter(valid_588857, JString, required = false,
-                                 default = nil)
-  if valid_588857 != nil:
-    section.add "userIp", valid_588857
-  var valid_588858 = query.getOrDefault("key")
-  valid_588858 = validateParameter(valid_588858, JString, required = false,
-                                 default = nil)
-  if valid_588858 != nil:
-    section.add "key", valid_588858
-  var valid_588859 = query.getOrDefault("prettyPrint")
-  valid_588859 = validateParameter(valid_588859, JBool, required = false,
+  if valid_578739 != nil:
+    section.add "key", valid_578739
+  var valid_578753 = query.getOrDefault("prettyPrint")
+  valid_578753 = validateParameter(valid_578753, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588859 != nil:
-    section.add "prettyPrint", valid_588859
+  if valid_578753 != nil:
+    section.add "prettyPrint", valid_578753
+  var valid_578754 = query.getOrDefault("oauth_token")
+  valid_578754 = validateParameter(valid_578754, JString, required = false,
+                                 default = nil)
+  if valid_578754 != nil:
+    section.add "oauth_token", valid_578754
+  var valid_578755 = query.getOrDefault("alt")
+  valid_578755 = validateParameter(valid_578755, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578755 != nil:
+    section.add "alt", valid_578755
+  var valid_578756 = query.getOrDefault("userIp")
+  valid_578756 = validateParameter(valid_578756, JString, required = false,
+                                 default = nil)
+  if valid_578756 != nil:
+    section.add "userIp", valid_578756
+  var valid_578757 = query.getOrDefault("quotaUser")
+  valid_578757 = validateParameter(valid_578757, JString, required = false,
+                                 default = nil)
+  if valid_578757 != nil:
+    section.add "quotaUser", valid_578757
+  var valid_578758 = query.getOrDefault("getStats")
+  valid_578758 = validateParameter(valid_578758, JBool, required = false, default = nil)
+  if valid_578758 != nil:
+    section.add "getStats", valid_578758
+  var valid_578759 = query.getOrDefault("fields")
+  valid_578759 = validateParameter(valid_578759, JString, required = false,
+                                 default = nil)
+  if valid_578759 != nil:
+    section.add "fields", valid_578759
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -216,68 +220,68 @@ proc validate_TaskqueueTaskqueuesGet_588710(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588882: Call_TaskqueueTaskqueuesGet_588709; path: JsonNode;
+proc call*(call_578782: Call_TaskqueueTaskqueuesGet_578609; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get detailed information about a TaskQueue.
   ## 
-  let valid = call_588882.validator(path, query, header, formData, body)
-  let scheme = call_588882.pickScheme
+  let valid = call_578782.validator(path, query, header, formData, body)
+  let scheme = call_578782.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588882.url(scheme.get, call_588882.host, call_588882.base,
-                         call_588882.route, valid.getOrDefault("path"),
+  let url = call_578782.url(scheme.get, call_578782.host, call_578782.base,
+                         call_578782.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588882, url, valid)
+  result = hook(call_578782, url, valid)
 
-proc call*(call_588953: Call_TaskqueueTaskqueuesGet_588709; project: string;
-          taskqueue: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; getStats: bool = false; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_578853: Call_TaskqueueTaskqueuesGet_578609; taskqueue: string;
+          project: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; getStats: bool = false; fields: string = ""): Recallable =
   ## taskqueueTaskqueuesGet
   ## Get detailed information about a TaskQueue.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   getStats: bool
-  ##           : Whether to get stats. Optional.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   project: string (required)
-  ##          : The project under which the queue lies.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
   ##   taskqueue: string (required)
   ##            : The id of the taskqueue to get the properties of.
-  var path_588954 = newJObject()
-  var query_588956 = newJObject()
-  add(query_588956, "fields", newJString(fields))
-  add(query_588956, "quotaUser", newJString(quotaUser))
-  add(query_588956, "alt", newJString(alt))
-  add(query_588956, "getStats", newJBool(getStats))
-  add(query_588956, "oauth_token", newJString(oauthToken))
-  add(query_588956, "userIp", newJString(userIp))
-  add(query_588956, "key", newJString(key))
-  add(path_588954, "project", newJString(project))
-  add(query_588956, "prettyPrint", newJBool(prettyPrint))
-  add(path_588954, "taskqueue", newJString(taskqueue))
-  result = call_588953.call(path_588954, query_588956, nil, nil, nil)
+  ##   getStats: bool
+  ##           : Whether to get stats. Optional.
+  ##   project: string (required)
+  ##          : The project under which the queue lies.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578854 = newJObject()
+  var query_578856 = newJObject()
+  add(query_578856, "key", newJString(key))
+  add(query_578856, "prettyPrint", newJBool(prettyPrint))
+  add(query_578856, "oauth_token", newJString(oauthToken))
+  add(query_578856, "alt", newJString(alt))
+  add(query_578856, "userIp", newJString(userIp))
+  add(query_578856, "quotaUser", newJString(quotaUser))
+  add(path_578854, "taskqueue", newJString(taskqueue))
+  add(query_578856, "getStats", newJBool(getStats))
+  add(path_578854, "project", newJString(project))
+  add(query_578856, "fields", newJString(fields))
+  result = call_578853.call(path_578854, query_578856, nil, nil, nil)
 
-var taskqueueTaskqueuesGet* = Call_TaskqueueTaskqueuesGet_588709(
+var taskqueueTaskqueuesGet* = Call_TaskqueueTaskqueuesGet_578609(
     name: "taskqueueTaskqueuesGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/taskqueues/{taskqueue}",
-    validator: validate_TaskqueueTaskqueuesGet_588710,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTaskqueuesGet_588711,
+    validator: validate_TaskqueueTaskqueuesGet_578610,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTaskqueuesGet_578611,
     schemes: {Scheme.Https})
 type
-  Call_TaskqueueTasksInsert_589011 = ref object of OpenApiRestCall_588441
-proc url_TaskqueueTasksInsert_589013(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTasksInsert_578911 = ref object of OpenApiRestCall_578339
+proc url_TaskqueueTasksInsert_578913(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -296,81 +300,81 @@ proc url_TaskqueueTasksInsert_589013(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTasksInsert_589012(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTasksInsert_578912(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Insert a new task in a TaskQueue
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   project: JString (required)
-  ##          : The project under which the queue lies
   ##   taskqueue: JString (required)
   ##            : The taskqueue to insert the task into
+  ##   project: JString (required)
+  ##          : The project under which the queue lies
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_589014 = path.getOrDefault("project")
-  valid_589014 = validateParameter(valid_589014, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `taskqueue` field"
+  var valid_578914 = path.getOrDefault("taskqueue")
+  valid_578914 = validateParameter(valid_578914, JString, required = true,
                                  default = nil)
-  if valid_589014 != nil:
-    section.add "project", valid_589014
-  var valid_589015 = path.getOrDefault("taskqueue")
-  valid_589015 = validateParameter(valid_589015, JString, required = true,
+  if valid_578914 != nil:
+    section.add "taskqueue", valid_578914
+  var valid_578915 = path.getOrDefault("project")
+  valid_578915 = validateParameter(valid_578915, JString, required = true,
                                  default = nil)
-  if valid_589015 != nil:
-    section.add "taskqueue", valid_589015
+  if valid_578915 != nil:
+    section.add "project", valid_578915
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589016 = query.getOrDefault("fields")
-  valid_589016 = validateParameter(valid_589016, JString, required = false,
+  var valid_578916 = query.getOrDefault("key")
+  valid_578916 = validateParameter(valid_578916, JString, required = false,
                                  default = nil)
-  if valid_589016 != nil:
-    section.add "fields", valid_589016
-  var valid_589017 = query.getOrDefault("quotaUser")
-  valid_589017 = validateParameter(valid_589017, JString, required = false,
-                                 default = nil)
-  if valid_589017 != nil:
-    section.add "quotaUser", valid_589017
-  var valid_589018 = query.getOrDefault("alt")
-  valid_589018 = validateParameter(valid_589018, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589018 != nil:
-    section.add "alt", valid_589018
-  var valid_589019 = query.getOrDefault("oauth_token")
-  valid_589019 = validateParameter(valid_589019, JString, required = false,
-                                 default = nil)
-  if valid_589019 != nil:
-    section.add "oauth_token", valid_589019
-  var valid_589020 = query.getOrDefault("userIp")
-  valid_589020 = validateParameter(valid_589020, JString, required = false,
-                                 default = nil)
-  if valid_589020 != nil:
-    section.add "userIp", valid_589020
-  var valid_589021 = query.getOrDefault("key")
-  valid_589021 = validateParameter(valid_589021, JString, required = false,
-                                 default = nil)
-  if valid_589021 != nil:
-    section.add "key", valid_589021
-  var valid_589022 = query.getOrDefault("prettyPrint")
-  valid_589022 = validateParameter(valid_589022, JBool, required = false,
+  if valid_578916 != nil:
+    section.add "key", valid_578916
+  var valid_578917 = query.getOrDefault("prettyPrint")
+  valid_578917 = validateParameter(valid_578917, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589022 != nil:
-    section.add "prettyPrint", valid_589022
+  if valid_578917 != nil:
+    section.add "prettyPrint", valid_578917
+  var valid_578918 = query.getOrDefault("oauth_token")
+  valid_578918 = validateParameter(valid_578918, JString, required = false,
+                                 default = nil)
+  if valid_578918 != nil:
+    section.add "oauth_token", valid_578918
+  var valid_578919 = query.getOrDefault("alt")
+  valid_578919 = validateParameter(valid_578919, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578919 != nil:
+    section.add "alt", valid_578919
+  var valid_578920 = query.getOrDefault("userIp")
+  valid_578920 = validateParameter(valid_578920, JString, required = false,
+                                 default = nil)
+  if valid_578920 != nil:
+    section.add "userIp", valid_578920
+  var valid_578921 = query.getOrDefault("quotaUser")
+  valid_578921 = validateParameter(valid_578921, JString, required = false,
+                                 default = nil)
+  if valid_578921 != nil:
+    section.add "quotaUser", valid_578921
+  var valid_578922 = query.getOrDefault("fields")
+  valid_578922 = validateParameter(valid_578922, JString, required = false,
+                                 default = nil)
+  if valid_578922 != nil:
+    section.add "fields", valid_578922
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -382,69 +386,69 @@ proc validate_TaskqueueTasksInsert_589012(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589024: Call_TaskqueueTasksInsert_589011; path: JsonNode;
+proc call*(call_578924: Call_TaskqueueTasksInsert_578911; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Insert a new task in a TaskQueue
   ## 
-  let valid = call_589024.validator(path, query, header, formData, body)
-  let scheme = call_589024.pickScheme
+  let valid = call_578924.validator(path, query, header, formData, body)
+  let scheme = call_578924.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589024.url(scheme.get, call_589024.host, call_589024.base,
-                         call_589024.route, valid.getOrDefault("path"),
+  let url = call_578924.url(scheme.get, call_578924.host, call_578924.base,
+                         call_578924.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589024, url, valid)
+  result = hook(call_578924, url, valid)
 
-proc call*(call_589025: Call_TaskqueueTasksInsert_589011; project: string;
-          taskqueue: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578925: Call_TaskqueueTasksInsert_578911; taskqueue: string;
+          project: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## taskqueueTasksInsert
   ## Insert a new task in a TaskQueue
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   taskqueue: string (required)
+  ##            : The taskqueue to insert the task into
   ##   project: string (required)
   ##          : The project under which the queue lies
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  ##   taskqueue: string (required)
-  ##            : The taskqueue to insert the task into
-  var path_589026 = newJObject()
-  var query_589027 = newJObject()
-  var body_589028 = newJObject()
-  add(query_589027, "fields", newJString(fields))
-  add(query_589027, "quotaUser", newJString(quotaUser))
-  add(query_589027, "alt", newJString(alt))
-  add(query_589027, "oauth_token", newJString(oauthToken))
-  add(query_589027, "userIp", newJString(userIp))
-  add(query_589027, "key", newJString(key))
-  add(path_589026, "project", newJString(project))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578926 = newJObject()
+  var query_578927 = newJObject()
+  var body_578928 = newJObject()
+  add(query_578927, "key", newJString(key))
+  add(query_578927, "prettyPrint", newJBool(prettyPrint))
+  add(query_578927, "oauth_token", newJString(oauthToken))
+  add(query_578927, "alt", newJString(alt))
+  add(query_578927, "userIp", newJString(userIp))
+  add(query_578927, "quotaUser", newJString(quotaUser))
+  add(path_578926, "taskqueue", newJString(taskqueue))
+  add(path_578926, "project", newJString(project))
   if body != nil:
-    body_589028 = body
-  add(query_589027, "prettyPrint", newJBool(prettyPrint))
-  add(path_589026, "taskqueue", newJString(taskqueue))
-  result = call_589025.call(path_589026, query_589027, nil, nil, body_589028)
+    body_578928 = body
+  add(query_578927, "fields", newJString(fields))
+  result = call_578925.call(path_578926, query_578927, nil, nil, body_578928)
 
-var taskqueueTasksInsert* = Call_TaskqueueTasksInsert_589011(
+var taskqueueTasksInsert* = Call_TaskqueueTasksInsert_578911(
     name: "taskqueueTasksInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{project}/taskqueues/{taskqueue}/tasks",
-    validator: validate_TaskqueueTasksInsert_589012,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksInsert_589013,
+    validator: validate_TaskqueueTasksInsert_578912,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksInsert_578913,
     schemes: {Scheme.Https})
 type
-  Call_TaskqueueTasksList_588995 = ref object of OpenApiRestCall_588441
-proc url_TaskqueueTasksList_588997(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTasksList_578895 = ref object of OpenApiRestCall_578339
+proc url_TaskqueueTasksList_578897(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -463,7 +467,7 @@ proc url_TaskqueueTasksList_588997(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTasksList_588996(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTasksList_578896(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## List Tasks in a TaskQueue
@@ -471,74 +475,74 @@ proc validate_TaskqueueTasksList_588996(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   project: JString (required)
-  ##          : The project under which the queue lies.
   ##   taskqueue: JString (required)
   ##            : The id of the taskqueue to list tasks from.
+  ##   project: JString (required)
+  ##          : The project under which the queue lies.
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_588998 = path.getOrDefault("project")
-  valid_588998 = validateParameter(valid_588998, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `taskqueue` field"
+  var valid_578898 = path.getOrDefault("taskqueue")
+  valid_578898 = validateParameter(valid_578898, JString, required = true,
                                  default = nil)
-  if valid_588998 != nil:
-    section.add "project", valid_588998
-  var valid_588999 = path.getOrDefault("taskqueue")
-  valid_588999 = validateParameter(valid_588999, JString, required = true,
+  if valid_578898 != nil:
+    section.add "taskqueue", valid_578898
+  var valid_578899 = path.getOrDefault("project")
+  valid_578899 = validateParameter(valid_578899, JString, required = true,
                                  default = nil)
-  if valid_588999 != nil:
-    section.add "taskqueue", valid_588999
+  if valid_578899 != nil:
+    section.add "project", valid_578899
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589000 = query.getOrDefault("fields")
-  valid_589000 = validateParameter(valid_589000, JString, required = false,
+  var valid_578900 = query.getOrDefault("key")
+  valid_578900 = validateParameter(valid_578900, JString, required = false,
                                  default = nil)
-  if valid_589000 != nil:
-    section.add "fields", valid_589000
-  var valid_589001 = query.getOrDefault("quotaUser")
-  valid_589001 = validateParameter(valid_589001, JString, required = false,
-                                 default = nil)
-  if valid_589001 != nil:
-    section.add "quotaUser", valid_589001
-  var valid_589002 = query.getOrDefault("alt")
-  valid_589002 = validateParameter(valid_589002, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589002 != nil:
-    section.add "alt", valid_589002
-  var valid_589003 = query.getOrDefault("oauth_token")
-  valid_589003 = validateParameter(valid_589003, JString, required = false,
-                                 default = nil)
-  if valid_589003 != nil:
-    section.add "oauth_token", valid_589003
-  var valid_589004 = query.getOrDefault("userIp")
-  valid_589004 = validateParameter(valid_589004, JString, required = false,
-                                 default = nil)
-  if valid_589004 != nil:
-    section.add "userIp", valid_589004
-  var valid_589005 = query.getOrDefault("key")
-  valid_589005 = validateParameter(valid_589005, JString, required = false,
-                                 default = nil)
-  if valid_589005 != nil:
-    section.add "key", valid_589005
-  var valid_589006 = query.getOrDefault("prettyPrint")
-  valid_589006 = validateParameter(valid_589006, JBool, required = false,
+  if valid_578900 != nil:
+    section.add "key", valid_578900
+  var valid_578901 = query.getOrDefault("prettyPrint")
+  valid_578901 = validateParameter(valid_578901, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589006 != nil:
-    section.add "prettyPrint", valid_589006
+  if valid_578901 != nil:
+    section.add "prettyPrint", valid_578901
+  var valid_578902 = query.getOrDefault("oauth_token")
+  valid_578902 = validateParameter(valid_578902, JString, required = false,
+                                 default = nil)
+  if valid_578902 != nil:
+    section.add "oauth_token", valid_578902
+  var valid_578903 = query.getOrDefault("alt")
+  valid_578903 = validateParameter(valid_578903, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578903 != nil:
+    section.add "alt", valid_578903
+  var valid_578904 = query.getOrDefault("userIp")
+  valid_578904 = validateParameter(valid_578904, JString, required = false,
+                                 default = nil)
+  if valid_578904 != nil:
+    section.add "userIp", valid_578904
+  var valid_578905 = query.getOrDefault("quotaUser")
+  valid_578905 = validateParameter(valid_578905, JString, required = false,
+                                 default = nil)
+  if valid_578905 != nil:
+    section.add "quotaUser", valid_578905
+  var valid_578906 = query.getOrDefault("fields")
+  valid_578906 = validateParameter(valid_578906, JString, required = false,
+                                 default = nil)
+  if valid_578906 != nil:
+    section.add "fields", valid_578906
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -547,65 +551,65 @@ proc validate_TaskqueueTasksList_588996(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589007: Call_TaskqueueTasksList_588995; path: JsonNode;
+proc call*(call_578907: Call_TaskqueueTasksList_578895; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## List Tasks in a TaskQueue
   ## 
-  let valid = call_589007.validator(path, query, header, formData, body)
-  let scheme = call_589007.pickScheme
+  let valid = call_578907.validator(path, query, header, formData, body)
+  let scheme = call_578907.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589007.url(scheme.get, call_589007.host, call_589007.base,
-                         call_589007.route, valid.getOrDefault("path"),
+  let url = call_578907.url(scheme.get, call_578907.host, call_578907.base,
+                         call_578907.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589007, url, valid)
+  result = hook(call_578907, url, valid)
 
-proc call*(call_589008: Call_TaskqueueTasksList_588995; project: string;
-          taskqueue: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_578908: Call_TaskqueueTasksList_578895; taskqueue: string;
+          project: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; fields: string = ""): Recallable =
   ## taskqueueTasksList
   ## List Tasks in a TaskQueue
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   project: string (required)
-  ##          : The project under which the queue lies.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
   ##   taskqueue: string (required)
   ##            : The id of the taskqueue to list tasks from.
-  var path_589009 = newJObject()
-  var query_589010 = newJObject()
-  add(query_589010, "fields", newJString(fields))
-  add(query_589010, "quotaUser", newJString(quotaUser))
-  add(query_589010, "alt", newJString(alt))
-  add(query_589010, "oauth_token", newJString(oauthToken))
-  add(query_589010, "userIp", newJString(userIp))
-  add(query_589010, "key", newJString(key))
-  add(path_589009, "project", newJString(project))
-  add(query_589010, "prettyPrint", newJBool(prettyPrint))
-  add(path_589009, "taskqueue", newJString(taskqueue))
-  result = call_589008.call(path_589009, query_589010, nil, nil, nil)
+  ##   project: string (required)
+  ##          : The project under which the queue lies.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578909 = newJObject()
+  var query_578910 = newJObject()
+  add(query_578910, "key", newJString(key))
+  add(query_578910, "prettyPrint", newJBool(prettyPrint))
+  add(query_578910, "oauth_token", newJString(oauthToken))
+  add(query_578910, "alt", newJString(alt))
+  add(query_578910, "userIp", newJString(userIp))
+  add(query_578910, "quotaUser", newJString(quotaUser))
+  add(path_578909, "taskqueue", newJString(taskqueue))
+  add(path_578909, "project", newJString(project))
+  add(query_578910, "fields", newJString(fields))
+  result = call_578908.call(path_578909, query_578910, nil, nil, nil)
 
-var taskqueueTasksList* = Call_TaskqueueTasksList_588995(
+var taskqueueTasksList* = Call_TaskqueueTasksList_578895(
     name: "taskqueueTasksList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{project}/taskqueues/{taskqueue}/tasks",
-    validator: validate_TaskqueueTasksList_588996,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksList_588997,
+    validator: validate_TaskqueueTasksList_578896,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksList_578897,
     schemes: {Scheme.Https})
 type
-  Call_TaskqueueTasksLease_589029 = ref object of OpenApiRestCall_588441
-proc url_TaskqueueTasksLease_589031(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTasksLease_578929 = ref object of OpenApiRestCall_578339
+proc url_TaskqueueTasksLease_578931(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -624,7 +628,7 @@ proc url_TaskqueueTasksLease_589031(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTasksLease_589030(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTasksLease_578930(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Lease 1 or more tasks from a TaskQueue.
@@ -632,101 +636,101 @@ proc validate_TaskqueueTasksLease_589030(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   project: JString (required)
-  ##          : The project under which the queue lies.
   ##   taskqueue: JString (required)
   ##            : The taskqueue to lease a task from.
+  ##   project: JString (required)
+  ##          : The project under which the queue lies.
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_589032 = path.getOrDefault("project")
-  valid_589032 = validateParameter(valid_589032, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `taskqueue` field"
+  var valid_578932 = path.getOrDefault("taskqueue")
+  valid_578932 = validateParameter(valid_578932, JString, required = true,
                                  default = nil)
-  if valid_589032 != nil:
-    section.add "project", valid_589032
-  var valid_589033 = path.getOrDefault("taskqueue")
-  valid_589033 = validateParameter(valid_589033, JString, required = true,
+  if valid_578932 != nil:
+    section.add "taskqueue", valid_578932
+  var valid_578933 = path.getOrDefault("project")
+  valid_578933 = validateParameter(valid_578933, JString, required = true,
                                  default = nil)
-  if valid_589033 != nil:
-    section.add "taskqueue", valid_589033
+  if valid_578933 != nil:
+    section.add "project", valid_578933
   result.add "path", section
   ## parameters in `query` object:
-  ##   tag: JString
-  ##      : The tag allowed for tasks in the response. Must only be specified if group_by_tag is true. If group_by_tag is true and tag is not specified the tag will be that of the oldest task by eta, i.e. the first available tag
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   groupByTag: JBool
-  ##             : When true, all returned tasks will have the same tag
+  ##   prettyPrint: JBool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   tag: JString
+  ##      : The tag allowed for tasks in the response. Must only be specified if group_by_tag is true. If group_by_tag is true and tag is not specified the tag will be that of the oldest task by eta, i.e. the first available tag
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
   ##   leaseSecs: JInt (required)
   ##            : The lease in seconds.
   ##   numTasks: JInt (required)
   ##           : The number of tasks to lease.
-  ##   prettyPrint: JBool
-  ##              : Returns response with indentations and line breaks.
+  ##   groupByTag: JBool
+  ##             : When true, all returned tasks will have the same tag
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589034 = query.getOrDefault("tag")
-  valid_589034 = validateParameter(valid_589034, JString, required = false,
+  var valid_578934 = query.getOrDefault("key")
+  valid_578934 = validateParameter(valid_578934, JString, required = false,
                                  default = nil)
-  if valid_589034 != nil:
-    section.add "tag", valid_589034
-  var valid_589035 = query.getOrDefault("fields")
-  valid_589035 = validateParameter(valid_589035, JString, required = false,
+  if valid_578934 != nil:
+    section.add "key", valid_578934
+  var valid_578935 = query.getOrDefault("prettyPrint")
+  valid_578935 = validateParameter(valid_578935, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_578935 != nil:
+    section.add "prettyPrint", valid_578935
+  var valid_578936 = query.getOrDefault("oauth_token")
+  valid_578936 = validateParameter(valid_578936, JString, required = false,
                                  default = nil)
-  if valid_589035 != nil:
-    section.add "fields", valid_589035
-  var valid_589036 = query.getOrDefault("quotaUser")
-  valid_589036 = validateParameter(valid_589036, JString, required = false,
+  if valid_578936 != nil:
+    section.add "oauth_token", valid_578936
+  var valid_578937 = query.getOrDefault("tag")
+  valid_578937 = validateParameter(valid_578937, JString, required = false,
                                  default = nil)
-  if valid_589036 != nil:
-    section.add "quotaUser", valid_589036
-  var valid_589037 = query.getOrDefault("alt")
-  valid_589037 = validateParameter(valid_589037, JString, required = false,
+  if valid_578937 != nil:
+    section.add "tag", valid_578937
+  var valid_578938 = query.getOrDefault("alt")
+  valid_578938 = validateParameter(valid_578938, JString, required = false,
                                  default = newJString("json"))
-  if valid_589037 != nil:
-    section.add "alt", valid_589037
-  var valid_589038 = query.getOrDefault("oauth_token")
-  valid_589038 = validateParameter(valid_589038, JString, required = false,
+  if valid_578938 != nil:
+    section.add "alt", valid_578938
+  var valid_578939 = query.getOrDefault("userIp")
+  valid_578939 = validateParameter(valid_578939, JString, required = false,
                                  default = nil)
-  if valid_589038 != nil:
-    section.add "oauth_token", valid_589038
-  var valid_589039 = query.getOrDefault("userIp")
-  valid_589039 = validateParameter(valid_589039, JString, required = false,
+  if valid_578939 != nil:
+    section.add "userIp", valid_578939
+  var valid_578940 = query.getOrDefault("quotaUser")
+  valid_578940 = validateParameter(valid_578940, JString, required = false,
                                  default = nil)
-  if valid_589039 != nil:
-    section.add "userIp", valid_589039
-  var valid_589040 = query.getOrDefault("key")
-  valid_589040 = validateParameter(valid_589040, JString, required = false,
-                                 default = nil)
-  if valid_589040 != nil:
-    section.add "key", valid_589040
-  var valid_589041 = query.getOrDefault("groupByTag")
-  valid_589041 = validateParameter(valid_589041, JBool, required = false, default = nil)
-  if valid_589041 != nil:
-    section.add "groupByTag", valid_589041
+  if valid_578940 != nil:
+    section.add "quotaUser", valid_578940
   assert query != nil,
         "query argument is necessary due to required `leaseSecs` field"
-  var valid_589042 = query.getOrDefault("leaseSecs")
-  valid_589042 = validateParameter(valid_589042, JInt, required = true, default = nil)
-  if valid_589042 != nil:
-    section.add "leaseSecs", valid_589042
-  var valid_589043 = query.getOrDefault("numTasks")
-  valid_589043 = validateParameter(valid_589043, JInt, required = true, default = nil)
-  if valid_589043 != nil:
-    section.add "numTasks", valid_589043
-  var valid_589044 = query.getOrDefault("prettyPrint")
-  valid_589044 = validateParameter(valid_589044, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_589044 != nil:
-    section.add "prettyPrint", valid_589044
+  var valid_578941 = query.getOrDefault("leaseSecs")
+  valid_578941 = validateParameter(valid_578941, JInt, required = true, default = nil)
+  if valid_578941 != nil:
+    section.add "leaseSecs", valid_578941
+  var valid_578942 = query.getOrDefault("numTasks")
+  valid_578942 = validateParameter(valid_578942, JInt, required = true, default = nil)
+  if valid_578942 != nil:
+    section.add "numTasks", valid_578942
+  var valid_578943 = query.getOrDefault("groupByTag")
+  valid_578943 = validateParameter(valid_578943, JBool, required = false, default = nil)
+  if valid_578943 != nil:
+    section.add "groupByTag", valid_578943
+  var valid_578944 = query.getOrDefault("fields")
+  valid_578944 = validateParameter(valid_578944, JString, required = false,
+                                 default = nil)
+  if valid_578944 != nil:
+    section.add "fields", valid_578944
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -735,79 +739,79 @@ proc validate_TaskqueueTasksLease_589030(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589045: Call_TaskqueueTasksLease_589029; path: JsonNode;
+proc call*(call_578945: Call_TaskqueueTasksLease_578929; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lease 1 or more tasks from a TaskQueue.
   ## 
-  let valid = call_589045.validator(path, query, header, formData, body)
-  let scheme = call_589045.pickScheme
+  let valid = call_578945.validator(path, query, header, formData, body)
+  let scheme = call_578945.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589045.url(scheme.get, call_589045.host, call_589045.base,
-                         call_589045.route, valid.getOrDefault("path"),
+  let url = call_578945.url(scheme.get, call_578945.host, call_578945.base,
+                         call_578945.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589045, url, valid)
+  result = hook(call_578945, url, valid)
 
-proc call*(call_589046: Call_TaskqueueTasksLease_589029; leaseSecs: int;
-          project: string; numTasks: int; taskqueue: string; tag: string = "";
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          groupByTag: bool = false; prettyPrint: bool = true): Recallable =
+proc call*(call_578946: Call_TaskqueueTasksLease_578929; taskqueue: string;
+          leaseSecs: int; numTasks: int; project: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; tag: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          groupByTag: bool = false; fields: string = ""): Recallable =
   ## taskqueueTasksLease
   ## Lease 1 or more tasks from a TaskQueue.
-  ##   tag: string
-  ##      : The tag allowed for tasks in the response. Must only be specified if group_by_tag is true. If group_by_tag is true and tag is not specified the tag will be that of the oldest task by eta, i.e. the first available tag
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   groupByTag: bool
-  ##             : When true, all returned tasks will have the same tag
-  ##   leaseSecs: int (required)
-  ##            : The lease in seconds.
-  ##   project: string (required)
-  ##          : The project under which the queue lies.
-  ##   numTasks: int (required)
-  ##           : The number of tasks to lease.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   tag: string
+  ##      : The tag allowed for tasks in the response. Must only be specified if group_by_tag is true. If group_by_tag is true and tag is not specified the tag will be that of the oldest task by eta, i.e. the first available tag
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
   ##   taskqueue: string (required)
   ##            : The taskqueue to lease a task from.
-  var path_589047 = newJObject()
-  var query_589048 = newJObject()
-  add(query_589048, "tag", newJString(tag))
-  add(query_589048, "fields", newJString(fields))
-  add(query_589048, "quotaUser", newJString(quotaUser))
-  add(query_589048, "alt", newJString(alt))
-  add(query_589048, "oauth_token", newJString(oauthToken))
-  add(query_589048, "userIp", newJString(userIp))
-  add(query_589048, "key", newJString(key))
-  add(query_589048, "groupByTag", newJBool(groupByTag))
-  add(query_589048, "leaseSecs", newJInt(leaseSecs))
-  add(path_589047, "project", newJString(project))
-  add(query_589048, "numTasks", newJInt(numTasks))
-  add(query_589048, "prettyPrint", newJBool(prettyPrint))
-  add(path_589047, "taskqueue", newJString(taskqueue))
-  result = call_589046.call(path_589047, query_589048, nil, nil, nil)
+  ##   leaseSecs: int (required)
+  ##            : The lease in seconds.
+  ##   numTasks: int (required)
+  ##           : The number of tasks to lease.
+  ##   project: string (required)
+  ##          : The project under which the queue lies.
+  ##   groupByTag: bool
+  ##             : When true, all returned tasks will have the same tag
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  var path_578947 = newJObject()
+  var query_578948 = newJObject()
+  add(query_578948, "key", newJString(key))
+  add(query_578948, "prettyPrint", newJBool(prettyPrint))
+  add(query_578948, "oauth_token", newJString(oauthToken))
+  add(query_578948, "tag", newJString(tag))
+  add(query_578948, "alt", newJString(alt))
+  add(query_578948, "userIp", newJString(userIp))
+  add(query_578948, "quotaUser", newJString(quotaUser))
+  add(path_578947, "taskqueue", newJString(taskqueue))
+  add(query_578948, "leaseSecs", newJInt(leaseSecs))
+  add(query_578948, "numTasks", newJInt(numTasks))
+  add(path_578947, "project", newJString(project))
+  add(query_578948, "groupByTag", newJBool(groupByTag))
+  add(query_578948, "fields", newJString(fields))
+  result = call_578946.call(path_578947, query_578948, nil, nil, nil)
 
-var taskqueueTasksLease* = Call_TaskqueueTasksLease_589029(
+var taskqueueTasksLease* = Call_TaskqueueTasksLease_578929(
     name: "taskqueueTasksLease", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/taskqueues/{taskqueue}/tasks/lease",
-    validator: validate_TaskqueueTasksLease_589030,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksLease_589031,
+    validator: validate_TaskqueueTasksLease_578930,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksLease_578931,
     schemes: {Scheme.Https})
 type
-  Call_TaskqueueTasksUpdate_589066 = ref object of OpenApiRestCall_588441
-proc url_TaskqueueTasksUpdate_589068(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTasksUpdate_578966 = ref object of OpenApiRestCall_578339
+proc url_TaskqueueTasksUpdate_578968(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -828,94 +832,94 @@ proc url_TaskqueueTasksUpdate_589068(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTasksUpdate_589067(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTasksUpdate_578967(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Update tasks that are leased out of a TaskQueue.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   task: JString (required)
+  ##   taskqueue: JString (required)
   ##   project: JString (required)
   ##          : The project under which the queue lies.
-  ##   taskqueue: JString (required)
+  ##   task: JString (required)
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `task` field"
-  var valid_589069 = path.getOrDefault("task")
-  valid_589069 = validateParameter(valid_589069, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `taskqueue` field"
+  var valid_578969 = path.getOrDefault("taskqueue")
+  valid_578969 = validateParameter(valid_578969, JString, required = true,
                                  default = nil)
-  if valid_589069 != nil:
-    section.add "task", valid_589069
-  var valid_589070 = path.getOrDefault("project")
-  valid_589070 = validateParameter(valid_589070, JString, required = true,
+  if valid_578969 != nil:
+    section.add "taskqueue", valid_578969
+  var valid_578970 = path.getOrDefault("project")
+  valid_578970 = validateParameter(valid_578970, JString, required = true,
                                  default = nil)
-  if valid_589070 != nil:
-    section.add "project", valid_589070
-  var valid_589071 = path.getOrDefault("taskqueue")
-  valid_589071 = validateParameter(valid_589071, JString, required = true,
+  if valid_578970 != nil:
+    section.add "project", valid_578970
+  var valid_578971 = path.getOrDefault("task")
+  valid_578971 = validateParameter(valid_578971, JString, required = true,
                                  default = nil)
-  if valid_589071 != nil:
-    section.add "taskqueue", valid_589071
+  if valid_578971 != nil:
+    section.add "task", valid_578971
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   newLeaseSeconds: JInt (required)
   ##                  : The new lease in seconds.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589072 = query.getOrDefault("fields")
-  valid_589072 = validateParameter(valid_589072, JString, required = false,
+  var valid_578972 = query.getOrDefault("key")
+  valid_578972 = validateParameter(valid_578972, JString, required = false,
                                  default = nil)
-  if valid_589072 != nil:
-    section.add "fields", valid_589072
-  var valid_589073 = query.getOrDefault("quotaUser")
-  valid_589073 = validateParameter(valid_589073, JString, required = false,
-                                 default = nil)
-  if valid_589073 != nil:
-    section.add "quotaUser", valid_589073
-  var valid_589074 = query.getOrDefault("alt")
-  valid_589074 = validateParameter(valid_589074, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589074 != nil:
-    section.add "alt", valid_589074
-  var valid_589075 = query.getOrDefault("oauth_token")
-  valid_589075 = validateParameter(valid_589075, JString, required = false,
-                                 default = nil)
-  if valid_589075 != nil:
-    section.add "oauth_token", valid_589075
-  var valid_589076 = query.getOrDefault("userIp")
-  valid_589076 = validateParameter(valid_589076, JString, required = false,
-                                 default = nil)
-  if valid_589076 != nil:
-    section.add "userIp", valid_589076
-  var valid_589077 = query.getOrDefault("key")
-  valid_589077 = validateParameter(valid_589077, JString, required = false,
-                                 default = nil)
-  if valid_589077 != nil:
-    section.add "key", valid_589077
+  if valid_578972 != nil:
+    section.add "key", valid_578972
   assert query != nil,
         "query argument is necessary due to required `newLeaseSeconds` field"
-  var valid_589078 = query.getOrDefault("newLeaseSeconds")
-  valid_589078 = validateParameter(valid_589078, JInt, required = true, default = nil)
-  if valid_589078 != nil:
-    section.add "newLeaseSeconds", valid_589078
-  var valid_589079 = query.getOrDefault("prettyPrint")
-  valid_589079 = validateParameter(valid_589079, JBool, required = false,
+  var valid_578973 = query.getOrDefault("newLeaseSeconds")
+  valid_578973 = validateParameter(valid_578973, JInt, required = true, default = nil)
+  if valid_578973 != nil:
+    section.add "newLeaseSeconds", valid_578973
+  var valid_578974 = query.getOrDefault("prettyPrint")
+  valid_578974 = validateParameter(valid_578974, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589079 != nil:
-    section.add "prettyPrint", valid_589079
+  if valid_578974 != nil:
+    section.add "prettyPrint", valid_578974
+  var valid_578975 = query.getOrDefault("oauth_token")
+  valid_578975 = validateParameter(valid_578975, JString, required = false,
+                                 default = nil)
+  if valid_578975 != nil:
+    section.add "oauth_token", valid_578975
+  var valid_578976 = query.getOrDefault("alt")
+  valid_578976 = validateParameter(valid_578976, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578976 != nil:
+    section.add "alt", valid_578976
+  var valid_578977 = query.getOrDefault("userIp")
+  valid_578977 = validateParameter(valid_578977, JString, required = false,
+                                 default = nil)
+  if valid_578977 != nil:
+    section.add "userIp", valid_578977
+  var valid_578978 = query.getOrDefault("quotaUser")
+  valid_578978 = validateParameter(valid_578978, JString, required = false,
+                                 default = nil)
+  if valid_578978 != nil:
+    section.add "quotaUser", valid_578978
+  var valid_578979 = query.getOrDefault("fields")
+  valid_578979 = validateParameter(valid_578979, JString, required = false,
+                                 default = nil)
+  if valid_578979 != nil:
+    section.add "fields", valid_578979
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -927,75 +931,75 @@ proc validate_TaskqueueTasksUpdate_589067(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589081: Call_TaskqueueTasksUpdate_589066; path: JsonNode;
+proc call*(call_578981: Call_TaskqueueTasksUpdate_578966; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Update tasks that are leased out of a TaskQueue.
   ## 
-  let valid = call_589081.validator(path, query, header, formData, body)
-  let scheme = call_589081.pickScheme
+  let valid = call_578981.validator(path, query, header, formData, body)
+  let scheme = call_578981.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589081.url(scheme.get, call_589081.host, call_589081.base,
-                         call_589081.route, valid.getOrDefault("path"),
+  let url = call_578981.url(scheme.get, call_578981.host, call_578981.base,
+                         call_578981.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589081, url, valid)
+  result = hook(call_578981, url, valid)
 
-proc call*(call_589082: Call_TaskqueueTasksUpdate_589066; task: string;
-          newLeaseSeconds: int; project: string; taskqueue: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578982: Call_TaskqueueTasksUpdate_578966; newLeaseSeconds: int;
+          taskqueue: string; project: string; task: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## taskqueueTasksUpdate
   ## Update tasks that are leased out of a TaskQueue.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   task: string (required)
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   newLeaseSeconds: int (required)
   ##                  : The new lease in seconds.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   taskqueue: string (required)
   ##   project: string (required)
   ##          : The project under which the queue lies.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  ##   taskqueue: string (required)
-  var path_589083 = newJObject()
-  var query_589084 = newJObject()
-  var body_589085 = newJObject()
-  add(query_589084, "fields", newJString(fields))
-  add(query_589084, "quotaUser", newJString(quotaUser))
-  add(query_589084, "alt", newJString(alt))
-  add(path_589083, "task", newJString(task))
-  add(query_589084, "oauth_token", newJString(oauthToken))
-  add(query_589084, "userIp", newJString(userIp))
-  add(query_589084, "key", newJString(key))
-  add(query_589084, "newLeaseSeconds", newJInt(newLeaseSeconds))
-  add(path_589083, "project", newJString(project))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   task: string (required)
+  var path_578983 = newJObject()
+  var query_578984 = newJObject()
+  var body_578985 = newJObject()
+  add(query_578984, "key", newJString(key))
+  add(query_578984, "newLeaseSeconds", newJInt(newLeaseSeconds))
+  add(query_578984, "prettyPrint", newJBool(prettyPrint))
+  add(query_578984, "oauth_token", newJString(oauthToken))
+  add(query_578984, "alt", newJString(alt))
+  add(query_578984, "userIp", newJString(userIp))
+  add(query_578984, "quotaUser", newJString(quotaUser))
+  add(path_578983, "taskqueue", newJString(taskqueue))
+  add(path_578983, "project", newJString(project))
   if body != nil:
-    body_589085 = body
-  add(query_589084, "prettyPrint", newJBool(prettyPrint))
-  add(path_589083, "taskqueue", newJString(taskqueue))
-  result = call_589082.call(path_589083, query_589084, nil, nil, body_589085)
+    body_578985 = body
+  add(query_578984, "fields", newJString(fields))
+  add(path_578983, "task", newJString(task))
+  result = call_578982.call(path_578983, query_578984, nil, nil, body_578985)
 
-var taskqueueTasksUpdate* = Call_TaskqueueTasksUpdate_589066(
+var taskqueueTasksUpdate* = Call_TaskqueueTasksUpdate_578966(
     name: "taskqueueTasksUpdate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/{project}/taskqueues/{taskqueue}/tasks/{task}",
-    validator: validate_TaskqueueTasksUpdate_589067,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksUpdate_589068,
+    validator: validate_TaskqueueTasksUpdate_578967,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksUpdate_578968,
     schemes: {Scheme.Https})
 type
-  Call_TaskqueueTasksGet_589049 = ref object of OpenApiRestCall_588441
-proc url_TaskqueueTasksGet_589051(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTasksGet_578949 = ref object of OpenApiRestCall_578339
+proc url_TaskqueueTasksGet_578951(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1016,7 +1020,7 @@ proc url_TaskqueueTasksGet_589051(protocol: Scheme; host: string; base: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTasksGet_589050(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTasksGet_578950(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Get a particular task from a TaskQueue.
@@ -1024,81 +1028,81 @@ proc validate_TaskqueueTasksGet_589050(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   task: JString (required)
-  ##       : The task to get properties of.
-  ##   project: JString (required)
-  ##          : The project under which the queue lies.
   ##   taskqueue: JString (required)
   ##            : The taskqueue in which the task belongs.
+  ##   project: JString (required)
+  ##          : The project under which the queue lies.
+  ##   task: JString (required)
+  ##       : The task to get properties of.
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `task` field"
-  var valid_589052 = path.getOrDefault("task")
-  valid_589052 = validateParameter(valid_589052, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `taskqueue` field"
+  var valid_578952 = path.getOrDefault("taskqueue")
+  valid_578952 = validateParameter(valid_578952, JString, required = true,
                                  default = nil)
-  if valid_589052 != nil:
-    section.add "task", valid_589052
-  var valid_589053 = path.getOrDefault("project")
-  valid_589053 = validateParameter(valid_589053, JString, required = true,
+  if valid_578952 != nil:
+    section.add "taskqueue", valid_578952
+  var valid_578953 = path.getOrDefault("project")
+  valid_578953 = validateParameter(valid_578953, JString, required = true,
                                  default = nil)
-  if valid_589053 != nil:
-    section.add "project", valid_589053
-  var valid_589054 = path.getOrDefault("taskqueue")
-  valid_589054 = validateParameter(valid_589054, JString, required = true,
+  if valid_578953 != nil:
+    section.add "project", valid_578953
+  var valid_578954 = path.getOrDefault("task")
+  valid_578954 = validateParameter(valid_578954, JString, required = true,
                                  default = nil)
-  if valid_589054 != nil:
-    section.add "taskqueue", valid_589054
+  if valid_578954 != nil:
+    section.add "task", valid_578954
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589055 = query.getOrDefault("fields")
-  valid_589055 = validateParameter(valid_589055, JString, required = false,
+  var valid_578955 = query.getOrDefault("key")
+  valid_578955 = validateParameter(valid_578955, JString, required = false,
                                  default = nil)
-  if valid_589055 != nil:
-    section.add "fields", valid_589055
-  var valid_589056 = query.getOrDefault("quotaUser")
-  valid_589056 = validateParameter(valid_589056, JString, required = false,
-                                 default = nil)
-  if valid_589056 != nil:
-    section.add "quotaUser", valid_589056
-  var valid_589057 = query.getOrDefault("alt")
-  valid_589057 = validateParameter(valid_589057, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589057 != nil:
-    section.add "alt", valid_589057
-  var valid_589058 = query.getOrDefault("oauth_token")
-  valid_589058 = validateParameter(valid_589058, JString, required = false,
-                                 default = nil)
-  if valid_589058 != nil:
-    section.add "oauth_token", valid_589058
-  var valid_589059 = query.getOrDefault("userIp")
-  valid_589059 = validateParameter(valid_589059, JString, required = false,
-                                 default = nil)
-  if valid_589059 != nil:
-    section.add "userIp", valid_589059
-  var valid_589060 = query.getOrDefault("key")
-  valid_589060 = validateParameter(valid_589060, JString, required = false,
-                                 default = nil)
-  if valid_589060 != nil:
-    section.add "key", valid_589060
-  var valid_589061 = query.getOrDefault("prettyPrint")
-  valid_589061 = validateParameter(valid_589061, JBool, required = false,
+  if valid_578955 != nil:
+    section.add "key", valid_578955
+  var valid_578956 = query.getOrDefault("prettyPrint")
+  valid_578956 = validateParameter(valid_578956, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589061 != nil:
-    section.add "prettyPrint", valid_589061
+  if valid_578956 != nil:
+    section.add "prettyPrint", valid_578956
+  var valid_578957 = query.getOrDefault("oauth_token")
+  valid_578957 = validateParameter(valid_578957, JString, required = false,
+                                 default = nil)
+  if valid_578957 != nil:
+    section.add "oauth_token", valid_578957
+  var valid_578958 = query.getOrDefault("alt")
+  valid_578958 = validateParameter(valid_578958, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578958 != nil:
+    section.add "alt", valid_578958
+  var valid_578959 = query.getOrDefault("userIp")
+  valid_578959 = validateParameter(valid_578959, JString, required = false,
+                                 default = nil)
+  if valid_578959 != nil:
+    section.add "userIp", valid_578959
+  var valid_578960 = query.getOrDefault("quotaUser")
+  valid_578960 = validateParameter(valid_578960, JString, required = false,
+                                 default = nil)
+  if valid_578960 != nil:
+    section.add "quotaUser", valid_578960
+  var valid_578961 = query.getOrDefault("fields")
+  valid_578961 = validateParameter(valid_578961, JString, required = false,
+                                 default = nil)
+  if valid_578961 != nil:
+    section.add "fields", valid_578961
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1107,68 +1111,68 @@ proc validate_TaskqueueTasksGet_589050(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589062: Call_TaskqueueTasksGet_589049; path: JsonNode;
+proc call*(call_578962: Call_TaskqueueTasksGet_578949; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get a particular task from a TaskQueue.
   ## 
-  let valid = call_589062.validator(path, query, header, formData, body)
-  let scheme = call_589062.pickScheme
+  let valid = call_578962.validator(path, query, header, formData, body)
+  let scheme = call_578962.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589062.url(scheme.get, call_589062.host, call_589062.base,
-                         call_589062.route, valid.getOrDefault("path"),
+  let url = call_578962.url(scheme.get, call_578962.host, call_578962.base,
+                         call_578962.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589062, url, valid)
+  result = hook(call_578962, url, valid)
 
-proc call*(call_589063: Call_TaskqueueTasksGet_589049; task: string; project: string;
-          taskqueue: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_578963: Call_TaskqueueTasksGet_578949; taskqueue: string;
+          project: string; task: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; fields: string = ""): Recallable =
   ## taskqueueTasksGet
   ## Get a particular task from a TaskQueue.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   task: string (required)
-  ##       : The task to get properties of.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   project: string (required)
-  ##          : The project under which the queue lies.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
   ##   taskqueue: string (required)
   ##            : The taskqueue in which the task belongs.
-  var path_589064 = newJObject()
-  var query_589065 = newJObject()
-  add(query_589065, "fields", newJString(fields))
-  add(query_589065, "quotaUser", newJString(quotaUser))
-  add(query_589065, "alt", newJString(alt))
-  add(path_589064, "task", newJString(task))
-  add(query_589065, "oauth_token", newJString(oauthToken))
-  add(query_589065, "userIp", newJString(userIp))
-  add(query_589065, "key", newJString(key))
-  add(path_589064, "project", newJString(project))
-  add(query_589065, "prettyPrint", newJBool(prettyPrint))
-  add(path_589064, "taskqueue", newJString(taskqueue))
-  result = call_589063.call(path_589064, query_589065, nil, nil, nil)
+  ##   project: string (required)
+  ##          : The project under which the queue lies.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   task: string (required)
+  ##       : The task to get properties of.
+  var path_578964 = newJObject()
+  var query_578965 = newJObject()
+  add(query_578965, "key", newJString(key))
+  add(query_578965, "prettyPrint", newJBool(prettyPrint))
+  add(query_578965, "oauth_token", newJString(oauthToken))
+  add(query_578965, "alt", newJString(alt))
+  add(query_578965, "userIp", newJString(userIp))
+  add(query_578965, "quotaUser", newJString(quotaUser))
+  add(path_578964, "taskqueue", newJString(taskqueue))
+  add(path_578964, "project", newJString(project))
+  add(query_578965, "fields", newJString(fields))
+  add(path_578964, "task", newJString(task))
+  result = call_578963.call(path_578964, query_578965, nil, nil, nil)
 
-var taskqueueTasksGet* = Call_TaskqueueTasksGet_589049(name: "taskqueueTasksGet",
+var taskqueueTasksGet* = Call_TaskqueueTasksGet_578949(name: "taskqueueTasksGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/{project}/taskqueues/{taskqueue}/tasks/{task}",
-    validator: validate_TaskqueueTasksGet_589050,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksGet_589051,
+    validator: validate_TaskqueueTasksGet_578950,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksGet_578951,
     schemes: {Scheme.Https})
 type
-  Call_TaskqueueTasksPatch_589103 = ref object of OpenApiRestCall_588441
-proc url_TaskqueueTasksPatch_589105(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTasksPatch_579003 = ref object of OpenApiRestCall_578339
+proc url_TaskqueueTasksPatch_579005(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1189,7 +1193,7 @@ proc url_TaskqueueTasksPatch_589105(protocol: Scheme; host: string; base: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTasksPatch_589104(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTasksPatch_579004(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Update tasks that are leased out of a TaskQueue. This method supports patch semantics.
@@ -1197,87 +1201,87 @@ proc validate_TaskqueueTasksPatch_589104(path: JsonNode; query: JsonNode;
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   task: JString (required)
+  ##   taskqueue: JString (required)
   ##   project: JString (required)
   ##          : The project under which the queue lies.
-  ##   taskqueue: JString (required)
+  ##   task: JString (required)
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `task` field"
-  var valid_589106 = path.getOrDefault("task")
-  valid_589106 = validateParameter(valid_589106, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `taskqueue` field"
+  var valid_579006 = path.getOrDefault("taskqueue")
+  valid_579006 = validateParameter(valid_579006, JString, required = true,
                                  default = nil)
-  if valid_589106 != nil:
-    section.add "task", valid_589106
-  var valid_589107 = path.getOrDefault("project")
-  valid_589107 = validateParameter(valid_589107, JString, required = true,
+  if valid_579006 != nil:
+    section.add "taskqueue", valid_579006
+  var valid_579007 = path.getOrDefault("project")
+  valid_579007 = validateParameter(valid_579007, JString, required = true,
                                  default = nil)
-  if valid_589107 != nil:
-    section.add "project", valid_589107
-  var valid_589108 = path.getOrDefault("taskqueue")
-  valid_589108 = validateParameter(valid_589108, JString, required = true,
+  if valid_579007 != nil:
+    section.add "project", valid_579007
+  var valid_579008 = path.getOrDefault("task")
+  valid_579008 = validateParameter(valid_579008, JString, required = true,
                                  default = nil)
-  if valid_589108 != nil:
-    section.add "taskqueue", valid_589108
+  if valid_579008 != nil:
+    section.add "task", valid_579008
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   newLeaseSeconds: JInt (required)
   ##                  : The new lease in seconds.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589109 = query.getOrDefault("fields")
-  valid_589109 = validateParameter(valid_589109, JString, required = false,
+  var valid_579009 = query.getOrDefault("key")
+  valid_579009 = validateParameter(valid_579009, JString, required = false,
                                  default = nil)
-  if valid_589109 != nil:
-    section.add "fields", valid_589109
-  var valid_589110 = query.getOrDefault("quotaUser")
-  valid_589110 = validateParameter(valid_589110, JString, required = false,
-                                 default = nil)
-  if valid_589110 != nil:
-    section.add "quotaUser", valid_589110
-  var valid_589111 = query.getOrDefault("alt")
-  valid_589111 = validateParameter(valid_589111, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589111 != nil:
-    section.add "alt", valid_589111
-  var valid_589112 = query.getOrDefault("oauth_token")
-  valid_589112 = validateParameter(valid_589112, JString, required = false,
-                                 default = nil)
-  if valid_589112 != nil:
-    section.add "oauth_token", valid_589112
-  var valid_589113 = query.getOrDefault("userIp")
-  valid_589113 = validateParameter(valid_589113, JString, required = false,
-                                 default = nil)
-  if valid_589113 != nil:
-    section.add "userIp", valid_589113
-  var valid_589114 = query.getOrDefault("key")
-  valid_589114 = validateParameter(valid_589114, JString, required = false,
-                                 default = nil)
-  if valid_589114 != nil:
-    section.add "key", valid_589114
+  if valid_579009 != nil:
+    section.add "key", valid_579009
   assert query != nil,
         "query argument is necessary due to required `newLeaseSeconds` field"
-  var valid_589115 = query.getOrDefault("newLeaseSeconds")
-  valid_589115 = validateParameter(valid_589115, JInt, required = true, default = nil)
-  if valid_589115 != nil:
-    section.add "newLeaseSeconds", valid_589115
-  var valid_589116 = query.getOrDefault("prettyPrint")
-  valid_589116 = validateParameter(valid_589116, JBool, required = false,
+  var valid_579010 = query.getOrDefault("newLeaseSeconds")
+  valid_579010 = validateParameter(valid_579010, JInt, required = true, default = nil)
+  if valid_579010 != nil:
+    section.add "newLeaseSeconds", valid_579010
+  var valid_579011 = query.getOrDefault("prettyPrint")
+  valid_579011 = validateParameter(valid_579011, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589116 != nil:
-    section.add "prettyPrint", valid_589116
+  if valid_579011 != nil:
+    section.add "prettyPrint", valid_579011
+  var valid_579012 = query.getOrDefault("oauth_token")
+  valid_579012 = validateParameter(valid_579012, JString, required = false,
+                                 default = nil)
+  if valid_579012 != nil:
+    section.add "oauth_token", valid_579012
+  var valid_579013 = query.getOrDefault("alt")
+  valid_579013 = validateParameter(valid_579013, JString, required = false,
+                                 default = newJString("json"))
+  if valid_579013 != nil:
+    section.add "alt", valid_579013
+  var valid_579014 = query.getOrDefault("userIp")
+  valid_579014 = validateParameter(valid_579014, JString, required = false,
+                                 default = nil)
+  if valid_579014 != nil:
+    section.add "userIp", valid_579014
+  var valid_579015 = query.getOrDefault("quotaUser")
+  valid_579015 = validateParameter(valid_579015, JString, required = false,
+                                 default = nil)
+  if valid_579015 != nil:
+    section.add "quotaUser", valid_579015
+  var valid_579016 = query.getOrDefault("fields")
+  valid_579016 = validateParameter(valid_579016, JString, required = false,
+                                 default = nil)
+  if valid_579016 != nil:
+    section.add "fields", valid_579016
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1289,75 +1293,75 @@ proc validate_TaskqueueTasksPatch_589104(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589118: Call_TaskqueueTasksPatch_589103; path: JsonNode;
+proc call*(call_579018: Call_TaskqueueTasksPatch_579003; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Update tasks that are leased out of a TaskQueue. This method supports patch semantics.
   ## 
-  let valid = call_589118.validator(path, query, header, formData, body)
-  let scheme = call_589118.pickScheme
+  let valid = call_579018.validator(path, query, header, formData, body)
+  let scheme = call_579018.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589118.url(scheme.get, call_589118.host, call_589118.base,
-                         call_589118.route, valid.getOrDefault("path"),
+  let url = call_579018.url(scheme.get, call_579018.host, call_579018.base,
+                         call_579018.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589118, url, valid)
+  result = hook(call_579018, url, valid)
 
-proc call*(call_589119: Call_TaskqueueTasksPatch_589103; task: string;
-          newLeaseSeconds: int; project: string; taskqueue: string;
-          fields: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; key: string = "";
-          body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_579019: Call_TaskqueueTasksPatch_579003; newLeaseSeconds: int;
+          taskqueue: string; project: string; task: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## taskqueueTasksPatch
   ## Update tasks that are leased out of a TaskQueue. This method supports patch semantics.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   task: string (required)
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   newLeaseSeconds: int (required)
   ##                  : The new lease in seconds.
+  ##   prettyPrint: bool
+  ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   taskqueue: string (required)
   ##   project: string (required)
   ##          : The project under which the queue lies.
   ##   body: JObject
-  ##   prettyPrint: bool
-  ##              : Returns response with indentations and line breaks.
-  ##   taskqueue: string (required)
-  var path_589120 = newJObject()
-  var query_589121 = newJObject()
-  var body_589122 = newJObject()
-  add(query_589121, "fields", newJString(fields))
-  add(query_589121, "quotaUser", newJString(quotaUser))
-  add(query_589121, "alt", newJString(alt))
-  add(path_589120, "task", newJString(task))
-  add(query_589121, "oauth_token", newJString(oauthToken))
-  add(query_589121, "userIp", newJString(userIp))
-  add(query_589121, "key", newJString(key))
-  add(query_589121, "newLeaseSeconds", newJInt(newLeaseSeconds))
-  add(path_589120, "project", newJString(project))
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   task: string (required)
+  var path_579020 = newJObject()
+  var query_579021 = newJObject()
+  var body_579022 = newJObject()
+  add(query_579021, "key", newJString(key))
+  add(query_579021, "newLeaseSeconds", newJInt(newLeaseSeconds))
+  add(query_579021, "prettyPrint", newJBool(prettyPrint))
+  add(query_579021, "oauth_token", newJString(oauthToken))
+  add(query_579021, "alt", newJString(alt))
+  add(query_579021, "userIp", newJString(userIp))
+  add(query_579021, "quotaUser", newJString(quotaUser))
+  add(path_579020, "taskqueue", newJString(taskqueue))
+  add(path_579020, "project", newJString(project))
   if body != nil:
-    body_589122 = body
-  add(query_589121, "prettyPrint", newJBool(prettyPrint))
-  add(path_589120, "taskqueue", newJString(taskqueue))
-  result = call_589119.call(path_589120, query_589121, nil, nil, body_589122)
+    body_579022 = body
+  add(query_579021, "fields", newJString(fields))
+  add(path_579020, "task", newJString(task))
+  result = call_579019.call(path_579020, query_579021, nil, nil, body_579022)
 
-var taskqueueTasksPatch* = Call_TaskqueueTasksPatch_589103(
+var taskqueueTasksPatch* = Call_TaskqueueTasksPatch_579003(
     name: "taskqueueTasksPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com",
     route: "/{project}/taskqueues/{taskqueue}/tasks/{task}",
-    validator: validate_TaskqueueTasksPatch_589104,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksPatch_589105,
+    validator: validate_TaskqueueTasksPatch_579004,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksPatch_579005,
     schemes: {Scheme.Https})
 type
-  Call_TaskqueueTasksDelete_589086 = ref object of OpenApiRestCall_588441
-proc url_TaskqueueTasksDelete_589088(protocol: Scheme; host: string; base: string;
+  Call_TaskqueueTasksDelete_578986 = ref object of OpenApiRestCall_578339
+proc url_TaskqueueTasksDelete_578988(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1378,88 +1382,88 @@ proc url_TaskqueueTasksDelete_589088(protocol: Scheme; host: string; base: strin
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_TaskqueueTasksDelete_589087(path: JsonNode; query: JsonNode;
+proc validate_TaskqueueTasksDelete_578987(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Delete a task from a TaskQueue.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
-  ##   task: JString (required)
-  ##       : The id of the task to delete.
-  ##   project: JString (required)
-  ##          : The project under which the queue lies.
   ##   taskqueue: JString (required)
   ##            : The taskqueue to delete a task from.
+  ##   project: JString (required)
+  ##          : The project under which the queue lies.
+  ##   task: JString (required)
+  ##       : The id of the task to delete.
   section = newJObject()
-  assert path != nil, "path argument is necessary due to required `task` field"
-  var valid_589089 = path.getOrDefault("task")
-  valid_589089 = validateParameter(valid_589089, JString, required = true,
+  assert path != nil, "path argument is necessary due to required `taskqueue` field"
+  var valid_578989 = path.getOrDefault("taskqueue")
+  valid_578989 = validateParameter(valid_578989, JString, required = true,
                                  default = nil)
-  if valid_589089 != nil:
-    section.add "task", valid_589089
-  var valid_589090 = path.getOrDefault("project")
-  valid_589090 = validateParameter(valid_589090, JString, required = true,
+  if valid_578989 != nil:
+    section.add "taskqueue", valid_578989
+  var valid_578990 = path.getOrDefault("project")
+  valid_578990 = validateParameter(valid_578990, JString, required = true,
                                  default = nil)
-  if valid_589090 != nil:
-    section.add "project", valid_589090
-  var valid_589091 = path.getOrDefault("taskqueue")
-  valid_589091 = validateParameter(valid_589091, JString, required = true,
+  if valid_578990 != nil:
+    section.add "project", valid_578990
+  var valid_578991 = path.getOrDefault("task")
+  valid_578991 = validateParameter(valid_578991, JString, required = true,
                                  default = nil)
-  if valid_589091 != nil:
-    section.add "taskqueue", valid_589091
+  if valid_578991 != nil:
+    section.add "task", valid_578991
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: JString
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589092 = query.getOrDefault("fields")
-  valid_589092 = validateParameter(valid_589092, JString, required = false,
+  var valid_578992 = query.getOrDefault("key")
+  valid_578992 = validateParameter(valid_578992, JString, required = false,
                                  default = nil)
-  if valid_589092 != nil:
-    section.add "fields", valid_589092
-  var valid_589093 = query.getOrDefault("quotaUser")
-  valid_589093 = validateParameter(valid_589093, JString, required = false,
-                                 default = nil)
-  if valid_589093 != nil:
-    section.add "quotaUser", valid_589093
-  var valid_589094 = query.getOrDefault("alt")
-  valid_589094 = validateParameter(valid_589094, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589094 != nil:
-    section.add "alt", valid_589094
-  var valid_589095 = query.getOrDefault("oauth_token")
-  valid_589095 = validateParameter(valid_589095, JString, required = false,
-                                 default = nil)
-  if valid_589095 != nil:
-    section.add "oauth_token", valid_589095
-  var valid_589096 = query.getOrDefault("userIp")
-  valid_589096 = validateParameter(valid_589096, JString, required = false,
-                                 default = nil)
-  if valid_589096 != nil:
-    section.add "userIp", valid_589096
-  var valid_589097 = query.getOrDefault("key")
-  valid_589097 = validateParameter(valid_589097, JString, required = false,
-                                 default = nil)
-  if valid_589097 != nil:
-    section.add "key", valid_589097
-  var valid_589098 = query.getOrDefault("prettyPrint")
-  valid_589098 = validateParameter(valid_589098, JBool, required = false,
+  if valid_578992 != nil:
+    section.add "key", valid_578992
+  var valid_578993 = query.getOrDefault("prettyPrint")
+  valid_578993 = validateParameter(valid_578993, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589098 != nil:
-    section.add "prettyPrint", valid_589098
+  if valid_578993 != nil:
+    section.add "prettyPrint", valid_578993
+  var valid_578994 = query.getOrDefault("oauth_token")
+  valid_578994 = validateParameter(valid_578994, JString, required = false,
+                                 default = nil)
+  if valid_578994 != nil:
+    section.add "oauth_token", valid_578994
+  var valid_578995 = query.getOrDefault("alt")
+  valid_578995 = validateParameter(valid_578995, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578995 != nil:
+    section.add "alt", valid_578995
+  var valid_578996 = query.getOrDefault("userIp")
+  valid_578996 = validateParameter(valid_578996, JString, required = false,
+                                 default = nil)
+  if valid_578996 != nil:
+    section.add "userIp", valid_578996
+  var valid_578997 = query.getOrDefault("quotaUser")
+  valid_578997 = validateParameter(valid_578997, JString, required = false,
+                                 default = nil)
+  if valid_578997 != nil:
+    section.add "quotaUser", valid_578997
+  var valid_578998 = query.getOrDefault("fields")
+  valid_578998 = validateParameter(valid_578998, JString, required = false,
+                                 default = nil)
+  if valid_578998 != nil:
+    section.add "fields", valid_578998
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1468,65 +1472,65 @@ proc validate_TaskqueueTasksDelete_589087(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589099: Call_TaskqueueTasksDelete_589086; path: JsonNode;
+proc call*(call_578999: Call_TaskqueueTasksDelete_578986; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Delete a task from a TaskQueue.
   ## 
-  let valid = call_589099.validator(path, query, header, formData, body)
-  let scheme = call_589099.pickScheme
+  let valid = call_578999.validator(path, query, header, formData, body)
+  let scheme = call_578999.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589099.url(scheme.get, call_589099.host, call_589099.base,
-                         call_589099.route, valid.getOrDefault("path"),
+  let url = call_578999.url(scheme.get, call_578999.host, call_578999.base,
+                         call_578999.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589099, url, valid)
+  result = hook(call_578999, url, valid)
 
-proc call*(call_589100: Call_TaskqueueTasksDelete_589086; task: string;
-          project: string; taskqueue: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579000: Call_TaskqueueTasksDelete_578986; taskqueue: string;
+          project: string; task: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; fields: string = ""): Recallable =
   ## taskqueueTasksDelete
   ## Delete a task from a TaskQueue.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   task: string (required)
-  ##       : The id of the task to delete.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   project: string (required)
-  ##          : The project under which the queue lies.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : IP address of the site where the request originates. Use this if you want to enforce per-user limits.
+  ##   quotaUser: string
+  ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.
   ##   taskqueue: string (required)
   ##            : The taskqueue to delete a task from.
-  var path_589101 = newJObject()
-  var query_589102 = newJObject()
-  add(query_589102, "fields", newJString(fields))
-  add(query_589102, "quotaUser", newJString(quotaUser))
-  add(query_589102, "alt", newJString(alt))
-  add(path_589101, "task", newJString(task))
-  add(query_589102, "oauth_token", newJString(oauthToken))
-  add(query_589102, "userIp", newJString(userIp))
-  add(query_589102, "key", newJString(key))
-  add(path_589101, "project", newJString(project))
-  add(query_589102, "prettyPrint", newJBool(prettyPrint))
-  add(path_589101, "taskqueue", newJString(taskqueue))
-  result = call_589100.call(path_589101, query_589102, nil, nil, nil)
+  ##   project: string (required)
+  ##          : The project under which the queue lies.
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   task: string (required)
+  ##       : The id of the task to delete.
+  var path_579001 = newJObject()
+  var query_579002 = newJObject()
+  add(query_579002, "key", newJString(key))
+  add(query_579002, "prettyPrint", newJBool(prettyPrint))
+  add(query_579002, "oauth_token", newJString(oauthToken))
+  add(query_579002, "alt", newJString(alt))
+  add(query_579002, "userIp", newJString(userIp))
+  add(query_579002, "quotaUser", newJString(quotaUser))
+  add(path_579001, "taskqueue", newJString(taskqueue))
+  add(path_579001, "project", newJString(project))
+  add(query_579002, "fields", newJString(fields))
+  add(path_579001, "task", newJString(task))
+  result = call_579000.call(path_579001, query_579002, nil, nil, nil)
 
-var taskqueueTasksDelete* = Call_TaskqueueTasksDelete_589086(
+var taskqueueTasksDelete* = Call_TaskqueueTasksDelete_578986(
     name: "taskqueueTasksDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/{project}/taskqueues/{taskqueue}/tasks/{task}",
-    validator: validate_TaskqueueTasksDelete_589087,
-    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksDelete_589088,
+    validator: validate_TaskqueueTasksDelete_578987,
+    base: "/taskqueue/v1beta2/projects", url: url_TaskqueueTasksDelete_578988,
     schemes: {Scheme.Https})
 export
   rest

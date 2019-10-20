@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_588457 = ref object of OpenApiRestCall
+  OpenApiRestCall_578355 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_588457](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_578355](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_588457): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_578355): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -95,9 +95,13 @@ proc hydratePath(input: JsonNode; segments: seq[PathToken]): Option[string] {.us
     if head notin input:
       return
     let js = input[head]
-    if js.kind notin {JString, JInt, JFloat, JNull, JBool}:
+    case js.kind
+    of JInt, JFloat, JNull, JBool:
+      head = $js
+    of JString:
+      head = js.getStr
+    else:
       return
-    head = $js
   var remainder = input.hydratePath(segments[1 ..^ 1])
   if remainder.isNone:
     return
@@ -108,8 +112,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_LicensingLicenseAssignmentsInsert_588725 = ref object of OpenApiRestCall_588457
-proc url_LicensingLicenseAssignmentsInsert_588727(protocol: Scheme; host: string;
+  Call_LicensingLicenseAssignmentsInsert_578625 = ref object of OpenApiRestCall_578355
+proc url_LicensingLicenseAssignmentsInsert_578627(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -128,7 +132,7 @@ proc url_LicensingLicenseAssignmentsInsert_588727(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LicensingLicenseAssignmentsInsert_588726(path: JsonNode;
+proc validate_LicensingLicenseAssignmentsInsert_578626(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Assign License.
   ## 
@@ -141,68 +145,68 @@ proc validate_LicensingLicenseAssignmentsInsert_588726(path: JsonNode;
   ##            : Name for product
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `skuId` field"
-  var valid_588853 = path.getOrDefault("skuId")
-  valid_588853 = validateParameter(valid_588853, JString, required = true,
+  var valid_578753 = path.getOrDefault("skuId")
+  valid_578753 = validateParameter(valid_578753, JString, required = true,
                                  default = nil)
-  if valid_588853 != nil:
-    section.add "skuId", valid_588853
-  var valid_588854 = path.getOrDefault("productId")
-  valid_588854 = validateParameter(valid_588854, JString, required = true,
+  if valid_578753 != nil:
+    section.add "skuId", valid_578753
+  var valid_578754 = path.getOrDefault("productId")
+  valid_578754 = validateParameter(valid_578754, JString, required = true,
                                  default = nil)
-  if valid_588854 != nil:
-    section.add "productId", valid_588854
+  if valid_578754 != nil:
+    section.add "productId", valid_578754
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_588855 = query.getOrDefault("fields")
-  valid_588855 = validateParameter(valid_588855, JString, required = false,
+  var valid_578755 = query.getOrDefault("key")
+  valid_578755 = validateParameter(valid_578755, JString, required = false,
                                  default = nil)
-  if valid_588855 != nil:
-    section.add "fields", valid_588855
-  var valid_588856 = query.getOrDefault("quotaUser")
-  valid_588856 = validateParameter(valid_588856, JString, required = false,
-                                 default = nil)
-  if valid_588856 != nil:
-    section.add "quotaUser", valid_588856
-  var valid_588870 = query.getOrDefault("alt")
-  valid_588870 = validateParameter(valid_588870, JString, required = false,
-                                 default = newJString("json"))
-  if valid_588870 != nil:
-    section.add "alt", valid_588870
-  var valid_588871 = query.getOrDefault("oauth_token")
-  valid_588871 = validateParameter(valid_588871, JString, required = false,
-                                 default = nil)
-  if valid_588871 != nil:
-    section.add "oauth_token", valid_588871
-  var valid_588872 = query.getOrDefault("userIp")
-  valid_588872 = validateParameter(valid_588872, JString, required = false,
-                                 default = nil)
-  if valid_588872 != nil:
-    section.add "userIp", valid_588872
-  var valid_588873 = query.getOrDefault("key")
-  valid_588873 = validateParameter(valid_588873, JString, required = false,
-                                 default = nil)
-  if valid_588873 != nil:
-    section.add "key", valid_588873
-  var valid_588874 = query.getOrDefault("prettyPrint")
-  valid_588874 = validateParameter(valid_588874, JBool, required = false,
+  if valid_578755 != nil:
+    section.add "key", valid_578755
+  var valid_578769 = query.getOrDefault("prettyPrint")
+  valid_578769 = validateParameter(valid_578769, JBool, required = false,
                                  default = newJBool(true))
-  if valid_588874 != nil:
-    section.add "prettyPrint", valid_588874
+  if valid_578769 != nil:
+    section.add "prettyPrint", valid_578769
+  var valid_578770 = query.getOrDefault("oauth_token")
+  valid_578770 = validateParameter(valid_578770, JString, required = false,
+                                 default = nil)
+  if valid_578770 != nil:
+    section.add "oauth_token", valid_578770
+  var valid_578771 = query.getOrDefault("alt")
+  valid_578771 = validateParameter(valid_578771, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578771 != nil:
+    section.add "alt", valid_578771
+  var valid_578772 = query.getOrDefault("userIp")
+  valid_578772 = validateParameter(valid_578772, JString, required = false,
+                                 default = nil)
+  if valid_578772 != nil:
+    section.add "userIp", valid_578772
+  var valid_578773 = query.getOrDefault("quotaUser")
+  valid_578773 = validateParameter(valid_578773, JString, required = false,
+                                 default = nil)
+  if valid_578773 != nil:
+    section.add "quotaUser", valid_578773
+  var valid_578774 = query.getOrDefault("fields")
+  valid_578774 = validateParameter(valid_578774, JString, required = false,
+                                 default = nil)
+  if valid_578774 != nil:
+    section.add "fields", valid_578774
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -214,70 +218,70 @@ proc validate_LicensingLicenseAssignmentsInsert_588726(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_588898: Call_LicensingLicenseAssignmentsInsert_588725;
+proc call*(call_578798: Call_LicensingLicenseAssignmentsInsert_578625;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Assign License.
   ## 
-  let valid = call_588898.validator(path, query, header, formData, body)
-  let scheme = call_588898.pickScheme
+  let valid = call_578798.validator(path, query, header, formData, body)
+  let scheme = call_578798.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_588898.url(scheme.get, call_588898.host, call_588898.base,
-                         call_588898.route, valid.getOrDefault("path"),
+  let url = call_578798.url(scheme.get, call_578798.host, call_578798.base,
+                         call_578798.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_588898, url, valid)
+  result = hook(call_578798, url, valid)
 
-proc call*(call_588969: Call_LicensingLicenseAssignmentsInsert_588725;
-          skuId: string; productId: string; fields: string = ""; quotaUser: string = "";
-          alt: string = "json"; oauthToken: string = ""; userIp: string = "";
-          key: string = ""; body: JsonNode = nil; prettyPrint: bool = true): Recallable =
+proc call*(call_578869: Call_LicensingLicenseAssignmentsInsert_578625;
+          skuId: string; productId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## licensingLicenseAssignmentsInsert
   ## Assign License.
-  ##   skuId: string (required)
-  ##        : Name for sku
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
+  ##   skuId: string (required)
+  ##        : Name for sku
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
   ##   productId: string (required)
   ##            : Name for product
-  var path_588970 = newJObject()
-  var query_588972 = newJObject()
-  var body_588973 = newJObject()
-  add(path_588970, "skuId", newJString(skuId))
-  add(query_588972, "fields", newJString(fields))
-  add(query_588972, "quotaUser", newJString(quotaUser))
-  add(query_588972, "alt", newJString(alt))
-  add(query_588972, "oauth_token", newJString(oauthToken))
-  add(query_588972, "userIp", newJString(userIp))
-  add(query_588972, "key", newJString(key))
+  var path_578870 = newJObject()
+  var query_578872 = newJObject()
+  var body_578873 = newJObject()
+  add(query_578872, "key", newJString(key))
+  add(path_578870, "skuId", newJString(skuId))
+  add(query_578872, "prettyPrint", newJBool(prettyPrint))
+  add(query_578872, "oauth_token", newJString(oauthToken))
+  add(query_578872, "alt", newJString(alt))
+  add(query_578872, "userIp", newJString(userIp))
+  add(query_578872, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_588973 = body
-  add(query_588972, "prettyPrint", newJBool(prettyPrint))
-  add(path_588970, "productId", newJString(productId))
-  result = call_588969.call(path_588970, query_588972, nil, nil, body_588973)
+    body_578873 = body
+  add(query_578872, "fields", newJString(fields))
+  add(path_578870, "productId", newJString(productId))
+  result = call_578869.call(path_578870, query_578872, nil, nil, body_578873)
 
-var licensingLicenseAssignmentsInsert* = Call_LicensingLicenseAssignmentsInsert_588725(
+var licensingLicenseAssignmentsInsert* = Call_LicensingLicenseAssignmentsInsert_578625(
     name: "licensingLicenseAssignmentsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{productId}/sku/{skuId}/user",
-    validator: validate_LicensingLicenseAssignmentsInsert_588726,
+    validator: validate_LicensingLicenseAssignmentsInsert_578626,
     base: "/apps/licensing/v1/product",
-    url: url_LicensingLicenseAssignmentsInsert_588727, schemes: {Scheme.Https})
+    url: url_LicensingLicenseAssignmentsInsert_578627, schemes: {Scheme.Https})
 type
-  Call_LicensingLicenseAssignmentsUpdate_589029 = ref object of OpenApiRestCall_588457
-proc url_LicensingLicenseAssignmentsUpdate_589031(protocol: Scheme; host: string;
+  Call_LicensingLicenseAssignmentsUpdate_578929 = ref object of OpenApiRestCall_578355
+proc url_LicensingLicenseAssignmentsUpdate_578931(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -298,7 +302,7 @@ proc url_LicensingLicenseAssignmentsUpdate_589031(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LicensingLicenseAssignmentsUpdate_589030(path: JsonNode;
+proc validate_LicensingLicenseAssignmentsUpdate_578930(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Assign License.
   ## 
@@ -307,79 +311,79 @@ proc validate_LicensingLicenseAssignmentsUpdate_589030(path: JsonNode;
   ## parameters in `path` object:
   ##   skuId: JString (required)
   ##        : Name for sku for which license would be revoked
-  ##   productId: JString (required)
-  ##            : Name for product
   ##   userId: JString (required)
   ##         : email id or unique Id of the user
+  ##   productId: JString (required)
+  ##            : Name for product
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `skuId` field"
-  var valid_589032 = path.getOrDefault("skuId")
-  valid_589032 = validateParameter(valid_589032, JString, required = true,
+  var valid_578932 = path.getOrDefault("skuId")
+  valid_578932 = validateParameter(valid_578932, JString, required = true,
                                  default = nil)
-  if valid_589032 != nil:
-    section.add "skuId", valid_589032
-  var valid_589033 = path.getOrDefault("productId")
-  valid_589033 = validateParameter(valid_589033, JString, required = true,
+  if valid_578932 != nil:
+    section.add "skuId", valid_578932
+  var valid_578933 = path.getOrDefault("userId")
+  valid_578933 = validateParameter(valid_578933, JString, required = true,
                                  default = nil)
-  if valid_589033 != nil:
-    section.add "productId", valid_589033
-  var valid_589034 = path.getOrDefault("userId")
-  valid_589034 = validateParameter(valid_589034, JString, required = true,
+  if valid_578933 != nil:
+    section.add "userId", valid_578933
+  var valid_578934 = path.getOrDefault("productId")
+  valid_578934 = validateParameter(valid_578934, JString, required = true,
                                  default = nil)
-  if valid_589034 != nil:
-    section.add "userId", valid_589034
+  if valid_578934 != nil:
+    section.add "productId", valid_578934
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589035 = query.getOrDefault("fields")
-  valid_589035 = validateParameter(valid_589035, JString, required = false,
+  var valid_578935 = query.getOrDefault("key")
+  valid_578935 = validateParameter(valid_578935, JString, required = false,
                                  default = nil)
-  if valid_589035 != nil:
-    section.add "fields", valid_589035
-  var valid_589036 = query.getOrDefault("quotaUser")
-  valid_589036 = validateParameter(valid_589036, JString, required = false,
-                                 default = nil)
-  if valid_589036 != nil:
-    section.add "quotaUser", valid_589036
-  var valid_589037 = query.getOrDefault("alt")
-  valid_589037 = validateParameter(valid_589037, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589037 != nil:
-    section.add "alt", valid_589037
-  var valid_589038 = query.getOrDefault("oauth_token")
-  valid_589038 = validateParameter(valid_589038, JString, required = false,
-                                 default = nil)
-  if valid_589038 != nil:
-    section.add "oauth_token", valid_589038
-  var valid_589039 = query.getOrDefault("userIp")
-  valid_589039 = validateParameter(valid_589039, JString, required = false,
-                                 default = nil)
-  if valid_589039 != nil:
-    section.add "userIp", valid_589039
-  var valid_589040 = query.getOrDefault("key")
-  valid_589040 = validateParameter(valid_589040, JString, required = false,
-                                 default = nil)
-  if valid_589040 != nil:
-    section.add "key", valid_589040
-  var valid_589041 = query.getOrDefault("prettyPrint")
-  valid_589041 = validateParameter(valid_589041, JBool, required = false,
+  if valid_578935 != nil:
+    section.add "key", valid_578935
+  var valid_578936 = query.getOrDefault("prettyPrint")
+  valid_578936 = validateParameter(valid_578936, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589041 != nil:
-    section.add "prettyPrint", valid_589041
+  if valid_578936 != nil:
+    section.add "prettyPrint", valid_578936
+  var valid_578937 = query.getOrDefault("oauth_token")
+  valid_578937 = validateParameter(valid_578937, JString, required = false,
+                                 default = nil)
+  if valid_578937 != nil:
+    section.add "oauth_token", valid_578937
+  var valid_578938 = query.getOrDefault("alt")
+  valid_578938 = validateParameter(valid_578938, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578938 != nil:
+    section.add "alt", valid_578938
+  var valid_578939 = query.getOrDefault("userIp")
+  valid_578939 = validateParameter(valid_578939, JString, required = false,
+                                 default = nil)
+  if valid_578939 != nil:
+    section.add "userIp", valid_578939
+  var valid_578940 = query.getOrDefault("quotaUser")
+  valid_578940 = validateParameter(valid_578940, JString, required = false,
+                                 default = nil)
+  if valid_578940 != nil:
+    section.add "quotaUser", valid_578940
+  var valid_578941 = query.getOrDefault("fields")
+  valid_578941 = validateParameter(valid_578941, JString, required = false,
+                                 default = nil)
+  if valid_578941 != nil:
+    section.add "fields", valid_578941
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -391,74 +395,74 @@ proc validate_LicensingLicenseAssignmentsUpdate_589030(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589043: Call_LicensingLicenseAssignmentsUpdate_589029;
+proc call*(call_578943: Call_LicensingLicenseAssignmentsUpdate_578929;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Assign License.
   ## 
-  let valid = call_589043.validator(path, query, header, formData, body)
-  let scheme = call_589043.pickScheme
+  let valid = call_578943.validator(path, query, header, formData, body)
+  let scheme = call_578943.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589043.url(scheme.get, call_589043.host, call_589043.base,
-                         call_589043.route, valid.getOrDefault("path"),
+  let url = call_578943.url(scheme.get, call_578943.host, call_578943.base,
+                         call_578943.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589043, url, valid)
+  result = hook(call_578943, url, valid)
 
-proc call*(call_589044: Call_LicensingLicenseAssignmentsUpdate_589029;
-          skuId: string; productId: string; userId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578944: Call_LicensingLicenseAssignmentsUpdate_578929;
+          skuId: string; userId: string; productId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## licensingLicenseAssignmentsUpdate
   ## Assign License.
-  ##   skuId: string (required)
-  ##        : Name for sku for which license would be revoked
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
+  ##   skuId: string (required)
+  ##        : Name for sku for which license would be revoked
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  ##   productId: string (required)
-  ##            : Name for product
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : email id or unique Id of the user
-  var path_589045 = newJObject()
-  var query_589046 = newJObject()
-  var body_589047 = newJObject()
-  add(path_589045, "skuId", newJString(skuId))
-  add(query_589046, "fields", newJString(fields))
-  add(query_589046, "quotaUser", newJString(quotaUser))
-  add(query_589046, "alt", newJString(alt))
-  add(query_589046, "oauth_token", newJString(oauthToken))
-  add(query_589046, "userIp", newJString(userIp))
-  add(query_589046, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   productId: string (required)
+  ##            : Name for product
+  var path_578945 = newJObject()
+  var query_578946 = newJObject()
+  var body_578947 = newJObject()
+  add(query_578946, "key", newJString(key))
+  add(path_578945, "skuId", newJString(skuId))
+  add(query_578946, "prettyPrint", newJBool(prettyPrint))
+  add(query_578946, "oauth_token", newJString(oauthToken))
+  add(query_578946, "alt", newJString(alt))
+  add(query_578946, "userIp", newJString(userIp))
+  add(query_578946, "quotaUser", newJString(quotaUser))
+  add(path_578945, "userId", newJString(userId))
   if body != nil:
-    body_589047 = body
-  add(query_589046, "prettyPrint", newJBool(prettyPrint))
-  add(path_589045, "productId", newJString(productId))
-  add(path_589045, "userId", newJString(userId))
-  result = call_589044.call(path_589045, query_589046, nil, nil, body_589047)
+    body_578947 = body
+  add(query_578946, "fields", newJString(fields))
+  add(path_578945, "productId", newJString(productId))
+  result = call_578944.call(path_578945, query_578946, nil, nil, body_578947)
 
-var licensingLicenseAssignmentsUpdate* = Call_LicensingLicenseAssignmentsUpdate_589029(
+var licensingLicenseAssignmentsUpdate* = Call_LicensingLicenseAssignmentsUpdate_578929(
     name: "licensingLicenseAssignmentsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{productId}/sku/{skuId}/user/{userId}",
-    validator: validate_LicensingLicenseAssignmentsUpdate_589030,
+    validator: validate_LicensingLicenseAssignmentsUpdate_578930,
     base: "/apps/licensing/v1/product",
-    url: url_LicensingLicenseAssignmentsUpdate_589031, schemes: {Scheme.Https})
+    url: url_LicensingLicenseAssignmentsUpdate_578931, schemes: {Scheme.Https})
 type
-  Call_LicensingLicenseAssignmentsGet_589012 = ref object of OpenApiRestCall_588457
-proc url_LicensingLicenseAssignmentsGet_589014(protocol: Scheme; host: string;
+  Call_LicensingLicenseAssignmentsGet_578912 = ref object of OpenApiRestCall_578355
+proc url_LicensingLicenseAssignmentsGet_578914(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -479,7 +483,7 @@ proc url_LicensingLicenseAssignmentsGet_589014(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LicensingLicenseAssignmentsGet_589013(path: JsonNode;
+proc validate_LicensingLicenseAssignmentsGet_578913(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get license assignment of a particular product and sku for a user
   ## 
@@ -488,79 +492,79 @@ proc validate_LicensingLicenseAssignmentsGet_589013(path: JsonNode;
   ## parameters in `path` object:
   ##   skuId: JString (required)
   ##        : Name for sku
-  ##   productId: JString (required)
-  ##            : Name for product
   ##   userId: JString (required)
   ##         : email id or unique Id of the user
+  ##   productId: JString (required)
+  ##            : Name for product
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `skuId` field"
-  var valid_589015 = path.getOrDefault("skuId")
-  valid_589015 = validateParameter(valid_589015, JString, required = true,
+  var valid_578915 = path.getOrDefault("skuId")
+  valid_578915 = validateParameter(valid_578915, JString, required = true,
                                  default = nil)
-  if valid_589015 != nil:
-    section.add "skuId", valid_589015
-  var valid_589016 = path.getOrDefault("productId")
-  valid_589016 = validateParameter(valid_589016, JString, required = true,
+  if valid_578915 != nil:
+    section.add "skuId", valid_578915
+  var valid_578916 = path.getOrDefault("userId")
+  valid_578916 = validateParameter(valid_578916, JString, required = true,
                                  default = nil)
-  if valid_589016 != nil:
-    section.add "productId", valid_589016
-  var valid_589017 = path.getOrDefault("userId")
-  valid_589017 = validateParameter(valid_589017, JString, required = true,
+  if valid_578916 != nil:
+    section.add "userId", valid_578916
+  var valid_578917 = path.getOrDefault("productId")
+  valid_578917 = validateParameter(valid_578917, JString, required = true,
                                  default = nil)
-  if valid_589017 != nil:
-    section.add "userId", valid_589017
+  if valid_578917 != nil:
+    section.add "productId", valid_578917
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589018 = query.getOrDefault("fields")
-  valid_589018 = validateParameter(valid_589018, JString, required = false,
+  var valid_578918 = query.getOrDefault("key")
+  valid_578918 = validateParameter(valid_578918, JString, required = false,
                                  default = nil)
-  if valid_589018 != nil:
-    section.add "fields", valid_589018
-  var valid_589019 = query.getOrDefault("quotaUser")
-  valid_589019 = validateParameter(valid_589019, JString, required = false,
-                                 default = nil)
-  if valid_589019 != nil:
-    section.add "quotaUser", valid_589019
-  var valid_589020 = query.getOrDefault("alt")
-  valid_589020 = validateParameter(valid_589020, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589020 != nil:
-    section.add "alt", valid_589020
-  var valid_589021 = query.getOrDefault("oauth_token")
-  valid_589021 = validateParameter(valid_589021, JString, required = false,
-                                 default = nil)
-  if valid_589021 != nil:
-    section.add "oauth_token", valid_589021
-  var valid_589022 = query.getOrDefault("userIp")
-  valid_589022 = validateParameter(valid_589022, JString, required = false,
-                                 default = nil)
-  if valid_589022 != nil:
-    section.add "userIp", valid_589022
-  var valid_589023 = query.getOrDefault("key")
-  valid_589023 = validateParameter(valid_589023, JString, required = false,
-                                 default = nil)
-  if valid_589023 != nil:
-    section.add "key", valid_589023
-  var valid_589024 = query.getOrDefault("prettyPrint")
-  valid_589024 = validateParameter(valid_589024, JBool, required = false,
+  if valid_578918 != nil:
+    section.add "key", valid_578918
+  var valid_578919 = query.getOrDefault("prettyPrint")
+  valid_578919 = validateParameter(valid_578919, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589024 != nil:
-    section.add "prettyPrint", valid_589024
+  if valid_578919 != nil:
+    section.add "prettyPrint", valid_578919
+  var valid_578920 = query.getOrDefault("oauth_token")
+  valid_578920 = validateParameter(valid_578920, JString, required = false,
+                                 default = nil)
+  if valid_578920 != nil:
+    section.add "oauth_token", valid_578920
+  var valid_578921 = query.getOrDefault("alt")
+  valid_578921 = validateParameter(valid_578921, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578921 != nil:
+    section.add "alt", valid_578921
+  var valid_578922 = query.getOrDefault("userIp")
+  valid_578922 = validateParameter(valid_578922, JString, required = false,
+                                 default = nil)
+  if valid_578922 != nil:
+    section.add "userIp", valid_578922
+  var valid_578923 = query.getOrDefault("quotaUser")
+  valid_578923 = validateParameter(valid_578923, JString, required = false,
+                                 default = nil)
+  if valid_578923 != nil:
+    section.add "quotaUser", valid_578923
+  var valid_578924 = query.getOrDefault("fields")
+  valid_578924 = validateParameter(valid_578924, JString, required = false,
+                                 default = nil)
+  if valid_578924 != nil:
+    section.add "fields", valid_578924
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -569,68 +573,68 @@ proc validate_LicensingLicenseAssignmentsGet_589013(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589025: Call_LicensingLicenseAssignmentsGet_589012; path: JsonNode;
+proc call*(call_578925: Call_LicensingLicenseAssignmentsGet_578912; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Get license assignment of a particular product and sku for a user
   ## 
-  let valid = call_589025.validator(path, query, header, formData, body)
-  let scheme = call_589025.pickScheme
+  let valid = call_578925.validator(path, query, header, formData, body)
+  let scheme = call_578925.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589025.url(scheme.get, call_589025.host, call_589025.base,
-                         call_589025.route, valid.getOrDefault("path"),
+  let url = call_578925.url(scheme.get, call_578925.host, call_578925.base,
+                         call_578925.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589025, url, valid)
+  result = hook(call_578925, url, valid)
 
-proc call*(call_589026: Call_LicensingLicenseAssignmentsGet_589012; skuId: string;
-          productId: string; userId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_578926: Call_LicensingLicenseAssignmentsGet_578912; skuId: string;
+          userId: string; productId: string; key: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; fields: string = ""): Recallable =
   ## licensingLicenseAssignmentsGet
   ## Get license assignment of a particular product and sku for a user
-  ##   skuId: string (required)
-  ##        : Name for sku
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   productId: string (required)
-  ##            : Name for product
+  ##   skuId: string (required)
+  ##        : Name for sku
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : email id or unique Id of the user
-  var path_589027 = newJObject()
-  var query_589028 = newJObject()
-  add(path_589027, "skuId", newJString(skuId))
-  add(query_589028, "fields", newJString(fields))
-  add(query_589028, "quotaUser", newJString(quotaUser))
-  add(query_589028, "alt", newJString(alt))
-  add(query_589028, "oauth_token", newJString(oauthToken))
-  add(query_589028, "userIp", newJString(userIp))
-  add(query_589028, "key", newJString(key))
-  add(path_589027, "productId", newJString(productId))
-  add(query_589028, "prettyPrint", newJBool(prettyPrint))
-  add(path_589027, "userId", newJString(userId))
-  result = call_589026.call(path_589027, query_589028, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   productId: string (required)
+  ##            : Name for product
+  var path_578927 = newJObject()
+  var query_578928 = newJObject()
+  add(query_578928, "key", newJString(key))
+  add(path_578927, "skuId", newJString(skuId))
+  add(query_578928, "prettyPrint", newJBool(prettyPrint))
+  add(query_578928, "oauth_token", newJString(oauthToken))
+  add(query_578928, "alt", newJString(alt))
+  add(query_578928, "userIp", newJString(userIp))
+  add(query_578928, "quotaUser", newJString(quotaUser))
+  add(path_578927, "userId", newJString(userId))
+  add(query_578928, "fields", newJString(fields))
+  add(path_578927, "productId", newJString(productId))
+  result = call_578926.call(path_578927, query_578928, nil, nil, nil)
 
-var licensingLicenseAssignmentsGet* = Call_LicensingLicenseAssignmentsGet_589012(
+var licensingLicenseAssignmentsGet* = Call_LicensingLicenseAssignmentsGet_578912(
     name: "licensingLicenseAssignmentsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{productId}/sku/{skuId}/user/{userId}",
-    validator: validate_LicensingLicenseAssignmentsGet_589013,
-    base: "/apps/licensing/v1/product", url: url_LicensingLicenseAssignmentsGet_589014,
+    validator: validate_LicensingLicenseAssignmentsGet_578913,
+    base: "/apps/licensing/v1/product", url: url_LicensingLicenseAssignmentsGet_578914,
     schemes: {Scheme.Https})
 type
-  Call_LicensingLicenseAssignmentsPatch_589065 = ref object of OpenApiRestCall_588457
-proc url_LicensingLicenseAssignmentsPatch_589067(protocol: Scheme; host: string;
+  Call_LicensingLicenseAssignmentsPatch_578965 = ref object of OpenApiRestCall_578355
+proc url_LicensingLicenseAssignmentsPatch_578967(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -651,7 +655,7 @@ proc url_LicensingLicenseAssignmentsPatch_589067(protocol: Scheme; host: string;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LicensingLicenseAssignmentsPatch_589066(path: JsonNode;
+proc validate_LicensingLicenseAssignmentsPatch_578966(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Assign License. This method supports patch semantics.
   ## 
@@ -660,79 +664,79 @@ proc validate_LicensingLicenseAssignmentsPatch_589066(path: JsonNode;
   ## parameters in `path` object:
   ##   skuId: JString (required)
   ##        : Name for sku for which license would be revoked
-  ##   productId: JString (required)
-  ##            : Name for product
   ##   userId: JString (required)
   ##         : email id or unique Id of the user
+  ##   productId: JString (required)
+  ##            : Name for product
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `skuId` field"
-  var valid_589068 = path.getOrDefault("skuId")
-  valid_589068 = validateParameter(valid_589068, JString, required = true,
+  var valid_578968 = path.getOrDefault("skuId")
+  valid_578968 = validateParameter(valid_578968, JString, required = true,
                                  default = nil)
-  if valid_589068 != nil:
-    section.add "skuId", valid_589068
-  var valid_589069 = path.getOrDefault("productId")
-  valid_589069 = validateParameter(valid_589069, JString, required = true,
+  if valid_578968 != nil:
+    section.add "skuId", valid_578968
+  var valid_578969 = path.getOrDefault("userId")
+  valid_578969 = validateParameter(valid_578969, JString, required = true,
                                  default = nil)
-  if valid_589069 != nil:
-    section.add "productId", valid_589069
-  var valid_589070 = path.getOrDefault("userId")
-  valid_589070 = validateParameter(valid_589070, JString, required = true,
+  if valid_578969 != nil:
+    section.add "userId", valid_578969
+  var valid_578970 = path.getOrDefault("productId")
+  valid_578970 = validateParameter(valid_578970, JString, required = true,
                                  default = nil)
-  if valid_589070 != nil:
-    section.add "userId", valid_589070
+  if valid_578970 != nil:
+    section.add "productId", valid_578970
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589071 = query.getOrDefault("fields")
-  valid_589071 = validateParameter(valid_589071, JString, required = false,
+  var valid_578971 = query.getOrDefault("key")
+  valid_578971 = validateParameter(valid_578971, JString, required = false,
                                  default = nil)
-  if valid_589071 != nil:
-    section.add "fields", valid_589071
-  var valid_589072 = query.getOrDefault("quotaUser")
-  valid_589072 = validateParameter(valid_589072, JString, required = false,
-                                 default = nil)
-  if valid_589072 != nil:
-    section.add "quotaUser", valid_589072
-  var valid_589073 = query.getOrDefault("alt")
-  valid_589073 = validateParameter(valid_589073, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589073 != nil:
-    section.add "alt", valid_589073
-  var valid_589074 = query.getOrDefault("oauth_token")
-  valid_589074 = validateParameter(valid_589074, JString, required = false,
-                                 default = nil)
-  if valid_589074 != nil:
-    section.add "oauth_token", valid_589074
-  var valid_589075 = query.getOrDefault("userIp")
-  valid_589075 = validateParameter(valid_589075, JString, required = false,
-                                 default = nil)
-  if valid_589075 != nil:
-    section.add "userIp", valid_589075
-  var valid_589076 = query.getOrDefault("key")
-  valid_589076 = validateParameter(valid_589076, JString, required = false,
-                                 default = nil)
-  if valid_589076 != nil:
-    section.add "key", valid_589076
-  var valid_589077 = query.getOrDefault("prettyPrint")
-  valid_589077 = validateParameter(valid_589077, JBool, required = false,
+  if valid_578971 != nil:
+    section.add "key", valid_578971
+  var valid_578972 = query.getOrDefault("prettyPrint")
+  valid_578972 = validateParameter(valid_578972, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589077 != nil:
-    section.add "prettyPrint", valid_589077
+  if valid_578972 != nil:
+    section.add "prettyPrint", valid_578972
+  var valid_578973 = query.getOrDefault("oauth_token")
+  valid_578973 = validateParameter(valid_578973, JString, required = false,
+                                 default = nil)
+  if valid_578973 != nil:
+    section.add "oauth_token", valid_578973
+  var valid_578974 = query.getOrDefault("alt")
+  valid_578974 = validateParameter(valid_578974, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578974 != nil:
+    section.add "alt", valid_578974
+  var valid_578975 = query.getOrDefault("userIp")
+  valid_578975 = validateParameter(valid_578975, JString, required = false,
+                                 default = nil)
+  if valid_578975 != nil:
+    section.add "userIp", valid_578975
+  var valid_578976 = query.getOrDefault("quotaUser")
+  valid_578976 = validateParameter(valid_578976, JString, required = false,
+                                 default = nil)
+  if valid_578976 != nil:
+    section.add "quotaUser", valid_578976
+  var valid_578977 = query.getOrDefault("fields")
+  valid_578977 = validateParameter(valid_578977, JString, required = false,
+                                 default = nil)
+  if valid_578977 != nil:
+    section.add "fields", valid_578977
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -744,74 +748,74 @@ proc validate_LicensingLicenseAssignmentsPatch_589066(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589079: Call_LicensingLicenseAssignmentsPatch_589065;
+proc call*(call_578979: Call_LicensingLicenseAssignmentsPatch_578965;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Assign License. This method supports patch semantics.
   ## 
-  let valid = call_589079.validator(path, query, header, formData, body)
-  let scheme = call_589079.pickScheme
+  let valid = call_578979.validator(path, query, header, formData, body)
+  let scheme = call_578979.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589079.url(scheme.get, call_589079.host, call_589079.base,
-                         call_589079.route, valid.getOrDefault("path"),
+  let url = call_578979.url(scheme.get, call_578979.host, call_578979.base,
+                         call_578979.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589079, url, valid)
+  result = hook(call_578979, url, valid)
 
-proc call*(call_589080: Call_LicensingLicenseAssignmentsPatch_589065;
-          skuId: string; productId: string; userId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; body: JsonNode = nil;
-          prettyPrint: bool = true): Recallable =
+proc call*(call_578980: Call_LicensingLicenseAssignmentsPatch_578965;
+          skuId: string; userId: string; productId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
+          fields: string = ""): Recallable =
   ## licensingLicenseAssignmentsPatch
   ## Assign License. This method supports patch semantics.
-  ##   skuId: string (required)
-  ##        : Name for sku for which license would be revoked
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   body: JObject
+  ##   skuId: string (required)
+  ##        : Name for sku for which license would be revoked
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  ##   productId: string (required)
-  ##            : Name for product
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : email id or unique Id of the user
-  var path_589081 = newJObject()
-  var query_589082 = newJObject()
-  var body_589083 = newJObject()
-  add(path_589081, "skuId", newJString(skuId))
-  add(query_589082, "fields", newJString(fields))
-  add(query_589082, "quotaUser", newJString(quotaUser))
-  add(query_589082, "alt", newJString(alt))
-  add(query_589082, "oauth_token", newJString(oauthToken))
-  add(query_589082, "userIp", newJString(userIp))
-  add(query_589082, "key", newJString(key))
+  ##   body: JObject
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   productId: string (required)
+  ##            : Name for product
+  var path_578981 = newJObject()
+  var query_578982 = newJObject()
+  var body_578983 = newJObject()
+  add(query_578982, "key", newJString(key))
+  add(path_578981, "skuId", newJString(skuId))
+  add(query_578982, "prettyPrint", newJBool(prettyPrint))
+  add(query_578982, "oauth_token", newJString(oauthToken))
+  add(query_578982, "alt", newJString(alt))
+  add(query_578982, "userIp", newJString(userIp))
+  add(query_578982, "quotaUser", newJString(quotaUser))
+  add(path_578981, "userId", newJString(userId))
   if body != nil:
-    body_589083 = body
-  add(query_589082, "prettyPrint", newJBool(prettyPrint))
-  add(path_589081, "productId", newJString(productId))
-  add(path_589081, "userId", newJString(userId))
-  result = call_589080.call(path_589081, query_589082, nil, nil, body_589083)
+    body_578983 = body
+  add(query_578982, "fields", newJString(fields))
+  add(path_578981, "productId", newJString(productId))
+  result = call_578980.call(path_578981, query_578982, nil, nil, body_578983)
 
-var licensingLicenseAssignmentsPatch* = Call_LicensingLicenseAssignmentsPatch_589065(
+var licensingLicenseAssignmentsPatch* = Call_LicensingLicenseAssignmentsPatch_578965(
     name: "licensingLicenseAssignmentsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/{productId}/sku/{skuId}/user/{userId}",
-    validator: validate_LicensingLicenseAssignmentsPatch_589066,
-    base: "/apps/licensing/v1/product", url: url_LicensingLicenseAssignmentsPatch_589067,
+    validator: validate_LicensingLicenseAssignmentsPatch_578966,
+    base: "/apps/licensing/v1/product", url: url_LicensingLicenseAssignmentsPatch_578967,
     schemes: {Scheme.Https})
 type
-  Call_LicensingLicenseAssignmentsDelete_589048 = ref object of OpenApiRestCall_588457
-proc url_LicensingLicenseAssignmentsDelete_589050(protocol: Scheme; host: string;
+  Call_LicensingLicenseAssignmentsDelete_578948 = ref object of OpenApiRestCall_578355
+proc url_LicensingLicenseAssignmentsDelete_578950(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -832,7 +836,7 @@ proc url_LicensingLicenseAssignmentsDelete_589050(protocol: Scheme; host: string
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LicensingLicenseAssignmentsDelete_589049(path: JsonNode;
+proc validate_LicensingLicenseAssignmentsDelete_578949(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Revoke License.
   ## 
@@ -841,79 +845,79 @@ proc validate_LicensingLicenseAssignmentsDelete_589049(path: JsonNode;
   ## parameters in `path` object:
   ##   skuId: JString (required)
   ##        : Name for sku
-  ##   productId: JString (required)
-  ##            : Name for product
   ##   userId: JString (required)
   ##         : email id or unique Id of the user
+  ##   productId: JString (required)
+  ##            : Name for product
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `skuId` field"
-  var valid_589051 = path.getOrDefault("skuId")
-  valid_589051 = validateParameter(valid_589051, JString, required = true,
+  var valid_578951 = path.getOrDefault("skuId")
+  valid_578951 = validateParameter(valid_578951, JString, required = true,
                                  default = nil)
-  if valid_589051 != nil:
-    section.add "skuId", valid_589051
-  var valid_589052 = path.getOrDefault("productId")
-  valid_589052 = validateParameter(valid_589052, JString, required = true,
+  if valid_578951 != nil:
+    section.add "skuId", valid_578951
+  var valid_578952 = path.getOrDefault("userId")
+  valid_578952 = validateParameter(valid_578952, JString, required = true,
                                  default = nil)
-  if valid_589052 != nil:
-    section.add "productId", valid_589052
-  var valid_589053 = path.getOrDefault("userId")
-  valid_589053 = validateParameter(valid_589053, JString, required = true,
+  if valid_578952 != nil:
+    section.add "userId", valid_578952
+  var valid_578953 = path.getOrDefault("productId")
+  valid_578953 = validateParameter(valid_578953, JString, required = true,
                                  default = nil)
-  if valid_589053 != nil:
-    section.add "userId", valid_589053
+  if valid_578953 != nil:
+    section.add "productId", valid_578953
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_589054 = query.getOrDefault("fields")
-  valid_589054 = validateParameter(valid_589054, JString, required = false,
+  var valid_578954 = query.getOrDefault("key")
+  valid_578954 = validateParameter(valid_578954, JString, required = false,
                                  default = nil)
-  if valid_589054 != nil:
-    section.add "fields", valid_589054
-  var valid_589055 = query.getOrDefault("quotaUser")
-  valid_589055 = validateParameter(valid_589055, JString, required = false,
-                                 default = nil)
-  if valid_589055 != nil:
-    section.add "quotaUser", valid_589055
-  var valid_589056 = query.getOrDefault("alt")
-  valid_589056 = validateParameter(valid_589056, JString, required = false,
-                                 default = newJString("json"))
-  if valid_589056 != nil:
-    section.add "alt", valid_589056
-  var valid_589057 = query.getOrDefault("oauth_token")
-  valid_589057 = validateParameter(valid_589057, JString, required = false,
-                                 default = nil)
-  if valid_589057 != nil:
-    section.add "oauth_token", valid_589057
-  var valid_589058 = query.getOrDefault("userIp")
-  valid_589058 = validateParameter(valid_589058, JString, required = false,
-                                 default = nil)
-  if valid_589058 != nil:
-    section.add "userIp", valid_589058
-  var valid_589059 = query.getOrDefault("key")
-  valid_589059 = validateParameter(valid_589059, JString, required = false,
-                                 default = nil)
-  if valid_589059 != nil:
-    section.add "key", valid_589059
-  var valid_589060 = query.getOrDefault("prettyPrint")
-  valid_589060 = validateParameter(valid_589060, JBool, required = false,
+  if valid_578954 != nil:
+    section.add "key", valid_578954
+  var valid_578955 = query.getOrDefault("prettyPrint")
+  valid_578955 = validateParameter(valid_578955, JBool, required = false,
                                  default = newJBool(true))
-  if valid_589060 != nil:
-    section.add "prettyPrint", valid_589060
+  if valid_578955 != nil:
+    section.add "prettyPrint", valid_578955
+  var valid_578956 = query.getOrDefault("oauth_token")
+  valid_578956 = validateParameter(valid_578956, JString, required = false,
+                                 default = nil)
+  if valid_578956 != nil:
+    section.add "oauth_token", valid_578956
+  var valid_578957 = query.getOrDefault("alt")
+  valid_578957 = validateParameter(valid_578957, JString, required = false,
+                                 default = newJString("json"))
+  if valid_578957 != nil:
+    section.add "alt", valid_578957
+  var valid_578958 = query.getOrDefault("userIp")
+  valid_578958 = validateParameter(valid_578958, JString, required = false,
+                                 default = nil)
+  if valid_578958 != nil:
+    section.add "userIp", valid_578958
+  var valid_578959 = query.getOrDefault("quotaUser")
+  valid_578959 = validateParameter(valid_578959, JString, required = false,
+                                 default = nil)
+  if valid_578959 != nil:
+    section.add "quotaUser", valid_578959
+  var valid_578960 = query.getOrDefault("fields")
+  valid_578960 = validateParameter(valid_578960, JString, required = false,
+                                 default = nil)
+  if valid_578960 != nil:
+    section.add "fields", valid_578960
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -922,69 +926,69 @@ proc validate_LicensingLicenseAssignmentsDelete_589049(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589061: Call_LicensingLicenseAssignmentsDelete_589048;
+proc call*(call_578961: Call_LicensingLicenseAssignmentsDelete_578948;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Revoke License.
   ## 
-  let valid = call_589061.validator(path, query, header, formData, body)
-  let scheme = call_589061.pickScheme
+  let valid = call_578961.validator(path, query, header, formData, body)
+  let scheme = call_578961.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589061.url(scheme.get, call_589061.host, call_589061.base,
-                         call_589061.route, valid.getOrDefault("path"),
+  let url = call_578961.url(scheme.get, call_578961.host, call_578961.base,
+                         call_578961.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589061, url, valid)
+  result = hook(call_578961, url, valid)
 
-proc call*(call_589062: Call_LicensingLicenseAssignmentsDelete_589048;
-          skuId: string; productId: string; userId: string; fields: string = "";
-          quotaUser: string = ""; alt: string = "json"; oauthToken: string = "";
-          userIp: string = ""; key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_578962: Call_LicensingLicenseAssignmentsDelete_578948;
+          skuId: string; userId: string; productId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## licensingLicenseAssignmentsDelete
   ## Revoke License.
-  ##   skuId: string (required)
-  ##        : Name for sku
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   productId: string (required)
-  ##            : Name for product
+  ##   skuId: string (required)
+  ##        : Name for sku
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
   ##         : email id or unique Id of the user
-  var path_589063 = newJObject()
-  var query_589064 = newJObject()
-  add(path_589063, "skuId", newJString(skuId))
-  add(query_589064, "fields", newJString(fields))
-  add(query_589064, "quotaUser", newJString(quotaUser))
-  add(query_589064, "alt", newJString(alt))
-  add(query_589064, "oauth_token", newJString(oauthToken))
-  add(query_589064, "userIp", newJString(userIp))
-  add(query_589064, "key", newJString(key))
-  add(path_589063, "productId", newJString(productId))
-  add(query_589064, "prettyPrint", newJBool(prettyPrint))
-  add(path_589063, "userId", newJString(userId))
-  result = call_589062.call(path_589063, query_589064, nil, nil, nil)
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   productId: string (required)
+  ##            : Name for product
+  var path_578963 = newJObject()
+  var query_578964 = newJObject()
+  add(query_578964, "key", newJString(key))
+  add(path_578963, "skuId", newJString(skuId))
+  add(query_578964, "prettyPrint", newJBool(prettyPrint))
+  add(query_578964, "oauth_token", newJString(oauthToken))
+  add(query_578964, "alt", newJString(alt))
+  add(query_578964, "userIp", newJString(userIp))
+  add(query_578964, "quotaUser", newJString(quotaUser))
+  add(path_578963, "userId", newJString(userId))
+  add(query_578964, "fields", newJString(fields))
+  add(path_578963, "productId", newJString(productId))
+  result = call_578962.call(path_578963, query_578964, nil, nil, nil)
 
-var licensingLicenseAssignmentsDelete* = Call_LicensingLicenseAssignmentsDelete_589048(
+var licensingLicenseAssignmentsDelete* = Call_LicensingLicenseAssignmentsDelete_578948(
     name: "licensingLicenseAssignmentsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{productId}/sku/{skuId}/user/{userId}",
-    validator: validate_LicensingLicenseAssignmentsDelete_589049,
+    validator: validate_LicensingLicenseAssignmentsDelete_578949,
     base: "/apps/licensing/v1/product",
-    url: url_LicensingLicenseAssignmentsDelete_589050, schemes: {Scheme.Https})
+    url: url_LicensingLicenseAssignmentsDelete_578950, schemes: {Scheme.Https})
 type
-  Call_LicensingLicenseAssignmentsListForProductAndSku_589084 = ref object of OpenApiRestCall_588457
-proc url_LicensingLicenseAssignmentsListForProductAndSku_589086(protocol: Scheme;
+  Call_LicensingLicenseAssignmentsListForProductAndSku_578984 = ref object of OpenApiRestCall_578355
+proc url_LicensingLicenseAssignmentsListForProductAndSku_578986(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1003,7 +1007,7 @@ proc url_LicensingLicenseAssignmentsListForProductAndSku_589086(protocol: Scheme
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LicensingLicenseAssignmentsListForProductAndSku_589085(
+proc validate_LicensingLicenseAssignmentsListForProductAndSku_578985(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## List license assignments for given product and sku of the customer.
@@ -1017,91 +1021,91 @@ proc validate_LicensingLicenseAssignmentsListForProductAndSku_589085(
   ##            : Name for product
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `skuId` field"
-  var valid_589087 = path.getOrDefault("skuId")
-  valid_589087 = validateParameter(valid_589087, JString, required = true,
+  var valid_578987 = path.getOrDefault("skuId")
+  valid_578987 = validateParameter(valid_578987, JString, required = true,
                                  default = nil)
-  if valid_589087 != nil:
-    section.add "skuId", valid_589087
-  var valid_589088 = path.getOrDefault("productId")
-  valid_589088 = validateParameter(valid_589088, JString, required = true,
+  if valid_578987 != nil:
+    section.add "skuId", valid_578987
+  var valid_578988 = path.getOrDefault("productId")
+  valid_578988 = validateParameter(valid_578988, JString, required = true,
                                  default = nil)
-  if valid_589088 != nil:
-    section.add "productId", valid_589088
+  if valid_578988 != nil:
+    section.add "productId", valid_578988
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Token to fetch the next page.Optional. By default server will return first page
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   customerId: JString (required)
-  ##             : CustomerId represents the customer for whom licenseassignments are queried
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : Maximum number of campaigns to return at one time. Must be positive. Optional. Default value is 100.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : Token to fetch the next page.Optional. By default server will return first page
+  ##   customerId: JString (required)
+  ##             : CustomerId represents the customer for whom licenseassignments are queried
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : Maximum number of campaigns to return at one time. Must be positive. Optional. Default value is 100.
   section = newJObject()
-  var valid_589089 = query.getOrDefault("fields")
-  valid_589089 = validateParameter(valid_589089, JString, required = false,
+  var valid_578989 = query.getOrDefault("key")
+  valid_578989 = validateParameter(valid_578989, JString, required = false,
                                  default = nil)
-  if valid_589089 != nil:
-    section.add "fields", valid_589089
-  var valid_589090 = query.getOrDefault("pageToken")
-  valid_589090 = validateParameter(valid_589090, JString, required = false,
-                                 default = newJString(""))
-  if valid_589090 != nil:
-    section.add "pageToken", valid_589090
-  var valid_589091 = query.getOrDefault("quotaUser")
-  valid_589091 = validateParameter(valid_589091, JString, required = false,
+  if valid_578989 != nil:
+    section.add "key", valid_578989
+  var valid_578990 = query.getOrDefault("prettyPrint")
+  valid_578990 = validateParameter(valid_578990, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_578990 != nil:
+    section.add "prettyPrint", valid_578990
+  var valid_578991 = query.getOrDefault("oauth_token")
+  valid_578991 = validateParameter(valid_578991, JString, required = false,
                                  default = nil)
-  if valid_589091 != nil:
-    section.add "quotaUser", valid_589091
-  var valid_589092 = query.getOrDefault("alt")
-  valid_589092 = validateParameter(valid_589092, JString, required = false,
+  if valid_578991 != nil:
+    section.add "oauth_token", valid_578991
+  var valid_578992 = query.getOrDefault("alt")
+  valid_578992 = validateParameter(valid_578992, JString, required = false,
                                  default = newJString("json"))
-  if valid_589092 != nil:
-    section.add "alt", valid_589092
+  if valid_578992 != nil:
+    section.add "alt", valid_578992
+  var valid_578993 = query.getOrDefault("userIp")
+  valid_578993 = validateParameter(valid_578993, JString, required = false,
+                                 default = nil)
+  if valid_578993 != nil:
+    section.add "userIp", valid_578993
+  var valid_578994 = query.getOrDefault("quotaUser")
+  valid_578994 = validateParameter(valid_578994, JString, required = false,
+                                 default = nil)
+  if valid_578994 != nil:
+    section.add "quotaUser", valid_578994
+  var valid_578995 = query.getOrDefault("pageToken")
+  valid_578995 = validateParameter(valid_578995, JString, required = false,
+                                 default = newJString(""))
+  if valid_578995 != nil:
+    section.add "pageToken", valid_578995
   assert query != nil,
         "query argument is necessary due to required `customerId` field"
-  var valid_589093 = query.getOrDefault("customerId")
-  valid_589093 = validateParameter(valid_589093, JString, required = true,
+  var valid_578996 = query.getOrDefault("customerId")
+  valid_578996 = validateParameter(valid_578996, JString, required = true,
                                  default = nil)
-  if valid_589093 != nil:
-    section.add "customerId", valid_589093
-  var valid_589094 = query.getOrDefault("oauth_token")
-  valid_589094 = validateParameter(valid_589094, JString, required = false,
+  if valid_578996 != nil:
+    section.add "customerId", valid_578996
+  var valid_578997 = query.getOrDefault("fields")
+  valid_578997 = validateParameter(valid_578997, JString, required = false,
                                  default = nil)
-  if valid_589094 != nil:
-    section.add "oauth_token", valid_589094
-  var valid_589095 = query.getOrDefault("userIp")
-  valid_589095 = validateParameter(valid_589095, JString, required = false,
-                                 default = nil)
-  if valid_589095 != nil:
-    section.add "userIp", valid_589095
-  var valid_589097 = query.getOrDefault("maxResults")
-  valid_589097 = validateParameter(valid_589097, JInt, required = false,
+  if valid_578997 != nil:
+    section.add "fields", valid_578997
+  var valid_578999 = query.getOrDefault("maxResults")
+  valid_578999 = validateParameter(valid_578999, JInt, required = false,
                                  default = newJInt(100))
-  if valid_589097 != nil:
-    section.add "maxResults", valid_589097
-  var valid_589098 = query.getOrDefault("key")
-  valid_589098 = validateParameter(valid_589098, JString, required = false,
-                                 default = nil)
-  if valid_589098 != nil:
-    section.add "key", valid_589098
-  var valid_589099 = query.getOrDefault("prettyPrint")
-  valid_589099 = validateParameter(valid_589099, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_589099 != nil:
-    section.add "prettyPrint", valid_589099
+  if valid_578999 != nil:
+    section.add "maxResults", valid_578999
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1110,78 +1114,78 @@ proc validate_LicensingLicenseAssignmentsListForProductAndSku_589085(
   if body != nil:
     result.add "body", body
 
-proc call*(call_589100: Call_LicensingLicenseAssignmentsListForProductAndSku_589084;
+proc call*(call_579000: Call_LicensingLicenseAssignmentsListForProductAndSku_578984;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List license assignments for given product and sku of the customer.
   ## 
-  let valid = call_589100.validator(path, query, header, formData, body)
-  let scheme = call_589100.pickScheme
+  let valid = call_579000.validator(path, query, header, formData, body)
+  let scheme = call_579000.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589100.url(scheme.get, call_589100.host, call_589100.base,
-                         call_589100.route, valid.getOrDefault("path"),
+  let url = call_579000.url(scheme.get, call_579000.host, call_579000.base,
+                         call_579000.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589100, url, valid)
+  result = hook(call_579000, url, valid)
 
-proc call*(call_589101: Call_LicensingLicenseAssignmentsListForProductAndSku_589084;
-          skuId: string; customerId: string; productId: string; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; maxResults: int = 100;
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579001: Call_LicensingLicenseAssignmentsListForProductAndSku_578984;
+          skuId: string; customerId: string; productId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
+          fields: string = ""; maxResults: int = 100): Recallable =
   ## licensingLicenseAssignmentsListForProductAndSku
   ## List license assignments for given product and sku of the customer.
-  ##   skuId: string (required)
-  ##        : Name for sku
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Token to fetch the next page.Optional. By default server will return first page
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   customerId: string (required)
-  ##             : CustomerId represents the customer for whom licenseassignments are queried
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : Maximum number of campaigns to return at one time. Must be positive. Optional. Default value is 100.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   productId: string (required)
-  ##            : Name for product
+  ##   skuId: string (required)
+  ##        : Name for sku
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589102 = newJObject()
-  var query_589103 = newJObject()
-  add(path_589102, "skuId", newJString(skuId))
-  add(query_589103, "fields", newJString(fields))
-  add(query_589103, "pageToken", newJString(pageToken))
-  add(query_589103, "quotaUser", newJString(quotaUser))
-  add(query_589103, "alt", newJString(alt))
-  add(query_589103, "customerId", newJString(customerId))
-  add(query_589103, "oauth_token", newJString(oauthToken))
-  add(query_589103, "userIp", newJString(userIp))
-  add(query_589103, "maxResults", newJInt(maxResults))
-  add(query_589103, "key", newJString(key))
-  add(path_589102, "productId", newJString(productId))
-  add(query_589103, "prettyPrint", newJBool(prettyPrint))
-  result = call_589101.call(path_589102, query_589103, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : Token to fetch the next page.Optional. By default server will return first page
+  ##   customerId: string (required)
+  ##             : CustomerId represents the customer for whom licenseassignments are queried
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   productId: string (required)
+  ##            : Name for product
+  ##   maxResults: int
+  ##             : Maximum number of campaigns to return at one time. Must be positive. Optional. Default value is 100.
+  var path_579002 = newJObject()
+  var query_579003 = newJObject()
+  add(query_579003, "key", newJString(key))
+  add(path_579002, "skuId", newJString(skuId))
+  add(query_579003, "prettyPrint", newJBool(prettyPrint))
+  add(query_579003, "oauth_token", newJString(oauthToken))
+  add(query_579003, "alt", newJString(alt))
+  add(query_579003, "userIp", newJString(userIp))
+  add(query_579003, "quotaUser", newJString(quotaUser))
+  add(query_579003, "pageToken", newJString(pageToken))
+  add(query_579003, "customerId", newJString(customerId))
+  add(query_579003, "fields", newJString(fields))
+  add(path_579002, "productId", newJString(productId))
+  add(query_579003, "maxResults", newJInt(maxResults))
+  result = call_579001.call(path_579002, query_579003, nil, nil, nil)
 
-var licensingLicenseAssignmentsListForProductAndSku* = Call_LicensingLicenseAssignmentsListForProductAndSku_589084(
+var licensingLicenseAssignmentsListForProductAndSku* = Call_LicensingLicenseAssignmentsListForProductAndSku_578984(
     name: "licensingLicenseAssignmentsListForProductAndSku",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/{productId}/sku/{skuId}/users",
-    validator: validate_LicensingLicenseAssignmentsListForProductAndSku_589085,
+    validator: validate_LicensingLicenseAssignmentsListForProductAndSku_578985,
     base: "/apps/licensing/v1/product",
-    url: url_LicensingLicenseAssignmentsListForProductAndSku_589086,
+    url: url_LicensingLicenseAssignmentsListForProductAndSku_578986,
     schemes: {Scheme.Https})
 type
-  Call_LicensingLicenseAssignmentsListForProduct_589104 = ref object of OpenApiRestCall_588457
-proc url_LicensingLicenseAssignmentsListForProduct_589106(protocol: Scheme;
+  Call_LicensingLicenseAssignmentsListForProduct_579004 = ref object of OpenApiRestCall_578355
+proc url_LicensingLicenseAssignmentsListForProduct_579006(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1197,7 +1201,7 @@ proc url_LicensingLicenseAssignmentsListForProduct_589106(protocol: Scheme;
     raise newException(ValueError, "unable to fully hydrate path")
   result.path = base & hydrated.get
 
-proc validate_LicensingLicenseAssignmentsListForProduct_589105(path: JsonNode;
+proc validate_LicensingLicenseAssignmentsListForProduct_579005(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## List license assignments for given product of the customer.
   ## 
@@ -1208,86 +1212,86 @@ proc validate_LicensingLicenseAssignmentsListForProduct_589105(path: JsonNode;
   ##            : Name for product
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `productId` field"
-  var valid_589107 = path.getOrDefault("productId")
-  valid_589107 = validateParameter(valid_589107, JString, required = true,
+  var valid_579007 = path.getOrDefault("productId")
+  valid_579007 = validateParameter(valid_579007, JString, required = true,
                                  default = nil)
-  if valid_589107 != nil:
-    section.add "productId", valid_589107
+  if valid_579007 != nil:
+    section.add "productId", valid_579007
   result.add "path", section
   ## parameters in `query` object:
-  ##   fields: JString
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: JString
-  ##            : Token to fetch the next page.Optional. By default server will return first page
-  ##   quotaUser: JString
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: JString
-  ##      : Data format for the response.
-  ##   customerId: JString (required)
-  ##             : CustomerId represents the customer for whom licenseassignments are queried
-  ##   oauth_token: JString
-  ##              : OAuth 2.0 token for the current user.
-  ##   userIp: JString
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: JInt
-  ##             : Maximum number of campaigns to return at one time. Must be positive. Optional. Default value is 100.
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
+  ##   oauth_token: JString
+  ##              : OAuth 2.0 token for the current user.
+  ##   alt: JString
+  ##      : Data format for the response.
+  ##   userIp: JString
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: JString
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: JString
+  ##            : Token to fetch the next page.Optional. By default server will return first page
+  ##   customerId: JString (required)
+  ##             : CustomerId represents the customer for whom licenseassignments are queried
+  ##   fields: JString
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   maxResults: JInt
+  ##             : Maximum number of campaigns to return at one time. Must be positive. Optional. Default value is 100.
   section = newJObject()
-  var valid_589108 = query.getOrDefault("fields")
-  valid_589108 = validateParameter(valid_589108, JString, required = false,
+  var valid_579008 = query.getOrDefault("key")
+  valid_579008 = validateParameter(valid_579008, JString, required = false,
                                  default = nil)
-  if valid_589108 != nil:
-    section.add "fields", valid_589108
-  var valid_589109 = query.getOrDefault("pageToken")
-  valid_589109 = validateParameter(valid_589109, JString, required = false,
-                                 default = newJString(""))
-  if valid_589109 != nil:
-    section.add "pageToken", valid_589109
-  var valid_589110 = query.getOrDefault("quotaUser")
-  valid_589110 = validateParameter(valid_589110, JString, required = false,
+  if valid_579008 != nil:
+    section.add "key", valid_579008
+  var valid_579009 = query.getOrDefault("prettyPrint")
+  valid_579009 = validateParameter(valid_579009, JBool, required = false,
+                                 default = newJBool(true))
+  if valid_579009 != nil:
+    section.add "prettyPrint", valid_579009
+  var valid_579010 = query.getOrDefault("oauth_token")
+  valid_579010 = validateParameter(valid_579010, JString, required = false,
                                  default = nil)
-  if valid_589110 != nil:
-    section.add "quotaUser", valid_589110
-  var valid_589111 = query.getOrDefault("alt")
-  valid_589111 = validateParameter(valid_589111, JString, required = false,
+  if valid_579010 != nil:
+    section.add "oauth_token", valid_579010
+  var valid_579011 = query.getOrDefault("alt")
+  valid_579011 = validateParameter(valid_579011, JString, required = false,
                                  default = newJString("json"))
-  if valid_589111 != nil:
-    section.add "alt", valid_589111
+  if valid_579011 != nil:
+    section.add "alt", valid_579011
+  var valid_579012 = query.getOrDefault("userIp")
+  valid_579012 = validateParameter(valid_579012, JString, required = false,
+                                 default = nil)
+  if valid_579012 != nil:
+    section.add "userIp", valid_579012
+  var valid_579013 = query.getOrDefault("quotaUser")
+  valid_579013 = validateParameter(valid_579013, JString, required = false,
+                                 default = nil)
+  if valid_579013 != nil:
+    section.add "quotaUser", valid_579013
+  var valid_579014 = query.getOrDefault("pageToken")
+  valid_579014 = validateParameter(valid_579014, JString, required = false,
+                                 default = newJString(""))
+  if valid_579014 != nil:
+    section.add "pageToken", valid_579014
   assert query != nil,
         "query argument is necessary due to required `customerId` field"
-  var valid_589112 = query.getOrDefault("customerId")
-  valid_589112 = validateParameter(valid_589112, JString, required = true,
+  var valid_579015 = query.getOrDefault("customerId")
+  valid_579015 = validateParameter(valid_579015, JString, required = true,
                                  default = nil)
-  if valid_589112 != nil:
-    section.add "customerId", valid_589112
-  var valid_589113 = query.getOrDefault("oauth_token")
-  valid_589113 = validateParameter(valid_589113, JString, required = false,
+  if valid_579015 != nil:
+    section.add "customerId", valid_579015
+  var valid_579016 = query.getOrDefault("fields")
+  valid_579016 = validateParameter(valid_579016, JString, required = false,
                                  default = nil)
-  if valid_589113 != nil:
-    section.add "oauth_token", valid_589113
-  var valid_589114 = query.getOrDefault("userIp")
-  valid_589114 = validateParameter(valid_589114, JString, required = false,
-                                 default = nil)
-  if valid_589114 != nil:
-    section.add "userIp", valid_589114
-  var valid_589115 = query.getOrDefault("maxResults")
-  valid_589115 = validateParameter(valid_589115, JInt, required = false,
+  if valid_579016 != nil:
+    section.add "fields", valid_579016
+  var valid_579017 = query.getOrDefault("maxResults")
+  valid_579017 = validateParameter(valid_579017, JInt, required = false,
                                  default = newJInt(100))
-  if valid_589115 != nil:
-    section.add "maxResults", valid_589115
-  var valid_589116 = query.getOrDefault("key")
-  valid_589116 = validateParameter(valid_589116, JString, required = false,
-                                 default = nil)
-  if valid_589116 != nil:
-    section.add "key", valid_589116
-  var valid_589117 = query.getOrDefault("prettyPrint")
-  valid_589117 = validateParameter(valid_589117, JBool, required = false,
-                                 default = newJBool(true))
-  if valid_589117 != nil:
-    section.add "prettyPrint", valid_589117
+  if valid_579017 != nil:
+    section.add "maxResults", valid_579017
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1296,70 +1300,70 @@ proc validate_LicensingLicenseAssignmentsListForProduct_589105(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_589118: Call_LicensingLicenseAssignmentsListForProduct_589104;
+proc call*(call_579018: Call_LicensingLicenseAssignmentsListForProduct_579004;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## List license assignments for given product of the customer.
   ## 
-  let valid = call_589118.validator(path, query, header, formData, body)
-  let scheme = call_589118.pickScheme
+  let valid = call_579018.validator(path, query, header, formData, body)
+  let scheme = call_579018.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_589118.url(scheme.get, call_589118.host, call_589118.base,
-                         call_589118.route, valid.getOrDefault("path"),
+  let url = call_579018.url(scheme.get, call_579018.host, call_579018.base,
+                         call_579018.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_589118, url, valid)
+  result = hook(call_579018, url, valid)
 
-proc call*(call_589119: Call_LicensingLicenseAssignmentsListForProduct_589104;
-          customerId: string; productId: string; fields: string = "";
-          pageToken: string = ""; quotaUser: string = ""; alt: string = "json";
-          oauthToken: string = ""; userIp: string = ""; maxResults: int = 100;
-          key: string = ""; prettyPrint: bool = true): Recallable =
+proc call*(call_579019: Call_LicensingLicenseAssignmentsListForProduct_579004;
+          customerId: string; productId: string; key: string = "";
+          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
+          userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
+          fields: string = ""; maxResults: int = 100): Recallable =
   ## licensingLicenseAssignmentsListForProduct
   ## List license assignments for given product of the customer.
-  ##   fields: string
-  ##         : Selector specifying which fields to include in a partial response.
-  ##   pageToken: string
-  ##            : Token to fetch the next page.Optional. By default server will return first page
-  ##   quotaUser: string
-  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
-  ##   alt: string
-  ##      : Data format for the response.
-  ##   customerId: string (required)
-  ##             : CustomerId represents the customer for whom licenseassignments are queried
-  ##   oauthToken: string
-  ##             : OAuth 2.0 token for the current user.
-  ##   userIp: string
-  ##         : Deprecated. Please use quotaUser instead.
-  ##   maxResults: int
-  ##             : Maximum number of campaigns to return at one time. Must be positive. Optional. Default value is 100.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
-  ##   productId: string (required)
-  ##            : Name for product
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
-  var path_589120 = newJObject()
-  var query_589121 = newJObject()
-  add(query_589121, "fields", newJString(fields))
-  add(query_589121, "pageToken", newJString(pageToken))
-  add(query_589121, "quotaUser", newJString(quotaUser))
-  add(query_589121, "alt", newJString(alt))
-  add(query_589121, "customerId", newJString(customerId))
-  add(query_589121, "oauth_token", newJString(oauthToken))
-  add(query_589121, "userIp", newJString(userIp))
-  add(query_589121, "maxResults", newJInt(maxResults))
-  add(query_589121, "key", newJString(key))
-  add(path_589120, "productId", newJString(productId))
-  add(query_589121, "prettyPrint", newJBool(prettyPrint))
-  result = call_589119.call(path_589120, query_589121, nil, nil, nil)
+  ##   oauthToken: string
+  ##             : OAuth 2.0 token for the current user.
+  ##   alt: string
+  ##      : Data format for the response.
+  ##   userIp: string
+  ##         : Deprecated. Please use quotaUser instead.
+  ##   quotaUser: string
+  ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
+  ##   pageToken: string
+  ##            : Token to fetch the next page.Optional. By default server will return first page
+  ##   customerId: string (required)
+  ##             : CustomerId represents the customer for whom licenseassignments are queried
+  ##   fields: string
+  ##         : Selector specifying which fields to include in a partial response.
+  ##   productId: string (required)
+  ##            : Name for product
+  ##   maxResults: int
+  ##             : Maximum number of campaigns to return at one time. Must be positive. Optional. Default value is 100.
+  var path_579020 = newJObject()
+  var query_579021 = newJObject()
+  add(query_579021, "key", newJString(key))
+  add(query_579021, "prettyPrint", newJBool(prettyPrint))
+  add(query_579021, "oauth_token", newJString(oauthToken))
+  add(query_579021, "alt", newJString(alt))
+  add(query_579021, "userIp", newJString(userIp))
+  add(query_579021, "quotaUser", newJString(quotaUser))
+  add(query_579021, "pageToken", newJString(pageToken))
+  add(query_579021, "customerId", newJString(customerId))
+  add(query_579021, "fields", newJString(fields))
+  add(path_579020, "productId", newJString(productId))
+  add(query_579021, "maxResults", newJInt(maxResults))
+  result = call_579019.call(path_579020, query_579021, nil, nil, nil)
 
-var licensingLicenseAssignmentsListForProduct* = Call_LicensingLicenseAssignmentsListForProduct_589104(
+var licensingLicenseAssignmentsListForProduct* = Call_LicensingLicenseAssignmentsListForProduct_579004(
     name: "licensingLicenseAssignmentsListForProduct", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{productId}/users",
-    validator: validate_LicensingLicenseAssignmentsListForProduct_589105,
+    validator: validate_LicensingLicenseAssignmentsListForProduct_579005,
     base: "/apps/licensing/v1/product",
-    url: url_LicensingLicenseAssignmentsListForProduct_589106,
+    url: url_LicensingLicenseAssignmentsListForProduct_579006,
     schemes: {Scheme.Https})
 export
   rest
