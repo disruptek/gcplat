@@ -1,7 +1,7 @@
 
 import
-  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
-  asyncdispatch, jwt
+  json, options, hashes, uri, strutils, rest, os, uri, strutils, times, httpcore,
+  httpclient, asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Google Cloud DNS
@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_578339 = ref object of OpenApiRestCall
+  OpenApiRestCall_579364 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579364](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579364): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -112,8 +112,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_DnsProjectsGet_578609 = ref object of OpenApiRestCall_578339
-proc url_DnsProjectsGet_578611(protocol: Scheme; host: string; base: string;
+  Call_DnsProjectsGet_579634 = ref object of OpenApiRestCall_579364
+proc url_DnsProjectsGet_579636(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -126,9 +126,14 @@ proc url_DnsProjectsGet_578611(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsProjectsGet_578610(path: JsonNode; query: JsonNode;
+proc validate_DnsProjectsGet_579635(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Fetch the representation of an existing Project.
@@ -140,11 +145,11 @@ proc validate_DnsProjectsGet_578610(path: JsonNode; query: JsonNode;
   ##          : Identifies the project addressed by this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_578737 = path.getOrDefault("project")
-  valid_578737 = validateParameter(valid_578737, JString, required = true,
+  var valid_579762 = path.getOrDefault("project")
+  valid_579762 = validateParameter(valid_579762, JString, required = true,
                                  default = nil)
-  if valid_578737 != nil:
-    section.add "project", valid_578737
+  if valid_579762 != nil:
+    section.add "project", valid_579762
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -164,46 +169,46 @@ proc validate_DnsProjectsGet_578610(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578738 = query.getOrDefault("key")
-  valid_578738 = validateParameter(valid_578738, JString, required = false,
+  var valid_579763 = query.getOrDefault("key")
+  valid_579763 = validateParameter(valid_579763, JString, required = false,
                                  default = nil)
-  if valid_578738 != nil:
-    section.add "key", valid_578738
-  var valid_578752 = query.getOrDefault("prettyPrint")
-  valid_578752 = validateParameter(valid_578752, JBool, required = false,
+  if valid_579763 != nil:
+    section.add "key", valid_579763
+  var valid_579777 = query.getOrDefault("prettyPrint")
+  valid_579777 = validateParameter(valid_579777, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578752 != nil:
-    section.add "prettyPrint", valid_578752
-  var valid_578753 = query.getOrDefault("oauth_token")
-  valid_578753 = validateParameter(valid_578753, JString, required = false,
+  if valid_579777 != nil:
+    section.add "prettyPrint", valid_579777
+  var valid_579778 = query.getOrDefault("oauth_token")
+  valid_579778 = validateParameter(valid_579778, JString, required = false,
                                  default = nil)
-  if valid_578753 != nil:
-    section.add "oauth_token", valid_578753
-  var valid_578754 = query.getOrDefault("alt")
-  valid_578754 = validateParameter(valid_578754, JString, required = false,
+  if valid_579778 != nil:
+    section.add "oauth_token", valid_579778
+  var valid_579779 = query.getOrDefault("alt")
+  valid_579779 = validateParameter(valid_579779, JString, required = false,
                                  default = newJString("json"))
-  if valid_578754 != nil:
-    section.add "alt", valid_578754
-  var valid_578755 = query.getOrDefault("userIp")
-  valid_578755 = validateParameter(valid_578755, JString, required = false,
+  if valid_579779 != nil:
+    section.add "alt", valid_579779
+  var valid_579780 = query.getOrDefault("userIp")
+  valid_579780 = validateParameter(valid_579780, JString, required = false,
                                  default = nil)
-  if valid_578755 != nil:
-    section.add "userIp", valid_578755
-  var valid_578756 = query.getOrDefault("quotaUser")
-  valid_578756 = validateParameter(valid_578756, JString, required = false,
+  if valid_579780 != nil:
+    section.add "userIp", valid_579780
+  var valid_579781 = query.getOrDefault("quotaUser")
+  valid_579781 = validateParameter(valid_579781, JString, required = false,
                                  default = nil)
-  if valid_578756 != nil:
-    section.add "quotaUser", valid_578756
-  var valid_578757 = query.getOrDefault("clientOperationId")
-  valid_578757 = validateParameter(valid_578757, JString, required = false,
+  if valid_579781 != nil:
+    section.add "quotaUser", valid_579781
+  var valid_579782 = query.getOrDefault("clientOperationId")
+  valid_579782 = validateParameter(valid_579782, JString, required = false,
                                  default = nil)
-  if valid_578757 != nil:
-    section.add "clientOperationId", valid_578757
-  var valid_578758 = query.getOrDefault("fields")
-  valid_578758 = validateParameter(valid_578758, JString, required = false,
+  if valid_579782 != nil:
+    section.add "clientOperationId", valid_579782
+  var valid_579783 = query.getOrDefault("fields")
+  valid_579783 = validateParameter(valid_579783, JString, required = false,
                                  default = nil)
-  if valid_578758 != nil:
-    section.add "fields", valid_578758
+  if valid_579783 != nil:
+    section.add "fields", valid_579783
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -212,20 +217,20 @@ proc validate_DnsProjectsGet_578610(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578781: Call_DnsProjectsGet_578609; path: JsonNode; query: JsonNode;
+proc call*(call_579806: Call_DnsProjectsGet_579634; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Fetch the representation of an existing Project.
   ## 
-  let valid = call_578781.validator(path, query, header, formData, body)
-  let scheme = call_578781.pickScheme
+  let valid = call_579806.validator(path, query, header, formData, body)
+  let scheme = call_579806.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578781.url(scheme.get, call_578781.host, call_578781.base,
-                         call_578781.route, valid.getOrDefault("path"),
+  let url = call_579806.url(scheme.get, call_579806.host, call_579806.base,
+                         call_579806.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578781, url, valid)
+  result = hook(call_579806, url, valid)
 
-proc call*(call_578852: Call_DnsProjectsGet_578609; project: string;
+proc call*(call_579877: Call_DnsProjectsGet_579634; project: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
           clientOperationId: string = ""; fields: string = ""): Recallable =
@@ -249,26 +254,26 @@ proc call*(call_578852: Call_DnsProjectsGet_578609; project: string;
   ##                    : For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_578853 = newJObject()
-  var query_578855 = newJObject()
-  add(query_578855, "key", newJString(key))
-  add(query_578855, "prettyPrint", newJBool(prettyPrint))
-  add(query_578855, "oauth_token", newJString(oauthToken))
-  add(query_578855, "alt", newJString(alt))
-  add(query_578855, "userIp", newJString(userIp))
-  add(query_578855, "quotaUser", newJString(quotaUser))
-  add(path_578853, "project", newJString(project))
-  add(query_578855, "clientOperationId", newJString(clientOperationId))
-  add(query_578855, "fields", newJString(fields))
-  result = call_578852.call(path_578853, query_578855, nil, nil, nil)
+  var path_579878 = newJObject()
+  var query_579880 = newJObject()
+  add(query_579880, "key", newJString(key))
+  add(query_579880, "prettyPrint", newJBool(prettyPrint))
+  add(query_579880, "oauth_token", newJString(oauthToken))
+  add(query_579880, "alt", newJString(alt))
+  add(query_579880, "userIp", newJString(userIp))
+  add(query_579880, "quotaUser", newJString(quotaUser))
+  add(path_579878, "project", newJString(project))
+  add(query_579880, "clientOperationId", newJString(clientOperationId))
+  add(query_579880, "fields", newJString(fields))
+  result = call_579877.call(path_579878, query_579880, nil, nil, nil)
 
-var dnsProjectsGet* = Call_DnsProjectsGet_578609(name: "dnsProjectsGet",
+var dnsProjectsGet* = Call_DnsProjectsGet_579634(name: "dnsProjectsGet",
     meth: HttpMethod.HttpGet, host: "dns.googleapis.com", route: "/{project}",
-    validator: validate_DnsProjectsGet_578610, base: "/dns/v1beta2/projects",
-    url: url_DnsProjectsGet_578611, schemes: {Scheme.Https})
+    validator: validate_DnsProjectsGet_579635, base: "/dns/v1beta2/projects",
+    url: url_DnsProjectsGet_579636, schemes: {Scheme.Https})
 type
-  Call_DnsManagedZonesCreate_578912 = ref object of OpenApiRestCall_578339
-proc url_DnsManagedZonesCreate_578914(protocol: Scheme; host: string; base: string;
+  Call_DnsManagedZonesCreate_579937 = ref object of OpenApiRestCall_579364
+proc url_DnsManagedZonesCreate_579939(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -282,9 +287,14 @@ proc url_DnsManagedZonesCreate_578914(protocol: Scheme; host: string; base: stri
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsManagedZonesCreate_578913(path: JsonNode; query: JsonNode;
+proc validate_DnsManagedZonesCreate_579938(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Create a new ManagedZone.
   ## 
@@ -295,11 +305,11 @@ proc validate_DnsManagedZonesCreate_578913(path: JsonNode; query: JsonNode;
   ##          : Identifies the project addressed by this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_578915 = path.getOrDefault("project")
-  valid_578915 = validateParameter(valid_578915, JString, required = true,
+  var valid_579940 = path.getOrDefault("project")
+  valid_579940 = validateParameter(valid_579940, JString, required = true,
                                  default = nil)
-  if valid_578915 != nil:
-    section.add "project", valid_578915
+  if valid_579940 != nil:
+    section.add "project", valid_579940
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -319,46 +329,46 @@ proc validate_DnsManagedZonesCreate_578913(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578916 = query.getOrDefault("key")
-  valid_578916 = validateParameter(valid_578916, JString, required = false,
+  var valid_579941 = query.getOrDefault("key")
+  valid_579941 = validateParameter(valid_579941, JString, required = false,
                                  default = nil)
-  if valid_578916 != nil:
-    section.add "key", valid_578916
-  var valid_578917 = query.getOrDefault("prettyPrint")
-  valid_578917 = validateParameter(valid_578917, JBool, required = false,
+  if valid_579941 != nil:
+    section.add "key", valid_579941
+  var valid_579942 = query.getOrDefault("prettyPrint")
+  valid_579942 = validateParameter(valid_579942, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578917 != nil:
-    section.add "prettyPrint", valid_578917
-  var valid_578918 = query.getOrDefault("oauth_token")
-  valid_578918 = validateParameter(valid_578918, JString, required = false,
+  if valid_579942 != nil:
+    section.add "prettyPrint", valid_579942
+  var valid_579943 = query.getOrDefault("oauth_token")
+  valid_579943 = validateParameter(valid_579943, JString, required = false,
                                  default = nil)
-  if valid_578918 != nil:
-    section.add "oauth_token", valid_578918
-  var valid_578919 = query.getOrDefault("alt")
-  valid_578919 = validateParameter(valid_578919, JString, required = false,
+  if valid_579943 != nil:
+    section.add "oauth_token", valid_579943
+  var valid_579944 = query.getOrDefault("alt")
+  valid_579944 = validateParameter(valid_579944, JString, required = false,
                                  default = newJString("json"))
-  if valid_578919 != nil:
-    section.add "alt", valid_578919
-  var valid_578920 = query.getOrDefault("userIp")
-  valid_578920 = validateParameter(valid_578920, JString, required = false,
+  if valid_579944 != nil:
+    section.add "alt", valid_579944
+  var valid_579945 = query.getOrDefault("userIp")
+  valid_579945 = validateParameter(valid_579945, JString, required = false,
                                  default = nil)
-  if valid_578920 != nil:
-    section.add "userIp", valid_578920
-  var valid_578921 = query.getOrDefault("quotaUser")
-  valid_578921 = validateParameter(valid_578921, JString, required = false,
+  if valid_579945 != nil:
+    section.add "userIp", valid_579945
+  var valid_579946 = query.getOrDefault("quotaUser")
+  valid_579946 = validateParameter(valid_579946, JString, required = false,
                                  default = nil)
-  if valid_578921 != nil:
-    section.add "quotaUser", valid_578921
-  var valid_578922 = query.getOrDefault("clientOperationId")
-  valid_578922 = validateParameter(valid_578922, JString, required = false,
+  if valid_579946 != nil:
+    section.add "quotaUser", valid_579946
+  var valid_579947 = query.getOrDefault("clientOperationId")
+  valid_579947 = validateParameter(valid_579947, JString, required = false,
                                  default = nil)
-  if valid_578922 != nil:
-    section.add "clientOperationId", valid_578922
-  var valid_578923 = query.getOrDefault("fields")
-  valid_578923 = validateParameter(valid_578923, JString, required = false,
+  if valid_579947 != nil:
+    section.add "clientOperationId", valid_579947
+  var valid_579948 = query.getOrDefault("fields")
+  valid_579948 = validateParameter(valid_579948, JString, required = false,
                                  default = nil)
-  if valid_578923 != nil:
-    section.add "fields", valid_578923
+  if valid_579948 != nil:
+    section.add "fields", valid_579948
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -370,20 +380,20 @@ proc validate_DnsManagedZonesCreate_578913(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578925: Call_DnsManagedZonesCreate_578912; path: JsonNode;
+proc call*(call_579950: Call_DnsManagedZonesCreate_579937; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Create a new ManagedZone.
   ## 
-  let valid = call_578925.validator(path, query, header, formData, body)
-  let scheme = call_578925.pickScheme
+  let valid = call_579950.validator(path, query, header, formData, body)
+  let scheme = call_579950.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578925.url(scheme.get, call_578925.host, call_578925.base,
-                         call_578925.route, valid.getOrDefault("path"),
+  let url = call_579950.url(scheme.get, call_579950.host, call_579950.base,
+                         call_579950.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578925, url, valid)
+  result = hook(call_579950, url, valid)
 
-proc call*(call_578926: Call_DnsManagedZonesCreate_578912; project: string;
+proc call*(call_579951: Call_DnsManagedZonesCreate_579937; project: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
           clientOperationId: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
@@ -408,31 +418,31 @@ proc call*(call_578926: Call_DnsManagedZonesCreate_578912; project: string;
   ##   body: JObject
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_578927 = newJObject()
-  var query_578928 = newJObject()
-  var body_578929 = newJObject()
-  add(query_578928, "key", newJString(key))
-  add(query_578928, "prettyPrint", newJBool(prettyPrint))
-  add(query_578928, "oauth_token", newJString(oauthToken))
-  add(query_578928, "alt", newJString(alt))
-  add(query_578928, "userIp", newJString(userIp))
-  add(query_578928, "quotaUser", newJString(quotaUser))
-  add(path_578927, "project", newJString(project))
-  add(query_578928, "clientOperationId", newJString(clientOperationId))
+  var path_579952 = newJObject()
+  var query_579953 = newJObject()
+  var body_579954 = newJObject()
+  add(query_579953, "key", newJString(key))
+  add(query_579953, "prettyPrint", newJBool(prettyPrint))
+  add(query_579953, "oauth_token", newJString(oauthToken))
+  add(query_579953, "alt", newJString(alt))
+  add(query_579953, "userIp", newJString(userIp))
+  add(query_579953, "quotaUser", newJString(quotaUser))
+  add(path_579952, "project", newJString(project))
+  add(query_579953, "clientOperationId", newJString(clientOperationId))
   if body != nil:
-    body_578929 = body
-  add(query_578928, "fields", newJString(fields))
-  result = call_578926.call(path_578927, query_578928, nil, nil, body_578929)
+    body_579954 = body
+  add(query_579953, "fields", newJString(fields))
+  result = call_579951.call(path_579952, query_579953, nil, nil, body_579954)
 
-var dnsManagedZonesCreate* = Call_DnsManagedZonesCreate_578912(
+var dnsManagedZonesCreate* = Call_DnsManagedZonesCreate_579937(
     name: "dnsManagedZonesCreate", meth: HttpMethod.HttpPost,
     host: "dns.googleapis.com", route: "/{project}/managedZones",
-    validator: validate_DnsManagedZonesCreate_578913,
-    base: "/dns/v1beta2/projects", url: url_DnsManagedZonesCreate_578914,
+    validator: validate_DnsManagedZonesCreate_579938,
+    base: "/dns/v1beta2/projects", url: url_DnsManagedZonesCreate_579939,
     schemes: {Scheme.Https})
 type
-  Call_DnsManagedZonesList_578894 = ref object of OpenApiRestCall_578339
-proc url_DnsManagedZonesList_578896(protocol: Scheme; host: string; base: string;
+  Call_DnsManagedZonesList_579919 = ref object of OpenApiRestCall_579364
+proc url_DnsManagedZonesList_579921(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -446,9 +456,14 @@ proc url_DnsManagedZonesList_578896(protocol: Scheme; host: string; base: string
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsManagedZonesList_578895(path: JsonNode; query: JsonNode;
+proc validate_DnsManagedZonesList_579920(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Enumerate ManagedZones that have been created but not yet deleted.
@@ -460,11 +475,11 @@ proc validate_DnsManagedZonesList_578895(path: JsonNode; query: JsonNode;
   ##          : Identifies the project addressed by this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_578897 = path.getOrDefault("project")
-  valid_578897 = validateParameter(valid_578897, JString, required = true,
+  var valid_579922 = path.getOrDefault("project")
+  valid_579922 = validateParameter(valid_579922, JString, required = true,
                                  default = nil)
-  if valid_578897 != nil:
-    section.add "project", valid_578897
+  if valid_579922 != nil:
+    section.add "project", valid_579922
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -488,55 +503,55 @@ proc validate_DnsManagedZonesList_578895(path: JsonNode; query: JsonNode;
   ##   maxResults: JInt
   ##             : Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.
   section = newJObject()
-  var valid_578898 = query.getOrDefault("key")
-  valid_578898 = validateParameter(valid_578898, JString, required = false,
+  var valid_579923 = query.getOrDefault("key")
+  valid_579923 = validateParameter(valid_579923, JString, required = false,
                                  default = nil)
-  if valid_578898 != nil:
-    section.add "key", valid_578898
-  var valid_578899 = query.getOrDefault("prettyPrint")
-  valid_578899 = validateParameter(valid_578899, JBool, required = false,
+  if valid_579923 != nil:
+    section.add "key", valid_579923
+  var valid_579924 = query.getOrDefault("prettyPrint")
+  valid_579924 = validateParameter(valid_579924, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578899 != nil:
-    section.add "prettyPrint", valid_578899
-  var valid_578900 = query.getOrDefault("oauth_token")
-  valid_578900 = validateParameter(valid_578900, JString, required = false,
+  if valid_579924 != nil:
+    section.add "prettyPrint", valid_579924
+  var valid_579925 = query.getOrDefault("oauth_token")
+  valid_579925 = validateParameter(valid_579925, JString, required = false,
                                  default = nil)
-  if valid_578900 != nil:
-    section.add "oauth_token", valid_578900
-  var valid_578901 = query.getOrDefault("alt")
-  valid_578901 = validateParameter(valid_578901, JString, required = false,
+  if valid_579925 != nil:
+    section.add "oauth_token", valid_579925
+  var valid_579926 = query.getOrDefault("alt")
+  valid_579926 = validateParameter(valid_579926, JString, required = false,
                                  default = newJString("json"))
-  if valid_578901 != nil:
-    section.add "alt", valid_578901
-  var valid_578902 = query.getOrDefault("userIp")
-  valid_578902 = validateParameter(valid_578902, JString, required = false,
+  if valid_579926 != nil:
+    section.add "alt", valid_579926
+  var valid_579927 = query.getOrDefault("userIp")
+  valid_579927 = validateParameter(valid_579927, JString, required = false,
                                  default = nil)
-  if valid_578902 != nil:
-    section.add "userIp", valid_578902
-  var valid_578903 = query.getOrDefault("dnsName")
-  valid_578903 = validateParameter(valid_578903, JString, required = false,
+  if valid_579927 != nil:
+    section.add "userIp", valid_579927
+  var valid_579928 = query.getOrDefault("dnsName")
+  valid_579928 = validateParameter(valid_579928, JString, required = false,
                                  default = nil)
-  if valid_578903 != nil:
-    section.add "dnsName", valid_578903
-  var valid_578904 = query.getOrDefault("quotaUser")
-  valid_578904 = validateParameter(valid_578904, JString, required = false,
+  if valid_579928 != nil:
+    section.add "dnsName", valid_579928
+  var valid_579929 = query.getOrDefault("quotaUser")
+  valid_579929 = validateParameter(valid_579929, JString, required = false,
                                  default = nil)
-  if valid_578904 != nil:
-    section.add "quotaUser", valid_578904
-  var valid_578905 = query.getOrDefault("pageToken")
-  valid_578905 = validateParameter(valid_578905, JString, required = false,
+  if valid_579929 != nil:
+    section.add "quotaUser", valid_579929
+  var valid_579930 = query.getOrDefault("pageToken")
+  valid_579930 = validateParameter(valid_579930, JString, required = false,
                                  default = nil)
-  if valid_578905 != nil:
-    section.add "pageToken", valid_578905
-  var valid_578906 = query.getOrDefault("fields")
-  valid_578906 = validateParameter(valid_578906, JString, required = false,
+  if valid_579930 != nil:
+    section.add "pageToken", valid_579930
+  var valid_579931 = query.getOrDefault("fields")
+  valid_579931 = validateParameter(valid_579931, JString, required = false,
                                  default = nil)
-  if valid_578906 != nil:
-    section.add "fields", valid_578906
-  var valid_578907 = query.getOrDefault("maxResults")
-  valid_578907 = validateParameter(valid_578907, JInt, required = false, default = nil)
-  if valid_578907 != nil:
-    section.add "maxResults", valid_578907
+  if valid_579931 != nil:
+    section.add "fields", valid_579931
+  var valid_579932 = query.getOrDefault("maxResults")
+  valid_579932 = validateParameter(valid_579932, JInt, required = false, default = nil)
+  if valid_579932 != nil:
+    section.add "maxResults", valid_579932
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -545,20 +560,20 @@ proc validate_DnsManagedZonesList_578895(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578908: Call_DnsManagedZonesList_578894; path: JsonNode;
+proc call*(call_579933: Call_DnsManagedZonesList_579919; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Enumerate ManagedZones that have been created but not yet deleted.
   ## 
-  let valid = call_578908.validator(path, query, header, formData, body)
-  let scheme = call_578908.pickScheme
+  let valid = call_579933.validator(path, query, header, formData, body)
+  let scheme = call_579933.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578908.url(scheme.get, call_578908.host, call_578908.base,
-                         call_578908.route, valid.getOrDefault("path"),
+  let url = call_579933.url(scheme.get, call_579933.host, call_579933.base,
+                         call_579933.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578908, url, valid)
+  result = hook(call_579933, url, valid)
 
-proc call*(call_578909: Call_DnsManagedZonesList_578894; project: string;
+proc call*(call_579934: Call_DnsManagedZonesList_579919; project: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           alt: string = "json"; userIp: string = ""; dnsName: string = "";
           quotaUser: string = ""; pageToken: string = ""; fields: string = "";
@@ -587,29 +602,29 @@ proc call*(call_578909: Call_DnsManagedZonesList_578894; project: string;
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: int
   ##             : Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.
-  var path_578910 = newJObject()
-  var query_578911 = newJObject()
-  add(query_578911, "key", newJString(key))
-  add(query_578911, "prettyPrint", newJBool(prettyPrint))
-  add(query_578911, "oauth_token", newJString(oauthToken))
-  add(query_578911, "alt", newJString(alt))
-  add(query_578911, "userIp", newJString(userIp))
-  add(query_578911, "dnsName", newJString(dnsName))
-  add(query_578911, "quotaUser", newJString(quotaUser))
-  add(query_578911, "pageToken", newJString(pageToken))
-  add(path_578910, "project", newJString(project))
-  add(query_578911, "fields", newJString(fields))
-  add(query_578911, "maxResults", newJInt(maxResults))
-  result = call_578909.call(path_578910, query_578911, nil, nil, nil)
+  var path_579935 = newJObject()
+  var query_579936 = newJObject()
+  add(query_579936, "key", newJString(key))
+  add(query_579936, "prettyPrint", newJBool(prettyPrint))
+  add(query_579936, "oauth_token", newJString(oauthToken))
+  add(query_579936, "alt", newJString(alt))
+  add(query_579936, "userIp", newJString(userIp))
+  add(query_579936, "dnsName", newJString(dnsName))
+  add(query_579936, "quotaUser", newJString(quotaUser))
+  add(query_579936, "pageToken", newJString(pageToken))
+  add(path_579935, "project", newJString(project))
+  add(query_579936, "fields", newJString(fields))
+  add(query_579936, "maxResults", newJInt(maxResults))
+  result = call_579934.call(path_579935, query_579936, nil, nil, nil)
 
-var dnsManagedZonesList* = Call_DnsManagedZonesList_578894(
+var dnsManagedZonesList* = Call_DnsManagedZonesList_579919(
     name: "dnsManagedZonesList", meth: HttpMethod.HttpGet,
     host: "dns.googleapis.com", route: "/{project}/managedZones",
-    validator: validate_DnsManagedZonesList_578895, base: "/dns/v1beta2/projects",
-    url: url_DnsManagedZonesList_578896, schemes: {Scheme.Https})
+    validator: validate_DnsManagedZonesList_579920, base: "/dns/v1beta2/projects",
+    url: url_DnsManagedZonesList_579921, schemes: {Scheme.Https})
 type
-  Call_DnsManagedZonesUpdate_578947 = ref object of OpenApiRestCall_578339
-proc url_DnsManagedZonesUpdate_578949(protocol: Scheme; host: string; base: string;
+  Call_DnsManagedZonesUpdate_579972 = ref object of OpenApiRestCall_579364
+proc url_DnsManagedZonesUpdate_579974(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -625,9 +640,14 @@ proc url_DnsManagedZonesUpdate_578949(protocol: Scheme; host: string; base: stri
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsManagedZonesUpdate_578948(path: JsonNode; query: JsonNode;
+proc validate_DnsManagedZonesUpdate_579973(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Update an existing ManagedZone.
   ## 
@@ -641,16 +661,16 @@ proc validate_DnsManagedZonesUpdate_578948(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `managedZone` field"
-  var valid_578950 = path.getOrDefault("managedZone")
-  valid_578950 = validateParameter(valid_578950, JString, required = true,
+  var valid_579975 = path.getOrDefault("managedZone")
+  valid_579975 = validateParameter(valid_579975, JString, required = true,
                                  default = nil)
-  if valid_578950 != nil:
-    section.add "managedZone", valid_578950
-  var valid_578951 = path.getOrDefault("project")
-  valid_578951 = validateParameter(valid_578951, JString, required = true,
+  if valid_579975 != nil:
+    section.add "managedZone", valid_579975
+  var valid_579976 = path.getOrDefault("project")
+  valid_579976 = validateParameter(valid_579976, JString, required = true,
                                  default = nil)
-  if valid_578951 != nil:
-    section.add "project", valid_578951
+  if valid_579976 != nil:
+    section.add "project", valid_579976
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -670,46 +690,46 @@ proc validate_DnsManagedZonesUpdate_578948(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578952 = query.getOrDefault("key")
-  valid_578952 = validateParameter(valid_578952, JString, required = false,
+  var valid_579977 = query.getOrDefault("key")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
                                  default = nil)
-  if valid_578952 != nil:
-    section.add "key", valid_578952
-  var valid_578953 = query.getOrDefault("prettyPrint")
-  valid_578953 = validateParameter(valid_578953, JBool, required = false,
+  if valid_579977 != nil:
+    section.add "key", valid_579977
+  var valid_579978 = query.getOrDefault("prettyPrint")
+  valid_579978 = validateParameter(valid_579978, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578953 != nil:
-    section.add "prettyPrint", valid_578953
-  var valid_578954 = query.getOrDefault("oauth_token")
-  valid_578954 = validateParameter(valid_578954, JString, required = false,
+  if valid_579978 != nil:
+    section.add "prettyPrint", valid_579978
+  var valid_579979 = query.getOrDefault("oauth_token")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = nil)
-  if valid_578954 != nil:
-    section.add "oauth_token", valid_578954
-  var valid_578955 = query.getOrDefault("alt")
-  valid_578955 = validateParameter(valid_578955, JString, required = false,
+  if valid_579979 != nil:
+    section.add "oauth_token", valid_579979
+  var valid_579980 = query.getOrDefault("alt")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = newJString("json"))
-  if valid_578955 != nil:
-    section.add "alt", valid_578955
-  var valid_578956 = query.getOrDefault("userIp")
-  valid_578956 = validateParameter(valid_578956, JString, required = false,
+  if valid_579980 != nil:
+    section.add "alt", valid_579980
+  var valid_579981 = query.getOrDefault("userIp")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_578956 != nil:
-    section.add "userIp", valid_578956
-  var valid_578957 = query.getOrDefault("quotaUser")
-  valid_578957 = validateParameter(valid_578957, JString, required = false,
+  if valid_579981 != nil:
+    section.add "userIp", valid_579981
+  var valid_579982 = query.getOrDefault("quotaUser")
+  valid_579982 = validateParameter(valid_579982, JString, required = false,
                                  default = nil)
-  if valid_578957 != nil:
-    section.add "quotaUser", valid_578957
-  var valid_578958 = query.getOrDefault("clientOperationId")
-  valid_578958 = validateParameter(valid_578958, JString, required = false,
+  if valid_579982 != nil:
+    section.add "quotaUser", valid_579982
+  var valid_579983 = query.getOrDefault("clientOperationId")
+  valid_579983 = validateParameter(valid_579983, JString, required = false,
                                  default = nil)
-  if valid_578958 != nil:
-    section.add "clientOperationId", valid_578958
-  var valid_578959 = query.getOrDefault("fields")
-  valid_578959 = validateParameter(valid_578959, JString, required = false,
+  if valid_579983 != nil:
+    section.add "clientOperationId", valid_579983
+  var valid_579984 = query.getOrDefault("fields")
+  valid_579984 = validateParameter(valid_579984, JString, required = false,
                                  default = nil)
-  if valid_578959 != nil:
-    section.add "fields", valid_578959
+  if valid_579984 != nil:
+    section.add "fields", valid_579984
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -721,20 +741,20 @@ proc validate_DnsManagedZonesUpdate_578948(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578961: Call_DnsManagedZonesUpdate_578947; path: JsonNode;
+proc call*(call_579986: Call_DnsManagedZonesUpdate_579972; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Update an existing ManagedZone.
   ## 
-  let valid = call_578961.validator(path, query, header, formData, body)
-  let scheme = call_578961.pickScheme
+  let valid = call_579986.validator(path, query, header, formData, body)
+  let scheme = call_579986.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578961.url(scheme.get, call_578961.host, call_578961.base,
-                         call_578961.route, valid.getOrDefault("path"),
+  let url = call_579986.url(scheme.get, call_579986.host, call_579986.base,
+                         call_579986.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578961, url, valid)
+  result = hook(call_579986, url, valid)
 
-proc call*(call_578962: Call_DnsManagedZonesUpdate_578947; managedZone: string;
+proc call*(call_579987: Call_DnsManagedZonesUpdate_579972; managedZone: string;
           project: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; clientOperationId: string = ""; body: JsonNode = nil;
@@ -762,32 +782,32 @@ proc call*(call_578962: Call_DnsManagedZonesUpdate_578947; managedZone: string;
   ##   body: JObject
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_578963 = newJObject()
-  var query_578964 = newJObject()
-  var body_578965 = newJObject()
-  add(query_578964, "key", newJString(key))
-  add(query_578964, "prettyPrint", newJBool(prettyPrint))
-  add(query_578964, "oauth_token", newJString(oauthToken))
-  add(path_578963, "managedZone", newJString(managedZone))
-  add(query_578964, "alt", newJString(alt))
-  add(query_578964, "userIp", newJString(userIp))
-  add(query_578964, "quotaUser", newJString(quotaUser))
-  add(path_578963, "project", newJString(project))
-  add(query_578964, "clientOperationId", newJString(clientOperationId))
+  var path_579988 = newJObject()
+  var query_579989 = newJObject()
+  var body_579990 = newJObject()
+  add(query_579989, "key", newJString(key))
+  add(query_579989, "prettyPrint", newJBool(prettyPrint))
+  add(query_579989, "oauth_token", newJString(oauthToken))
+  add(path_579988, "managedZone", newJString(managedZone))
+  add(query_579989, "alt", newJString(alt))
+  add(query_579989, "userIp", newJString(userIp))
+  add(query_579989, "quotaUser", newJString(quotaUser))
+  add(path_579988, "project", newJString(project))
+  add(query_579989, "clientOperationId", newJString(clientOperationId))
   if body != nil:
-    body_578965 = body
-  add(query_578964, "fields", newJString(fields))
-  result = call_578962.call(path_578963, query_578964, nil, nil, body_578965)
+    body_579990 = body
+  add(query_579989, "fields", newJString(fields))
+  result = call_579987.call(path_579988, query_579989, nil, nil, body_579990)
 
-var dnsManagedZonesUpdate* = Call_DnsManagedZonesUpdate_578947(
+var dnsManagedZonesUpdate* = Call_DnsManagedZonesUpdate_579972(
     name: "dnsManagedZonesUpdate", meth: HttpMethod.HttpPut,
     host: "dns.googleapis.com", route: "/{project}/managedZones/{managedZone}",
-    validator: validate_DnsManagedZonesUpdate_578948,
-    base: "/dns/v1beta2/projects", url: url_DnsManagedZonesUpdate_578949,
+    validator: validate_DnsManagedZonesUpdate_579973,
+    base: "/dns/v1beta2/projects", url: url_DnsManagedZonesUpdate_579974,
     schemes: {Scheme.Https})
 type
-  Call_DnsManagedZonesGet_578930 = ref object of OpenApiRestCall_578339
-proc url_DnsManagedZonesGet_578932(protocol: Scheme; host: string; base: string;
+  Call_DnsManagedZonesGet_579955 = ref object of OpenApiRestCall_579364
+proc url_DnsManagedZonesGet_579957(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -803,9 +823,14 @@ proc url_DnsManagedZonesGet_578932(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsManagedZonesGet_578931(path: JsonNode; query: JsonNode;
+proc validate_DnsManagedZonesGet_579956(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Fetch the representation of an existing ManagedZone.
@@ -820,16 +845,16 @@ proc validate_DnsManagedZonesGet_578931(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `managedZone` field"
-  var valid_578933 = path.getOrDefault("managedZone")
-  valid_578933 = validateParameter(valid_578933, JString, required = true,
+  var valid_579958 = path.getOrDefault("managedZone")
+  valid_579958 = validateParameter(valid_579958, JString, required = true,
                                  default = nil)
-  if valid_578933 != nil:
-    section.add "managedZone", valid_578933
-  var valid_578934 = path.getOrDefault("project")
-  valid_578934 = validateParameter(valid_578934, JString, required = true,
+  if valid_579958 != nil:
+    section.add "managedZone", valid_579958
+  var valid_579959 = path.getOrDefault("project")
+  valid_579959 = validateParameter(valid_579959, JString, required = true,
                                  default = nil)
-  if valid_578934 != nil:
-    section.add "project", valid_578934
+  if valid_579959 != nil:
+    section.add "project", valid_579959
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -849,46 +874,46 @@ proc validate_DnsManagedZonesGet_578931(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578935 = query.getOrDefault("key")
-  valid_578935 = validateParameter(valid_578935, JString, required = false,
+  var valid_579960 = query.getOrDefault("key")
+  valid_579960 = validateParameter(valid_579960, JString, required = false,
                                  default = nil)
-  if valid_578935 != nil:
-    section.add "key", valid_578935
-  var valid_578936 = query.getOrDefault("prettyPrint")
-  valid_578936 = validateParameter(valid_578936, JBool, required = false,
+  if valid_579960 != nil:
+    section.add "key", valid_579960
+  var valid_579961 = query.getOrDefault("prettyPrint")
+  valid_579961 = validateParameter(valid_579961, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578936 != nil:
-    section.add "prettyPrint", valid_578936
-  var valid_578937 = query.getOrDefault("oauth_token")
-  valid_578937 = validateParameter(valid_578937, JString, required = false,
+  if valid_579961 != nil:
+    section.add "prettyPrint", valid_579961
+  var valid_579962 = query.getOrDefault("oauth_token")
+  valid_579962 = validateParameter(valid_579962, JString, required = false,
                                  default = nil)
-  if valid_578937 != nil:
-    section.add "oauth_token", valid_578937
-  var valid_578938 = query.getOrDefault("alt")
-  valid_578938 = validateParameter(valid_578938, JString, required = false,
+  if valid_579962 != nil:
+    section.add "oauth_token", valid_579962
+  var valid_579963 = query.getOrDefault("alt")
+  valid_579963 = validateParameter(valid_579963, JString, required = false,
                                  default = newJString("json"))
-  if valid_578938 != nil:
-    section.add "alt", valid_578938
-  var valid_578939 = query.getOrDefault("userIp")
-  valid_578939 = validateParameter(valid_578939, JString, required = false,
+  if valid_579963 != nil:
+    section.add "alt", valid_579963
+  var valid_579964 = query.getOrDefault("userIp")
+  valid_579964 = validateParameter(valid_579964, JString, required = false,
                                  default = nil)
-  if valid_578939 != nil:
-    section.add "userIp", valid_578939
-  var valid_578940 = query.getOrDefault("quotaUser")
-  valid_578940 = validateParameter(valid_578940, JString, required = false,
+  if valid_579964 != nil:
+    section.add "userIp", valid_579964
+  var valid_579965 = query.getOrDefault("quotaUser")
+  valid_579965 = validateParameter(valid_579965, JString, required = false,
                                  default = nil)
-  if valid_578940 != nil:
-    section.add "quotaUser", valid_578940
-  var valid_578941 = query.getOrDefault("clientOperationId")
-  valid_578941 = validateParameter(valid_578941, JString, required = false,
+  if valid_579965 != nil:
+    section.add "quotaUser", valid_579965
+  var valid_579966 = query.getOrDefault("clientOperationId")
+  valid_579966 = validateParameter(valid_579966, JString, required = false,
                                  default = nil)
-  if valid_578941 != nil:
-    section.add "clientOperationId", valid_578941
-  var valid_578942 = query.getOrDefault("fields")
-  valid_578942 = validateParameter(valid_578942, JString, required = false,
+  if valid_579966 != nil:
+    section.add "clientOperationId", valid_579966
+  var valid_579967 = query.getOrDefault("fields")
+  valid_579967 = validateParameter(valid_579967, JString, required = false,
                                  default = nil)
-  if valid_578942 != nil:
-    section.add "fields", valid_578942
+  if valid_579967 != nil:
+    section.add "fields", valid_579967
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -897,20 +922,20 @@ proc validate_DnsManagedZonesGet_578931(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578943: Call_DnsManagedZonesGet_578930; path: JsonNode;
+proc call*(call_579968: Call_DnsManagedZonesGet_579955; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Fetch the representation of an existing ManagedZone.
   ## 
-  let valid = call_578943.validator(path, query, header, formData, body)
-  let scheme = call_578943.pickScheme
+  let valid = call_579968.validator(path, query, header, formData, body)
+  let scheme = call_579968.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578943.url(scheme.get, call_578943.host, call_578943.base,
-                         call_578943.route, valid.getOrDefault("path"),
+  let url = call_579968.url(scheme.get, call_579968.host, call_579968.base,
+                         call_579968.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578943, url, valid)
+  result = hook(call_579968, url, valid)
 
-proc call*(call_578944: Call_DnsManagedZonesGet_578930; managedZone: string;
+proc call*(call_579969: Call_DnsManagedZonesGet_579955; managedZone: string;
           project: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; clientOperationId: string = ""; fields: string = ""): Recallable =
@@ -936,28 +961,28 @@ proc call*(call_578944: Call_DnsManagedZonesGet_578930; managedZone: string;
   ##                    : For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_578945 = newJObject()
-  var query_578946 = newJObject()
-  add(query_578946, "key", newJString(key))
-  add(query_578946, "prettyPrint", newJBool(prettyPrint))
-  add(query_578946, "oauth_token", newJString(oauthToken))
-  add(path_578945, "managedZone", newJString(managedZone))
-  add(query_578946, "alt", newJString(alt))
-  add(query_578946, "userIp", newJString(userIp))
-  add(query_578946, "quotaUser", newJString(quotaUser))
-  add(path_578945, "project", newJString(project))
-  add(query_578946, "clientOperationId", newJString(clientOperationId))
-  add(query_578946, "fields", newJString(fields))
-  result = call_578944.call(path_578945, query_578946, nil, nil, nil)
+  var path_579970 = newJObject()
+  var query_579971 = newJObject()
+  add(query_579971, "key", newJString(key))
+  add(query_579971, "prettyPrint", newJBool(prettyPrint))
+  add(query_579971, "oauth_token", newJString(oauthToken))
+  add(path_579970, "managedZone", newJString(managedZone))
+  add(query_579971, "alt", newJString(alt))
+  add(query_579971, "userIp", newJString(userIp))
+  add(query_579971, "quotaUser", newJString(quotaUser))
+  add(path_579970, "project", newJString(project))
+  add(query_579971, "clientOperationId", newJString(clientOperationId))
+  add(query_579971, "fields", newJString(fields))
+  result = call_579969.call(path_579970, query_579971, nil, nil, nil)
 
-var dnsManagedZonesGet* = Call_DnsManagedZonesGet_578930(
+var dnsManagedZonesGet* = Call_DnsManagedZonesGet_579955(
     name: "dnsManagedZonesGet", meth: HttpMethod.HttpGet,
     host: "dns.googleapis.com", route: "/{project}/managedZones/{managedZone}",
-    validator: validate_DnsManagedZonesGet_578931, base: "/dns/v1beta2/projects",
-    url: url_DnsManagedZonesGet_578932, schemes: {Scheme.Https})
+    validator: validate_DnsManagedZonesGet_579956, base: "/dns/v1beta2/projects",
+    url: url_DnsManagedZonesGet_579957, schemes: {Scheme.Https})
 type
-  Call_DnsManagedZonesPatch_578983 = ref object of OpenApiRestCall_578339
-proc url_DnsManagedZonesPatch_578985(protocol: Scheme; host: string; base: string;
+  Call_DnsManagedZonesPatch_580008 = ref object of OpenApiRestCall_579364
+proc url_DnsManagedZonesPatch_580010(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -973,9 +998,14 @@ proc url_DnsManagedZonesPatch_578985(protocol: Scheme; host: string; base: strin
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsManagedZonesPatch_578984(path: JsonNode; query: JsonNode;
+proc validate_DnsManagedZonesPatch_580009(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Apply a partial update to an existing ManagedZone.
   ## 
@@ -989,16 +1019,16 @@ proc validate_DnsManagedZonesPatch_578984(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `managedZone` field"
-  var valid_578986 = path.getOrDefault("managedZone")
-  valid_578986 = validateParameter(valid_578986, JString, required = true,
+  var valid_580011 = path.getOrDefault("managedZone")
+  valid_580011 = validateParameter(valid_580011, JString, required = true,
                                  default = nil)
-  if valid_578986 != nil:
-    section.add "managedZone", valid_578986
-  var valid_578987 = path.getOrDefault("project")
-  valid_578987 = validateParameter(valid_578987, JString, required = true,
+  if valid_580011 != nil:
+    section.add "managedZone", valid_580011
+  var valid_580012 = path.getOrDefault("project")
+  valid_580012 = validateParameter(valid_580012, JString, required = true,
                                  default = nil)
-  if valid_578987 != nil:
-    section.add "project", valid_578987
+  if valid_580012 != nil:
+    section.add "project", valid_580012
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1018,46 +1048,46 @@ proc validate_DnsManagedZonesPatch_578984(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578988 = query.getOrDefault("key")
-  valid_578988 = validateParameter(valid_578988, JString, required = false,
+  var valid_580013 = query.getOrDefault("key")
+  valid_580013 = validateParameter(valid_580013, JString, required = false,
                                  default = nil)
-  if valid_578988 != nil:
-    section.add "key", valid_578988
-  var valid_578989 = query.getOrDefault("prettyPrint")
-  valid_578989 = validateParameter(valid_578989, JBool, required = false,
+  if valid_580013 != nil:
+    section.add "key", valid_580013
+  var valid_580014 = query.getOrDefault("prettyPrint")
+  valid_580014 = validateParameter(valid_580014, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578989 != nil:
-    section.add "prettyPrint", valid_578989
-  var valid_578990 = query.getOrDefault("oauth_token")
-  valid_578990 = validateParameter(valid_578990, JString, required = false,
+  if valid_580014 != nil:
+    section.add "prettyPrint", valid_580014
+  var valid_580015 = query.getOrDefault("oauth_token")
+  valid_580015 = validateParameter(valid_580015, JString, required = false,
                                  default = nil)
-  if valid_578990 != nil:
-    section.add "oauth_token", valid_578990
-  var valid_578991 = query.getOrDefault("alt")
-  valid_578991 = validateParameter(valid_578991, JString, required = false,
+  if valid_580015 != nil:
+    section.add "oauth_token", valid_580015
+  var valid_580016 = query.getOrDefault("alt")
+  valid_580016 = validateParameter(valid_580016, JString, required = false,
                                  default = newJString("json"))
-  if valid_578991 != nil:
-    section.add "alt", valid_578991
-  var valid_578992 = query.getOrDefault("userIp")
-  valid_578992 = validateParameter(valid_578992, JString, required = false,
+  if valid_580016 != nil:
+    section.add "alt", valid_580016
+  var valid_580017 = query.getOrDefault("userIp")
+  valid_580017 = validateParameter(valid_580017, JString, required = false,
                                  default = nil)
-  if valid_578992 != nil:
-    section.add "userIp", valid_578992
-  var valid_578993 = query.getOrDefault("quotaUser")
-  valid_578993 = validateParameter(valid_578993, JString, required = false,
+  if valid_580017 != nil:
+    section.add "userIp", valid_580017
+  var valid_580018 = query.getOrDefault("quotaUser")
+  valid_580018 = validateParameter(valid_580018, JString, required = false,
                                  default = nil)
-  if valid_578993 != nil:
-    section.add "quotaUser", valid_578993
-  var valid_578994 = query.getOrDefault("clientOperationId")
-  valid_578994 = validateParameter(valid_578994, JString, required = false,
+  if valid_580018 != nil:
+    section.add "quotaUser", valid_580018
+  var valid_580019 = query.getOrDefault("clientOperationId")
+  valid_580019 = validateParameter(valid_580019, JString, required = false,
                                  default = nil)
-  if valid_578994 != nil:
-    section.add "clientOperationId", valid_578994
-  var valid_578995 = query.getOrDefault("fields")
-  valid_578995 = validateParameter(valid_578995, JString, required = false,
+  if valid_580019 != nil:
+    section.add "clientOperationId", valid_580019
+  var valid_580020 = query.getOrDefault("fields")
+  valid_580020 = validateParameter(valid_580020, JString, required = false,
                                  default = nil)
-  if valid_578995 != nil:
-    section.add "fields", valid_578995
+  if valid_580020 != nil:
+    section.add "fields", valid_580020
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1069,20 +1099,20 @@ proc validate_DnsManagedZonesPatch_578984(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578997: Call_DnsManagedZonesPatch_578983; path: JsonNode;
+proc call*(call_580022: Call_DnsManagedZonesPatch_580008; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Apply a partial update to an existing ManagedZone.
   ## 
-  let valid = call_578997.validator(path, query, header, formData, body)
-  let scheme = call_578997.pickScheme
+  let valid = call_580022.validator(path, query, header, formData, body)
+  let scheme = call_580022.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578997.url(scheme.get, call_578997.host, call_578997.base,
-                         call_578997.route, valid.getOrDefault("path"),
+  let url = call_580022.url(scheme.get, call_580022.host, call_580022.base,
+                         call_580022.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578997, url, valid)
+  result = hook(call_580022, url, valid)
 
-proc call*(call_578998: Call_DnsManagedZonesPatch_578983; managedZone: string;
+proc call*(call_580023: Call_DnsManagedZonesPatch_580008; managedZone: string;
           project: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; clientOperationId: string = ""; body: JsonNode = nil;
@@ -1110,32 +1140,32 @@ proc call*(call_578998: Call_DnsManagedZonesPatch_578983; managedZone: string;
   ##   body: JObject
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_578999 = newJObject()
-  var query_579000 = newJObject()
-  var body_579001 = newJObject()
-  add(query_579000, "key", newJString(key))
-  add(query_579000, "prettyPrint", newJBool(prettyPrint))
-  add(query_579000, "oauth_token", newJString(oauthToken))
-  add(path_578999, "managedZone", newJString(managedZone))
-  add(query_579000, "alt", newJString(alt))
-  add(query_579000, "userIp", newJString(userIp))
-  add(query_579000, "quotaUser", newJString(quotaUser))
-  add(path_578999, "project", newJString(project))
-  add(query_579000, "clientOperationId", newJString(clientOperationId))
+  var path_580024 = newJObject()
+  var query_580025 = newJObject()
+  var body_580026 = newJObject()
+  add(query_580025, "key", newJString(key))
+  add(query_580025, "prettyPrint", newJBool(prettyPrint))
+  add(query_580025, "oauth_token", newJString(oauthToken))
+  add(path_580024, "managedZone", newJString(managedZone))
+  add(query_580025, "alt", newJString(alt))
+  add(query_580025, "userIp", newJString(userIp))
+  add(query_580025, "quotaUser", newJString(quotaUser))
+  add(path_580024, "project", newJString(project))
+  add(query_580025, "clientOperationId", newJString(clientOperationId))
   if body != nil:
-    body_579001 = body
-  add(query_579000, "fields", newJString(fields))
-  result = call_578998.call(path_578999, query_579000, nil, nil, body_579001)
+    body_580026 = body
+  add(query_580025, "fields", newJString(fields))
+  result = call_580023.call(path_580024, query_580025, nil, nil, body_580026)
 
-var dnsManagedZonesPatch* = Call_DnsManagedZonesPatch_578983(
+var dnsManagedZonesPatch* = Call_DnsManagedZonesPatch_580008(
     name: "dnsManagedZonesPatch", meth: HttpMethod.HttpPatch,
     host: "dns.googleapis.com", route: "/{project}/managedZones/{managedZone}",
-    validator: validate_DnsManagedZonesPatch_578984,
-    base: "/dns/v1beta2/projects", url: url_DnsManagedZonesPatch_578985,
+    validator: validate_DnsManagedZonesPatch_580009,
+    base: "/dns/v1beta2/projects", url: url_DnsManagedZonesPatch_580010,
     schemes: {Scheme.Https})
 type
-  Call_DnsManagedZonesDelete_578966 = ref object of OpenApiRestCall_578339
-proc url_DnsManagedZonesDelete_578968(protocol: Scheme; host: string; base: string;
+  Call_DnsManagedZonesDelete_579991 = ref object of OpenApiRestCall_579364
+proc url_DnsManagedZonesDelete_579993(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1151,9 +1181,14 @@ proc url_DnsManagedZonesDelete_578968(protocol: Scheme; host: string; base: stri
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsManagedZonesDelete_578967(path: JsonNode; query: JsonNode;
+proc validate_DnsManagedZonesDelete_579992(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Delete a previously created ManagedZone.
   ## 
@@ -1167,16 +1202,16 @@ proc validate_DnsManagedZonesDelete_578967(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `managedZone` field"
-  var valid_578969 = path.getOrDefault("managedZone")
-  valid_578969 = validateParameter(valid_578969, JString, required = true,
+  var valid_579994 = path.getOrDefault("managedZone")
+  valid_579994 = validateParameter(valid_579994, JString, required = true,
                                  default = nil)
-  if valid_578969 != nil:
-    section.add "managedZone", valid_578969
-  var valid_578970 = path.getOrDefault("project")
-  valid_578970 = validateParameter(valid_578970, JString, required = true,
+  if valid_579994 != nil:
+    section.add "managedZone", valid_579994
+  var valid_579995 = path.getOrDefault("project")
+  valid_579995 = validateParameter(valid_579995, JString, required = true,
                                  default = nil)
-  if valid_578970 != nil:
-    section.add "project", valid_578970
+  if valid_579995 != nil:
+    section.add "project", valid_579995
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1196,46 +1231,46 @@ proc validate_DnsManagedZonesDelete_578967(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578971 = query.getOrDefault("key")
-  valid_578971 = validateParameter(valid_578971, JString, required = false,
+  var valid_579996 = query.getOrDefault("key")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_578971 != nil:
-    section.add "key", valid_578971
-  var valid_578972 = query.getOrDefault("prettyPrint")
-  valid_578972 = validateParameter(valid_578972, JBool, required = false,
+  if valid_579996 != nil:
+    section.add "key", valid_579996
+  var valid_579997 = query.getOrDefault("prettyPrint")
+  valid_579997 = validateParameter(valid_579997, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578972 != nil:
-    section.add "prettyPrint", valid_578972
-  var valid_578973 = query.getOrDefault("oauth_token")
-  valid_578973 = validateParameter(valid_578973, JString, required = false,
+  if valid_579997 != nil:
+    section.add "prettyPrint", valid_579997
+  var valid_579998 = query.getOrDefault("oauth_token")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = nil)
-  if valid_578973 != nil:
-    section.add "oauth_token", valid_578973
-  var valid_578974 = query.getOrDefault("alt")
-  valid_578974 = validateParameter(valid_578974, JString, required = false,
+  if valid_579998 != nil:
+    section.add "oauth_token", valid_579998
+  var valid_579999 = query.getOrDefault("alt")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = newJString("json"))
-  if valid_578974 != nil:
-    section.add "alt", valid_578974
-  var valid_578975 = query.getOrDefault("userIp")
-  valid_578975 = validateParameter(valid_578975, JString, required = false,
+  if valid_579999 != nil:
+    section.add "alt", valid_579999
+  var valid_580000 = query.getOrDefault("userIp")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = nil)
-  if valid_578975 != nil:
-    section.add "userIp", valid_578975
-  var valid_578976 = query.getOrDefault("quotaUser")
-  valid_578976 = validateParameter(valid_578976, JString, required = false,
+  if valid_580000 != nil:
+    section.add "userIp", valid_580000
+  var valid_580001 = query.getOrDefault("quotaUser")
+  valid_580001 = validateParameter(valid_580001, JString, required = false,
                                  default = nil)
-  if valid_578976 != nil:
-    section.add "quotaUser", valid_578976
-  var valid_578977 = query.getOrDefault("clientOperationId")
-  valid_578977 = validateParameter(valid_578977, JString, required = false,
+  if valid_580001 != nil:
+    section.add "quotaUser", valid_580001
+  var valid_580002 = query.getOrDefault("clientOperationId")
+  valid_580002 = validateParameter(valid_580002, JString, required = false,
                                  default = nil)
-  if valid_578977 != nil:
-    section.add "clientOperationId", valid_578977
-  var valid_578978 = query.getOrDefault("fields")
-  valid_578978 = validateParameter(valid_578978, JString, required = false,
+  if valid_580002 != nil:
+    section.add "clientOperationId", valid_580002
+  var valid_580003 = query.getOrDefault("fields")
+  valid_580003 = validateParameter(valid_580003, JString, required = false,
                                  default = nil)
-  if valid_578978 != nil:
-    section.add "fields", valid_578978
+  if valid_580003 != nil:
+    section.add "fields", valid_580003
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1244,20 +1279,20 @@ proc validate_DnsManagedZonesDelete_578967(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578979: Call_DnsManagedZonesDelete_578966; path: JsonNode;
+proc call*(call_580004: Call_DnsManagedZonesDelete_579991; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Delete a previously created ManagedZone.
   ## 
-  let valid = call_578979.validator(path, query, header, formData, body)
-  let scheme = call_578979.pickScheme
+  let valid = call_580004.validator(path, query, header, formData, body)
+  let scheme = call_580004.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578979.url(scheme.get, call_578979.host, call_578979.base,
-                         call_578979.route, valid.getOrDefault("path"),
+  let url = call_580004.url(scheme.get, call_580004.host, call_580004.base,
+                         call_580004.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578979, url, valid)
+  result = hook(call_580004, url, valid)
 
-proc call*(call_578980: Call_DnsManagedZonesDelete_578966; managedZone: string;
+proc call*(call_580005: Call_DnsManagedZonesDelete_579991; managedZone: string;
           project: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; clientOperationId: string = ""; fields: string = ""): Recallable =
@@ -1283,29 +1318,29 @@ proc call*(call_578980: Call_DnsManagedZonesDelete_578966; managedZone: string;
   ##                    : For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_578981 = newJObject()
-  var query_578982 = newJObject()
-  add(query_578982, "key", newJString(key))
-  add(query_578982, "prettyPrint", newJBool(prettyPrint))
-  add(query_578982, "oauth_token", newJString(oauthToken))
-  add(path_578981, "managedZone", newJString(managedZone))
-  add(query_578982, "alt", newJString(alt))
-  add(query_578982, "userIp", newJString(userIp))
-  add(query_578982, "quotaUser", newJString(quotaUser))
-  add(path_578981, "project", newJString(project))
-  add(query_578982, "clientOperationId", newJString(clientOperationId))
-  add(query_578982, "fields", newJString(fields))
-  result = call_578980.call(path_578981, query_578982, nil, nil, nil)
+  var path_580006 = newJObject()
+  var query_580007 = newJObject()
+  add(query_580007, "key", newJString(key))
+  add(query_580007, "prettyPrint", newJBool(prettyPrint))
+  add(query_580007, "oauth_token", newJString(oauthToken))
+  add(path_580006, "managedZone", newJString(managedZone))
+  add(query_580007, "alt", newJString(alt))
+  add(query_580007, "userIp", newJString(userIp))
+  add(query_580007, "quotaUser", newJString(quotaUser))
+  add(path_580006, "project", newJString(project))
+  add(query_580007, "clientOperationId", newJString(clientOperationId))
+  add(query_580007, "fields", newJString(fields))
+  result = call_580005.call(path_580006, query_580007, nil, nil, nil)
 
-var dnsManagedZonesDelete* = Call_DnsManagedZonesDelete_578966(
+var dnsManagedZonesDelete* = Call_DnsManagedZonesDelete_579991(
     name: "dnsManagedZonesDelete", meth: HttpMethod.HttpDelete,
     host: "dns.googleapis.com", route: "/{project}/managedZones/{managedZone}",
-    validator: validate_DnsManagedZonesDelete_578967,
-    base: "/dns/v1beta2/projects", url: url_DnsManagedZonesDelete_578968,
+    validator: validate_DnsManagedZonesDelete_579992,
+    base: "/dns/v1beta2/projects", url: url_DnsManagedZonesDelete_579993,
     schemes: {Scheme.Https})
 type
-  Call_DnsChangesCreate_579022 = ref object of OpenApiRestCall_578339
-proc url_DnsChangesCreate_579024(protocol: Scheme; host: string; base: string;
+  Call_DnsChangesCreate_580047 = ref object of OpenApiRestCall_579364
+proc url_DnsChangesCreate_580049(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1322,9 +1357,14 @@ proc url_DnsChangesCreate_579024(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsChangesCreate_579023(path: JsonNode; query: JsonNode;
+proc validate_DnsChangesCreate_580048(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Atomically update the ResourceRecordSet collection.
@@ -1339,16 +1379,16 @@ proc validate_DnsChangesCreate_579023(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `managedZone` field"
-  var valid_579025 = path.getOrDefault("managedZone")
-  valid_579025 = validateParameter(valid_579025, JString, required = true,
+  var valid_580050 = path.getOrDefault("managedZone")
+  valid_580050 = validateParameter(valid_580050, JString, required = true,
                                  default = nil)
-  if valid_579025 != nil:
-    section.add "managedZone", valid_579025
-  var valid_579026 = path.getOrDefault("project")
-  valid_579026 = validateParameter(valid_579026, JString, required = true,
+  if valid_580050 != nil:
+    section.add "managedZone", valid_580050
+  var valid_580051 = path.getOrDefault("project")
+  valid_580051 = validateParameter(valid_580051, JString, required = true,
                                  default = nil)
-  if valid_579026 != nil:
-    section.add "project", valid_579026
+  if valid_580051 != nil:
+    section.add "project", valid_580051
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1368,46 +1408,46 @@ proc validate_DnsChangesCreate_579023(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579027 = query.getOrDefault("key")
-  valid_579027 = validateParameter(valid_579027, JString, required = false,
+  var valid_580052 = query.getOrDefault("key")
+  valid_580052 = validateParameter(valid_580052, JString, required = false,
                                  default = nil)
-  if valid_579027 != nil:
-    section.add "key", valid_579027
-  var valid_579028 = query.getOrDefault("prettyPrint")
-  valid_579028 = validateParameter(valid_579028, JBool, required = false,
+  if valid_580052 != nil:
+    section.add "key", valid_580052
+  var valid_580053 = query.getOrDefault("prettyPrint")
+  valid_580053 = validateParameter(valid_580053, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579028 != nil:
-    section.add "prettyPrint", valid_579028
-  var valid_579029 = query.getOrDefault("oauth_token")
-  valid_579029 = validateParameter(valid_579029, JString, required = false,
+  if valid_580053 != nil:
+    section.add "prettyPrint", valid_580053
+  var valid_580054 = query.getOrDefault("oauth_token")
+  valid_580054 = validateParameter(valid_580054, JString, required = false,
                                  default = nil)
-  if valid_579029 != nil:
-    section.add "oauth_token", valid_579029
-  var valid_579030 = query.getOrDefault("alt")
-  valid_579030 = validateParameter(valid_579030, JString, required = false,
+  if valid_580054 != nil:
+    section.add "oauth_token", valid_580054
+  var valid_580055 = query.getOrDefault("alt")
+  valid_580055 = validateParameter(valid_580055, JString, required = false,
                                  default = newJString("json"))
-  if valid_579030 != nil:
-    section.add "alt", valid_579030
-  var valid_579031 = query.getOrDefault("userIp")
-  valid_579031 = validateParameter(valid_579031, JString, required = false,
+  if valid_580055 != nil:
+    section.add "alt", valid_580055
+  var valid_580056 = query.getOrDefault("userIp")
+  valid_580056 = validateParameter(valid_580056, JString, required = false,
                                  default = nil)
-  if valid_579031 != nil:
-    section.add "userIp", valid_579031
-  var valid_579032 = query.getOrDefault("quotaUser")
-  valid_579032 = validateParameter(valid_579032, JString, required = false,
+  if valid_580056 != nil:
+    section.add "userIp", valid_580056
+  var valid_580057 = query.getOrDefault("quotaUser")
+  valid_580057 = validateParameter(valid_580057, JString, required = false,
                                  default = nil)
-  if valid_579032 != nil:
-    section.add "quotaUser", valid_579032
-  var valid_579033 = query.getOrDefault("clientOperationId")
-  valid_579033 = validateParameter(valid_579033, JString, required = false,
+  if valid_580057 != nil:
+    section.add "quotaUser", valid_580057
+  var valid_580058 = query.getOrDefault("clientOperationId")
+  valid_580058 = validateParameter(valid_580058, JString, required = false,
                                  default = nil)
-  if valid_579033 != nil:
-    section.add "clientOperationId", valid_579033
-  var valid_579034 = query.getOrDefault("fields")
-  valid_579034 = validateParameter(valid_579034, JString, required = false,
+  if valid_580058 != nil:
+    section.add "clientOperationId", valid_580058
+  var valid_580059 = query.getOrDefault("fields")
+  valid_580059 = validateParameter(valid_580059, JString, required = false,
                                  default = nil)
-  if valid_579034 != nil:
-    section.add "fields", valid_579034
+  if valid_580059 != nil:
+    section.add "fields", valid_580059
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1419,20 +1459,20 @@ proc validate_DnsChangesCreate_579023(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579036: Call_DnsChangesCreate_579022; path: JsonNode;
+proc call*(call_580061: Call_DnsChangesCreate_580047; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Atomically update the ResourceRecordSet collection.
   ## 
-  let valid = call_579036.validator(path, query, header, formData, body)
-  let scheme = call_579036.pickScheme
+  let valid = call_580061.validator(path, query, header, formData, body)
+  let scheme = call_580061.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579036.url(scheme.get, call_579036.host, call_579036.base,
-                         call_579036.route, valid.getOrDefault("path"),
+  let url = call_580061.url(scheme.get, call_580061.host, call_580061.base,
+                         call_580061.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579036, url, valid)
+  result = hook(call_580061, url, valid)
 
-proc call*(call_579037: Call_DnsChangesCreate_579022; managedZone: string;
+proc call*(call_580062: Call_DnsChangesCreate_580047; managedZone: string;
           project: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; clientOperationId: string = ""; body: JsonNode = nil;
@@ -1460,31 +1500,31 @@ proc call*(call_579037: Call_DnsChangesCreate_579022; managedZone: string;
   ##   body: JObject
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579038 = newJObject()
-  var query_579039 = newJObject()
-  var body_579040 = newJObject()
-  add(query_579039, "key", newJString(key))
-  add(query_579039, "prettyPrint", newJBool(prettyPrint))
-  add(query_579039, "oauth_token", newJString(oauthToken))
-  add(path_579038, "managedZone", newJString(managedZone))
-  add(query_579039, "alt", newJString(alt))
-  add(query_579039, "userIp", newJString(userIp))
-  add(query_579039, "quotaUser", newJString(quotaUser))
-  add(path_579038, "project", newJString(project))
-  add(query_579039, "clientOperationId", newJString(clientOperationId))
+  var path_580063 = newJObject()
+  var query_580064 = newJObject()
+  var body_580065 = newJObject()
+  add(query_580064, "key", newJString(key))
+  add(query_580064, "prettyPrint", newJBool(prettyPrint))
+  add(query_580064, "oauth_token", newJString(oauthToken))
+  add(path_580063, "managedZone", newJString(managedZone))
+  add(query_580064, "alt", newJString(alt))
+  add(query_580064, "userIp", newJString(userIp))
+  add(query_580064, "quotaUser", newJString(quotaUser))
+  add(path_580063, "project", newJString(project))
+  add(query_580064, "clientOperationId", newJString(clientOperationId))
   if body != nil:
-    body_579040 = body
-  add(query_579039, "fields", newJString(fields))
-  result = call_579037.call(path_579038, query_579039, nil, nil, body_579040)
+    body_580065 = body
+  add(query_580064, "fields", newJString(fields))
+  result = call_580062.call(path_580063, query_580064, nil, nil, body_580065)
 
-var dnsChangesCreate* = Call_DnsChangesCreate_579022(name: "dnsChangesCreate",
+var dnsChangesCreate* = Call_DnsChangesCreate_580047(name: "dnsChangesCreate",
     meth: HttpMethod.HttpPost, host: "dns.googleapis.com",
     route: "/{project}/managedZones/{managedZone}/changes",
-    validator: validate_DnsChangesCreate_579023, base: "/dns/v1beta2/projects",
-    url: url_DnsChangesCreate_579024, schemes: {Scheme.Https})
+    validator: validate_DnsChangesCreate_580048, base: "/dns/v1beta2/projects",
+    url: url_DnsChangesCreate_580049, schemes: {Scheme.Https})
 type
-  Call_DnsChangesList_579002 = ref object of OpenApiRestCall_578339
-proc url_DnsChangesList_579004(protocol: Scheme; host: string; base: string;
+  Call_DnsChangesList_580027 = ref object of OpenApiRestCall_579364
+proc url_DnsChangesList_580029(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1501,9 +1541,14 @@ proc url_DnsChangesList_579004(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsChangesList_579003(path: JsonNode; query: JsonNode;
+proc validate_DnsChangesList_580028(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Enumerate Changes to a ResourceRecordSet collection.
@@ -1518,16 +1563,16 @@ proc validate_DnsChangesList_579003(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `managedZone` field"
-  var valid_579005 = path.getOrDefault("managedZone")
-  valid_579005 = validateParameter(valid_579005, JString, required = true,
+  var valid_580030 = path.getOrDefault("managedZone")
+  valid_580030 = validateParameter(valid_580030, JString, required = true,
                                  default = nil)
-  if valid_579005 != nil:
-    section.add "managedZone", valid_579005
-  var valid_579006 = path.getOrDefault("project")
-  valid_579006 = validateParameter(valid_579006, JString, required = true,
+  if valid_580030 != nil:
+    section.add "managedZone", valid_580030
+  var valid_580031 = path.getOrDefault("project")
+  valid_580031 = validateParameter(valid_580031, JString, required = true,
                                  default = nil)
-  if valid_579006 != nil:
-    section.add "project", valid_579006
+  if valid_580031 != nil:
+    section.add "project", valid_580031
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1553,60 +1598,60 @@ proc validate_DnsChangesList_579003(path: JsonNode; query: JsonNode;
   ##   maxResults: JInt
   ##             : Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.
   section = newJObject()
-  var valid_579007 = query.getOrDefault("key")
-  valid_579007 = validateParameter(valid_579007, JString, required = false,
+  var valid_580032 = query.getOrDefault("key")
+  valid_580032 = validateParameter(valid_580032, JString, required = false,
                                  default = nil)
-  if valid_579007 != nil:
-    section.add "key", valid_579007
-  var valid_579008 = query.getOrDefault("prettyPrint")
-  valid_579008 = validateParameter(valid_579008, JBool, required = false,
+  if valid_580032 != nil:
+    section.add "key", valid_580032
+  var valid_580033 = query.getOrDefault("prettyPrint")
+  valid_580033 = validateParameter(valid_580033, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579008 != nil:
-    section.add "prettyPrint", valid_579008
-  var valid_579009 = query.getOrDefault("oauth_token")
-  valid_579009 = validateParameter(valid_579009, JString, required = false,
+  if valid_580033 != nil:
+    section.add "prettyPrint", valid_580033
+  var valid_580034 = query.getOrDefault("oauth_token")
+  valid_580034 = validateParameter(valid_580034, JString, required = false,
                                  default = nil)
-  if valid_579009 != nil:
-    section.add "oauth_token", valid_579009
-  var valid_579010 = query.getOrDefault("sortBy")
-  valid_579010 = validateParameter(valid_579010, JString, required = false,
+  if valid_580034 != nil:
+    section.add "oauth_token", valid_580034
+  var valid_580035 = query.getOrDefault("sortBy")
+  valid_580035 = validateParameter(valid_580035, JString, required = false,
                                  default = newJString("changeSequence"))
-  if valid_579010 != nil:
-    section.add "sortBy", valid_579010
-  var valid_579011 = query.getOrDefault("alt")
-  valid_579011 = validateParameter(valid_579011, JString, required = false,
+  if valid_580035 != nil:
+    section.add "sortBy", valid_580035
+  var valid_580036 = query.getOrDefault("alt")
+  valid_580036 = validateParameter(valid_580036, JString, required = false,
                                  default = newJString("json"))
-  if valid_579011 != nil:
-    section.add "alt", valid_579011
-  var valid_579012 = query.getOrDefault("userIp")
-  valid_579012 = validateParameter(valid_579012, JString, required = false,
+  if valid_580036 != nil:
+    section.add "alt", valid_580036
+  var valid_580037 = query.getOrDefault("userIp")
+  valid_580037 = validateParameter(valid_580037, JString, required = false,
                                  default = nil)
-  if valid_579012 != nil:
-    section.add "userIp", valid_579012
-  var valid_579013 = query.getOrDefault("quotaUser")
-  valid_579013 = validateParameter(valid_579013, JString, required = false,
+  if valid_580037 != nil:
+    section.add "userIp", valid_580037
+  var valid_580038 = query.getOrDefault("quotaUser")
+  valid_580038 = validateParameter(valid_580038, JString, required = false,
                                  default = nil)
-  if valid_579013 != nil:
-    section.add "quotaUser", valid_579013
-  var valid_579014 = query.getOrDefault("pageToken")
-  valid_579014 = validateParameter(valid_579014, JString, required = false,
+  if valid_580038 != nil:
+    section.add "quotaUser", valid_580038
+  var valid_580039 = query.getOrDefault("pageToken")
+  valid_580039 = validateParameter(valid_580039, JString, required = false,
                                  default = nil)
-  if valid_579014 != nil:
-    section.add "pageToken", valid_579014
-  var valid_579015 = query.getOrDefault("sortOrder")
-  valid_579015 = validateParameter(valid_579015, JString, required = false,
+  if valid_580039 != nil:
+    section.add "pageToken", valid_580039
+  var valid_580040 = query.getOrDefault("sortOrder")
+  valid_580040 = validateParameter(valid_580040, JString, required = false,
                                  default = nil)
-  if valid_579015 != nil:
-    section.add "sortOrder", valid_579015
-  var valid_579016 = query.getOrDefault("fields")
-  valid_579016 = validateParameter(valid_579016, JString, required = false,
+  if valid_580040 != nil:
+    section.add "sortOrder", valid_580040
+  var valid_580041 = query.getOrDefault("fields")
+  valid_580041 = validateParameter(valid_580041, JString, required = false,
                                  default = nil)
-  if valid_579016 != nil:
-    section.add "fields", valid_579016
-  var valid_579017 = query.getOrDefault("maxResults")
-  valid_579017 = validateParameter(valid_579017, JInt, required = false, default = nil)
-  if valid_579017 != nil:
-    section.add "maxResults", valid_579017
+  if valid_580041 != nil:
+    section.add "fields", valid_580041
+  var valid_580042 = query.getOrDefault("maxResults")
+  valid_580042 = validateParameter(valid_580042, JInt, required = false, default = nil)
+  if valid_580042 != nil:
+    section.add "maxResults", valid_580042
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1615,20 +1660,20 @@ proc validate_DnsChangesList_579003(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579018: Call_DnsChangesList_579002; path: JsonNode; query: JsonNode;
+proc call*(call_580043: Call_DnsChangesList_580027; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Enumerate Changes to a ResourceRecordSet collection.
   ## 
-  let valid = call_579018.validator(path, query, header, formData, body)
-  let scheme = call_579018.pickScheme
+  let valid = call_580043.validator(path, query, header, formData, body)
+  let scheme = call_580043.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579018.url(scheme.get, call_579018.host, call_579018.base,
-                         call_579018.route, valid.getOrDefault("path"),
+  let url = call_580043.url(scheme.get, call_580043.host, call_580043.base,
+                         call_580043.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579018, url, valid)
+  result = hook(call_580043, url, valid)
 
-proc call*(call_579019: Call_DnsChangesList_579002; managedZone: string;
+proc call*(call_580044: Call_DnsChangesList_580027; managedZone: string;
           project: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; sortBy: string = "changeSequence";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -1662,31 +1707,31 @@ proc call*(call_579019: Call_DnsChangesList_579002; managedZone: string;
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: int
   ##             : Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.
-  var path_579020 = newJObject()
-  var query_579021 = newJObject()
-  add(query_579021, "key", newJString(key))
-  add(query_579021, "prettyPrint", newJBool(prettyPrint))
-  add(query_579021, "oauth_token", newJString(oauthToken))
-  add(path_579020, "managedZone", newJString(managedZone))
-  add(query_579021, "sortBy", newJString(sortBy))
-  add(query_579021, "alt", newJString(alt))
-  add(query_579021, "userIp", newJString(userIp))
-  add(query_579021, "quotaUser", newJString(quotaUser))
-  add(query_579021, "pageToken", newJString(pageToken))
-  add(query_579021, "sortOrder", newJString(sortOrder))
-  add(path_579020, "project", newJString(project))
-  add(query_579021, "fields", newJString(fields))
-  add(query_579021, "maxResults", newJInt(maxResults))
-  result = call_579019.call(path_579020, query_579021, nil, nil, nil)
+  var path_580045 = newJObject()
+  var query_580046 = newJObject()
+  add(query_580046, "key", newJString(key))
+  add(query_580046, "prettyPrint", newJBool(prettyPrint))
+  add(query_580046, "oauth_token", newJString(oauthToken))
+  add(path_580045, "managedZone", newJString(managedZone))
+  add(query_580046, "sortBy", newJString(sortBy))
+  add(query_580046, "alt", newJString(alt))
+  add(query_580046, "userIp", newJString(userIp))
+  add(query_580046, "quotaUser", newJString(quotaUser))
+  add(query_580046, "pageToken", newJString(pageToken))
+  add(query_580046, "sortOrder", newJString(sortOrder))
+  add(path_580045, "project", newJString(project))
+  add(query_580046, "fields", newJString(fields))
+  add(query_580046, "maxResults", newJInt(maxResults))
+  result = call_580044.call(path_580045, query_580046, nil, nil, nil)
 
-var dnsChangesList* = Call_DnsChangesList_579002(name: "dnsChangesList",
+var dnsChangesList* = Call_DnsChangesList_580027(name: "dnsChangesList",
     meth: HttpMethod.HttpGet, host: "dns.googleapis.com",
     route: "/{project}/managedZones/{managedZone}/changes",
-    validator: validate_DnsChangesList_579003, base: "/dns/v1beta2/projects",
-    url: url_DnsChangesList_579004, schemes: {Scheme.Https})
+    validator: validate_DnsChangesList_580028, base: "/dns/v1beta2/projects",
+    url: url_DnsChangesList_580029, schemes: {Scheme.Https})
 type
-  Call_DnsChangesGet_579041 = ref object of OpenApiRestCall_578339
-proc url_DnsChangesGet_579043(protocol: Scheme; host: string; base: string;
+  Call_DnsChangesGet_580066 = ref object of OpenApiRestCall_579364
+proc url_DnsChangesGet_580068(protocol: Scheme; host: string; base: string;
                              route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1705,9 +1750,14 @@ proc url_DnsChangesGet_579043(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsChangesGet_579042(path: JsonNode; query: JsonNode; header: JsonNode;
+proc validate_DnsChangesGet_580067(path: JsonNode; query: JsonNode; header: JsonNode;
                                   formData: JsonNode; body: JsonNode): JsonNode =
   ## Fetch the representation of an existing Change.
   ## 
@@ -1723,21 +1773,21 @@ proc validate_DnsChangesGet_579042(path: JsonNode; query: JsonNode; header: Json
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `managedZone` field"
-  var valid_579044 = path.getOrDefault("managedZone")
-  valid_579044 = validateParameter(valid_579044, JString, required = true,
+  var valid_580069 = path.getOrDefault("managedZone")
+  valid_580069 = validateParameter(valid_580069, JString, required = true,
                                  default = nil)
-  if valid_579044 != nil:
-    section.add "managedZone", valid_579044
-  var valid_579045 = path.getOrDefault("project")
-  valid_579045 = validateParameter(valid_579045, JString, required = true,
+  if valid_580069 != nil:
+    section.add "managedZone", valid_580069
+  var valid_580070 = path.getOrDefault("project")
+  valid_580070 = validateParameter(valid_580070, JString, required = true,
                                  default = nil)
-  if valid_579045 != nil:
-    section.add "project", valid_579045
-  var valid_579046 = path.getOrDefault("changeId")
-  valid_579046 = validateParameter(valid_579046, JString, required = true,
+  if valid_580070 != nil:
+    section.add "project", valid_580070
+  var valid_580071 = path.getOrDefault("changeId")
+  valid_580071 = validateParameter(valid_580071, JString, required = true,
                                  default = nil)
-  if valid_579046 != nil:
-    section.add "changeId", valid_579046
+  if valid_580071 != nil:
+    section.add "changeId", valid_580071
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1757,46 +1807,46 @@ proc validate_DnsChangesGet_579042(path: JsonNode; query: JsonNode; header: Json
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579047 = query.getOrDefault("key")
-  valid_579047 = validateParameter(valid_579047, JString, required = false,
+  var valid_580072 = query.getOrDefault("key")
+  valid_580072 = validateParameter(valid_580072, JString, required = false,
                                  default = nil)
-  if valid_579047 != nil:
-    section.add "key", valid_579047
-  var valid_579048 = query.getOrDefault("prettyPrint")
-  valid_579048 = validateParameter(valid_579048, JBool, required = false,
+  if valid_580072 != nil:
+    section.add "key", valid_580072
+  var valid_580073 = query.getOrDefault("prettyPrint")
+  valid_580073 = validateParameter(valid_580073, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579048 != nil:
-    section.add "prettyPrint", valid_579048
-  var valid_579049 = query.getOrDefault("oauth_token")
-  valid_579049 = validateParameter(valid_579049, JString, required = false,
+  if valid_580073 != nil:
+    section.add "prettyPrint", valid_580073
+  var valid_580074 = query.getOrDefault("oauth_token")
+  valid_580074 = validateParameter(valid_580074, JString, required = false,
                                  default = nil)
-  if valid_579049 != nil:
-    section.add "oauth_token", valid_579049
-  var valid_579050 = query.getOrDefault("alt")
-  valid_579050 = validateParameter(valid_579050, JString, required = false,
+  if valid_580074 != nil:
+    section.add "oauth_token", valid_580074
+  var valid_580075 = query.getOrDefault("alt")
+  valid_580075 = validateParameter(valid_580075, JString, required = false,
                                  default = newJString("json"))
-  if valid_579050 != nil:
-    section.add "alt", valid_579050
-  var valid_579051 = query.getOrDefault("userIp")
-  valid_579051 = validateParameter(valid_579051, JString, required = false,
+  if valid_580075 != nil:
+    section.add "alt", valid_580075
+  var valid_580076 = query.getOrDefault("userIp")
+  valid_580076 = validateParameter(valid_580076, JString, required = false,
                                  default = nil)
-  if valid_579051 != nil:
-    section.add "userIp", valid_579051
-  var valid_579052 = query.getOrDefault("quotaUser")
-  valid_579052 = validateParameter(valid_579052, JString, required = false,
+  if valid_580076 != nil:
+    section.add "userIp", valid_580076
+  var valid_580077 = query.getOrDefault("quotaUser")
+  valid_580077 = validateParameter(valid_580077, JString, required = false,
                                  default = nil)
-  if valid_579052 != nil:
-    section.add "quotaUser", valid_579052
-  var valid_579053 = query.getOrDefault("clientOperationId")
-  valid_579053 = validateParameter(valid_579053, JString, required = false,
+  if valid_580077 != nil:
+    section.add "quotaUser", valid_580077
+  var valid_580078 = query.getOrDefault("clientOperationId")
+  valid_580078 = validateParameter(valid_580078, JString, required = false,
                                  default = nil)
-  if valid_579053 != nil:
-    section.add "clientOperationId", valid_579053
-  var valid_579054 = query.getOrDefault("fields")
-  valid_579054 = validateParameter(valid_579054, JString, required = false,
+  if valid_580078 != nil:
+    section.add "clientOperationId", valid_580078
+  var valid_580079 = query.getOrDefault("fields")
+  valid_580079 = validateParameter(valid_580079, JString, required = false,
                                  default = nil)
-  if valid_579054 != nil:
-    section.add "fields", valid_579054
+  if valid_580079 != nil:
+    section.add "fields", valid_580079
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1805,20 +1855,20 @@ proc validate_DnsChangesGet_579042(path: JsonNode; query: JsonNode; header: Json
   if body != nil:
     result.add "body", body
 
-proc call*(call_579055: Call_DnsChangesGet_579041; path: JsonNode; query: JsonNode;
+proc call*(call_580080: Call_DnsChangesGet_580066; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Fetch the representation of an existing Change.
   ## 
-  let valid = call_579055.validator(path, query, header, formData, body)
-  let scheme = call_579055.pickScheme
+  let valid = call_580080.validator(path, query, header, formData, body)
+  let scheme = call_580080.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579055.url(scheme.get, call_579055.host, call_579055.base,
-                         call_579055.route, valid.getOrDefault("path"),
+  let url = call_580080.url(scheme.get, call_580080.host, call_580080.base,
+                         call_580080.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579055, url, valid)
+  result = hook(call_580080, url, valid)
 
-proc call*(call_579056: Call_DnsChangesGet_579041; managedZone: string;
+proc call*(call_580081: Call_DnsChangesGet_580066; managedZone: string;
           project: string; changeId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; clientOperationId: string = ""; fields: string = ""): Recallable =
@@ -1846,29 +1896,29 @@ proc call*(call_579056: Call_DnsChangesGet_579041; managedZone: string;
   ##           : The identifier of the requested change, from a previous ResourceRecordSetsChangeResponse.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579057 = newJObject()
-  var query_579058 = newJObject()
-  add(query_579058, "key", newJString(key))
-  add(query_579058, "prettyPrint", newJBool(prettyPrint))
-  add(query_579058, "oauth_token", newJString(oauthToken))
-  add(path_579057, "managedZone", newJString(managedZone))
-  add(query_579058, "alt", newJString(alt))
-  add(query_579058, "userIp", newJString(userIp))
-  add(query_579058, "quotaUser", newJString(quotaUser))
-  add(path_579057, "project", newJString(project))
-  add(query_579058, "clientOperationId", newJString(clientOperationId))
-  add(path_579057, "changeId", newJString(changeId))
-  add(query_579058, "fields", newJString(fields))
-  result = call_579056.call(path_579057, query_579058, nil, nil, nil)
+  var path_580082 = newJObject()
+  var query_580083 = newJObject()
+  add(query_580083, "key", newJString(key))
+  add(query_580083, "prettyPrint", newJBool(prettyPrint))
+  add(query_580083, "oauth_token", newJString(oauthToken))
+  add(path_580082, "managedZone", newJString(managedZone))
+  add(query_580083, "alt", newJString(alt))
+  add(query_580083, "userIp", newJString(userIp))
+  add(query_580083, "quotaUser", newJString(quotaUser))
+  add(path_580082, "project", newJString(project))
+  add(query_580083, "clientOperationId", newJString(clientOperationId))
+  add(path_580082, "changeId", newJString(changeId))
+  add(query_580083, "fields", newJString(fields))
+  result = call_580081.call(path_580082, query_580083, nil, nil, nil)
 
-var dnsChangesGet* = Call_DnsChangesGet_579041(name: "dnsChangesGet",
+var dnsChangesGet* = Call_DnsChangesGet_580066(name: "dnsChangesGet",
     meth: HttpMethod.HttpGet, host: "dns.googleapis.com",
     route: "/{project}/managedZones/{managedZone}/changes/{changeId}",
-    validator: validate_DnsChangesGet_579042, base: "/dns/v1beta2/projects",
-    url: url_DnsChangesGet_579043, schemes: {Scheme.Https})
+    validator: validate_DnsChangesGet_580067, base: "/dns/v1beta2/projects",
+    url: url_DnsChangesGet_580068, schemes: {Scheme.Https})
 type
-  Call_DnsDnsKeysList_579059 = ref object of OpenApiRestCall_578339
-proc url_DnsDnsKeysList_579061(protocol: Scheme; host: string; base: string;
+  Call_DnsDnsKeysList_580084 = ref object of OpenApiRestCall_579364
+proc url_DnsDnsKeysList_580086(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1885,9 +1935,14 @@ proc url_DnsDnsKeysList_579061(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsDnsKeysList_579060(path: JsonNode; query: JsonNode;
+proc validate_DnsDnsKeysList_580085(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Enumerate DnsKeys to a ResourceRecordSet collection.
@@ -1902,16 +1957,16 @@ proc validate_DnsDnsKeysList_579060(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `managedZone` field"
-  var valid_579062 = path.getOrDefault("managedZone")
-  valid_579062 = validateParameter(valid_579062, JString, required = true,
+  var valid_580087 = path.getOrDefault("managedZone")
+  valid_580087 = validateParameter(valid_580087, JString, required = true,
                                  default = nil)
-  if valid_579062 != nil:
-    section.add "managedZone", valid_579062
-  var valid_579063 = path.getOrDefault("project")
-  valid_579063 = validateParameter(valid_579063, JString, required = true,
+  if valid_580087 != nil:
+    section.add "managedZone", valid_580087
+  var valid_580088 = path.getOrDefault("project")
+  valid_580088 = validateParameter(valid_580088, JString, required = true,
                                  default = nil)
-  if valid_579063 != nil:
-    section.add "project", valid_579063
+  if valid_580088 != nil:
+    section.add "project", valid_580088
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1935,55 +1990,55 @@ proc validate_DnsDnsKeysList_579060(path: JsonNode; query: JsonNode;
   ##   maxResults: JInt
   ##             : Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.
   section = newJObject()
-  var valid_579064 = query.getOrDefault("key")
-  valid_579064 = validateParameter(valid_579064, JString, required = false,
+  var valid_580089 = query.getOrDefault("key")
+  valid_580089 = validateParameter(valid_580089, JString, required = false,
                                  default = nil)
-  if valid_579064 != nil:
-    section.add "key", valid_579064
-  var valid_579065 = query.getOrDefault("prettyPrint")
-  valid_579065 = validateParameter(valid_579065, JBool, required = false,
+  if valid_580089 != nil:
+    section.add "key", valid_580089
+  var valid_580090 = query.getOrDefault("prettyPrint")
+  valid_580090 = validateParameter(valid_580090, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579065 != nil:
-    section.add "prettyPrint", valid_579065
-  var valid_579066 = query.getOrDefault("oauth_token")
-  valid_579066 = validateParameter(valid_579066, JString, required = false,
+  if valid_580090 != nil:
+    section.add "prettyPrint", valid_580090
+  var valid_580091 = query.getOrDefault("oauth_token")
+  valid_580091 = validateParameter(valid_580091, JString, required = false,
                                  default = nil)
-  if valid_579066 != nil:
-    section.add "oauth_token", valid_579066
-  var valid_579067 = query.getOrDefault("digestType")
-  valid_579067 = validateParameter(valid_579067, JString, required = false,
+  if valid_580091 != nil:
+    section.add "oauth_token", valid_580091
+  var valid_580092 = query.getOrDefault("digestType")
+  valid_580092 = validateParameter(valid_580092, JString, required = false,
                                  default = nil)
-  if valid_579067 != nil:
-    section.add "digestType", valid_579067
-  var valid_579068 = query.getOrDefault("alt")
-  valid_579068 = validateParameter(valid_579068, JString, required = false,
+  if valid_580092 != nil:
+    section.add "digestType", valid_580092
+  var valid_580093 = query.getOrDefault("alt")
+  valid_580093 = validateParameter(valid_580093, JString, required = false,
                                  default = newJString("json"))
-  if valid_579068 != nil:
-    section.add "alt", valid_579068
-  var valid_579069 = query.getOrDefault("userIp")
-  valid_579069 = validateParameter(valid_579069, JString, required = false,
+  if valid_580093 != nil:
+    section.add "alt", valid_580093
+  var valid_580094 = query.getOrDefault("userIp")
+  valid_580094 = validateParameter(valid_580094, JString, required = false,
                                  default = nil)
-  if valid_579069 != nil:
-    section.add "userIp", valid_579069
-  var valid_579070 = query.getOrDefault("quotaUser")
-  valid_579070 = validateParameter(valid_579070, JString, required = false,
+  if valid_580094 != nil:
+    section.add "userIp", valid_580094
+  var valid_580095 = query.getOrDefault("quotaUser")
+  valid_580095 = validateParameter(valid_580095, JString, required = false,
                                  default = nil)
-  if valid_579070 != nil:
-    section.add "quotaUser", valid_579070
-  var valid_579071 = query.getOrDefault("pageToken")
-  valid_579071 = validateParameter(valid_579071, JString, required = false,
+  if valid_580095 != nil:
+    section.add "quotaUser", valid_580095
+  var valid_580096 = query.getOrDefault("pageToken")
+  valid_580096 = validateParameter(valid_580096, JString, required = false,
                                  default = nil)
-  if valid_579071 != nil:
-    section.add "pageToken", valid_579071
-  var valid_579072 = query.getOrDefault("fields")
-  valid_579072 = validateParameter(valid_579072, JString, required = false,
+  if valid_580096 != nil:
+    section.add "pageToken", valid_580096
+  var valid_580097 = query.getOrDefault("fields")
+  valid_580097 = validateParameter(valid_580097, JString, required = false,
                                  default = nil)
-  if valid_579072 != nil:
-    section.add "fields", valid_579072
-  var valid_579073 = query.getOrDefault("maxResults")
-  valid_579073 = validateParameter(valid_579073, JInt, required = false, default = nil)
-  if valid_579073 != nil:
-    section.add "maxResults", valid_579073
+  if valid_580097 != nil:
+    section.add "fields", valid_580097
+  var valid_580098 = query.getOrDefault("maxResults")
+  valid_580098 = validateParameter(valid_580098, JInt, required = false, default = nil)
+  if valid_580098 != nil:
+    section.add "maxResults", valid_580098
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1992,20 +2047,20 @@ proc validate_DnsDnsKeysList_579060(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579074: Call_DnsDnsKeysList_579059; path: JsonNode; query: JsonNode;
+proc call*(call_580099: Call_DnsDnsKeysList_580084; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Enumerate DnsKeys to a ResourceRecordSet collection.
   ## 
-  let valid = call_579074.validator(path, query, header, formData, body)
-  let scheme = call_579074.pickScheme
+  let valid = call_580099.validator(path, query, header, formData, body)
+  let scheme = call_580099.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579074.url(scheme.get, call_579074.host, call_579074.base,
-                         call_579074.route, valid.getOrDefault("path"),
+  let url = call_580099.url(scheme.get, call_580099.host, call_580099.base,
+                         call_580099.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579074, url, valid)
+  result = hook(call_580099, url, valid)
 
-proc call*(call_579075: Call_DnsDnsKeysList_579059; managedZone: string;
+proc call*(call_580100: Call_DnsDnsKeysList_580084; managedZone: string;
           project: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; digestType: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
@@ -2036,30 +2091,30 @@ proc call*(call_579075: Call_DnsDnsKeysList_579059; managedZone: string;
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: int
   ##             : Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.
-  var path_579076 = newJObject()
-  var query_579077 = newJObject()
-  add(query_579077, "key", newJString(key))
-  add(query_579077, "prettyPrint", newJBool(prettyPrint))
-  add(query_579077, "oauth_token", newJString(oauthToken))
-  add(path_579076, "managedZone", newJString(managedZone))
-  add(query_579077, "digestType", newJString(digestType))
-  add(query_579077, "alt", newJString(alt))
-  add(query_579077, "userIp", newJString(userIp))
-  add(query_579077, "quotaUser", newJString(quotaUser))
-  add(query_579077, "pageToken", newJString(pageToken))
-  add(path_579076, "project", newJString(project))
-  add(query_579077, "fields", newJString(fields))
-  add(query_579077, "maxResults", newJInt(maxResults))
-  result = call_579075.call(path_579076, query_579077, nil, nil, nil)
+  var path_580101 = newJObject()
+  var query_580102 = newJObject()
+  add(query_580102, "key", newJString(key))
+  add(query_580102, "prettyPrint", newJBool(prettyPrint))
+  add(query_580102, "oauth_token", newJString(oauthToken))
+  add(path_580101, "managedZone", newJString(managedZone))
+  add(query_580102, "digestType", newJString(digestType))
+  add(query_580102, "alt", newJString(alt))
+  add(query_580102, "userIp", newJString(userIp))
+  add(query_580102, "quotaUser", newJString(quotaUser))
+  add(query_580102, "pageToken", newJString(pageToken))
+  add(path_580101, "project", newJString(project))
+  add(query_580102, "fields", newJString(fields))
+  add(query_580102, "maxResults", newJInt(maxResults))
+  result = call_580100.call(path_580101, query_580102, nil, nil, nil)
 
-var dnsDnsKeysList* = Call_DnsDnsKeysList_579059(name: "dnsDnsKeysList",
+var dnsDnsKeysList* = Call_DnsDnsKeysList_580084(name: "dnsDnsKeysList",
     meth: HttpMethod.HttpGet, host: "dns.googleapis.com",
     route: "/{project}/managedZones/{managedZone}/dnsKeys",
-    validator: validate_DnsDnsKeysList_579060, base: "/dns/v1beta2/projects",
-    url: url_DnsDnsKeysList_579061, schemes: {Scheme.Https})
+    validator: validate_DnsDnsKeysList_580085, base: "/dns/v1beta2/projects",
+    url: url_DnsDnsKeysList_580086, schemes: {Scheme.Https})
 type
-  Call_DnsDnsKeysGet_579078 = ref object of OpenApiRestCall_578339
-proc url_DnsDnsKeysGet_579080(protocol: Scheme; host: string; base: string;
+  Call_DnsDnsKeysGet_580103 = ref object of OpenApiRestCall_579364
+proc url_DnsDnsKeysGet_580105(protocol: Scheme; host: string; base: string;
                              route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2078,9 +2133,14 @@ proc url_DnsDnsKeysGet_579080(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsDnsKeysGet_579079(path: JsonNode; query: JsonNode; header: JsonNode;
+proc validate_DnsDnsKeysGet_580104(path: JsonNode; query: JsonNode; header: JsonNode;
                                   formData: JsonNode; body: JsonNode): JsonNode =
   ## Fetch the representation of an existing DnsKey.
   ## 
@@ -2096,21 +2156,21 @@ proc validate_DnsDnsKeysGet_579079(path: JsonNode; query: JsonNode; header: Json
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `managedZone` field"
-  var valid_579081 = path.getOrDefault("managedZone")
-  valid_579081 = validateParameter(valid_579081, JString, required = true,
+  var valid_580106 = path.getOrDefault("managedZone")
+  valid_580106 = validateParameter(valid_580106, JString, required = true,
                                  default = nil)
-  if valid_579081 != nil:
-    section.add "managedZone", valid_579081
-  var valid_579082 = path.getOrDefault("project")
-  valid_579082 = validateParameter(valid_579082, JString, required = true,
+  if valid_580106 != nil:
+    section.add "managedZone", valid_580106
+  var valid_580107 = path.getOrDefault("project")
+  valid_580107 = validateParameter(valid_580107, JString, required = true,
                                  default = nil)
-  if valid_579082 != nil:
-    section.add "project", valid_579082
-  var valid_579083 = path.getOrDefault("dnsKeyId")
-  valid_579083 = validateParameter(valid_579083, JString, required = true,
+  if valid_580107 != nil:
+    section.add "project", valid_580107
+  var valid_580108 = path.getOrDefault("dnsKeyId")
+  valid_580108 = validateParameter(valid_580108, JString, required = true,
                                  default = nil)
-  if valid_579083 != nil:
-    section.add "dnsKeyId", valid_579083
+  if valid_580108 != nil:
+    section.add "dnsKeyId", valid_580108
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2132,51 +2192,51 @@ proc validate_DnsDnsKeysGet_579079(path: JsonNode; query: JsonNode; header: Json
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579084 = query.getOrDefault("key")
-  valid_579084 = validateParameter(valid_579084, JString, required = false,
+  var valid_580109 = query.getOrDefault("key")
+  valid_580109 = validateParameter(valid_580109, JString, required = false,
                                  default = nil)
-  if valid_579084 != nil:
-    section.add "key", valid_579084
-  var valid_579085 = query.getOrDefault("prettyPrint")
-  valid_579085 = validateParameter(valid_579085, JBool, required = false,
+  if valid_580109 != nil:
+    section.add "key", valid_580109
+  var valid_580110 = query.getOrDefault("prettyPrint")
+  valid_580110 = validateParameter(valid_580110, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579085 != nil:
-    section.add "prettyPrint", valid_579085
-  var valid_579086 = query.getOrDefault("oauth_token")
-  valid_579086 = validateParameter(valid_579086, JString, required = false,
+  if valid_580110 != nil:
+    section.add "prettyPrint", valid_580110
+  var valid_580111 = query.getOrDefault("oauth_token")
+  valid_580111 = validateParameter(valid_580111, JString, required = false,
                                  default = nil)
-  if valid_579086 != nil:
-    section.add "oauth_token", valid_579086
-  var valid_579087 = query.getOrDefault("digestType")
-  valid_579087 = validateParameter(valid_579087, JString, required = false,
+  if valid_580111 != nil:
+    section.add "oauth_token", valid_580111
+  var valid_580112 = query.getOrDefault("digestType")
+  valid_580112 = validateParameter(valid_580112, JString, required = false,
                                  default = nil)
-  if valid_579087 != nil:
-    section.add "digestType", valid_579087
-  var valid_579088 = query.getOrDefault("alt")
-  valid_579088 = validateParameter(valid_579088, JString, required = false,
+  if valid_580112 != nil:
+    section.add "digestType", valid_580112
+  var valid_580113 = query.getOrDefault("alt")
+  valid_580113 = validateParameter(valid_580113, JString, required = false,
                                  default = newJString("json"))
-  if valid_579088 != nil:
-    section.add "alt", valid_579088
-  var valid_579089 = query.getOrDefault("userIp")
-  valid_579089 = validateParameter(valid_579089, JString, required = false,
+  if valid_580113 != nil:
+    section.add "alt", valid_580113
+  var valid_580114 = query.getOrDefault("userIp")
+  valid_580114 = validateParameter(valid_580114, JString, required = false,
                                  default = nil)
-  if valid_579089 != nil:
-    section.add "userIp", valid_579089
-  var valid_579090 = query.getOrDefault("quotaUser")
-  valid_579090 = validateParameter(valid_579090, JString, required = false,
+  if valid_580114 != nil:
+    section.add "userIp", valid_580114
+  var valid_580115 = query.getOrDefault("quotaUser")
+  valid_580115 = validateParameter(valid_580115, JString, required = false,
                                  default = nil)
-  if valid_579090 != nil:
-    section.add "quotaUser", valid_579090
-  var valid_579091 = query.getOrDefault("clientOperationId")
-  valid_579091 = validateParameter(valid_579091, JString, required = false,
+  if valid_580115 != nil:
+    section.add "quotaUser", valid_580115
+  var valid_580116 = query.getOrDefault("clientOperationId")
+  valid_580116 = validateParameter(valid_580116, JString, required = false,
                                  default = nil)
-  if valid_579091 != nil:
-    section.add "clientOperationId", valid_579091
-  var valid_579092 = query.getOrDefault("fields")
-  valid_579092 = validateParameter(valid_579092, JString, required = false,
+  if valid_580116 != nil:
+    section.add "clientOperationId", valid_580116
+  var valid_580117 = query.getOrDefault("fields")
+  valid_580117 = validateParameter(valid_580117, JString, required = false,
                                  default = nil)
-  if valid_579092 != nil:
-    section.add "fields", valid_579092
+  if valid_580117 != nil:
+    section.add "fields", valid_580117
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2185,20 +2245,20 @@ proc validate_DnsDnsKeysGet_579079(path: JsonNode; query: JsonNode; header: Json
   if body != nil:
     result.add "body", body
 
-proc call*(call_579093: Call_DnsDnsKeysGet_579078; path: JsonNode; query: JsonNode;
+proc call*(call_580118: Call_DnsDnsKeysGet_580103; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Fetch the representation of an existing DnsKey.
   ## 
-  let valid = call_579093.validator(path, query, header, formData, body)
-  let scheme = call_579093.pickScheme
+  let valid = call_580118.validator(path, query, header, formData, body)
+  let scheme = call_580118.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579093.url(scheme.get, call_579093.host, call_579093.base,
-                         call_579093.route, valid.getOrDefault("path"),
+  let url = call_580118.url(scheme.get, call_580118.host, call_580118.base,
+                         call_580118.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579093, url, valid)
+  result = hook(call_580118, url, valid)
 
-proc call*(call_579094: Call_DnsDnsKeysGet_579078; managedZone: string;
+proc call*(call_580119: Call_DnsDnsKeysGet_580103; managedZone: string;
           project: string; dnsKeyId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; digestType: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; clientOperationId: string = "";
@@ -2229,30 +2289,30 @@ proc call*(call_579094: Call_DnsDnsKeysGet_579078; managedZone: string;
   ##           : The identifier of the requested DnsKey.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579095 = newJObject()
-  var query_579096 = newJObject()
-  add(query_579096, "key", newJString(key))
-  add(query_579096, "prettyPrint", newJBool(prettyPrint))
-  add(query_579096, "oauth_token", newJString(oauthToken))
-  add(path_579095, "managedZone", newJString(managedZone))
-  add(query_579096, "digestType", newJString(digestType))
-  add(query_579096, "alt", newJString(alt))
-  add(query_579096, "userIp", newJString(userIp))
-  add(query_579096, "quotaUser", newJString(quotaUser))
-  add(path_579095, "project", newJString(project))
-  add(query_579096, "clientOperationId", newJString(clientOperationId))
-  add(path_579095, "dnsKeyId", newJString(dnsKeyId))
-  add(query_579096, "fields", newJString(fields))
-  result = call_579094.call(path_579095, query_579096, nil, nil, nil)
+  var path_580120 = newJObject()
+  var query_580121 = newJObject()
+  add(query_580121, "key", newJString(key))
+  add(query_580121, "prettyPrint", newJBool(prettyPrint))
+  add(query_580121, "oauth_token", newJString(oauthToken))
+  add(path_580120, "managedZone", newJString(managedZone))
+  add(query_580121, "digestType", newJString(digestType))
+  add(query_580121, "alt", newJString(alt))
+  add(query_580121, "userIp", newJString(userIp))
+  add(query_580121, "quotaUser", newJString(quotaUser))
+  add(path_580120, "project", newJString(project))
+  add(query_580121, "clientOperationId", newJString(clientOperationId))
+  add(path_580120, "dnsKeyId", newJString(dnsKeyId))
+  add(query_580121, "fields", newJString(fields))
+  result = call_580119.call(path_580120, query_580121, nil, nil, nil)
 
-var dnsDnsKeysGet* = Call_DnsDnsKeysGet_579078(name: "dnsDnsKeysGet",
+var dnsDnsKeysGet* = Call_DnsDnsKeysGet_580103(name: "dnsDnsKeysGet",
     meth: HttpMethod.HttpGet, host: "dns.googleapis.com",
     route: "/{project}/managedZones/{managedZone}/dnsKeys/{dnsKeyId}",
-    validator: validate_DnsDnsKeysGet_579079, base: "/dns/v1beta2/projects",
-    url: url_DnsDnsKeysGet_579080, schemes: {Scheme.Https})
+    validator: validate_DnsDnsKeysGet_580104, base: "/dns/v1beta2/projects",
+    url: url_DnsDnsKeysGet_580105, schemes: {Scheme.Https})
 type
-  Call_DnsManagedZoneOperationsList_579097 = ref object of OpenApiRestCall_578339
-proc url_DnsManagedZoneOperationsList_579099(protocol: Scheme; host: string;
+  Call_DnsManagedZoneOperationsList_580122 = ref object of OpenApiRestCall_579364
+proc url_DnsManagedZoneOperationsList_580124(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2269,9 +2329,14 @@ proc url_DnsManagedZoneOperationsList_579099(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsManagedZoneOperationsList_579098(path: JsonNode; query: JsonNode;
+proc validate_DnsManagedZoneOperationsList_580123(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Enumerate Operations for the given ManagedZone.
   ## 
@@ -2285,16 +2350,16 @@ proc validate_DnsManagedZoneOperationsList_579098(path: JsonNode; query: JsonNod
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `managedZone` field"
-  var valid_579100 = path.getOrDefault("managedZone")
-  valid_579100 = validateParameter(valid_579100, JString, required = true,
+  var valid_580125 = path.getOrDefault("managedZone")
+  valid_580125 = validateParameter(valid_580125, JString, required = true,
                                  default = nil)
-  if valid_579100 != nil:
-    section.add "managedZone", valid_579100
-  var valid_579101 = path.getOrDefault("project")
-  valid_579101 = validateParameter(valid_579101, JString, required = true,
+  if valid_580125 != nil:
+    section.add "managedZone", valid_580125
+  var valid_580126 = path.getOrDefault("project")
+  valid_580126 = validateParameter(valid_580126, JString, required = true,
                                  default = nil)
-  if valid_579101 != nil:
-    section.add "project", valid_579101
+  if valid_580126 != nil:
+    section.add "project", valid_580126
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2318,55 +2383,55 @@ proc validate_DnsManagedZoneOperationsList_579098(path: JsonNode; query: JsonNod
   ##   maxResults: JInt
   ##             : Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.
   section = newJObject()
-  var valid_579102 = query.getOrDefault("key")
-  valid_579102 = validateParameter(valid_579102, JString, required = false,
+  var valid_580127 = query.getOrDefault("key")
+  valid_580127 = validateParameter(valid_580127, JString, required = false,
                                  default = nil)
-  if valid_579102 != nil:
-    section.add "key", valid_579102
-  var valid_579103 = query.getOrDefault("prettyPrint")
-  valid_579103 = validateParameter(valid_579103, JBool, required = false,
+  if valid_580127 != nil:
+    section.add "key", valid_580127
+  var valid_580128 = query.getOrDefault("prettyPrint")
+  valid_580128 = validateParameter(valid_580128, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579103 != nil:
-    section.add "prettyPrint", valid_579103
-  var valid_579104 = query.getOrDefault("oauth_token")
-  valid_579104 = validateParameter(valid_579104, JString, required = false,
+  if valid_580128 != nil:
+    section.add "prettyPrint", valid_580128
+  var valid_580129 = query.getOrDefault("oauth_token")
+  valid_580129 = validateParameter(valid_580129, JString, required = false,
                                  default = nil)
-  if valid_579104 != nil:
-    section.add "oauth_token", valid_579104
-  var valid_579105 = query.getOrDefault("sortBy")
-  valid_579105 = validateParameter(valid_579105, JString, required = false,
+  if valid_580129 != nil:
+    section.add "oauth_token", valid_580129
+  var valid_580130 = query.getOrDefault("sortBy")
+  valid_580130 = validateParameter(valid_580130, JString, required = false,
                                  default = newJString("startTime"))
-  if valid_579105 != nil:
-    section.add "sortBy", valid_579105
-  var valid_579106 = query.getOrDefault("alt")
-  valid_579106 = validateParameter(valid_579106, JString, required = false,
+  if valid_580130 != nil:
+    section.add "sortBy", valid_580130
+  var valid_580131 = query.getOrDefault("alt")
+  valid_580131 = validateParameter(valid_580131, JString, required = false,
                                  default = newJString("json"))
-  if valid_579106 != nil:
-    section.add "alt", valid_579106
-  var valid_579107 = query.getOrDefault("userIp")
-  valid_579107 = validateParameter(valid_579107, JString, required = false,
+  if valid_580131 != nil:
+    section.add "alt", valid_580131
+  var valid_580132 = query.getOrDefault("userIp")
+  valid_580132 = validateParameter(valid_580132, JString, required = false,
                                  default = nil)
-  if valid_579107 != nil:
-    section.add "userIp", valid_579107
-  var valid_579108 = query.getOrDefault("quotaUser")
-  valid_579108 = validateParameter(valid_579108, JString, required = false,
+  if valid_580132 != nil:
+    section.add "userIp", valid_580132
+  var valid_580133 = query.getOrDefault("quotaUser")
+  valid_580133 = validateParameter(valid_580133, JString, required = false,
                                  default = nil)
-  if valid_579108 != nil:
-    section.add "quotaUser", valid_579108
-  var valid_579109 = query.getOrDefault("pageToken")
-  valid_579109 = validateParameter(valid_579109, JString, required = false,
+  if valid_580133 != nil:
+    section.add "quotaUser", valid_580133
+  var valid_580134 = query.getOrDefault("pageToken")
+  valid_580134 = validateParameter(valid_580134, JString, required = false,
                                  default = nil)
-  if valid_579109 != nil:
-    section.add "pageToken", valid_579109
-  var valid_579110 = query.getOrDefault("fields")
-  valid_579110 = validateParameter(valid_579110, JString, required = false,
+  if valid_580134 != nil:
+    section.add "pageToken", valid_580134
+  var valid_580135 = query.getOrDefault("fields")
+  valid_580135 = validateParameter(valid_580135, JString, required = false,
                                  default = nil)
-  if valid_579110 != nil:
-    section.add "fields", valid_579110
-  var valid_579111 = query.getOrDefault("maxResults")
-  valid_579111 = validateParameter(valid_579111, JInt, required = false, default = nil)
-  if valid_579111 != nil:
-    section.add "maxResults", valid_579111
+  if valid_580135 != nil:
+    section.add "fields", valid_580135
+  var valid_580136 = query.getOrDefault("maxResults")
+  valid_580136 = validateParameter(valid_580136, JInt, required = false, default = nil)
+  if valid_580136 != nil:
+    section.add "maxResults", valid_580136
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2375,20 +2440,20 @@ proc validate_DnsManagedZoneOperationsList_579098(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_579112: Call_DnsManagedZoneOperationsList_579097; path: JsonNode;
+proc call*(call_580137: Call_DnsManagedZoneOperationsList_580122; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Enumerate Operations for the given ManagedZone.
   ## 
-  let valid = call_579112.validator(path, query, header, formData, body)
-  let scheme = call_579112.pickScheme
+  let valid = call_580137.validator(path, query, header, formData, body)
+  let scheme = call_580137.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579112.url(scheme.get, call_579112.host, call_579112.base,
-                         call_579112.route, valid.getOrDefault("path"),
+  let url = call_580137.url(scheme.get, call_580137.host, call_580137.base,
+                         call_580137.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579112, url, valid)
+  result = hook(call_580137, url, valid)
 
-proc call*(call_579113: Call_DnsManagedZoneOperationsList_579097;
+proc call*(call_580138: Call_DnsManagedZoneOperationsList_580122;
           managedZone: string; project: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = "";
           sortBy: string = "startTime"; alt: string = "json"; userIp: string = "";
@@ -2420,32 +2485,32 @@ proc call*(call_579113: Call_DnsManagedZoneOperationsList_579097;
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: int
   ##             : Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.
-  var path_579114 = newJObject()
-  var query_579115 = newJObject()
-  add(query_579115, "key", newJString(key))
-  add(query_579115, "prettyPrint", newJBool(prettyPrint))
-  add(query_579115, "oauth_token", newJString(oauthToken))
-  add(path_579114, "managedZone", newJString(managedZone))
-  add(query_579115, "sortBy", newJString(sortBy))
-  add(query_579115, "alt", newJString(alt))
-  add(query_579115, "userIp", newJString(userIp))
-  add(query_579115, "quotaUser", newJString(quotaUser))
-  add(query_579115, "pageToken", newJString(pageToken))
-  add(path_579114, "project", newJString(project))
-  add(query_579115, "fields", newJString(fields))
-  add(query_579115, "maxResults", newJInt(maxResults))
-  result = call_579113.call(path_579114, query_579115, nil, nil, nil)
+  var path_580139 = newJObject()
+  var query_580140 = newJObject()
+  add(query_580140, "key", newJString(key))
+  add(query_580140, "prettyPrint", newJBool(prettyPrint))
+  add(query_580140, "oauth_token", newJString(oauthToken))
+  add(path_580139, "managedZone", newJString(managedZone))
+  add(query_580140, "sortBy", newJString(sortBy))
+  add(query_580140, "alt", newJString(alt))
+  add(query_580140, "userIp", newJString(userIp))
+  add(query_580140, "quotaUser", newJString(quotaUser))
+  add(query_580140, "pageToken", newJString(pageToken))
+  add(path_580139, "project", newJString(project))
+  add(query_580140, "fields", newJString(fields))
+  add(query_580140, "maxResults", newJInt(maxResults))
+  result = call_580138.call(path_580139, query_580140, nil, nil, nil)
 
-var dnsManagedZoneOperationsList* = Call_DnsManagedZoneOperationsList_579097(
+var dnsManagedZoneOperationsList* = Call_DnsManagedZoneOperationsList_580122(
     name: "dnsManagedZoneOperationsList", meth: HttpMethod.HttpGet,
     host: "dns.googleapis.com",
     route: "/{project}/managedZones/{managedZone}/operations",
-    validator: validate_DnsManagedZoneOperationsList_579098,
-    base: "/dns/v1beta2/projects", url: url_DnsManagedZoneOperationsList_579099,
+    validator: validate_DnsManagedZoneOperationsList_580123,
+    base: "/dns/v1beta2/projects", url: url_DnsManagedZoneOperationsList_580124,
     schemes: {Scheme.Https})
 type
-  Call_DnsManagedZoneOperationsGet_579116 = ref object of OpenApiRestCall_578339
-proc url_DnsManagedZoneOperationsGet_579118(protocol: Scheme; host: string;
+  Call_DnsManagedZoneOperationsGet_580141 = ref object of OpenApiRestCall_579364
+proc url_DnsManagedZoneOperationsGet_580143(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2464,9 +2529,14 @@ proc url_DnsManagedZoneOperationsGet_579118(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsManagedZoneOperationsGet_579117(path: JsonNode; query: JsonNode;
+proc validate_DnsManagedZoneOperationsGet_580142(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Fetch the representation of an existing Operation.
   ## 
@@ -2482,21 +2552,21 @@ proc validate_DnsManagedZoneOperationsGet_579117(path: JsonNode; query: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `managedZone` field"
-  var valid_579119 = path.getOrDefault("managedZone")
-  valid_579119 = validateParameter(valid_579119, JString, required = true,
+  var valid_580144 = path.getOrDefault("managedZone")
+  valid_580144 = validateParameter(valid_580144, JString, required = true,
                                  default = nil)
-  if valid_579119 != nil:
-    section.add "managedZone", valid_579119
-  var valid_579120 = path.getOrDefault("operation")
-  valid_579120 = validateParameter(valid_579120, JString, required = true,
+  if valid_580144 != nil:
+    section.add "managedZone", valid_580144
+  var valid_580145 = path.getOrDefault("operation")
+  valid_580145 = validateParameter(valid_580145, JString, required = true,
                                  default = nil)
-  if valid_579120 != nil:
-    section.add "operation", valid_579120
-  var valid_579121 = path.getOrDefault("project")
-  valid_579121 = validateParameter(valid_579121, JString, required = true,
+  if valid_580145 != nil:
+    section.add "operation", valid_580145
+  var valid_580146 = path.getOrDefault("project")
+  valid_580146 = validateParameter(valid_580146, JString, required = true,
                                  default = nil)
-  if valid_579121 != nil:
-    section.add "project", valid_579121
+  if valid_580146 != nil:
+    section.add "project", valid_580146
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2516,46 +2586,46 @@ proc validate_DnsManagedZoneOperationsGet_579117(path: JsonNode; query: JsonNode
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579122 = query.getOrDefault("key")
-  valid_579122 = validateParameter(valid_579122, JString, required = false,
+  var valid_580147 = query.getOrDefault("key")
+  valid_580147 = validateParameter(valid_580147, JString, required = false,
                                  default = nil)
-  if valid_579122 != nil:
-    section.add "key", valid_579122
-  var valid_579123 = query.getOrDefault("prettyPrint")
-  valid_579123 = validateParameter(valid_579123, JBool, required = false,
+  if valid_580147 != nil:
+    section.add "key", valid_580147
+  var valid_580148 = query.getOrDefault("prettyPrint")
+  valid_580148 = validateParameter(valid_580148, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579123 != nil:
-    section.add "prettyPrint", valid_579123
-  var valid_579124 = query.getOrDefault("oauth_token")
-  valid_579124 = validateParameter(valid_579124, JString, required = false,
+  if valid_580148 != nil:
+    section.add "prettyPrint", valid_580148
+  var valid_580149 = query.getOrDefault("oauth_token")
+  valid_580149 = validateParameter(valid_580149, JString, required = false,
                                  default = nil)
-  if valid_579124 != nil:
-    section.add "oauth_token", valid_579124
-  var valid_579125 = query.getOrDefault("alt")
-  valid_579125 = validateParameter(valid_579125, JString, required = false,
+  if valid_580149 != nil:
+    section.add "oauth_token", valid_580149
+  var valid_580150 = query.getOrDefault("alt")
+  valid_580150 = validateParameter(valid_580150, JString, required = false,
                                  default = newJString("json"))
-  if valid_579125 != nil:
-    section.add "alt", valid_579125
-  var valid_579126 = query.getOrDefault("userIp")
-  valid_579126 = validateParameter(valid_579126, JString, required = false,
+  if valid_580150 != nil:
+    section.add "alt", valid_580150
+  var valid_580151 = query.getOrDefault("userIp")
+  valid_580151 = validateParameter(valid_580151, JString, required = false,
                                  default = nil)
-  if valid_579126 != nil:
-    section.add "userIp", valid_579126
-  var valid_579127 = query.getOrDefault("quotaUser")
-  valid_579127 = validateParameter(valid_579127, JString, required = false,
+  if valid_580151 != nil:
+    section.add "userIp", valid_580151
+  var valid_580152 = query.getOrDefault("quotaUser")
+  valid_580152 = validateParameter(valid_580152, JString, required = false,
                                  default = nil)
-  if valid_579127 != nil:
-    section.add "quotaUser", valid_579127
-  var valid_579128 = query.getOrDefault("clientOperationId")
-  valid_579128 = validateParameter(valid_579128, JString, required = false,
+  if valid_580152 != nil:
+    section.add "quotaUser", valid_580152
+  var valid_580153 = query.getOrDefault("clientOperationId")
+  valid_580153 = validateParameter(valid_580153, JString, required = false,
                                  default = nil)
-  if valid_579128 != nil:
-    section.add "clientOperationId", valid_579128
-  var valid_579129 = query.getOrDefault("fields")
-  valid_579129 = validateParameter(valid_579129, JString, required = false,
+  if valid_580153 != nil:
+    section.add "clientOperationId", valid_580153
+  var valid_580154 = query.getOrDefault("fields")
+  valid_580154 = validateParameter(valid_580154, JString, required = false,
                                  default = nil)
-  if valid_579129 != nil:
-    section.add "fields", valid_579129
+  if valid_580154 != nil:
+    section.add "fields", valid_580154
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2564,20 +2634,20 @@ proc validate_DnsManagedZoneOperationsGet_579117(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_579130: Call_DnsManagedZoneOperationsGet_579116; path: JsonNode;
+proc call*(call_580155: Call_DnsManagedZoneOperationsGet_580141; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Fetch the representation of an existing Operation.
   ## 
-  let valid = call_579130.validator(path, query, header, formData, body)
-  let scheme = call_579130.pickScheme
+  let valid = call_580155.validator(path, query, header, formData, body)
+  let scheme = call_580155.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579130.url(scheme.get, call_579130.host, call_579130.base,
-                         call_579130.route, valid.getOrDefault("path"),
+  let url = call_580155.url(scheme.get, call_580155.host, call_580155.base,
+                         call_580155.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579130, url, valid)
+  result = hook(call_580155, url, valid)
 
-proc call*(call_579131: Call_DnsManagedZoneOperationsGet_579116;
+proc call*(call_580156: Call_DnsManagedZoneOperationsGet_580141;
           managedZone: string; operation: string; project: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; clientOperationId: string = "";
@@ -2606,31 +2676,31 @@ proc call*(call_579131: Call_DnsManagedZoneOperationsGet_579116;
   ##                    : For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579132 = newJObject()
-  var query_579133 = newJObject()
-  add(query_579133, "key", newJString(key))
-  add(query_579133, "prettyPrint", newJBool(prettyPrint))
-  add(query_579133, "oauth_token", newJString(oauthToken))
-  add(path_579132, "managedZone", newJString(managedZone))
-  add(path_579132, "operation", newJString(operation))
-  add(query_579133, "alt", newJString(alt))
-  add(query_579133, "userIp", newJString(userIp))
-  add(query_579133, "quotaUser", newJString(quotaUser))
-  add(path_579132, "project", newJString(project))
-  add(query_579133, "clientOperationId", newJString(clientOperationId))
-  add(query_579133, "fields", newJString(fields))
-  result = call_579131.call(path_579132, query_579133, nil, nil, nil)
+  var path_580157 = newJObject()
+  var query_580158 = newJObject()
+  add(query_580158, "key", newJString(key))
+  add(query_580158, "prettyPrint", newJBool(prettyPrint))
+  add(query_580158, "oauth_token", newJString(oauthToken))
+  add(path_580157, "managedZone", newJString(managedZone))
+  add(path_580157, "operation", newJString(operation))
+  add(query_580158, "alt", newJString(alt))
+  add(query_580158, "userIp", newJString(userIp))
+  add(query_580158, "quotaUser", newJString(quotaUser))
+  add(path_580157, "project", newJString(project))
+  add(query_580158, "clientOperationId", newJString(clientOperationId))
+  add(query_580158, "fields", newJString(fields))
+  result = call_580156.call(path_580157, query_580158, nil, nil, nil)
 
-var dnsManagedZoneOperationsGet* = Call_DnsManagedZoneOperationsGet_579116(
+var dnsManagedZoneOperationsGet* = Call_DnsManagedZoneOperationsGet_580141(
     name: "dnsManagedZoneOperationsGet", meth: HttpMethod.HttpGet,
     host: "dns.googleapis.com",
     route: "/{project}/managedZones/{managedZone}/operations/{operation}",
-    validator: validate_DnsManagedZoneOperationsGet_579117,
-    base: "/dns/v1beta2/projects", url: url_DnsManagedZoneOperationsGet_579118,
+    validator: validate_DnsManagedZoneOperationsGet_580142,
+    base: "/dns/v1beta2/projects", url: url_DnsManagedZoneOperationsGet_580143,
     schemes: {Scheme.Https})
 type
-  Call_DnsResourceRecordSetsList_579134 = ref object of OpenApiRestCall_578339
-proc url_DnsResourceRecordSetsList_579136(protocol: Scheme; host: string;
+  Call_DnsResourceRecordSetsList_580159 = ref object of OpenApiRestCall_579364
+proc url_DnsResourceRecordSetsList_580161(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2647,9 +2717,14 @@ proc url_DnsResourceRecordSetsList_579136(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsResourceRecordSetsList_579135(path: JsonNode; query: JsonNode;
+proc validate_DnsResourceRecordSetsList_580160(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Enumerate ResourceRecordSets that have been created but not yet deleted.
   ## 
@@ -2663,16 +2738,16 @@ proc validate_DnsResourceRecordSetsList_579135(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `managedZone` field"
-  var valid_579137 = path.getOrDefault("managedZone")
-  valid_579137 = validateParameter(valid_579137, JString, required = true,
+  var valid_580162 = path.getOrDefault("managedZone")
+  valid_580162 = validateParameter(valid_580162, JString, required = true,
                                  default = nil)
-  if valid_579137 != nil:
-    section.add "managedZone", valid_579137
-  var valid_579138 = path.getOrDefault("project")
-  valid_579138 = validateParameter(valid_579138, JString, required = true,
+  if valid_580162 != nil:
+    section.add "managedZone", valid_580162
+  var valid_580163 = path.getOrDefault("project")
+  valid_580163 = validateParameter(valid_580163, JString, required = true,
                                  default = nil)
-  if valid_579138 != nil:
-    section.add "project", valid_579138
+  if valid_580163 != nil:
+    section.add "project", valid_580163
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2698,60 +2773,60 @@ proc validate_DnsResourceRecordSetsList_579135(path: JsonNode; query: JsonNode;
   ##   maxResults: JInt
   ##             : Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.
   section = newJObject()
-  var valid_579139 = query.getOrDefault("key")
-  valid_579139 = validateParameter(valid_579139, JString, required = false,
+  var valid_580164 = query.getOrDefault("key")
+  valid_580164 = validateParameter(valid_580164, JString, required = false,
                                  default = nil)
-  if valid_579139 != nil:
-    section.add "key", valid_579139
-  var valid_579140 = query.getOrDefault("prettyPrint")
-  valid_579140 = validateParameter(valid_579140, JBool, required = false,
+  if valid_580164 != nil:
+    section.add "key", valid_580164
+  var valid_580165 = query.getOrDefault("prettyPrint")
+  valid_580165 = validateParameter(valid_580165, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579140 != nil:
-    section.add "prettyPrint", valid_579140
-  var valid_579141 = query.getOrDefault("oauth_token")
-  valid_579141 = validateParameter(valid_579141, JString, required = false,
+  if valid_580165 != nil:
+    section.add "prettyPrint", valid_580165
+  var valid_580166 = query.getOrDefault("oauth_token")
+  valid_580166 = validateParameter(valid_580166, JString, required = false,
                                  default = nil)
-  if valid_579141 != nil:
-    section.add "oauth_token", valid_579141
-  var valid_579142 = query.getOrDefault("name")
-  valid_579142 = validateParameter(valid_579142, JString, required = false,
+  if valid_580166 != nil:
+    section.add "oauth_token", valid_580166
+  var valid_580167 = query.getOrDefault("name")
+  valid_580167 = validateParameter(valid_580167, JString, required = false,
                                  default = nil)
-  if valid_579142 != nil:
-    section.add "name", valid_579142
-  var valid_579143 = query.getOrDefault("alt")
-  valid_579143 = validateParameter(valid_579143, JString, required = false,
+  if valid_580167 != nil:
+    section.add "name", valid_580167
+  var valid_580168 = query.getOrDefault("alt")
+  valid_580168 = validateParameter(valid_580168, JString, required = false,
                                  default = newJString("json"))
-  if valid_579143 != nil:
-    section.add "alt", valid_579143
-  var valid_579144 = query.getOrDefault("userIp")
-  valid_579144 = validateParameter(valid_579144, JString, required = false,
+  if valid_580168 != nil:
+    section.add "alt", valid_580168
+  var valid_580169 = query.getOrDefault("userIp")
+  valid_580169 = validateParameter(valid_580169, JString, required = false,
                                  default = nil)
-  if valid_579144 != nil:
-    section.add "userIp", valid_579144
-  var valid_579145 = query.getOrDefault("quotaUser")
-  valid_579145 = validateParameter(valid_579145, JString, required = false,
+  if valid_580169 != nil:
+    section.add "userIp", valid_580169
+  var valid_580170 = query.getOrDefault("quotaUser")
+  valid_580170 = validateParameter(valid_580170, JString, required = false,
                                  default = nil)
-  if valid_579145 != nil:
-    section.add "quotaUser", valid_579145
-  var valid_579146 = query.getOrDefault("type")
-  valid_579146 = validateParameter(valid_579146, JString, required = false,
+  if valid_580170 != nil:
+    section.add "quotaUser", valid_580170
+  var valid_580171 = query.getOrDefault("type")
+  valid_580171 = validateParameter(valid_580171, JString, required = false,
                                  default = nil)
-  if valid_579146 != nil:
-    section.add "type", valid_579146
-  var valid_579147 = query.getOrDefault("pageToken")
-  valid_579147 = validateParameter(valid_579147, JString, required = false,
+  if valid_580171 != nil:
+    section.add "type", valid_580171
+  var valid_580172 = query.getOrDefault("pageToken")
+  valid_580172 = validateParameter(valid_580172, JString, required = false,
                                  default = nil)
-  if valid_579147 != nil:
-    section.add "pageToken", valid_579147
-  var valid_579148 = query.getOrDefault("fields")
-  valid_579148 = validateParameter(valid_579148, JString, required = false,
+  if valid_580172 != nil:
+    section.add "pageToken", valid_580172
+  var valid_580173 = query.getOrDefault("fields")
+  valid_580173 = validateParameter(valid_580173, JString, required = false,
                                  default = nil)
-  if valid_579148 != nil:
-    section.add "fields", valid_579148
-  var valid_579149 = query.getOrDefault("maxResults")
-  valid_579149 = validateParameter(valid_579149, JInt, required = false, default = nil)
-  if valid_579149 != nil:
-    section.add "maxResults", valid_579149
+  if valid_580173 != nil:
+    section.add "fields", valid_580173
+  var valid_580174 = query.getOrDefault("maxResults")
+  valid_580174 = validateParameter(valid_580174, JInt, required = false, default = nil)
+  if valid_580174 != nil:
+    section.add "maxResults", valid_580174
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2760,20 +2835,20 @@ proc validate_DnsResourceRecordSetsList_579135(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579150: Call_DnsResourceRecordSetsList_579134; path: JsonNode;
+proc call*(call_580175: Call_DnsResourceRecordSetsList_580159; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Enumerate ResourceRecordSets that have been created but not yet deleted.
   ## 
-  let valid = call_579150.validator(path, query, header, formData, body)
-  let scheme = call_579150.pickScheme
+  let valid = call_580175.validator(path, query, header, formData, body)
+  let scheme = call_580175.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579150.url(scheme.get, call_579150.host, call_579150.base,
-                         call_579150.route, valid.getOrDefault("path"),
+  let url = call_580175.url(scheme.get, call_580175.host, call_580175.base,
+                         call_580175.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579150, url, valid)
+  result = hook(call_580175, url, valid)
 
-proc call*(call_579151: Call_DnsResourceRecordSetsList_579134; managedZone: string;
+proc call*(call_580176: Call_DnsResourceRecordSetsList_580159; managedZone: string;
           project: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; name: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; `type`: string = "";
@@ -2806,33 +2881,33 @@ proc call*(call_579151: Call_DnsResourceRecordSetsList_579134; managedZone: stri
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: int
   ##             : Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.
-  var path_579152 = newJObject()
-  var query_579153 = newJObject()
-  add(query_579153, "key", newJString(key))
-  add(query_579153, "prettyPrint", newJBool(prettyPrint))
-  add(query_579153, "oauth_token", newJString(oauthToken))
-  add(query_579153, "name", newJString(name))
-  add(path_579152, "managedZone", newJString(managedZone))
-  add(query_579153, "alt", newJString(alt))
-  add(query_579153, "userIp", newJString(userIp))
-  add(query_579153, "quotaUser", newJString(quotaUser))
-  add(query_579153, "type", newJString(`type`))
-  add(query_579153, "pageToken", newJString(pageToken))
-  add(path_579152, "project", newJString(project))
-  add(query_579153, "fields", newJString(fields))
-  add(query_579153, "maxResults", newJInt(maxResults))
-  result = call_579151.call(path_579152, query_579153, nil, nil, nil)
+  var path_580177 = newJObject()
+  var query_580178 = newJObject()
+  add(query_580178, "key", newJString(key))
+  add(query_580178, "prettyPrint", newJBool(prettyPrint))
+  add(query_580178, "oauth_token", newJString(oauthToken))
+  add(query_580178, "name", newJString(name))
+  add(path_580177, "managedZone", newJString(managedZone))
+  add(query_580178, "alt", newJString(alt))
+  add(query_580178, "userIp", newJString(userIp))
+  add(query_580178, "quotaUser", newJString(quotaUser))
+  add(query_580178, "type", newJString(`type`))
+  add(query_580178, "pageToken", newJString(pageToken))
+  add(path_580177, "project", newJString(project))
+  add(query_580178, "fields", newJString(fields))
+  add(query_580178, "maxResults", newJInt(maxResults))
+  result = call_580176.call(path_580177, query_580178, nil, nil, nil)
 
-var dnsResourceRecordSetsList* = Call_DnsResourceRecordSetsList_579134(
+var dnsResourceRecordSetsList* = Call_DnsResourceRecordSetsList_580159(
     name: "dnsResourceRecordSetsList", meth: HttpMethod.HttpGet,
     host: "dns.googleapis.com",
     route: "/{project}/managedZones/{managedZone}/rrsets",
-    validator: validate_DnsResourceRecordSetsList_579135,
-    base: "/dns/v1beta2/projects", url: url_DnsResourceRecordSetsList_579136,
+    validator: validate_DnsResourceRecordSetsList_580160,
+    base: "/dns/v1beta2/projects", url: url_DnsResourceRecordSetsList_580161,
     schemes: {Scheme.Https})
 type
-  Call_DnsPoliciesCreate_579171 = ref object of OpenApiRestCall_578339
-proc url_DnsPoliciesCreate_579173(protocol: Scheme; host: string; base: string;
+  Call_DnsPoliciesCreate_580196 = ref object of OpenApiRestCall_579364
+proc url_DnsPoliciesCreate_580198(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2846,9 +2921,14 @@ proc url_DnsPoliciesCreate_579173(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsPoliciesCreate_579172(path: JsonNode; query: JsonNode;
+proc validate_DnsPoliciesCreate_580197(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Create a new Policy
@@ -2860,11 +2940,11 @@ proc validate_DnsPoliciesCreate_579172(path: JsonNode; query: JsonNode;
   ##          : Identifies the project addressed by this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_579174 = path.getOrDefault("project")
-  valid_579174 = validateParameter(valid_579174, JString, required = true,
+  var valid_580199 = path.getOrDefault("project")
+  valid_580199 = validateParameter(valid_580199, JString, required = true,
                                  default = nil)
-  if valid_579174 != nil:
-    section.add "project", valid_579174
+  if valid_580199 != nil:
+    section.add "project", valid_580199
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2884,46 +2964,46 @@ proc validate_DnsPoliciesCreate_579172(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579175 = query.getOrDefault("key")
-  valid_579175 = validateParameter(valid_579175, JString, required = false,
+  var valid_580200 = query.getOrDefault("key")
+  valid_580200 = validateParameter(valid_580200, JString, required = false,
                                  default = nil)
-  if valid_579175 != nil:
-    section.add "key", valid_579175
-  var valid_579176 = query.getOrDefault("prettyPrint")
-  valid_579176 = validateParameter(valid_579176, JBool, required = false,
+  if valid_580200 != nil:
+    section.add "key", valid_580200
+  var valid_580201 = query.getOrDefault("prettyPrint")
+  valid_580201 = validateParameter(valid_580201, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579176 != nil:
-    section.add "prettyPrint", valid_579176
-  var valid_579177 = query.getOrDefault("oauth_token")
-  valid_579177 = validateParameter(valid_579177, JString, required = false,
+  if valid_580201 != nil:
+    section.add "prettyPrint", valid_580201
+  var valid_580202 = query.getOrDefault("oauth_token")
+  valid_580202 = validateParameter(valid_580202, JString, required = false,
                                  default = nil)
-  if valid_579177 != nil:
-    section.add "oauth_token", valid_579177
-  var valid_579178 = query.getOrDefault("alt")
-  valid_579178 = validateParameter(valid_579178, JString, required = false,
+  if valid_580202 != nil:
+    section.add "oauth_token", valid_580202
+  var valid_580203 = query.getOrDefault("alt")
+  valid_580203 = validateParameter(valid_580203, JString, required = false,
                                  default = newJString("json"))
-  if valid_579178 != nil:
-    section.add "alt", valid_579178
-  var valid_579179 = query.getOrDefault("userIp")
-  valid_579179 = validateParameter(valid_579179, JString, required = false,
+  if valid_580203 != nil:
+    section.add "alt", valid_580203
+  var valid_580204 = query.getOrDefault("userIp")
+  valid_580204 = validateParameter(valid_580204, JString, required = false,
                                  default = nil)
-  if valid_579179 != nil:
-    section.add "userIp", valid_579179
-  var valid_579180 = query.getOrDefault("quotaUser")
-  valid_579180 = validateParameter(valid_579180, JString, required = false,
+  if valid_580204 != nil:
+    section.add "userIp", valid_580204
+  var valid_580205 = query.getOrDefault("quotaUser")
+  valid_580205 = validateParameter(valid_580205, JString, required = false,
                                  default = nil)
-  if valid_579180 != nil:
-    section.add "quotaUser", valid_579180
-  var valid_579181 = query.getOrDefault("clientOperationId")
-  valid_579181 = validateParameter(valid_579181, JString, required = false,
+  if valid_580205 != nil:
+    section.add "quotaUser", valid_580205
+  var valid_580206 = query.getOrDefault("clientOperationId")
+  valid_580206 = validateParameter(valid_580206, JString, required = false,
                                  default = nil)
-  if valid_579181 != nil:
-    section.add "clientOperationId", valid_579181
-  var valid_579182 = query.getOrDefault("fields")
-  valid_579182 = validateParameter(valid_579182, JString, required = false,
+  if valid_580206 != nil:
+    section.add "clientOperationId", valid_580206
+  var valid_580207 = query.getOrDefault("fields")
+  valid_580207 = validateParameter(valid_580207, JString, required = false,
                                  default = nil)
-  if valid_579182 != nil:
-    section.add "fields", valid_579182
+  if valid_580207 != nil:
+    section.add "fields", valid_580207
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2935,20 +3015,20 @@ proc validate_DnsPoliciesCreate_579172(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579184: Call_DnsPoliciesCreate_579171; path: JsonNode;
+proc call*(call_580209: Call_DnsPoliciesCreate_580196; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Create a new Policy
   ## 
-  let valid = call_579184.validator(path, query, header, formData, body)
-  let scheme = call_579184.pickScheme
+  let valid = call_580209.validator(path, query, header, formData, body)
+  let scheme = call_580209.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579184.url(scheme.get, call_579184.host, call_579184.base,
-                         call_579184.route, valid.getOrDefault("path"),
+  let url = call_580209.url(scheme.get, call_580209.host, call_580209.base,
+                         call_580209.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579184, url, valid)
+  result = hook(call_580209, url, valid)
 
-proc call*(call_579185: Call_DnsPoliciesCreate_579171; project: string;
+proc call*(call_580210: Call_DnsPoliciesCreate_580196; project: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
           clientOperationId: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
@@ -2973,30 +3053,30 @@ proc call*(call_579185: Call_DnsPoliciesCreate_579171; project: string;
   ##   body: JObject
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579186 = newJObject()
-  var query_579187 = newJObject()
-  var body_579188 = newJObject()
-  add(query_579187, "key", newJString(key))
-  add(query_579187, "prettyPrint", newJBool(prettyPrint))
-  add(query_579187, "oauth_token", newJString(oauthToken))
-  add(query_579187, "alt", newJString(alt))
-  add(query_579187, "userIp", newJString(userIp))
-  add(query_579187, "quotaUser", newJString(quotaUser))
-  add(path_579186, "project", newJString(project))
-  add(query_579187, "clientOperationId", newJString(clientOperationId))
+  var path_580211 = newJObject()
+  var query_580212 = newJObject()
+  var body_580213 = newJObject()
+  add(query_580212, "key", newJString(key))
+  add(query_580212, "prettyPrint", newJBool(prettyPrint))
+  add(query_580212, "oauth_token", newJString(oauthToken))
+  add(query_580212, "alt", newJString(alt))
+  add(query_580212, "userIp", newJString(userIp))
+  add(query_580212, "quotaUser", newJString(quotaUser))
+  add(path_580211, "project", newJString(project))
+  add(query_580212, "clientOperationId", newJString(clientOperationId))
   if body != nil:
-    body_579188 = body
-  add(query_579187, "fields", newJString(fields))
-  result = call_579185.call(path_579186, query_579187, nil, nil, body_579188)
+    body_580213 = body
+  add(query_580212, "fields", newJString(fields))
+  result = call_580210.call(path_580211, query_580212, nil, nil, body_580213)
 
-var dnsPoliciesCreate* = Call_DnsPoliciesCreate_579171(name: "dnsPoliciesCreate",
+var dnsPoliciesCreate* = Call_DnsPoliciesCreate_580196(name: "dnsPoliciesCreate",
     meth: HttpMethod.HttpPost, host: "dns.googleapis.com",
-    route: "/{project}/policies", validator: validate_DnsPoliciesCreate_579172,
-    base: "/dns/v1beta2/projects", url: url_DnsPoliciesCreate_579173,
+    route: "/{project}/policies", validator: validate_DnsPoliciesCreate_580197,
+    base: "/dns/v1beta2/projects", url: url_DnsPoliciesCreate_580198,
     schemes: {Scheme.Https})
 type
-  Call_DnsPoliciesList_579154 = ref object of OpenApiRestCall_578339
-proc url_DnsPoliciesList_579156(protocol: Scheme; host: string; base: string;
+  Call_DnsPoliciesList_580179 = ref object of OpenApiRestCall_579364
+proc url_DnsPoliciesList_580181(protocol: Scheme; host: string; base: string;
                                route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3010,9 +3090,14 @@ proc url_DnsPoliciesList_579156(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsPoliciesList_579155(path: JsonNode; query: JsonNode;
+proc validate_DnsPoliciesList_580180(path: JsonNode; query: JsonNode;
                                     header: JsonNode; formData: JsonNode;
                                     body: JsonNode): JsonNode =
   ## Enumerate all Policies associated with a project.
@@ -3024,11 +3109,11 @@ proc validate_DnsPoliciesList_579155(path: JsonNode; query: JsonNode;
   ##          : Identifies the project addressed by this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `project` field"
-  var valid_579157 = path.getOrDefault("project")
-  valid_579157 = validateParameter(valid_579157, JString, required = true,
+  var valid_580182 = path.getOrDefault("project")
+  valid_580182 = validateParameter(valid_580182, JString, required = true,
                                  default = nil)
-  if valid_579157 != nil:
-    section.add "project", valid_579157
+  if valid_580182 != nil:
+    section.add "project", valid_580182
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3050,50 +3135,50 @@ proc validate_DnsPoliciesList_579155(path: JsonNode; query: JsonNode;
   ##   maxResults: JInt
   ##             : Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.
   section = newJObject()
-  var valid_579158 = query.getOrDefault("key")
-  valid_579158 = validateParameter(valid_579158, JString, required = false,
+  var valid_580183 = query.getOrDefault("key")
+  valid_580183 = validateParameter(valid_580183, JString, required = false,
                                  default = nil)
-  if valid_579158 != nil:
-    section.add "key", valid_579158
-  var valid_579159 = query.getOrDefault("prettyPrint")
-  valid_579159 = validateParameter(valid_579159, JBool, required = false,
+  if valid_580183 != nil:
+    section.add "key", valid_580183
+  var valid_580184 = query.getOrDefault("prettyPrint")
+  valid_580184 = validateParameter(valid_580184, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579159 != nil:
-    section.add "prettyPrint", valid_579159
-  var valid_579160 = query.getOrDefault("oauth_token")
-  valid_579160 = validateParameter(valid_579160, JString, required = false,
+  if valid_580184 != nil:
+    section.add "prettyPrint", valid_580184
+  var valid_580185 = query.getOrDefault("oauth_token")
+  valid_580185 = validateParameter(valid_580185, JString, required = false,
                                  default = nil)
-  if valid_579160 != nil:
-    section.add "oauth_token", valid_579160
-  var valid_579161 = query.getOrDefault("alt")
-  valid_579161 = validateParameter(valid_579161, JString, required = false,
+  if valid_580185 != nil:
+    section.add "oauth_token", valid_580185
+  var valid_580186 = query.getOrDefault("alt")
+  valid_580186 = validateParameter(valid_580186, JString, required = false,
                                  default = newJString("json"))
-  if valid_579161 != nil:
-    section.add "alt", valid_579161
-  var valid_579162 = query.getOrDefault("userIp")
-  valid_579162 = validateParameter(valid_579162, JString, required = false,
+  if valid_580186 != nil:
+    section.add "alt", valid_580186
+  var valid_580187 = query.getOrDefault("userIp")
+  valid_580187 = validateParameter(valid_580187, JString, required = false,
                                  default = nil)
-  if valid_579162 != nil:
-    section.add "userIp", valid_579162
-  var valid_579163 = query.getOrDefault("quotaUser")
-  valid_579163 = validateParameter(valid_579163, JString, required = false,
+  if valid_580187 != nil:
+    section.add "userIp", valid_580187
+  var valid_580188 = query.getOrDefault("quotaUser")
+  valid_580188 = validateParameter(valid_580188, JString, required = false,
                                  default = nil)
-  if valid_579163 != nil:
-    section.add "quotaUser", valid_579163
-  var valid_579164 = query.getOrDefault("pageToken")
-  valid_579164 = validateParameter(valid_579164, JString, required = false,
+  if valid_580188 != nil:
+    section.add "quotaUser", valid_580188
+  var valid_580189 = query.getOrDefault("pageToken")
+  valid_580189 = validateParameter(valid_580189, JString, required = false,
                                  default = nil)
-  if valid_579164 != nil:
-    section.add "pageToken", valid_579164
-  var valid_579165 = query.getOrDefault("fields")
-  valid_579165 = validateParameter(valid_579165, JString, required = false,
+  if valid_580189 != nil:
+    section.add "pageToken", valid_580189
+  var valid_580190 = query.getOrDefault("fields")
+  valid_580190 = validateParameter(valid_580190, JString, required = false,
                                  default = nil)
-  if valid_579165 != nil:
-    section.add "fields", valid_579165
-  var valid_579166 = query.getOrDefault("maxResults")
-  valid_579166 = validateParameter(valid_579166, JInt, required = false, default = nil)
-  if valid_579166 != nil:
-    section.add "maxResults", valid_579166
+  if valid_580190 != nil:
+    section.add "fields", valid_580190
+  var valid_580191 = query.getOrDefault("maxResults")
+  valid_580191 = validateParameter(valid_580191, JInt, required = false, default = nil)
+  if valid_580191 != nil:
+    section.add "maxResults", valid_580191
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3102,20 +3187,20 @@ proc validate_DnsPoliciesList_579155(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579167: Call_DnsPoliciesList_579154; path: JsonNode; query: JsonNode;
+proc call*(call_580192: Call_DnsPoliciesList_580179; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Enumerate all Policies associated with a project.
   ## 
-  let valid = call_579167.validator(path, query, header, formData, body)
-  let scheme = call_579167.pickScheme
+  let valid = call_580192.validator(path, query, header, formData, body)
+  let scheme = call_580192.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579167.url(scheme.get, call_579167.host, call_579167.base,
-                         call_579167.route, valid.getOrDefault("path"),
+  let url = call_580192.url(scheme.get, call_580192.host, call_580192.base,
+                         call_580192.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579167, url, valid)
+  result = hook(call_580192, url, valid)
 
-proc call*(call_579168: Call_DnsPoliciesList_579154; project: string;
+proc call*(call_580193: Call_DnsPoliciesList_580179; project: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
           pageToken: string = ""; fields: string = ""; maxResults: int = 0): Recallable =
@@ -3141,28 +3226,28 @@ proc call*(call_579168: Call_DnsPoliciesList_579154; project: string;
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: int
   ##             : Optional. Maximum number of results to be returned. If unspecified, the server will decide how many results to return.
-  var path_579169 = newJObject()
-  var query_579170 = newJObject()
-  add(query_579170, "key", newJString(key))
-  add(query_579170, "prettyPrint", newJBool(prettyPrint))
-  add(query_579170, "oauth_token", newJString(oauthToken))
-  add(query_579170, "alt", newJString(alt))
-  add(query_579170, "userIp", newJString(userIp))
-  add(query_579170, "quotaUser", newJString(quotaUser))
-  add(query_579170, "pageToken", newJString(pageToken))
-  add(path_579169, "project", newJString(project))
-  add(query_579170, "fields", newJString(fields))
-  add(query_579170, "maxResults", newJInt(maxResults))
-  result = call_579168.call(path_579169, query_579170, nil, nil, nil)
+  var path_580194 = newJObject()
+  var query_580195 = newJObject()
+  add(query_580195, "key", newJString(key))
+  add(query_580195, "prettyPrint", newJBool(prettyPrint))
+  add(query_580195, "oauth_token", newJString(oauthToken))
+  add(query_580195, "alt", newJString(alt))
+  add(query_580195, "userIp", newJString(userIp))
+  add(query_580195, "quotaUser", newJString(quotaUser))
+  add(query_580195, "pageToken", newJString(pageToken))
+  add(path_580194, "project", newJString(project))
+  add(query_580195, "fields", newJString(fields))
+  add(query_580195, "maxResults", newJInt(maxResults))
+  result = call_580193.call(path_580194, query_580195, nil, nil, nil)
 
-var dnsPoliciesList* = Call_DnsPoliciesList_579154(name: "dnsPoliciesList",
+var dnsPoliciesList* = Call_DnsPoliciesList_580179(name: "dnsPoliciesList",
     meth: HttpMethod.HttpGet, host: "dns.googleapis.com",
-    route: "/{project}/policies", validator: validate_DnsPoliciesList_579155,
-    base: "/dns/v1beta2/projects", url: url_DnsPoliciesList_579156,
+    route: "/{project}/policies", validator: validate_DnsPoliciesList_580180,
+    base: "/dns/v1beta2/projects", url: url_DnsPoliciesList_580181,
     schemes: {Scheme.Https})
 type
-  Call_DnsPoliciesUpdate_579206 = ref object of OpenApiRestCall_578339
-proc url_DnsPoliciesUpdate_579208(protocol: Scheme; host: string; base: string;
+  Call_DnsPoliciesUpdate_580231 = ref object of OpenApiRestCall_579364
+proc url_DnsPoliciesUpdate_580233(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3178,9 +3263,14 @@ proc url_DnsPoliciesUpdate_579208(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsPoliciesUpdate_579207(path: JsonNode; query: JsonNode;
+proc validate_DnsPoliciesUpdate_580232(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Update an existing Policy.
@@ -3194,16 +3284,16 @@ proc validate_DnsPoliciesUpdate_579207(path: JsonNode; query: JsonNode;
   ##          : Identifies the project addressed by this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `policy` field"
-  var valid_579209 = path.getOrDefault("policy")
-  valid_579209 = validateParameter(valid_579209, JString, required = true,
+  var valid_580234 = path.getOrDefault("policy")
+  valid_580234 = validateParameter(valid_580234, JString, required = true,
                                  default = nil)
-  if valid_579209 != nil:
-    section.add "policy", valid_579209
-  var valid_579210 = path.getOrDefault("project")
-  valid_579210 = validateParameter(valid_579210, JString, required = true,
+  if valid_580234 != nil:
+    section.add "policy", valid_580234
+  var valid_580235 = path.getOrDefault("project")
+  valid_580235 = validateParameter(valid_580235, JString, required = true,
                                  default = nil)
-  if valid_579210 != nil:
-    section.add "project", valid_579210
+  if valid_580235 != nil:
+    section.add "project", valid_580235
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3223,46 +3313,46 @@ proc validate_DnsPoliciesUpdate_579207(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579211 = query.getOrDefault("key")
-  valid_579211 = validateParameter(valid_579211, JString, required = false,
+  var valid_580236 = query.getOrDefault("key")
+  valid_580236 = validateParameter(valid_580236, JString, required = false,
                                  default = nil)
-  if valid_579211 != nil:
-    section.add "key", valid_579211
-  var valid_579212 = query.getOrDefault("prettyPrint")
-  valid_579212 = validateParameter(valid_579212, JBool, required = false,
+  if valid_580236 != nil:
+    section.add "key", valid_580236
+  var valid_580237 = query.getOrDefault("prettyPrint")
+  valid_580237 = validateParameter(valid_580237, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579212 != nil:
-    section.add "prettyPrint", valid_579212
-  var valid_579213 = query.getOrDefault("oauth_token")
-  valid_579213 = validateParameter(valid_579213, JString, required = false,
+  if valid_580237 != nil:
+    section.add "prettyPrint", valid_580237
+  var valid_580238 = query.getOrDefault("oauth_token")
+  valid_580238 = validateParameter(valid_580238, JString, required = false,
                                  default = nil)
-  if valid_579213 != nil:
-    section.add "oauth_token", valid_579213
-  var valid_579214 = query.getOrDefault("alt")
-  valid_579214 = validateParameter(valid_579214, JString, required = false,
+  if valid_580238 != nil:
+    section.add "oauth_token", valid_580238
+  var valid_580239 = query.getOrDefault("alt")
+  valid_580239 = validateParameter(valid_580239, JString, required = false,
                                  default = newJString("json"))
-  if valid_579214 != nil:
-    section.add "alt", valid_579214
-  var valid_579215 = query.getOrDefault("userIp")
-  valid_579215 = validateParameter(valid_579215, JString, required = false,
+  if valid_580239 != nil:
+    section.add "alt", valid_580239
+  var valid_580240 = query.getOrDefault("userIp")
+  valid_580240 = validateParameter(valid_580240, JString, required = false,
                                  default = nil)
-  if valid_579215 != nil:
-    section.add "userIp", valid_579215
-  var valid_579216 = query.getOrDefault("quotaUser")
-  valid_579216 = validateParameter(valid_579216, JString, required = false,
+  if valid_580240 != nil:
+    section.add "userIp", valid_580240
+  var valid_580241 = query.getOrDefault("quotaUser")
+  valid_580241 = validateParameter(valid_580241, JString, required = false,
                                  default = nil)
-  if valid_579216 != nil:
-    section.add "quotaUser", valid_579216
-  var valid_579217 = query.getOrDefault("clientOperationId")
-  valid_579217 = validateParameter(valid_579217, JString, required = false,
+  if valid_580241 != nil:
+    section.add "quotaUser", valid_580241
+  var valid_580242 = query.getOrDefault("clientOperationId")
+  valid_580242 = validateParameter(valid_580242, JString, required = false,
                                  default = nil)
-  if valid_579217 != nil:
-    section.add "clientOperationId", valid_579217
-  var valid_579218 = query.getOrDefault("fields")
-  valid_579218 = validateParameter(valid_579218, JString, required = false,
+  if valid_580242 != nil:
+    section.add "clientOperationId", valid_580242
+  var valid_580243 = query.getOrDefault("fields")
+  valid_580243 = validateParameter(valid_580243, JString, required = false,
                                  default = nil)
-  if valid_579218 != nil:
-    section.add "fields", valid_579218
+  if valid_580243 != nil:
+    section.add "fields", valid_580243
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3274,20 +3364,20 @@ proc validate_DnsPoliciesUpdate_579207(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579220: Call_DnsPoliciesUpdate_579206; path: JsonNode;
+proc call*(call_580245: Call_DnsPoliciesUpdate_580231; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Update an existing Policy.
   ## 
-  let valid = call_579220.validator(path, query, header, formData, body)
-  let scheme = call_579220.pickScheme
+  let valid = call_580245.validator(path, query, header, formData, body)
+  let scheme = call_580245.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579220.url(scheme.get, call_579220.host, call_579220.base,
-                         call_579220.route, valid.getOrDefault("path"),
+  let url = call_580245.url(scheme.get, call_580245.host, call_580245.base,
+                         call_580245.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579220, url, valid)
+  result = hook(call_580245, url, valid)
 
-proc call*(call_579221: Call_DnsPoliciesUpdate_579206; policy: string;
+proc call*(call_580246: Call_DnsPoliciesUpdate_580231; policy: string;
           project: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; clientOperationId: string = ""; body: JsonNode = nil;
@@ -3315,31 +3405,31 @@ proc call*(call_579221: Call_DnsPoliciesUpdate_579206; policy: string;
   ##   body: JObject
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579222 = newJObject()
-  var query_579223 = newJObject()
-  var body_579224 = newJObject()
-  add(query_579223, "key", newJString(key))
-  add(query_579223, "prettyPrint", newJBool(prettyPrint))
-  add(query_579223, "oauth_token", newJString(oauthToken))
-  add(path_579222, "policy", newJString(policy))
-  add(query_579223, "alt", newJString(alt))
-  add(query_579223, "userIp", newJString(userIp))
-  add(query_579223, "quotaUser", newJString(quotaUser))
-  add(path_579222, "project", newJString(project))
-  add(query_579223, "clientOperationId", newJString(clientOperationId))
+  var path_580247 = newJObject()
+  var query_580248 = newJObject()
+  var body_580249 = newJObject()
+  add(query_580248, "key", newJString(key))
+  add(query_580248, "prettyPrint", newJBool(prettyPrint))
+  add(query_580248, "oauth_token", newJString(oauthToken))
+  add(path_580247, "policy", newJString(policy))
+  add(query_580248, "alt", newJString(alt))
+  add(query_580248, "userIp", newJString(userIp))
+  add(query_580248, "quotaUser", newJString(quotaUser))
+  add(path_580247, "project", newJString(project))
+  add(query_580248, "clientOperationId", newJString(clientOperationId))
   if body != nil:
-    body_579224 = body
-  add(query_579223, "fields", newJString(fields))
-  result = call_579221.call(path_579222, query_579223, nil, nil, body_579224)
+    body_580249 = body
+  add(query_580248, "fields", newJString(fields))
+  result = call_580246.call(path_580247, query_580248, nil, nil, body_580249)
 
-var dnsPoliciesUpdate* = Call_DnsPoliciesUpdate_579206(name: "dnsPoliciesUpdate",
+var dnsPoliciesUpdate* = Call_DnsPoliciesUpdate_580231(name: "dnsPoliciesUpdate",
     meth: HttpMethod.HttpPut, host: "dns.googleapis.com",
-    route: "/{project}/policies/{policy}", validator: validate_DnsPoliciesUpdate_579207,
-    base: "/dns/v1beta2/projects", url: url_DnsPoliciesUpdate_579208,
+    route: "/{project}/policies/{policy}", validator: validate_DnsPoliciesUpdate_580232,
+    base: "/dns/v1beta2/projects", url: url_DnsPoliciesUpdate_580233,
     schemes: {Scheme.Https})
 type
-  Call_DnsPoliciesGet_579189 = ref object of OpenApiRestCall_578339
-proc url_DnsPoliciesGet_579191(protocol: Scheme; host: string; base: string;
+  Call_DnsPoliciesGet_580214 = ref object of OpenApiRestCall_579364
+proc url_DnsPoliciesGet_580216(protocol: Scheme; host: string; base: string;
                               route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3355,9 +3445,14 @@ proc url_DnsPoliciesGet_579191(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsPoliciesGet_579190(path: JsonNode; query: JsonNode;
+proc validate_DnsPoliciesGet_580215(path: JsonNode; query: JsonNode;
                                    header: JsonNode; formData: JsonNode;
                                    body: JsonNode): JsonNode =
   ## Fetch the representation of an existing Policy.
@@ -3371,16 +3466,16 @@ proc validate_DnsPoliciesGet_579190(path: JsonNode; query: JsonNode;
   ##          : Identifies the project addressed by this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `policy` field"
-  var valid_579192 = path.getOrDefault("policy")
-  valid_579192 = validateParameter(valid_579192, JString, required = true,
+  var valid_580217 = path.getOrDefault("policy")
+  valid_580217 = validateParameter(valid_580217, JString, required = true,
                                  default = nil)
-  if valid_579192 != nil:
-    section.add "policy", valid_579192
-  var valid_579193 = path.getOrDefault("project")
-  valid_579193 = validateParameter(valid_579193, JString, required = true,
+  if valid_580217 != nil:
+    section.add "policy", valid_580217
+  var valid_580218 = path.getOrDefault("project")
+  valid_580218 = validateParameter(valid_580218, JString, required = true,
                                  default = nil)
-  if valid_579193 != nil:
-    section.add "project", valid_579193
+  if valid_580218 != nil:
+    section.add "project", valid_580218
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3400,46 +3495,46 @@ proc validate_DnsPoliciesGet_579190(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579194 = query.getOrDefault("key")
-  valid_579194 = validateParameter(valid_579194, JString, required = false,
+  var valid_580219 = query.getOrDefault("key")
+  valid_580219 = validateParameter(valid_580219, JString, required = false,
                                  default = nil)
-  if valid_579194 != nil:
-    section.add "key", valid_579194
-  var valid_579195 = query.getOrDefault("prettyPrint")
-  valid_579195 = validateParameter(valid_579195, JBool, required = false,
+  if valid_580219 != nil:
+    section.add "key", valid_580219
+  var valid_580220 = query.getOrDefault("prettyPrint")
+  valid_580220 = validateParameter(valid_580220, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579195 != nil:
-    section.add "prettyPrint", valid_579195
-  var valid_579196 = query.getOrDefault("oauth_token")
-  valid_579196 = validateParameter(valid_579196, JString, required = false,
+  if valid_580220 != nil:
+    section.add "prettyPrint", valid_580220
+  var valid_580221 = query.getOrDefault("oauth_token")
+  valid_580221 = validateParameter(valid_580221, JString, required = false,
                                  default = nil)
-  if valid_579196 != nil:
-    section.add "oauth_token", valid_579196
-  var valid_579197 = query.getOrDefault("alt")
-  valid_579197 = validateParameter(valid_579197, JString, required = false,
+  if valid_580221 != nil:
+    section.add "oauth_token", valid_580221
+  var valid_580222 = query.getOrDefault("alt")
+  valid_580222 = validateParameter(valid_580222, JString, required = false,
                                  default = newJString("json"))
-  if valid_579197 != nil:
-    section.add "alt", valid_579197
-  var valid_579198 = query.getOrDefault("userIp")
-  valid_579198 = validateParameter(valid_579198, JString, required = false,
+  if valid_580222 != nil:
+    section.add "alt", valid_580222
+  var valid_580223 = query.getOrDefault("userIp")
+  valid_580223 = validateParameter(valid_580223, JString, required = false,
                                  default = nil)
-  if valid_579198 != nil:
-    section.add "userIp", valid_579198
-  var valid_579199 = query.getOrDefault("quotaUser")
-  valid_579199 = validateParameter(valid_579199, JString, required = false,
+  if valid_580223 != nil:
+    section.add "userIp", valid_580223
+  var valid_580224 = query.getOrDefault("quotaUser")
+  valid_580224 = validateParameter(valid_580224, JString, required = false,
                                  default = nil)
-  if valid_579199 != nil:
-    section.add "quotaUser", valid_579199
-  var valid_579200 = query.getOrDefault("clientOperationId")
-  valid_579200 = validateParameter(valid_579200, JString, required = false,
+  if valid_580224 != nil:
+    section.add "quotaUser", valid_580224
+  var valid_580225 = query.getOrDefault("clientOperationId")
+  valid_580225 = validateParameter(valid_580225, JString, required = false,
                                  default = nil)
-  if valid_579200 != nil:
-    section.add "clientOperationId", valid_579200
-  var valid_579201 = query.getOrDefault("fields")
-  valid_579201 = validateParameter(valid_579201, JString, required = false,
+  if valid_580225 != nil:
+    section.add "clientOperationId", valid_580225
+  var valid_580226 = query.getOrDefault("fields")
+  valid_580226 = validateParameter(valid_580226, JString, required = false,
                                  default = nil)
-  if valid_579201 != nil:
-    section.add "fields", valid_579201
+  if valid_580226 != nil:
+    section.add "fields", valid_580226
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3448,20 +3543,20 @@ proc validate_DnsPoliciesGet_579190(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579202: Call_DnsPoliciesGet_579189; path: JsonNode; query: JsonNode;
+proc call*(call_580227: Call_DnsPoliciesGet_580214; path: JsonNode; query: JsonNode;
           header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Fetch the representation of an existing Policy.
   ## 
-  let valid = call_579202.validator(path, query, header, formData, body)
-  let scheme = call_579202.pickScheme
+  let valid = call_580227.validator(path, query, header, formData, body)
+  let scheme = call_580227.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579202.url(scheme.get, call_579202.host, call_579202.base,
-                         call_579202.route, valid.getOrDefault("path"),
+  let url = call_580227.url(scheme.get, call_580227.host, call_580227.base,
+                         call_580227.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579202, url, valid)
+  result = hook(call_580227, url, valid)
 
-proc call*(call_579203: Call_DnsPoliciesGet_579189; policy: string; project: string;
+proc call*(call_580228: Call_DnsPoliciesGet_580214; policy: string; project: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
           clientOperationId: string = ""; fields: string = ""): Recallable =
@@ -3487,28 +3582,28 @@ proc call*(call_579203: Call_DnsPoliciesGet_579189; policy: string; project: str
   ##                    : For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579204 = newJObject()
-  var query_579205 = newJObject()
-  add(query_579205, "key", newJString(key))
-  add(query_579205, "prettyPrint", newJBool(prettyPrint))
-  add(query_579205, "oauth_token", newJString(oauthToken))
-  add(path_579204, "policy", newJString(policy))
-  add(query_579205, "alt", newJString(alt))
-  add(query_579205, "userIp", newJString(userIp))
-  add(query_579205, "quotaUser", newJString(quotaUser))
-  add(path_579204, "project", newJString(project))
-  add(query_579205, "clientOperationId", newJString(clientOperationId))
-  add(query_579205, "fields", newJString(fields))
-  result = call_579203.call(path_579204, query_579205, nil, nil, nil)
+  var path_580229 = newJObject()
+  var query_580230 = newJObject()
+  add(query_580230, "key", newJString(key))
+  add(query_580230, "prettyPrint", newJBool(prettyPrint))
+  add(query_580230, "oauth_token", newJString(oauthToken))
+  add(path_580229, "policy", newJString(policy))
+  add(query_580230, "alt", newJString(alt))
+  add(query_580230, "userIp", newJString(userIp))
+  add(query_580230, "quotaUser", newJString(quotaUser))
+  add(path_580229, "project", newJString(project))
+  add(query_580230, "clientOperationId", newJString(clientOperationId))
+  add(query_580230, "fields", newJString(fields))
+  result = call_580228.call(path_580229, query_580230, nil, nil, nil)
 
-var dnsPoliciesGet* = Call_DnsPoliciesGet_579189(name: "dnsPoliciesGet",
+var dnsPoliciesGet* = Call_DnsPoliciesGet_580214(name: "dnsPoliciesGet",
     meth: HttpMethod.HttpGet, host: "dns.googleapis.com",
-    route: "/{project}/policies/{policy}", validator: validate_DnsPoliciesGet_579190,
-    base: "/dns/v1beta2/projects", url: url_DnsPoliciesGet_579191,
+    route: "/{project}/policies/{policy}", validator: validate_DnsPoliciesGet_580215,
+    base: "/dns/v1beta2/projects", url: url_DnsPoliciesGet_580216,
     schemes: {Scheme.Https})
 type
-  Call_DnsPoliciesPatch_579242 = ref object of OpenApiRestCall_578339
-proc url_DnsPoliciesPatch_579244(protocol: Scheme; host: string; base: string;
+  Call_DnsPoliciesPatch_580267 = ref object of OpenApiRestCall_579364
+proc url_DnsPoliciesPatch_580269(protocol: Scheme; host: string; base: string;
                                 route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3524,9 +3619,14 @@ proc url_DnsPoliciesPatch_579244(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsPoliciesPatch_579243(path: JsonNode; query: JsonNode;
+proc validate_DnsPoliciesPatch_580268(path: JsonNode; query: JsonNode;
                                      header: JsonNode; formData: JsonNode;
                                      body: JsonNode): JsonNode =
   ## Apply a partial update to an existing Policy.
@@ -3540,16 +3640,16 @@ proc validate_DnsPoliciesPatch_579243(path: JsonNode; query: JsonNode;
   ##          : Identifies the project addressed by this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `policy` field"
-  var valid_579245 = path.getOrDefault("policy")
-  valid_579245 = validateParameter(valid_579245, JString, required = true,
+  var valid_580270 = path.getOrDefault("policy")
+  valid_580270 = validateParameter(valid_580270, JString, required = true,
                                  default = nil)
-  if valid_579245 != nil:
-    section.add "policy", valid_579245
-  var valid_579246 = path.getOrDefault("project")
-  valid_579246 = validateParameter(valid_579246, JString, required = true,
+  if valid_580270 != nil:
+    section.add "policy", valid_580270
+  var valid_580271 = path.getOrDefault("project")
+  valid_580271 = validateParameter(valid_580271, JString, required = true,
                                  default = nil)
-  if valid_579246 != nil:
-    section.add "project", valid_579246
+  if valid_580271 != nil:
+    section.add "project", valid_580271
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3569,46 +3669,46 @@ proc validate_DnsPoliciesPatch_579243(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579247 = query.getOrDefault("key")
-  valid_579247 = validateParameter(valid_579247, JString, required = false,
+  var valid_580272 = query.getOrDefault("key")
+  valid_580272 = validateParameter(valid_580272, JString, required = false,
                                  default = nil)
-  if valid_579247 != nil:
-    section.add "key", valid_579247
-  var valid_579248 = query.getOrDefault("prettyPrint")
-  valid_579248 = validateParameter(valid_579248, JBool, required = false,
+  if valid_580272 != nil:
+    section.add "key", valid_580272
+  var valid_580273 = query.getOrDefault("prettyPrint")
+  valid_580273 = validateParameter(valid_580273, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579248 != nil:
-    section.add "prettyPrint", valid_579248
-  var valid_579249 = query.getOrDefault("oauth_token")
-  valid_579249 = validateParameter(valid_579249, JString, required = false,
+  if valid_580273 != nil:
+    section.add "prettyPrint", valid_580273
+  var valid_580274 = query.getOrDefault("oauth_token")
+  valid_580274 = validateParameter(valid_580274, JString, required = false,
                                  default = nil)
-  if valid_579249 != nil:
-    section.add "oauth_token", valid_579249
-  var valid_579250 = query.getOrDefault("alt")
-  valid_579250 = validateParameter(valid_579250, JString, required = false,
+  if valid_580274 != nil:
+    section.add "oauth_token", valid_580274
+  var valid_580275 = query.getOrDefault("alt")
+  valid_580275 = validateParameter(valid_580275, JString, required = false,
                                  default = newJString("json"))
-  if valid_579250 != nil:
-    section.add "alt", valid_579250
-  var valid_579251 = query.getOrDefault("userIp")
-  valid_579251 = validateParameter(valid_579251, JString, required = false,
+  if valid_580275 != nil:
+    section.add "alt", valid_580275
+  var valid_580276 = query.getOrDefault("userIp")
+  valid_580276 = validateParameter(valid_580276, JString, required = false,
                                  default = nil)
-  if valid_579251 != nil:
-    section.add "userIp", valid_579251
-  var valid_579252 = query.getOrDefault("quotaUser")
-  valid_579252 = validateParameter(valid_579252, JString, required = false,
+  if valid_580276 != nil:
+    section.add "userIp", valid_580276
+  var valid_580277 = query.getOrDefault("quotaUser")
+  valid_580277 = validateParameter(valid_580277, JString, required = false,
                                  default = nil)
-  if valid_579252 != nil:
-    section.add "quotaUser", valid_579252
-  var valid_579253 = query.getOrDefault("clientOperationId")
-  valid_579253 = validateParameter(valid_579253, JString, required = false,
+  if valid_580277 != nil:
+    section.add "quotaUser", valid_580277
+  var valid_580278 = query.getOrDefault("clientOperationId")
+  valid_580278 = validateParameter(valid_580278, JString, required = false,
                                  default = nil)
-  if valid_579253 != nil:
-    section.add "clientOperationId", valid_579253
-  var valid_579254 = query.getOrDefault("fields")
-  valid_579254 = validateParameter(valid_579254, JString, required = false,
+  if valid_580278 != nil:
+    section.add "clientOperationId", valid_580278
+  var valid_580279 = query.getOrDefault("fields")
+  valid_580279 = validateParameter(valid_580279, JString, required = false,
                                  default = nil)
-  if valid_579254 != nil:
-    section.add "fields", valid_579254
+  if valid_580279 != nil:
+    section.add "fields", valid_580279
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3620,20 +3720,20 @@ proc validate_DnsPoliciesPatch_579243(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579256: Call_DnsPoliciesPatch_579242; path: JsonNode;
+proc call*(call_580281: Call_DnsPoliciesPatch_580267; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Apply a partial update to an existing Policy.
   ## 
-  let valid = call_579256.validator(path, query, header, formData, body)
-  let scheme = call_579256.pickScheme
+  let valid = call_580281.validator(path, query, header, formData, body)
+  let scheme = call_580281.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579256.url(scheme.get, call_579256.host, call_579256.base,
-                         call_579256.route, valid.getOrDefault("path"),
+  let url = call_580281.url(scheme.get, call_580281.host, call_580281.base,
+                         call_580281.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579256, url, valid)
+  result = hook(call_580281, url, valid)
 
-proc call*(call_579257: Call_DnsPoliciesPatch_579242; policy: string;
+proc call*(call_580282: Call_DnsPoliciesPatch_580267; policy: string;
           project: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; clientOperationId: string = ""; body: JsonNode = nil;
@@ -3661,31 +3761,31 @@ proc call*(call_579257: Call_DnsPoliciesPatch_579242; policy: string;
   ##   body: JObject
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579258 = newJObject()
-  var query_579259 = newJObject()
-  var body_579260 = newJObject()
-  add(query_579259, "key", newJString(key))
-  add(query_579259, "prettyPrint", newJBool(prettyPrint))
-  add(query_579259, "oauth_token", newJString(oauthToken))
-  add(path_579258, "policy", newJString(policy))
-  add(query_579259, "alt", newJString(alt))
-  add(query_579259, "userIp", newJString(userIp))
-  add(query_579259, "quotaUser", newJString(quotaUser))
-  add(path_579258, "project", newJString(project))
-  add(query_579259, "clientOperationId", newJString(clientOperationId))
+  var path_580283 = newJObject()
+  var query_580284 = newJObject()
+  var body_580285 = newJObject()
+  add(query_580284, "key", newJString(key))
+  add(query_580284, "prettyPrint", newJBool(prettyPrint))
+  add(query_580284, "oauth_token", newJString(oauthToken))
+  add(path_580283, "policy", newJString(policy))
+  add(query_580284, "alt", newJString(alt))
+  add(query_580284, "userIp", newJString(userIp))
+  add(query_580284, "quotaUser", newJString(quotaUser))
+  add(path_580283, "project", newJString(project))
+  add(query_580284, "clientOperationId", newJString(clientOperationId))
   if body != nil:
-    body_579260 = body
-  add(query_579259, "fields", newJString(fields))
-  result = call_579257.call(path_579258, query_579259, nil, nil, body_579260)
+    body_580285 = body
+  add(query_580284, "fields", newJString(fields))
+  result = call_580282.call(path_580283, query_580284, nil, nil, body_580285)
 
-var dnsPoliciesPatch* = Call_DnsPoliciesPatch_579242(name: "dnsPoliciesPatch",
+var dnsPoliciesPatch* = Call_DnsPoliciesPatch_580267(name: "dnsPoliciesPatch",
     meth: HttpMethod.HttpPatch, host: "dns.googleapis.com",
-    route: "/{project}/policies/{policy}", validator: validate_DnsPoliciesPatch_579243,
-    base: "/dns/v1beta2/projects", url: url_DnsPoliciesPatch_579244,
+    route: "/{project}/policies/{policy}", validator: validate_DnsPoliciesPatch_580268,
+    base: "/dns/v1beta2/projects", url: url_DnsPoliciesPatch_580269,
     schemes: {Scheme.Https})
 type
-  Call_DnsPoliciesDelete_579225 = ref object of OpenApiRestCall_578339
-proc url_DnsPoliciesDelete_579227(protocol: Scheme; host: string; base: string;
+  Call_DnsPoliciesDelete_580250 = ref object of OpenApiRestCall_579364
+proc url_DnsPoliciesDelete_580252(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3701,9 +3801,14 @@ proc url_DnsPoliciesDelete_579227(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_DnsPoliciesDelete_579226(path: JsonNode; query: JsonNode;
+proc validate_DnsPoliciesDelete_580251(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Delete a previously created Policy. Will fail if the policy is still being referenced by a network.
@@ -3717,16 +3822,16 @@ proc validate_DnsPoliciesDelete_579226(path: JsonNode; query: JsonNode;
   ##          : Identifies the project addressed by this request.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `policy` field"
-  var valid_579228 = path.getOrDefault("policy")
-  valid_579228 = validateParameter(valid_579228, JString, required = true,
+  var valid_580253 = path.getOrDefault("policy")
+  valid_580253 = validateParameter(valid_580253, JString, required = true,
                                  default = nil)
-  if valid_579228 != nil:
-    section.add "policy", valid_579228
-  var valid_579229 = path.getOrDefault("project")
-  valid_579229 = validateParameter(valid_579229, JString, required = true,
+  if valid_580253 != nil:
+    section.add "policy", valid_580253
+  var valid_580254 = path.getOrDefault("project")
+  valid_580254 = validateParameter(valid_580254, JString, required = true,
                                  default = nil)
-  if valid_579229 != nil:
-    section.add "project", valid_579229
+  if valid_580254 != nil:
+    section.add "project", valid_580254
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3746,46 +3851,46 @@ proc validate_DnsPoliciesDelete_579226(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579230 = query.getOrDefault("key")
-  valid_579230 = validateParameter(valid_579230, JString, required = false,
+  var valid_580255 = query.getOrDefault("key")
+  valid_580255 = validateParameter(valid_580255, JString, required = false,
                                  default = nil)
-  if valid_579230 != nil:
-    section.add "key", valid_579230
-  var valid_579231 = query.getOrDefault("prettyPrint")
-  valid_579231 = validateParameter(valid_579231, JBool, required = false,
+  if valid_580255 != nil:
+    section.add "key", valid_580255
+  var valid_580256 = query.getOrDefault("prettyPrint")
+  valid_580256 = validateParameter(valid_580256, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579231 != nil:
-    section.add "prettyPrint", valid_579231
-  var valid_579232 = query.getOrDefault("oauth_token")
-  valid_579232 = validateParameter(valid_579232, JString, required = false,
+  if valid_580256 != nil:
+    section.add "prettyPrint", valid_580256
+  var valid_580257 = query.getOrDefault("oauth_token")
+  valid_580257 = validateParameter(valid_580257, JString, required = false,
                                  default = nil)
-  if valid_579232 != nil:
-    section.add "oauth_token", valid_579232
-  var valid_579233 = query.getOrDefault("alt")
-  valid_579233 = validateParameter(valid_579233, JString, required = false,
+  if valid_580257 != nil:
+    section.add "oauth_token", valid_580257
+  var valid_580258 = query.getOrDefault("alt")
+  valid_580258 = validateParameter(valid_580258, JString, required = false,
                                  default = newJString("json"))
-  if valid_579233 != nil:
-    section.add "alt", valid_579233
-  var valid_579234 = query.getOrDefault("userIp")
-  valid_579234 = validateParameter(valid_579234, JString, required = false,
+  if valid_580258 != nil:
+    section.add "alt", valid_580258
+  var valid_580259 = query.getOrDefault("userIp")
+  valid_580259 = validateParameter(valid_580259, JString, required = false,
                                  default = nil)
-  if valid_579234 != nil:
-    section.add "userIp", valid_579234
-  var valid_579235 = query.getOrDefault("quotaUser")
-  valid_579235 = validateParameter(valid_579235, JString, required = false,
+  if valid_580259 != nil:
+    section.add "userIp", valid_580259
+  var valid_580260 = query.getOrDefault("quotaUser")
+  valid_580260 = validateParameter(valid_580260, JString, required = false,
                                  default = nil)
-  if valid_579235 != nil:
-    section.add "quotaUser", valid_579235
-  var valid_579236 = query.getOrDefault("clientOperationId")
-  valid_579236 = validateParameter(valid_579236, JString, required = false,
+  if valid_580260 != nil:
+    section.add "quotaUser", valid_580260
+  var valid_580261 = query.getOrDefault("clientOperationId")
+  valid_580261 = validateParameter(valid_580261, JString, required = false,
                                  default = nil)
-  if valid_579236 != nil:
-    section.add "clientOperationId", valid_579236
-  var valid_579237 = query.getOrDefault("fields")
-  valid_579237 = validateParameter(valid_579237, JString, required = false,
+  if valid_580261 != nil:
+    section.add "clientOperationId", valid_580261
+  var valid_580262 = query.getOrDefault("fields")
+  valid_580262 = validateParameter(valid_580262, JString, required = false,
                                  default = nil)
-  if valid_579237 != nil:
-    section.add "fields", valid_579237
+  if valid_580262 != nil:
+    section.add "fields", valid_580262
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3794,20 +3899,20 @@ proc validate_DnsPoliciesDelete_579226(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579238: Call_DnsPoliciesDelete_579225; path: JsonNode;
+proc call*(call_580263: Call_DnsPoliciesDelete_580250; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Delete a previously created Policy. Will fail if the policy is still being referenced by a network.
   ## 
-  let valid = call_579238.validator(path, query, header, formData, body)
-  let scheme = call_579238.pickScheme
+  let valid = call_580263.validator(path, query, header, formData, body)
+  let scheme = call_580263.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579238.url(scheme.get, call_579238.host, call_579238.base,
-                         call_579238.route, valid.getOrDefault("path"),
+  let url = call_580263.url(scheme.get, call_580263.host, call_580263.base,
+                         call_580263.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579238, url, valid)
+  result = hook(call_580263, url, valid)
 
-proc call*(call_579239: Call_DnsPoliciesDelete_579225; policy: string;
+proc call*(call_580264: Call_DnsPoliciesDelete_580250; policy: string;
           project: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; clientOperationId: string = ""; fields: string = ""): Recallable =
@@ -3833,24 +3938,24 @@ proc call*(call_579239: Call_DnsPoliciesDelete_579225; policy: string;
   ##                    : For mutating operation requests only. An optional identifier specified by the client. Must be unique for operation resources in the Operations collection.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579240 = newJObject()
-  var query_579241 = newJObject()
-  add(query_579241, "key", newJString(key))
-  add(query_579241, "prettyPrint", newJBool(prettyPrint))
-  add(query_579241, "oauth_token", newJString(oauthToken))
-  add(path_579240, "policy", newJString(policy))
-  add(query_579241, "alt", newJString(alt))
-  add(query_579241, "userIp", newJString(userIp))
-  add(query_579241, "quotaUser", newJString(quotaUser))
-  add(path_579240, "project", newJString(project))
-  add(query_579241, "clientOperationId", newJString(clientOperationId))
-  add(query_579241, "fields", newJString(fields))
-  result = call_579239.call(path_579240, query_579241, nil, nil, nil)
+  var path_580265 = newJObject()
+  var query_580266 = newJObject()
+  add(query_580266, "key", newJString(key))
+  add(query_580266, "prettyPrint", newJBool(prettyPrint))
+  add(query_580266, "oauth_token", newJString(oauthToken))
+  add(path_580265, "policy", newJString(policy))
+  add(query_580266, "alt", newJString(alt))
+  add(query_580266, "userIp", newJString(userIp))
+  add(query_580266, "quotaUser", newJString(quotaUser))
+  add(path_580265, "project", newJString(project))
+  add(query_580266, "clientOperationId", newJString(clientOperationId))
+  add(query_580266, "fields", newJString(fields))
+  result = call_580264.call(path_580265, query_580266, nil, nil, nil)
 
-var dnsPoliciesDelete* = Call_DnsPoliciesDelete_579225(name: "dnsPoliciesDelete",
+var dnsPoliciesDelete* = Call_DnsPoliciesDelete_580250(name: "dnsPoliciesDelete",
     meth: HttpMethod.HttpDelete, host: "dns.googleapis.com",
-    route: "/{project}/policies/{policy}", validator: validate_DnsPoliciesDelete_579226,
-    base: "/dns/v1beta2/projects", url: url_DnsPoliciesDelete_579227,
+    route: "/{project}/policies/{policy}", validator: validate_DnsPoliciesDelete_580251,
+    base: "/dns/v1beta2/projects", url: url_DnsPoliciesDelete_580252,
     schemes: {Scheme.Https})
 export
   rest

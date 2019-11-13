@@ -1,7 +1,7 @@
 
 import
-  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
-  asyncdispatch, jwt
+  json, options, hashes, uri, strutils, rest, os, uri, strutils, times, httpcore,
+  httpclient, asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Admin Reports
@@ -13,7 +13,7 @@ import
 ## 
 ## Fetches reports for the administrators of G Suite customers about the usage, collaboration, security, and risk for their users.
 ## 
-## https://developers.google.com/admin-sdk/reports/
+## /admin-sdk/reports/
 type
   Scheme {.pure.} = enum
     Https = "https", Http = "http", Wss = "wss", Ws = "ws"
@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_578355 = ref object of OpenApiRestCall
+  OpenApiRestCall_579380 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_578355](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579380](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_578355): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579380): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -112,8 +112,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_ReportsActivitiesList_578625 = ref object of OpenApiRestCall_578355
-proc url_ReportsActivitiesList_578627(protocol: Scheme; host: string; base: string;
+  Call_ReportsActivitiesList_579650 = ref object of OpenApiRestCall_579380
+proc url_ReportsActivitiesList_579652(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -129,11 +129,16 @@ proc url_ReportsActivitiesList_578627(protocol: Scheme; host: string; base: stri
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_ReportsActivitiesList_578626(path: JsonNode; query: JsonNode;
+proc validate_ReportsActivitiesList_579651(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
-  ## Retrieves a list of activities for a specific customer and application.
+  ## Retrieves a list of activities for a specific customer's account and application such as the Admin console application or the Google Drive application. For more information, see the guides for administrator and Google Drive activity reports. For more information about the activity report's parameters, see the activity parameters reference guides.
   ## 
   var section: JsonNode
   result = newJObject()
@@ -141,34 +146,37 @@ proc validate_ReportsActivitiesList_578626(path: JsonNode; query: JsonNode;
   ##   applicationName: JString (required)
   ##                  : Application name for which the events are to be retrieved.
   ##   userKey: JString (required)
-  ##          : Represents the profile id or the user email for which the data should be filtered. When 'all' is specified as the userKey, it returns usageReports for all users.
+  ##          : Represents the profile ID or the user email for which the data should be filtered. Can be all for all information, or userKey for a user's unique G Suite profile ID or their primary email address.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `applicationName` field"
-  var valid_578753 = path.getOrDefault("applicationName")
-  valid_578753 = validateParameter(valid_578753, JString, required = true,
+  var valid_579791 = path.getOrDefault("applicationName")
+  valid_579791 = validateParameter(valid_579791, JString, required = true,
+                                 default = newJString("access_transparency"))
+  if valid_579791 != nil:
+    section.add "applicationName", valid_579791
+  var valid_579792 = path.getOrDefault("userKey")
+  valid_579792 = validateParameter(valid_579792, JString, required = true,
                                  default = nil)
-  if valid_578753 != nil:
-    section.add "applicationName", valid_578753
-  var valid_578754 = path.getOrDefault("userKey")
-  valid_578754 = validateParameter(valid_578754, JString, required = true,
-                                 default = nil)
-  if valid_578754 != nil:
-    section.add "userKey", valid_578754
+  if valid_579792 != nil:
+    section.add "userKey", valid_579792
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   endTime: JString
-  ##          : Return events which occurred at or before this time.
+  ##          : Sets the end of the range of time shown in the report. The date is in the RFC 3339 format, for example 2010-10-28T10:26:35.000Z. The default value is the approximate time of the API request. An API report has three basic time concepts:  
+  ## - Date of the API's request for a report: When the API created and retrieved the report. 
+  ## - Report's start time: The beginning of the timespan shown in the report. The startTime must be before the endTime (if specified) and the current time when the request is made, or the API returns an error. 
+  ## - Report's end time: The end of the timespan shown in the report. For example, the timespan of events summarized in a report can start in April and end in May. The report itself can be requested in August.  If the endTime is not specified, the report returns all activities from the startTime until the current time or the most recent 180 days if the startTime is more than 180 days in the past.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   ##   oauth_token: JString
   ##              : OAuth 2.0 token for the current user.
   ##   eventName: JString
-  ##            : Name of the event being queried.
+  ##            : The name of the event being queried by the API. Each eventName is related to a specific G Suite service or feature which the API organizes into types of events. An example is the Google Calendar events in the Admin console application's reports. The Calendar Settings type structure has all of the Calendar eventName activities reported by the API. When an administrator changes a Calendar setting, the API reports this activity in the Calendar Settings type and eventName parameters. For more information about eventName query strings and parameters, see the list of event names for various applications above in applicationName.
   ##   startTime: JString
-  ##            : Return events which occurred at or after this time.
+  ##            : Sets the beginning of the range of time shown in the report. The date is in the RFC 3339 format, for example 2010-10-28T10:26:35.000Z. The report returns all activities from startTime until endTime. The startTime must be before the endTime (if specified) and the current time when the request is made, or the API returns an error.
   ##   alt: JString
   ##      : Data format for the response.
   ##   userIp: JString
@@ -176,99 +184,118 @@ proc validate_ReportsActivitiesList_578626(path: JsonNode; query: JsonNode;
   ##   quotaUser: JString
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   actorIpAddress: JString
-  ##                 : IP Address of host where the event was performed. Supports both IPv4 and IPv6 addresses.
+  ##                 : The Internet Protocol (IP) Address of host where the event was performed. This is an additional way to filter a report's summary using the IP address of the user whose activity is being reported. This IP address may or may not reflect the user's physical location. For example, the IP address can be the user's proxy server's address or a virtual private network (VPN) address. This parameter supports both IPv4 and IPv6 address versions.
   ##   pageToken: JString
-  ##            : Token to specify next page.
+  ##            : The token to specify next page. A report with multiple pages has a nextPageToken property in the response. In your follow-on request getting the next page of the report, enter the nextPageToken value in the pageToken query string.
   ##   orgUnitID: JString
-  ##            : the organizational unit's(OU) ID to filter activities from users belonging to a specific OU or one of its sub-OU(s)
+  ##            : ID of the organizational unit to report on. Activity records will be shown only for users who belong to the specified organizational unit. Data before Dec 17, 2018 doesn't appear in the filtered results.
   ##   filters: JString
-  ##          : Event parameters in the form [parameter1 name][operator][parameter1 value],[parameter2 name][operator][parameter2 value],...
+  ##          : The filters query string is a comma-separated list. The list is composed of event parameters that are manipulated by relational operators. Event parameters are in the form [parameter1 name][relational operator][parameter1 value],[parameter2 name][relational operator][parameter2 value],... 
+  ## These event parameters are associated with a specific eventName. An empty report is returned if the filtered request's parameter does not belong to the eventName. For more information about eventName parameters, see the list of event names for various applications above in applicationName.
+  ## 
+  ## In the following Admin Activity example, the <> operator is URL-encoded in the request's query string (%3C%3E):
+  ## GET...&eventName=CHANGE_CALENDAR_SETTING &filters=NEW_VALUE%3C%3EREAD_ONLY_ACCESS
+  ## 
+  ## In the following Drive example, the list can be a view or edit event's doc_id parameter with a value that is manipulated by an 'equal to' (==) or 'not equal to' (<>) relational operator. In the first example, the report returns each edited document's doc_id. In the second example, the report returns each viewed document's doc_id that equals the value 12345 and does not return any viewed document's which have a doc_id value of 98765. The <> operator is URL-encoded in the request's query string (%3C%3E):
+  ## 
+  ## GET...&eventName=edit&filters=doc_id GET...&eventName=view&filters=doc_id==12345,doc_id%3C%3E98765
+  ## 
+  ## The relational operators include:  
+  ## - == - 'equal to'. 
+  ## - <> - 'not equal to'. It is URL-encoded (%3C%3E). 
+  ## - < - 'less than'. It is URL-encoded (%3C). 
+  ## - <= - 'less than or equal to'. It is URL-encoded (%3C=). 
+  ## - > - 'greater than'. It is URL-encoded (%3E). 
+  ## - >= - 'greater than or equal to'. It is URL-encoded (%3E=).  
+  ## Note: The API doesn't accept multiple values of a parameter. If a particular parameter is supplied more than once in the API request, the API only accepts the last value of that request parameter.
+  ## In addition, if an invalid request parameter is supplied in the API request, the API ignores that request parameter and returns the response corresponding to the remaining valid request parameters. If no parameters are requested, all parameters are returned.
   ##   customerId: JString
-  ##             : Represents the customer for which the data is to be fetched.
+  ##             : The unique ID of the customer to retrieve data for.
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: JInt
-  ##             : Number of activity records to be shown in each page.
+  ##             : Determines how many activity records are shown on each response page. For example, if the request sets maxResults=1 and the report has two activities, the report has two pages. The response's nextPageToken property has the token to the second page. The maxResults query string is optional in the request. The default value is 1000.
   section = newJObject()
-  var valid_578755 = query.getOrDefault("key")
-  valid_578755 = validateParameter(valid_578755, JString, required = false,
+  var valid_579793 = query.getOrDefault("key")
+  valid_579793 = validateParameter(valid_579793, JString, required = false,
                                  default = nil)
-  if valid_578755 != nil:
-    section.add "key", valid_578755
-  var valid_578756 = query.getOrDefault("endTime")
-  valid_578756 = validateParameter(valid_578756, JString, required = false,
+  if valid_579793 != nil:
+    section.add "key", valid_579793
+  var valid_579794 = query.getOrDefault("endTime")
+  valid_579794 = validateParameter(valid_579794, JString, required = false,
                                  default = nil)
-  if valid_578756 != nil:
-    section.add "endTime", valid_578756
-  var valid_578770 = query.getOrDefault("prettyPrint")
-  valid_578770 = validateParameter(valid_578770, JBool, required = false,
+  if valid_579794 != nil:
+    section.add "endTime", valid_579794
+  var valid_579795 = query.getOrDefault("prettyPrint")
+  valid_579795 = validateParameter(valid_579795, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578770 != nil:
-    section.add "prettyPrint", valid_578770
-  var valid_578771 = query.getOrDefault("oauth_token")
-  valid_578771 = validateParameter(valid_578771, JString, required = false,
+  if valid_579795 != nil:
+    section.add "prettyPrint", valid_579795
+  var valid_579796 = query.getOrDefault("oauth_token")
+  valid_579796 = validateParameter(valid_579796, JString, required = false,
                                  default = nil)
-  if valid_578771 != nil:
-    section.add "oauth_token", valid_578771
-  var valid_578772 = query.getOrDefault("eventName")
-  valid_578772 = validateParameter(valid_578772, JString, required = false,
+  if valid_579796 != nil:
+    section.add "oauth_token", valid_579796
+  var valid_579797 = query.getOrDefault("eventName")
+  valid_579797 = validateParameter(valid_579797, JString, required = false,
                                  default = nil)
-  if valid_578772 != nil:
-    section.add "eventName", valid_578772
-  var valid_578773 = query.getOrDefault("startTime")
-  valid_578773 = validateParameter(valid_578773, JString, required = false,
+  if valid_579797 != nil:
+    section.add "eventName", valid_579797
+  var valid_579798 = query.getOrDefault("startTime")
+  valid_579798 = validateParameter(valid_579798, JString, required = false,
                                  default = nil)
-  if valid_578773 != nil:
-    section.add "startTime", valid_578773
-  var valid_578774 = query.getOrDefault("alt")
-  valid_578774 = validateParameter(valid_578774, JString, required = false,
+  if valid_579798 != nil:
+    section.add "startTime", valid_579798
+  var valid_579799 = query.getOrDefault("alt")
+  valid_579799 = validateParameter(valid_579799, JString, required = false,
                                  default = newJString("json"))
-  if valid_578774 != nil:
-    section.add "alt", valid_578774
-  var valid_578775 = query.getOrDefault("userIp")
-  valid_578775 = validateParameter(valid_578775, JString, required = false,
+  if valid_579799 != nil:
+    section.add "alt", valid_579799
+  var valid_579800 = query.getOrDefault("userIp")
+  valid_579800 = validateParameter(valid_579800, JString, required = false,
                                  default = nil)
-  if valid_578775 != nil:
-    section.add "userIp", valid_578775
-  var valid_578776 = query.getOrDefault("quotaUser")
-  valid_578776 = validateParameter(valid_578776, JString, required = false,
+  if valid_579800 != nil:
+    section.add "userIp", valid_579800
+  var valid_579801 = query.getOrDefault("quotaUser")
+  valid_579801 = validateParameter(valid_579801, JString, required = false,
                                  default = nil)
-  if valid_578776 != nil:
-    section.add "quotaUser", valid_578776
-  var valid_578777 = query.getOrDefault("actorIpAddress")
-  valid_578777 = validateParameter(valid_578777, JString, required = false,
+  if valid_579801 != nil:
+    section.add "quotaUser", valid_579801
+  var valid_579802 = query.getOrDefault("actorIpAddress")
+  valid_579802 = validateParameter(valid_579802, JString, required = false,
                                  default = nil)
-  if valid_578777 != nil:
-    section.add "actorIpAddress", valid_578777
-  var valid_578778 = query.getOrDefault("pageToken")
-  valid_578778 = validateParameter(valid_578778, JString, required = false,
+  if valid_579802 != nil:
+    section.add "actorIpAddress", valid_579802
+  var valid_579803 = query.getOrDefault("pageToken")
+  valid_579803 = validateParameter(valid_579803, JString, required = false,
                                  default = nil)
-  if valid_578778 != nil:
-    section.add "pageToken", valid_578778
-  var valid_578779 = query.getOrDefault("orgUnitID")
-  valid_578779 = validateParameter(valid_578779, JString, required = false,
+  if valid_579803 != nil:
+    section.add "pageToken", valid_579803
+  var valid_579804 = query.getOrDefault("orgUnitID")
+  valid_579804 = validateParameter(valid_579804, JString, required = false,
                                  default = newJString(""))
-  if valid_578779 != nil:
-    section.add "orgUnitID", valid_578779
-  var valid_578780 = query.getOrDefault("filters")
-  valid_578780 = validateParameter(valid_578780, JString, required = false,
+  if valid_579804 != nil:
+    section.add "orgUnitID", valid_579804
+  var valid_579805 = query.getOrDefault("filters")
+  valid_579805 = validateParameter(valid_579805, JString, required = false,
                                  default = nil)
-  if valid_578780 != nil:
-    section.add "filters", valid_578780
-  var valid_578781 = query.getOrDefault("customerId")
-  valid_578781 = validateParameter(valid_578781, JString, required = false,
+  if valid_579805 != nil:
+    section.add "filters", valid_579805
+  var valid_579806 = query.getOrDefault("customerId")
+  valid_579806 = validateParameter(valid_579806, JString, required = false,
                                  default = nil)
-  if valid_578781 != nil:
-    section.add "customerId", valid_578781
-  var valid_578782 = query.getOrDefault("fields")
-  valid_578782 = validateParameter(valid_578782, JString, required = false,
+  if valid_579806 != nil:
+    section.add "customerId", valid_579806
+  var valid_579807 = query.getOrDefault("fields")
+  valid_579807 = validateParameter(valid_579807, JString, required = false,
                                  default = nil)
-  if valid_578782 != nil:
-    section.add "fields", valid_578782
-  var valid_578783 = query.getOrDefault("maxResults")
-  valid_578783 = validateParameter(valid_578783, JInt, required = false, default = nil)
-  if valid_578783 != nil:
-    section.add "maxResults", valid_578783
+  if valid_579807 != nil:
+    section.add "fields", valid_579807
+  var valid_579809 = query.getOrDefault("maxResults")
+  valid_579809 = validateParameter(valid_579809, JInt, required = false,
+                                 default = newJInt(1000))
+  if valid_579809 != nil:
+    section.add "maxResults", valid_579809
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -277,42 +304,46 @@ proc validate_ReportsActivitiesList_578626(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578806: Call_ReportsActivitiesList_578625; path: JsonNode;
+proc call*(call_579832: Call_ReportsActivitiesList_579650; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
-  ## Retrieves a list of activities for a specific customer and application.
+  ## Retrieves a list of activities for a specific customer's account and application such as the Admin console application or the Google Drive application. For more information, see the guides for administrator and Google Drive activity reports. For more information about the activity report's parameters, see the activity parameters reference guides.
   ## 
-  let valid = call_578806.validator(path, query, header, formData, body)
-  let scheme = call_578806.pickScheme
+  let valid = call_579832.validator(path, query, header, formData, body)
+  let scheme = call_579832.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578806.url(scheme.get, call_578806.host, call_578806.base,
-                         call_578806.route, valid.getOrDefault("path"),
+  let url = call_579832.url(scheme.get, call_579832.host, call_579832.base,
+                         call_579832.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578806, url, valid)
+  result = hook(call_579832, url, valid)
 
-proc call*(call_578877: Call_ReportsActivitiesList_578625; applicationName: string;
-          userKey: string; key: string = ""; endTime: string = "";
-          prettyPrint: bool = true; oauthToken: string = ""; eventName: string = "";
-          startTime: string = ""; alt: string = "json"; userIp: string = "";
-          quotaUser: string = ""; actorIpAddress: string = ""; pageToken: string = "";
-          orgUnitID: string = ""; filters: string = ""; customerId: string = "";
-          fields: string = ""; maxResults: int = 0): Recallable =
+proc call*(call_579903: Call_ReportsActivitiesList_579650; userKey: string;
+          key: string = ""; endTime: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; eventName: string = "";
+          applicationName: string = "access_transparency"; startTime: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          actorIpAddress: string = ""; pageToken: string = ""; orgUnitID: string = "";
+          filters: string = ""; customerId: string = ""; fields: string = "";
+          maxResults: int = 1000): Recallable =
   ## reportsActivitiesList
-  ## Retrieves a list of activities for a specific customer and application.
+  ## Retrieves a list of activities for a specific customer's account and application such as the Admin console application or the Google Drive application. For more information, see the guides for administrator and Google Drive activity reports. For more information about the activity report's parameters, see the activity parameters reference guides.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   endTime: string
-  ##          : Return events which occurred at or before this time.
+  ##          : Sets the end of the range of time shown in the report. The date is in the RFC 3339 format, for example 2010-10-28T10:26:35.000Z. The default value is the approximate time of the API request. An API report has three basic time concepts:  
+  ## - Date of the API's request for a report: When the API created and retrieved the report. 
+  ## - Report's start time: The beginning of the timespan shown in the report. The startTime must be before the endTime (if specified) and the current time when the request is made, or the API returns an error. 
+  ## - Report's end time: The end of the timespan shown in the report. For example, the timespan of events summarized in a report can start in April and end in May. The report itself can be requested in August.  If the endTime is not specified, the report returns all activities from the startTime until the current time or the most recent 180 days if the startTime is more than 180 days in the past.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
   ##             : OAuth 2.0 token for the current user.
   ##   eventName: string
-  ##            : Name of the event being queried.
+  ##            : The name of the event being queried by the API. Each eventName is related to a specific G Suite service or feature which the API organizes into types of events. An example is the Google Calendar events in the Admin console application's reports. The Calendar Settings type structure has all of the Calendar eventName activities reported by the API. When an administrator changes a Calendar setting, the API reports this activity in the Calendar Settings type and eventName parameters. For more information about eventName query strings and parameters, see the list of event names for various applications above in applicationName.
   ##   applicationName: string (required)
   ##                  : Application name for which the events are to be retrieved.
   ##   startTime: string
-  ##            : Return events which occurred at or after this time.
+  ##            : Sets the beginning of the range of time shown in the report. The date is in the RFC 3339 format, for example 2010-10-28T10:26:35.000Z. The report returns all activities from startTime until endTime. The startTime must be before the endTime (if specified) and the current time when the request is made, or the API returns an error.
   ##   alt: string
   ##      : Data format for the response.
   ##   userIp: string
@@ -320,52 +351,70 @@ proc call*(call_578877: Call_ReportsActivitiesList_578625; applicationName: stri
   ##   quotaUser: string
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   actorIpAddress: string
-  ##                 : IP Address of host where the event was performed. Supports both IPv4 and IPv6 addresses.
+  ##                 : The Internet Protocol (IP) Address of host where the event was performed. This is an additional way to filter a report's summary using the IP address of the user whose activity is being reported. This IP address may or may not reflect the user's physical location. For example, the IP address can be the user's proxy server's address or a virtual private network (VPN) address. This parameter supports both IPv4 and IPv6 address versions.
   ##   pageToken: string
-  ##            : Token to specify next page.
+  ##            : The token to specify next page. A report with multiple pages has a nextPageToken property in the response. In your follow-on request getting the next page of the report, enter the nextPageToken value in the pageToken query string.
   ##   orgUnitID: string
-  ##            : the organizational unit's(OU) ID to filter activities from users belonging to a specific OU or one of its sub-OU(s)
+  ##            : ID of the organizational unit to report on. Activity records will be shown only for users who belong to the specified organizational unit. Data before Dec 17, 2018 doesn't appear in the filtered results.
   ##   filters: string
-  ##          : Event parameters in the form [parameter1 name][operator][parameter1 value],[parameter2 name][operator][parameter2 value],...
+  ##          : The filters query string is a comma-separated list. The list is composed of event parameters that are manipulated by relational operators. Event parameters are in the form [parameter1 name][relational operator][parameter1 value],[parameter2 name][relational operator][parameter2 value],... 
+  ## These event parameters are associated with a specific eventName. An empty report is returned if the filtered request's parameter does not belong to the eventName. For more information about eventName parameters, see the list of event names for various applications above in applicationName.
+  ## 
+  ## In the following Admin Activity example, the <> operator is URL-encoded in the request's query string (%3C%3E):
+  ## GET...&eventName=CHANGE_CALENDAR_SETTING &filters=NEW_VALUE%3C%3EREAD_ONLY_ACCESS
+  ## 
+  ## In the following Drive example, the list can be a view or edit event's doc_id parameter with a value that is manipulated by an 'equal to' (==) or 'not equal to' (<>) relational operator. In the first example, the report returns each edited document's doc_id. In the second example, the report returns each viewed document's doc_id that equals the value 12345 and does not return any viewed document's which have a doc_id value of 98765. The <> operator is URL-encoded in the request's query string (%3C%3E):
+  ## 
+  ## GET...&eventName=edit&filters=doc_id GET...&eventName=view&filters=doc_id==12345,doc_id%3C%3E98765
+  ## 
+  ## The relational operators include:  
+  ## - == - 'equal to'. 
+  ## - <> - 'not equal to'. It is URL-encoded (%3C%3E). 
+  ## - < - 'less than'. It is URL-encoded (%3C). 
+  ## - <= - 'less than or equal to'. It is URL-encoded (%3C=). 
+  ## - > - 'greater than'. It is URL-encoded (%3E). 
+  ## - >= - 'greater than or equal to'. It is URL-encoded (%3E=).  
+  ## Note: The API doesn't accept multiple values of a parameter. If a particular parameter is supplied more than once in the API request, the API only accepts the last value of that request parameter.
+  ## In addition, if an invalid request parameter is supplied in the API request, the API ignores that request parameter and returns the response corresponding to the remaining valid request parameters. If no parameters are requested, all parameters are returned.
   ##   customerId: string
-  ##             : Represents the customer for which the data is to be fetched.
+  ##             : The unique ID of the customer to retrieve data for.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: int
-  ##             : Number of activity records to be shown in each page.
+  ##             : Determines how many activity records are shown on each response page. For example, if the request sets maxResults=1 and the report has two activities, the report has two pages. The response's nextPageToken property has the token to the second page. The maxResults query string is optional in the request. The default value is 1000.
   ##   userKey: string (required)
-  ##          : Represents the profile id or the user email for which the data should be filtered. When 'all' is specified as the userKey, it returns usageReports for all users.
-  var path_578878 = newJObject()
-  var query_578880 = newJObject()
-  add(query_578880, "key", newJString(key))
-  add(query_578880, "endTime", newJString(endTime))
-  add(query_578880, "prettyPrint", newJBool(prettyPrint))
-  add(query_578880, "oauth_token", newJString(oauthToken))
-  add(query_578880, "eventName", newJString(eventName))
-  add(path_578878, "applicationName", newJString(applicationName))
-  add(query_578880, "startTime", newJString(startTime))
-  add(query_578880, "alt", newJString(alt))
-  add(query_578880, "userIp", newJString(userIp))
-  add(query_578880, "quotaUser", newJString(quotaUser))
-  add(query_578880, "actorIpAddress", newJString(actorIpAddress))
-  add(query_578880, "pageToken", newJString(pageToken))
-  add(query_578880, "orgUnitID", newJString(orgUnitID))
-  add(query_578880, "filters", newJString(filters))
-  add(query_578880, "customerId", newJString(customerId))
-  add(query_578880, "fields", newJString(fields))
-  add(query_578880, "maxResults", newJInt(maxResults))
-  add(path_578878, "userKey", newJString(userKey))
-  result = call_578877.call(path_578878, query_578880, nil, nil, nil)
+  ##          : Represents the profile ID or the user email for which the data should be filtered. Can be all for all information, or userKey for a user's unique G Suite profile ID or their primary email address.
+  var path_579904 = newJObject()
+  var query_579906 = newJObject()
+  add(query_579906, "key", newJString(key))
+  add(query_579906, "endTime", newJString(endTime))
+  add(query_579906, "prettyPrint", newJBool(prettyPrint))
+  add(query_579906, "oauth_token", newJString(oauthToken))
+  add(query_579906, "eventName", newJString(eventName))
+  add(path_579904, "applicationName", newJString(applicationName))
+  add(query_579906, "startTime", newJString(startTime))
+  add(query_579906, "alt", newJString(alt))
+  add(query_579906, "userIp", newJString(userIp))
+  add(query_579906, "quotaUser", newJString(quotaUser))
+  add(query_579906, "actorIpAddress", newJString(actorIpAddress))
+  add(query_579906, "pageToken", newJString(pageToken))
+  add(query_579906, "orgUnitID", newJString(orgUnitID))
+  add(query_579906, "filters", newJString(filters))
+  add(query_579906, "customerId", newJString(customerId))
+  add(query_579906, "fields", newJString(fields))
+  add(query_579906, "maxResults", newJInt(maxResults))
+  add(path_579904, "userKey", newJString(userKey))
+  result = call_579903.call(path_579904, query_579906, nil, nil, nil)
 
-var reportsActivitiesList* = Call_ReportsActivitiesList_578625(
+var reportsActivitiesList* = Call_ReportsActivitiesList_579650(
     name: "reportsActivitiesList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/activity/users/{userKey}/applications/{applicationName}",
-    validator: validate_ReportsActivitiesList_578626, base: "/admin/reports/v1",
-    url: url_ReportsActivitiesList_578627, schemes: {Scheme.Https})
+    validator: validate_ReportsActivitiesList_579651, base: "/admin/reports/v1",
+    url: url_ReportsActivitiesList_579652, schemes: {Scheme.Https})
 type
-  Call_ReportsActivitiesWatch_578919 = ref object of OpenApiRestCall_578355
-proc url_ReportsActivitiesWatch_578921(protocol: Scheme; host: string; base: string;
+  Call_ReportsActivitiesWatch_579945 = ref object of OpenApiRestCall_579380
+proc url_ReportsActivitiesWatch_579947(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -382,11 +431,16 @@ proc url_ReportsActivitiesWatch_578921(protocol: Scheme; host: string; base: str
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_ReportsActivitiesWatch_578920(path: JsonNode; query: JsonNode;
+proc validate_ReportsActivitiesWatch_579946(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
-  ## Push changes to activities
+  ## Start receiving notifications for account activities. For more information, see Receiving Push Notifications.
   ## 
   var section: JsonNode
   result = newJObject()
@@ -394,34 +448,37 @@ proc validate_ReportsActivitiesWatch_578920(path: JsonNode; query: JsonNode;
   ##   applicationName: JString (required)
   ##                  : Application name for which the events are to be retrieved.
   ##   userKey: JString (required)
-  ##          : Represents the profile id or the user email for which the data should be filtered. When 'all' is specified as the userKey, it returns usageReports for all users.
+  ##          : Represents the profile ID or the user email for which the data should be filtered. Can be all for all information, or userKey for a user's unique G Suite profile ID or their primary email address.
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `applicationName` field"
-  var valid_578922 = path.getOrDefault("applicationName")
-  valid_578922 = validateParameter(valid_578922, JString, required = true,
+  var valid_579948 = path.getOrDefault("applicationName")
+  valid_579948 = validateParameter(valid_579948, JString, required = true,
+                                 default = newJString("access_transparency"))
+  if valid_579948 != nil:
+    section.add "applicationName", valid_579948
+  var valid_579949 = path.getOrDefault("userKey")
+  valid_579949 = validateParameter(valid_579949, JString, required = true,
                                  default = nil)
-  if valid_578922 != nil:
-    section.add "applicationName", valid_578922
-  var valid_578923 = path.getOrDefault("userKey")
-  valid_578923 = validateParameter(valid_578923, JString, required = true,
-                                 default = nil)
-  if valid_578923 != nil:
-    section.add "userKey", valid_578923
+  if valid_579949 != nil:
+    section.add "userKey", valid_579949
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   endTime: JString
-  ##          : Return events which occurred at or before this time.
+  ##          : Sets the end of the range of time shown in the report. The date is in the RFC 3339 format, for example 2010-10-28T10:26:35.000Z. The default value is the approximate time of the API request. An API report has three basic time concepts:  
+  ## - Date of the API's request for a report: When the API created and retrieved the report. 
+  ## - Report's start time: The beginning of the timespan shown in the report. The startTime must be before the endTime (if specified) and the current time when the request is made, or the API returns an error. 
+  ## - Report's end time: The end of the timespan shown in the report. For example, the timespan of events summarized in a report can start in April and end in May. The report itself can be requested in August.  If the endTime is not specified, the report returns all activities from the startTime until the current time or the most recent 180 days if the startTime is more than 180 days in the past.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   ##   oauth_token: JString
   ##              : OAuth 2.0 token for the current user.
   ##   eventName: JString
-  ##            : Name of the event being queried.
+  ##            : The name of the event being queried by the API. Each eventName is related to a specific G Suite service or feature which the API organizes into types of events. An example is the Google Calendar events in the Admin console application's reports. The Calendar Settings type structure has all of the Calendar eventName activities reported by the API. When an administrator changes a Calendar setting, the API reports this activity in the Calendar Settings type and eventName parameters. For more information about eventName query strings and parameters, see the list of event names for various applications above in applicationName.
   ##   startTime: JString
-  ##            : Return events which occurred at or after this time.
+  ##            : Sets the beginning of the range of time shown in the report. The date is in the RFC 3339 format, for example 2010-10-28T10:26:35.000Z. The report returns all activities from startTime until endTime. The startTime must be before the endTime (if specified) and the current time when the request is made, or the API returns an error.
   ##   alt: JString
   ##      : Data format for the response.
   ##   userIp: JString
@@ -429,99 +486,118 @@ proc validate_ReportsActivitiesWatch_578920(path: JsonNode; query: JsonNode;
   ##   quotaUser: JString
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   actorIpAddress: JString
-  ##                 : IP Address of host where the event was performed. Supports both IPv4 and IPv6 addresses.
+  ##                 : The Internet Protocol (IP) Address of host where the event was performed. This is an additional way to filter a report's summary using the IP address of the user whose activity is being reported. This IP address may or may not reflect the user's physical location. For example, the IP address can be the user's proxy server's address or a virtual private network (VPN) address. This parameter supports both IPv4 and IPv6 address versions.
   ##   pageToken: JString
-  ##            : Token to specify next page.
+  ##            : The token to specify next page. A report with multiple pages has a nextPageToken property in the response. In your follow-on request getting the next page of the report, enter the nextPageToken value in the pageToken query string.
   ##   orgUnitID: JString
-  ##            : the organizational unit's(OU) ID to filter activities from users belonging to a specific OU or one of its sub-OU(s)
+  ##            : ID of the organizational unit to report on. Activity records will be shown only for users who belong to the specified organizational unit. Data before Dec 17, 2018 doesn't appear in the filtered results.
   ##   filters: JString
-  ##          : Event parameters in the form [parameter1 name][operator][parameter1 value],[parameter2 name][operator][parameter2 value],...
+  ##          : The filters query string is a comma-separated list. The list is composed of event parameters that are manipulated by relational operators. Event parameters are in the form [parameter1 name][relational operator][parameter1 value],[parameter2 name][relational operator][parameter2 value],... 
+  ## These event parameters are associated with a specific eventName. An empty report is returned if the filtered request's parameter does not belong to the eventName. For more information about eventName parameters, see the list of event names for various applications above in applicationName.
+  ## 
+  ## In the following Admin Activity example, the <> operator is URL-encoded in the request's query string (%3C%3E):
+  ## GET...&eventName=CHANGE_CALENDAR_SETTING &filters=NEW_VALUE%3C%3EREAD_ONLY_ACCESS
+  ## 
+  ## In the following Drive example, the list can be a view or edit event's doc_id parameter with a value that is manipulated by an 'equal to' (==) or 'not equal to' (<>) relational operator. In the first example, the report returns each edited document's doc_id. In the second example, the report returns each viewed document's doc_id that equals the value 12345 and does not return any viewed document's which have a doc_id value of 98765. The <> operator is URL-encoded in the request's query string (%3C%3E):
+  ## 
+  ## GET...&eventName=edit&filters=doc_id GET...&eventName=view&filters=doc_id==12345,doc_id%3C%3E98765
+  ## 
+  ## The relational operators include:  
+  ## - == - 'equal to'. 
+  ## - <> - 'not equal to'. It is URL-encoded (%3C%3E). 
+  ## - < - 'less than'. It is URL-encoded (%3C). 
+  ## - <= - 'less than or equal to'. It is URL-encoded (%3C=). 
+  ## - > - 'greater than'. It is URL-encoded (%3E). 
+  ## - >= - 'greater than or equal to'. It is URL-encoded (%3E=).  
+  ## Note: The API doesn't accept multiple values of a parameter. If a particular parameter is supplied more than once in the API request, the API only accepts the last value of that request parameter.
+  ## In addition, if an invalid request parameter is supplied in the API request, the API ignores that request parameter and returns the response corresponding to the remaining valid request parameters. If no parameters are requested, all parameters are returned.
   ##   customerId: JString
-  ##             : Represents the customer for which the data is to be fetched.
+  ##             : The unique ID of the customer to retrieve data for.
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: JInt
-  ##             : Number of activity records to be shown in each page.
+  ##             : Determines how many activity records are shown on each response page. For example, if the request sets maxResults=1 and the report has two activities, the report has two pages. The response's nextPageToken property has the token to the second page. The maxResults query string is optional in the request. The default value is 1000.
   section = newJObject()
-  var valid_578924 = query.getOrDefault("key")
-  valid_578924 = validateParameter(valid_578924, JString, required = false,
+  var valid_579950 = query.getOrDefault("key")
+  valid_579950 = validateParameter(valid_579950, JString, required = false,
                                  default = nil)
-  if valid_578924 != nil:
-    section.add "key", valid_578924
-  var valid_578925 = query.getOrDefault("endTime")
-  valid_578925 = validateParameter(valid_578925, JString, required = false,
+  if valid_579950 != nil:
+    section.add "key", valid_579950
+  var valid_579951 = query.getOrDefault("endTime")
+  valid_579951 = validateParameter(valid_579951, JString, required = false,
                                  default = nil)
-  if valid_578925 != nil:
-    section.add "endTime", valid_578925
-  var valid_578926 = query.getOrDefault("prettyPrint")
-  valid_578926 = validateParameter(valid_578926, JBool, required = false,
+  if valid_579951 != nil:
+    section.add "endTime", valid_579951
+  var valid_579952 = query.getOrDefault("prettyPrint")
+  valid_579952 = validateParameter(valid_579952, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578926 != nil:
-    section.add "prettyPrint", valid_578926
-  var valid_578927 = query.getOrDefault("oauth_token")
-  valid_578927 = validateParameter(valid_578927, JString, required = false,
+  if valid_579952 != nil:
+    section.add "prettyPrint", valid_579952
+  var valid_579953 = query.getOrDefault("oauth_token")
+  valid_579953 = validateParameter(valid_579953, JString, required = false,
                                  default = nil)
-  if valid_578927 != nil:
-    section.add "oauth_token", valid_578927
-  var valid_578928 = query.getOrDefault("eventName")
-  valid_578928 = validateParameter(valid_578928, JString, required = false,
+  if valid_579953 != nil:
+    section.add "oauth_token", valid_579953
+  var valid_579954 = query.getOrDefault("eventName")
+  valid_579954 = validateParameter(valid_579954, JString, required = false,
                                  default = nil)
-  if valid_578928 != nil:
-    section.add "eventName", valid_578928
-  var valid_578929 = query.getOrDefault("startTime")
-  valid_578929 = validateParameter(valid_578929, JString, required = false,
+  if valid_579954 != nil:
+    section.add "eventName", valid_579954
+  var valid_579955 = query.getOrDefault("startTime")
+  valid_579955 = validateParameter(valid_579955, JString, required = false,
                                  default = nil)
-  if valid_578929 != nil:
-    section.add "startTime", valid_578929
-  var valid_578930 = query.getOrDefault("alt")
-  valid_578930 = validateParameter(valid_578930, JString, required = false,
+  if valid_579955 != nil:
+    section.add "startTime", valid_579955
+  var valid_579956 = query.getOrDefault("alt")
+  valid_579956 = validateParameter(valid_579956, JString, required = false,
                                  default = newJString("json"))
-  if valid_578930 != nil:
-    section.add "alt", valid_578930
-  var valid_578931 = query.getOrDefault("userIp")
-  valid_578931 = validateParameter(valid_578931, JString, required = false,
+  if valid_579956 != nil:
+    section.add "alt", valid_579956
+  var valid_579957 = query.getOrDefault("userIp")
+  valid_579957 = validateParameter(valid_579957, JString, required = false,
                                  default = nil)
-  if valid_578931 != nil:
-    section.add "userIp", valid_578931
-  var valid_578932 = query.getOrDefault("quotaUser")
-  valid_578932 = validateParameter(valid_578932, JString, required = false,
+  if valid_579957 != nil:
+    section.add "userIp", valid_579957
+  var valid_579958 = query.getOrDefault("quotaUser")
+  valid_579958 = validateParameter(valid_579958, JString, required = false,
                                  default = nil)
-  if valid_578932 != nil:
-    section.add "quotaUser", valid_578932
-  var valid_578933 = query.getOrDefault("actorIpAddress")
-  valid_578933 = validateParameter(valid_578933, JString, required = false,
+  if valid_579958 != nil:
+    section.add "quotaUser", valid_579958
+  var valid_579959 = query.getOrDefault("actorIpAddress")
+  valid_579959 = validateParameter(valid_579959, JString, required = false,
                                  default = nil)
-  if valid_578933 != nil:
-    section.add "actorIpAddress", valid_578933
-  var valid_578934 = query.getOrDefault("pageToken")
-  valid_578934 = validateParameter(valid_578934, JString, required = false,
+  if valid_579959 != nil:
+    section.add "actorIpAddress", valid_579959
+  var valid_579960 = query.getOrDefault("pageToken")
+  valid_579960 = validateParameter(valid_579960, JString, required = false,
                                  default = nil)
-  if valid_578934 != nil:
-    section.add "pageToken", valid_578934
-  var valid_578935 = query.getOrDefault("orgUnitID")
-  valid_578935 = validateParameter(valid_578935, JString, required = false,
+  if valid_579960 != nil:
+    section.add "pageToken", valid_579960
+  var valid_579961 = query.getOrDefault("orgUnitID")
+  valid_579961 = validateParameter(valid_579961, JString, required = false,
                                  default = newJString(""))
-  if valid_578935 != nil:
-    section.add "orgUnitID", valid_578935
-  var valid_578936 = query.getOrDefault("filters")
-  valid_578936 = validateParameter(valid_578936, JString, required = false,
+  if valid_579961 != nil:
+    section.add "orgUnitID", valid_579961
+  var valid_579962 = query.getOrDefault("filters")
+  valid_579962 = validateParameter(valid_579962, JString, required = false,
                                  default = nil)
-  if valid_578936 != nil:
-    section.add "filters", valid_578936
-  var valid_578937 = query.getOrDefault("customerId")
-  valid_578937 = validateParameter(valid_578937, JString, required = false,
+  if valid_579962 != nil:
+    section.add "filters", valid_579962
+  var valid_579963 = query.getOrDefault("customerId")
+  valid_579963 = validateParameter(valid_579963, JString, required = false,
                                  default = nil)
-  if valid_578937 != nil:
-    section.add "customerId", valid_578937
-  var valid_578938 = query.getOrDefault("fields")
-  valid_578938 = validateParameter(valid_578938, JString, required = false,
+  if valid_579963 != nil:
+    section.add "customerId", valid_579963
+  var valid_579964 = query.getOrDefault("fields")
+  valid_579964 = validateParameter(valid_579964, JString, required = false,
                                  default = nil)
-  if valid_578938 != nil:
-    section.add "fields", valid_578938
-  var valid_578939 = query.getOrDefault("maxResults")
-  valid_578939 = validateParameter(valid_578939, JInt, required = false, default = nil)
-  if valid_578939 != nil:
-    section.add "maxResults", valid_578939
+  if valid_579964 != nil:
+    section.add "fields", valid_579964
+  var valid_579965 = query.getOrDefault("maxResults")
+  valid_579965 = validateParameter(valid_579965, JInt, required = false,
+                                 default = newJInt(1000))
+  if valid_579965 != nil:
+    section.add "maxResults", valid_579965
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -533,43 +609,46 @@ proc validate_ReportsActivitiesWatch_578920(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578941: Call_ReportsActivitiesWatch_578919; path: JsonNode;
+proc call*(call_579967: Call_ReportsActivitiesWatch_579945; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
-  ## Push changes to activities
+  ## Start receiving notifications for account activities. For more information, see Receiving Push Notifications.
   ## 
-  let valid = call_578941.validator(path, query, header, formData, body)
-  let scheme = call_578941.pickScheme
+  let valid = call_579967.validator(path, query, header, formData, body)
+  let scheme = call_579967.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578941.url(scheme.get, call_578941.host, call_578941.base,
-                         call_578941.route, valid.getOrDefault("path"),
+  let url = call_579967.url(scheme.get, call_579967.host, call_579967.base,
+                         call_579967.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578941, url, valid)
+  result = hook(call_579967, url, valid)
 
-proc call*(call_578942: Call_ReportsActivitiesWatch_578919;
-          applicationName: string; userKey: string; key: string = "";
-          endTime: string = ""; prettyPrint: bool = true; oauthToken: string = "";
-          eventName: string = ""; startTime: string = ""; alt: string = "json";
-          userIp: string = ""; quotaUser: string = ""; actorIpAddress: string = "";
-          pageToken: string = ""; orgUnitID: string = ""; filters: string = "";
-          customerId: string = ""; resource: JsonNode = nil; fields: string = "";
-          maxResults: int = 0): Recallable =
+proc call*(call_579968: Call_ReportsActivitiesWatch_579945; userKey: string;
+          key: string = ""; endTime: string = ""; prettyPrint: bool = true;
+          oauthToken: string = ""; eventName: string = "";
+          applicationName: string = "access_transparency"; startTime: string = "";
+          alt: string = "json"; userIp: string = ""; quotaUser: string = "";
+          actorIpAddress: string = ""; pageToken: string = ""; orgUnitID: string = "";
+          filters: string = ""; customerId: string = ""; resource: JsonNode = nil;
+          fields: string = ""; maxResults: int = 1000): Recallable =
   ## reportsActivitiesWatch
-  ## Push changes to activities
+  ## Start receiving notifications for account activities. For more information, see Receiving Push Notifications.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   endTime: string
-  ##          : Return events which occurred at or before this time.
+  ##          : Sets the end of the range of time shown in the report. The date is in the RFC 3339 format, for example 2010-10-28T10:26:35.000Z. The default value is the approximate time of the API request. An API report has three basic time concepts:  
+  ## - Date of the API's request for a report: When the API created and retrieved the report. 
+  ## - Report's start time: The beginning of the timespan shown in the report. The startTime must be before the endTime (if specified) and the current time when the request is made, or the API returns an error. 
+  ## - Report's end time: The end of the timespan shown in the report. For example, the timespan of events summarized in a report can start in April and end in May. The report itself can be requested in August.  If the endTime is not specified, the report returns all activities from the startTime until the current time or the most recent 180 days if the startTime is more than 180 days in the past.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
   ##             : OAuth 2.0 token for the current user.
   ##   eventName: string
-  ##            : Name of the event being queried.
+  ##            : The name of the event being queried by the API. Each eventName is related to a specific G Suite service or feature which the API organizes into types of events. An example is the Google Calendar events in the Admin console application's reports. The Calendar Settings type structure has all of the Calendar eventName activities reported by the API. When an administrator changes a Calendar setting, the API reports this activity in the Calendar Settings type and eventName parameters. For more information about eventName query strings and parameters, see the list of event names for various applications above in applicationName.
   ##   applicationName: string (required)
   ##                  : Application name for which the events are to be retrieved.
   ##   startTime: string
-  ##            : Return events which occurred at or after this time.
+  ##            : Sets the beginning of the range of time shown in the report. The date is in the RFC 3339 format, for example 2010-10-28T10:26:35.000Z. The report returns all activities from startTime until endTime. The startTime must be before the endTime (if specified) and the current time when the request is made, or the API returns an error.
   ##   alt: string
   ##      : Data format for the response.
   ##   userIp: string
@@ -577,63 +656,86 @@ proc call*(call_578942: Call_ReportsActivitiesWatch_578919;
   ##   quotaUser: string
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   actorIpAddress: string
-  ##                 : IP Address of host where the event was performed. Supports both IPv4 and IPv6 addresses.
+  ##                 : The Internet Protocol (IP) Address of host where the event was performed. This is an additional way to filter a report's summary using the IP address of the user whose activity is being reported. This IP address may or may not reflect the user's physical location. For example, the IP address can be the user's proxy server's address or a virtual private network (VPN) address. This parameter supports both IPv4 and IPv6 address versions.
   ##   pageToken: string
-  ##            : Token to specify next page.
+  ##            : The token to specify next page. A report with multiple pages has a nextPageToken property in the response. In your follow-on request getting the next page of the report, enter the nextPageToken value in the pageToken query string.
   ##   orgUnitID: string
-  ##            : the organizational unit's(OU) ID to filter activities from users belonging to a specific OU or one of its sub-OU(s)
+  ##            : ID of the organizational unit to report on. Activity records will be shown only for users who belong to the specified organizational unit. Data before Dec 17, 2018 doesn't appear in the filtered results.
   ##   filters: string
-  ##          : Event parameters in the form [parameter1 name][operator][parameter1 value],[parameter2 name][operator][parameter2 value],...
+  ##          : The filters query string is a comma-separated list. The list is composed of event parameters that are manipulated by relational operators. Event parameters are in the form [parameter1 name][relational operator][parameter1 value],[parameter2 name][relational operator][parameter2 value],... 
+  ## These event parameters are associated with a specific eventName. An empty report is returned if the filtered request's parameter does not belong to the eventName. For more information about eventName parameters, see the list of event names for various applications above in applicationName.
+  ## 
+  ## In the following Admin Activity example, the <> operator is URL-encoded in the request's query string (%3C%3E):
+  ## GET...&eventName=CHANGE_CALENDAR_SETTING &filters=NEW_VALUE%3C%3EREAD_ONLY_ACCESS
+  ## 
+  ## In the following Drive example, the list can be a view or edit event's doc_id parameter with a value that is manipulated by an 'equal to' (==) or 'not equal to' (<>) relational operator. In the first example, the report returns each edited document's doc_id. In the second example, the report returns each viewed document's doc_id that equals the value 12345 and does not return any viewed document's which have a doc_id value of 98765. The <> operator is URL-encoded in the request's query string (%3C%3E):
+  ## 
+  ## GET...&eventName=edit&filters=doc_id GET...&eventName=view&filters=doc_id==12345,doc_id%3C%3E98765
+  ## 
+  ## The relational operators include:  
+  ## - == - 'equal to'. 
+  ## - <> - 'not equal to'. It is URL-encoded (%3C%3E). 
+  ## - < - 'less than'. It is URL-encoded (%3C). 
+  ## - <= - 'less than or equal to'. It is URL-encoded (%3C=). 
+  ## - > - 'greater than'. It is URL-encoded (%3E). 
+  ## - >= - 'greater than or equal to'. It is URL-encoded (%3E=).  
+  ## Note: The API doesn't accept multiple values of a parameter. If a particular parameter is supplied more than once in the API request, the API only accepts the last value of that request parameter.
+  ## In addition, if an invalid request parameter is supplied in the API request, the API ignores that request parameter and returns the response corresponding to the remaining valid request parameters. If no parameters are requested, all parameters are returned.
   ##   customerId: string
-  ##             : Represents the customer for which the data is to be fetched.
+  ##             : The unique ID of the customer to retrieve data for.
   ##   resource: JObject
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: int
-  ##             : Number of activity records to be shown in each page.
+  ##             : Determines how many activity records are shown on each response page. For example, if the request sets maxResults=1 and the report has two activities, the report has two pages. The response's nextPageToken property has the token to the second page. The maxResults query string is optional in the request. The default value is 1000.
   ##   userKey: string (required)
-  ##          : Represents the profile id or the user email for which the data should be filtered. When 'all' is specified as the userKey, it returns usageReports for all users.
-  var path_578943 = newJObject()
-  var query_578944 = newJObject()
-  var body_578945 = newJObject()
-  add(query_578944, "key", newJString(key))
-  add(query_578944, "endTime", newJString(endTime))
-  add(query_578944, "prettyPrint", newJBool(prettyPrint))
-  add(query_578944, "oauth_token", newJString(oauthToken))
-  add(query_578944, "eventName", newJString(eventName))
-  add(path_578943, "applicationName", newJString(applicationName))
-  add(query_578944, "startTime", newJString(startTime))
-  add(query_578944, "alt", newJString(alt))
-  add(query_578944, "userIp", newJString(userIp))
-  add(query_578944, "quotaUser", newJString(quotaUser))
-  add(query_578944, "actorIpAddress", newJString(actorIpAddress))
-  add(query_578944, "pageToken", newJString(pageToken))
-  add(query_578944, "orgUnitID", newJString(orgUnitID))
-  add(query_578944, "filters", newJString(filters))
-  add(query_578944, "customerId", newJString(customerId))
+  ##          : Represents the profile ID or the user email for which the data should be filtered. Can be all for all information, or userKey for a user's unique G Suite profile ID or their primary email address.
+  var path_579969 = newJObject()
+  var query_579970 = newJObject()
+  var body_579971 = newJObject()
+  add(query_579970, "key", newJString(key))
+  add(query_579970, "endTime", newJString(endTime))
+  add(query_579970, "prettyPrint", newJBool(prettyPrint))
+  add(query_579970, "oauth_token", newJString(oauthToken))
+  add(query_579970, "eventName", newJString(eventName))
+  add(path_579969, "applicationName", newJString(applicationName))
+  add(query_579970, "startTime", newJString(startTime))
+  add(query_579970, "alt", newJString(alt))
+  add(query_579970, "userIp", newJString(userIp))
+  add(query_579970, "quotaUser", newJString(quotaUser))
+  add(query_579970, "actorIpAddress", newJString(actorIpAddress))
+  add(query_579970, "pageToken", newJString(pageToken))
+  add(query_579970, "orgUnitID", newJString(orgUnitID))
+  add(query_579970, "filters", newJString(filters))
+  add(query_579970, "customerId", newJString(customerId))
   if resource != nil:
-    body_578945 = resource
-  add(query_578944, "fields", newJString(fields))
-  add(query_578944, "maxResults", newJInt(maxResults))
-  add(path_578943, "userKey", newJString(userKey))
-  result = call_578942.call(path_578943, query_578944, nil, nil, body_578945)
+    body_579971 = resource
+  add(query_579970, "fields", newJString(fields))
+  add(query_579970, "maxResults", newJInt(maxResults))
+  add(path_579969, "userKey", newJString(userKey))
+  result = call_579968.call(path_579969, query_579970, nil, nil, body_579971)
 
-var reportsActivitiesWatch* = Call_ReportsActivitiesWatch_578919(
+var reportsActivitiesWatch* = Call_ReportsActivitiesWatch_579945(
     name: "reportsActivitiesWatch", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/activity/users/{userKey}/applications/{applicationName}/watch",
-    validator: validate_ReportsActivitiesWatch_578920, base: "/admin/reports/v1",
-    url: url_ReportsActivitiesWatch_578921, schemes: {Scheme.Https})
+    validator: validate_ReportsActivitiesWatch_579946, base: "/admin/reports/v1",
+    url: url_ReportsActivitiesWatch_579947, schemes: {Scheme.Https})
 type
-  Call_AdminChannelsStop_578946 = ref object of OpenApiRestCall_578355
-proc url_AdminChannelsStop_578948(protocol: Scheme; host: string; base: string;
+  Call_AdminChannelsStop_579972 = ref object of OpenApiRestCall_579380
+proc url_AdminChannelsStop_579974(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
-  result.path = base & route
+  if base ==
+      "/" and
+      route.startsWith "/":
+    result.path = route
+  else:
+    result.path = base & route
 
-proc validate_AdminChannelsStop_578947(path: JsonNode; query: JsonNode;
+proc validate_AdminChannelsStop_579973(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Stop watching resources through this channel
@@ -658,41 +760,41 @@ proc validate_AdminChannelsStop_578947(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578949 = query.getOrDefault("key")
-  valid_578949 = validateParameter(valid_578949, JString, required = false,
+  var valid_579975 = query.getOrDefault("key")
+  valid_579975 = validateParameter(valid_579975, JString, required = false,
                                  default = nil)
-  if valid_578949 != nil:
-    section.add "key", valid_578949
-  var valid_578950 = query.getOrDefault("prettyPrint")
-  valid_578950 = validateParameter(valid_578950, JBool, required = false,
+  if valid_579975 != nil:
+    section.add "key", valid_579975
+  var valid_579976 = query.getOrDefault("prettyPrint")
+  valid_579976 = validateParameter(valid_579976, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578950 != nil:
-    section.add "prettyPrint", valid_578950
-  var valid_578951 = query.getOrDefault("oauth_token")
-  valid_578951 = validateParameter(valid_578951, JString, required = false,
+  if valid_579976 != nil:
+    section.add "prettyPrint", valid_579976
+  var valid_579977 = query.getOrDefault("oauth_token")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
                                  default = nil)
-  if valid_578951 != nil:
-    section.add "oauth_token", valid_578951
-  var valid_578952 = query.getOrDefault("alt")
-  valid_578952 = validateParameter(valid_578952, JString, required = false,
+  if valid_579977 != nil:
+    section.add "oauth_token", valid_579977
+  var valid_579978 = query.getOrDefault("alt")
+  valid_579978 = validateParameter(valid_579978, JString, required = false,
                                  default = newJString("json"))
-  if valid_578952 != nil:
-    section.add "alt", valid_578952
-  var valid_578953 = query.getOrDefault("userIp")
-  valid_578953 = validateParameter(valid_578953, JString, required = false,
+  if valid_579978 != nil:
+    section.add "alt", valid_579978
+  var valid_579979 = query.getOrDefault("userIp")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = nil)
-  if valid_578953 != nil:
-    section.add "userIp", valid_578953
-  var valid_578954 = query.getOrDefault("quotaUser")
-  valid_578954 = validateParameter(valid_578954, JString, required = false,
+  if valid_579979 != nil:
+    section.add "userIp", valid_579979
+  var valid_579980 = query.getOrDefault("quotaUser")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = nil)
-  if valid_578954 != nil:
-    section.add "quotaUser", valid_578954
-  var valid_578955 = query.getOrDefault("fields")
-  valid_578955 = validateParameter(valid_578955, JString, required = false,
+  if valid_579980 != nil:
+    section.add "quotaUser", valid_579980
+  var valid_579981 = query.getOrDefault("fields")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_578955 != nil:
-    section.add "fields", valid_578955
+  if valid_579981 != nil:
+    section.add "fields", valid_579981
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -704,20 +806,20 @@ proc validate_AdminChannelsStop_578947(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578957: Call_AdminChannelsStop_578946; path: JsonNode;
+proc call*(call_579983: Call_AdminChannelsStop_579972; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Stop watching resources through this channel
   ## 
-  let valid = call_578957.validator(path, query, header, formData, body)
-  let scheme = call_578957.pickScheme
+  let valid = call_579983.validator(path, query, header, formData, body)
+  let scheme = call_579983.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578957.url(scheme.get, call_578957.host, call_578957.base,
-                         call_578957.route, valid.getOrDefault("path"),
+  let url = call_579983.url(scheme.get, call_579983.host, call_579983.base,
+                         call_579983.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578957, url, valid)
+  result = hook(call_579983, url, valid)
 
-proc call*(call_578958: Call_AdminChannelsStop_578946; key: string = "";
+proc call*(call_579984: Call_AdminChannelsStop_579972; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; resource: JsonNode = nil;
           fields: string = ""): Recallable =
@@ -738,27 +840,27 @@ proc call*(call_578958: Call_AdminChannelsStop_578946; key: string = "";
   ##   resource: JObject
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var query_578959 = newJObject()
-  var body_578960 = newJObject()
-  add(query_578959, "key", newJString(key))
-  add(query_578959, "prettyPrint", newJBool(prettyPrint))
-  add(query_578959, "oauth_token", newJString(oauthToken))
-  add(query_578959, "alt", newJString(alt))
-  add(query_578959, "userIp", newJString(userIp))
-  add(query_578959, "quotaUser", newJString(quotaUser))
+  var query_579985 = newJObject()
+  var body_579986 = newJObject()
+  add(query_579985, "key", newJString(key))
+  add(query_579985, "prettyPrint", newJBool(prettyPrint))
+  add(query_579985, "oauth_token", newJString(oauthToken))
+  add(query_579985, "alt", newJString(alt))
+  add(query_579985, "userIp", newJString(userIp))
+  add(query_579985, "quotaUser", newJString(quotaUser))
   if resource != nil:
-    body_578960 = resource
-  add(query_578959, "fields", newJString(fields))
-  result = call_578958.call(nil, query_578959, nil, nil, body_578960)
+    body_579986 = resource
+  add(query_579985, "fields", newJString(fields))
+  result = call_579984.call(nil, query_579985, nil, nil, body_579986)
 
-var adminChannelsStop* = Call_AdminChannelsStop_578946(name: "adminChannelsStop",
+var adminChannelsStop* = Call_AdminChannelsStop_579972(name: "adminChannelsStop",
     meth: HttpMethod.HttpPost, host: "www.googleapis.com",
     route: "/admin/reports_v1/channels/stop",
-    validator: validate_AdminChannelsStop_578947, base: "/admin/reports/v1",
-    url: url_AdminChannelsStop_578948, schemes: {Scheme.Https})
+    validator: validate_AdminChannelsStop_579973, base: "/admin/reports/v1",
+    url: url_AdminChannelsStop_579974, schemes: {Scheme.Https})
 type
-  Call_ReportsCustomerUsageReportsGet_578961 = ref object of OpenApiRestCall_578355
-proc url_ReportsCustomerUsageReportsGet_578963(protocol: Scheme; host: string;
+  Call_ReportsCustomerUsageReportsGet_579987 = ref object of OpenApiRestCall_579380
+proc url_ReportsCustomerUsageReportsGet_579989(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -771,24 +873,29 @@ proc url_ReportsCustomerUsageReportsGet_578963(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_ReportsCustomerUsageReportsGet_578962(path: JsonNode;
+proc validate_ReportsCustomerUsageReportsGet_579988(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
-  ## Retrieves a report which is a collection of properties / statistics for a specific customer.
+  ## Retrieves a report which is a collection of properties and statistics for a specific customer's account. For more information, see the Customers Usage Report guide. For more information about the customer report's parameters, see the Customers Usage parameters reference guides.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
   ##   date: JString (required)
-  ##       : Represents the date in yyyy-mm-dd format for which the data is to be fetched.
+  ##       : Represents the date the usage occurred. The timestamp is in the ISO 8601 format, yyyy-mm-dd. We recommend you use your account's time zone for this.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `date` field"
-  var valid_578964 = path.getOrDefault("date")
-  valid_578964 = validateParameter(valid_578964, JString, required = true,
+  var valid_579990 = path.getOrDefault("date")
+  valid_579990 = validateParameter(valid_579990, JString, required = true,
                                  default = nil)
-  if valid_578964 != nil:
-    section.add "date", valid_578964
+  if valid_579990 != nil:
+    section.add "date", valid_579990
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -804,64 +911,69 @@ proc validate_ReportsCustomerUsageReportsGet_578962(path: JsonNode;
   ##   quotaUser: JString
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   pageToken: JString
-  ##            : Token to specify next page.
+  ##            : Token to specify next page. A report with multiple pages has a nextPageToken property in the response. For your follow-on requests getting all of the report's pages, enter the nextPageToken value in the pageToken query string.
   ##   customerId: JString
-  ##             : Represents the customer for which the data is to be fetched.
+  ##             : The unique ID of the customer to retrieve data for.
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   ##   parameters: JString
-  ##             : Represents the application name, parameter name pairs to fetch in csv as app_name1:param_name1, app_name2:param_name2.
+  ##             : The parameters query string is a comma-separated list of event parameters that refine a report's results. The parameter is associated with a specific application. The application values for the Customers usage report include accounts, app_maker, apps_scripts, calendar, classroom, cros, docs, gmail, gplus, device_management, meet, and sites.
+  ## A parameters query string is in the CSV form of app_name1:param_name1, app_name2:param_name2.
+  ## Note: The API doesn't accept multiple values of a parameter. If a particular parameter is supplied more than once in the API request, the API only accepts the last value of that request parameter.
+  ## In addition, if an invalid request parameter is supplied in the API request, the API ignores that request parameter and returns the response corresponding to the remaining valid request parameters.
+  ## 
+  ## An example of an invalid request parameter is one that does not belong to the application. If no parameters are requested, all parameters are returned.
   section = newJObject()
-  var valid_578965 = query.getOrDefault("key")
-  valid_578965 = validateParameter(valid_578965, JString, required = false,
+  var valid_579991 = query.getOrDefault("key")
+  valid_579991 = validateParameter(valid_579991, JString, required = false,
                                  default = nil)
-  if valid_578965 != nil:
-    section.add "key", valid_578965
-  var valid_578966 = query.getOrDefault("prettyPrint")
-  valid_578966 = validateParameter(valid_578966, JBool, required = false,
+  if valid_579991 != nil:
+    section.add "key", valid_579991
+  var valid_579992 = query.getOrDefault("prettyPrint")
+  valid_579992 = validateParameter(valid_579992, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578966 != nil:
-    section.add "prettyPrint", valid_578966
-  var valid_578967 = query.getOrDefault("oauth_token")
-  valid_578967 = validateParameter(valid_578967, JString, required = false,
+  if valid_579992 != nil:
+    section.add "prettyPrint", valid_579992
+  var valid_579993 = query.getOrDefault("oauth_token")
+  valid_579993 = validateParameter(valid_579993, JString, required = false,
                                  default = nil)
-  if valid_578967 != nil:
-    section.add "oauth_token", valid_578967
-  var valid_578968 = query.getOrDefault("alt")
-  valid_578968 = validateParameter(valid_578968, JString, required = false,
+  if valid_579993 != nil:
+    section.add "oauth_token", valid_579993
+  var valid_579994 = query.getOrDefault("alt")
+  valid_579994 = validateParameter(valid_579994, JString, required = false,
                                  default = newJString("json"))
-  if valid_578968 != nil:
-    section.add "alt", valid_578968
-  var valid_578969 = query.getOrDefault("userIp")
-  valid_578969 = validateParameter(valid_578969, JString, required = false,
+  if valid_579994 != nil:
+    section.add "alt", valid_579994
+  var valid_579995 = query.getOrDefault("userIp")
+  valid_579995 = validateParameter(valid_579995, JString, required = false,
                                  default = nil)
-  if valid_578969 != nil:
-    section.add "userIp", valid_578969
-  var valid_578970 = query.getOrDefault("quotaUser")
-  valid_578970 = validateParameter(valid_578970, JString, required = false,
+  if valid_579995 != nil:
+    section.add "userIp", valid_579995
+  var valid_579996 = query.getOrDefault("quotaUser")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_578970 != nil:
-    section.add "quotaUser", valid_578970
-  var valid_578971 = query.getOrDefault("pageToken")
-  valid_578971 = validateParameter(valid_578971, JString, required = false,
+  if valid_579996 != nil:
+    section.add "quotaUser", valid_579996
+  var valid_579997 = query.getOrDefault("pageToken")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = nil)
-  if valid_578971 != nil:
-    section.add "pageToken", valid_578971
-  var valid_578972 = query.getOrDefault("customerId")
-  valid_578972 = validateParameter(valid_578972, JString, required = false,
+  if valid_579997 != nil:
+    section.add "pageToken", valid_579997
+  var valid_579998 = query.getOrDefault("customerId")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = nil)
-  if valid_578972 != nil:
-    section.add "customerId", valid_578972
-  var valid_578973 = query.getOrDefault("fields")
-  valid_578973 = validateParameter(valid_578973, JString, required = false,
+  if valid_579998 != nil:
+    section.add "customerId", valid_579998
+  var valid_579999 = query.getOrDefault("fields")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = nil)
-  if valid_578973 != nil:
-    section.add "fields", valid_578973
-  var valid_578974 = query.getOrDefault("parameters")
-  valid_578974 = validateParameter(valid_578974, JString, required = false,
+  if valid_579999 != nil:
+    section.add "fields", valid_579999
+  var valid_580000 = query.getOrDefault("parameters")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = nil)
-  if valid_578974 != nil:
-    section.add "parameters", valid_578974
+  if valid_580000 != nil:
+    section.add "parameters", valid_580000
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -870,26 +982,26 @@ proc validate_ReportsCustomerUsageReportsGet_578962(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578975: Call_ReportsCustomerUsageReportsGet_578961; path: JsonNode;
+proc call*(call_580001: Call_ReportsCustomerUsageReportsGet_579987; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
-  ## Retrieves a report which is a collection of properties / statistics for a specific customer.
+  ## Retrieves a report which is a collection of properties and statistics for a specific customer's account. For more information, see the Customers Usage Report guide. For more information about the customer report's parameters, see the Customers Usage parameters reference guides.
   ## 
-  let valid = call_578975.validator(path, query, header, formData, body)
-  let scheme = call_578975.pickScheme
+  let valid = call_580001.validator(path, query, header, formData, body)
+  let scheme = call_580001.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578975.url(scheme.get, call_578975.host, call_578975.base,
-                         call_578975.route, valid.getOrDefault("path"),
+  let url = call_580001.url(scheme.get, call_580001.host, call_580001.base,
+                         call_580001.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578975, url, valid)
+  result = hook(call_580001, url, valid)
 
-proc call*(call_578976: Call_ReportsCustomerUsageReportsGet_578961; date: string;
+proc call*(call_580002: Call_ReportsCustomerUsageReportsGet_579987; date: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
           pageToken: string = ""; customerId: string = ""; fields: string = "";
           parameters: string = ""): Recallable =
   ## reportsCustomerUsageReportsGet
-  ## Retrieves a report which is a collection of properties / statistics for a specific customer.
+  ## Retrieves a report which is a collection of properties and statistics for a specific customer's account. For more information, see the Customers Usage Report guide. For more information about the customer report's parameters, see the Customers Usage parameters reference guides.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
@@ -903,39 +1015,44 @@ proc call*(call_578976: Call_ReportsCustomerUsageReportsGet_578961; date: string
   ##   quotaUser: string
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   pageToken: string
-  ##            : Token to specify next page.
+  ##            : Token to specify next page. A report with multiple pages has a nextPageToken property in the response. For your follow-on requests getting all of the report's pages, enter the nextPageToken value in the pageToken query string.
   ##   customerId: string
-  ##             : Represents the customer for which the data is to be fetched.
+  ##             : The unique ID of the customer to retrieve data for.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
   ##   date: string (required)
-  ##       : Represents the date in yyyy-mm-dd format for which the data is to be fetched.
+  ##       : Represents the date the usage occurred. The timestamp is in the ISO 8601 format, yyyy-mm-dd. We recommend you use your account's time zone for this.
   ##   parameters: string
-  ##             : Represents the application name, parameter name pairs to fetch in csv as app_name1:param_name1, app_name2:param_name2.
-  var path_578977 = newJObject()
-  var query_578978 = newJObject()
-  add(query_578978, "key", newJString(key))
-  add(query_578978, "prettyPrint", newJBool(prettyPrint))
-  add(query_578978, "oauth_token", newJString(oauthToken))
-  add(query_578978, "alt", newJString(alt))
-  add(query_578978, "userIp", newJString(userIp))
-  add(query_578978, "quotaUser", newJString(quotaUser))
-  add(query_578978, "pageToken", newJString(pageToken))
-  add(query_578978, "customerId", newJString(customerId))
-  add(query_578978, "fields", newJString(fields))
-  add(path_578977, "date", newJString(date))
-  add(query_578978, "parameters", newJString(parameters))
-  result = call_578976.call(path_578977, query_578978, nil, nil, nil)
+  ##             : The parameters query string is a comma-separated list of event parameters that refine a report's results. The parameter is associated with a specific application. The application values for the Customers usage report include accounts, app_maker, apps_scripts, calendar, classroom, cros, docs, gmail, gplus, device_management, meet, and sites.
+  ## A parameters query string is in the CSV form of app_name1:param_name1, app_name2:param_name2.
+  ## Note: The API doesn't accept multiple values of a parameter. If a particular parameter is supplied more than once in the API request, the API only accepts the last value of that request parameter.
+  ## In addition, if an invalid request parameter is supplied in the API request, the API ignores that request parameter and returns the response corresponding to the remaining valid request parameters.
+  ## 
+  ## An example of an invalid request parameter is one that does not belong to the application. If no parameters are requested, all parameters are returned.
+  var path_580003 = newJObject()
+  var query_580004 = newJObject()
+  add(query_580004, "key", newJString(key))
+  add(query_580004, "prettyPrint", newJBool(prettyPrint))
+  add(query_580004, "oauth_token", newJString(oauthToken))
+  add(query_580004, "alt", newJString(alt))
+  add(query_580004, "userIp", newJString(userIp))
+  add(query_580004, "quotaUser", newJString(quotaUser))
+  add(query_580004, "pageToken", newJString(pageToken))
+  add(query_580004, "customerId", newJString(customerId))
+  add(query_580004, "fields", newJString(fields))
+  add(path_580003, "date", newJString(date))
+  add(query_580004, "parameters", newJString(parameters))
+  result = call_580002.call(path_580003, query_580004, nil, nil, nil)
 
-var reportsCustomerUsageReportsGet* = Call_ReportsCustomerUsageReportsGet_578961(
+var reportsCustomerUsageReportsGet* = Call_ReportsCustomerUsageReportsGet_579987(
     name: "reportsCustomerUsageReportsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/usage/dates/{date}",
-    validator: validate_ReportsCustomerUsageReportsGet_578962,
-    base: "/admin/reports/v1", url: url_ReportsCustomerUsageReportsGet_578963,
+    validator: validate_ReportsCustomerUsageReportsGet_579988,
+    base: "/admin/reports/v1", url: url_ReportsCustomerUsageReportsGet_579989,
     schemes: {Scheme.Https})
 type
-  Call_ReportsUserUsageReportGet_578979 = ref object of OpenApiRestCall_578355
-proc url_ReportsUserUsageReportGet_578981(protocol: Scheme; host: string;
+  Call_ReportsUserUsageReportGet_580005 = ref object of OpenApiRestCall_579380
+proc url_ReportsUserUsageReportGet_580007(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -951,37 +1068,47 @@ proc url_ReportsUserUsageReportGet_578981(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_ReportsUserUsageReportGet_578980(path: JsonNode; query: JsonNode;
+proc validate_ReportsUserUsageReportGet_580006(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
-  ## Retrieves a report which is a collection of properties / statistics for a set of users.
+  ## Retrieves a report which is a collection of properties and statistics for a set of users with the account. For more information, see the User Usage Report guide. For more information about the user report's parameters, see the Users Usage parameters reference guides.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
   ##   date: JString (required)
-  ##       : Represents the date in yyyy-mm-dd format for which the data is to be fetched.
+  ##       : Represents the date the usage occurred. The timestamp is in the ISO 8601 format, yyyy-mm-dd. We recommend you use your account's time zone for this.
   ##   userKey: JString (required)
-  ##          : Represents the profile id or the user email for which the data should be filtered.
+  ##          : Represents the profile ID or the user email for which the data should be filtered. Can be all for all information, or userKey for a user's unique G Suite profile ID or their primary email address.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `date` field"
-  var valid_578982 = path.getOrDefault("date")
-  valid_578982 = validateParameter(valid_578982, JString, required = true,
+  var valid_580008 = path.getOrDefault("date")
+  valid_580008 = validateParameter(valid_580008, JString, required = true,
                                  default = nil)
-  if valid_578982 != nil:
-    section.add "date", valid_578982
-  var valid_578983 = path.getOrDefault("userKey")
-  valid_578983 = validateParameter(valid_578983, JString, required = true,
+  if valid_580008 != nil:
+    section.add "date", valid_580008
+  var valid_580009 = path.getOrDefault("userKey")
+  valid_580009 = validateParameter(valid_580009, JString, required = true,
                                  default = nil)
-  if valid_578983 != nil:
-    section.add "userKey", valid_578983
+  if valid_580009 != nil:
+    section.add "userKey", valid_580009
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   parameters: JString
-  ##             : Represents the application name, parameter name pairs to fetch in csv as app_name1:param_name1, app_name2:param_name2.
+  ##             : The parameters query string is a comma-separated list of event parameters that refine a report's results. The parameter is associated with a specific application. The application values for the Customers usage report include accounts, app_maker, apps_scripts, calendar, classroom, cros, docs, gmail, gplus, device_management, meet, and sites.
+  ## A parameters query string is in the CSV form of app_name1:param_name1, app_name2:param_name2.
+  ## Note: The API doesn't accept multiple values of a parameter.
+  ## If a particular parameter is supplied more than once in the API request, the API only accepts the last value of that request parameter. In addition, if an invalid request parameter is supplied in the API request, the API ignores that request parameter and returns the response corresponding to the remaining valid request parameters.
+  ## 
+  ## An example of an invalid request parameter is one that does not belong to the application. If no parameters are requested, all parameters are returned.
   ##   prettyPrint: JBool
   ##              : Returns response with indentations and line breaks.
   ##   oauth_token: JString
@@ -993,82 +1120,97 @@ proc validate_ReportsUserUsageReportGet_578980(path: JsonNode; query: JsonNode;
   ##   quotaUser: JString
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   pageToken: JString
-  ##            : Token to specify next page.
+  ##            : Token to specify next page. A report with multiple pages has a nextPageToken property in the response. In your follow-on request getting the next page of the report, enter the nextPageToken value in the pageToken query string.
   ##   orgUnitID: JString
-  ##            : the organizational unit's ID to filter usage parameters from users belonging to a specific OU or one of its sub-OU(s).
+  ##            : ID of the organizational unit to report on. User activity will be shown only for users who belong to the specified organizational unit. Data before Dec 17, 2018 doesn't appear in the filtered results.
   ##   filters: JString
-  ##          : Represents the set of filters including parameter operator value.
+  ##          : The filters query string is a comma-separated list of an application's event parameters where the parameter's value is manipulated by a relational operator. The filters query string includes the name of the application whose usage is returned in the report. The application values for the Users Usage Report include accounts, docs, and gmail.
+  ## Filters are in the form [application name]:[parameter name][relational operator][parameter value],....
+  ## 
+  ## In this example, the <> 'not equal to' operator is URL-encoded in the request's query string (%3C%3E):
+  ## GET https://www.googleapis.com/admin/reports/v1/usage/users/all/dates/2013-03-03 ?parameters=accounts:last_login_time &filters=accounts:last_login_time>2010-10-28T10:26:35.000Z
+  ## 
+  ## 
+  ## The relational operators include:  
+  ## - == - 'equal to'. 
+  ## - <> - 'not equal to'. It is URL-encoded (%3C%3E). 
+  ## - < - 'less than'. It is URL-encoded (%3C). 
+  ## - <= - 'less than or equal to'. It is URL-encoded (%3C=). 
+  ## - > - 'greater than'. It is URL-encoded (%3E). 
+  ## - >= - 'greater than or equal to'. It is URL-encoded (%3E=).
   ##   customerId: JString
-  ##             : Represents the customer for which the data is to be fetched.
+  ##             : The unique ID of the customer to retrieve data for.
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: JInt
-  ##             : Maximum number of results to return. Maximum allowed is 1000
+  ##             : Determines how many activity records are shown on each response page. For example, if the request sets maxResults=1 and the report has two activities, the report has two pages. The response's nextPageToken property has the token to the second page.
+  ## The maxResults query string is optional.
   section = newJObject()
-  var valid_578984 = query.getOrDefault("key")
-  valid_578984 = validateParameter(valid_578984, JString, required = false,
+  var valid_580010 = query.getOrDefault("key")
+  valid_580010 = validateParameter(valid_580010, JString, required = false,
                                  default = nil)
-  if valid_578984 != nil:
-    section.add "key", valid_578984
-  var valid_578985 = query.getOrDefault("parameters")
-  valid_578985 = validateParameter(valid_578985, JString, required = false,
+  if valid_580010 != nil:
+    section.add "key", valid_580010
+  var valid_580011 = query.getOrDefault("parameters")
+  valid_580011 = validateParameter(valid_580011, JString, required = false,
                                  default = nil)
-  if valid_578985 != nil:
-    section.add "parameters", valid_578985
-  var valid_578986 = query.getOrDefault("prettyPrint")
-  valid_578986 = validateParameter(valid_578986, JBool, required = false,
+  if valid_580011 != nil:
+    section.add "parameters", valid_580011
+  var valid_580012 = query.getOrDefault("prettyPrint")
+  valid_580012 = validateParameter(valid_580012, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578986 != nil:
-    section.add "prettyPrint", valid_578986
-  var valid_578987 = query.getOrDefault("oauth_token")
-  valid_578987 = validateParameter(valid_578987, JString, required = false,
+  if valid_580012 != nil:
+    section.add "prettyPrint", valid_580012
+  var valid_580013 = query.getOrDefault("oauth_token")
+  valid_580013 = validateParameter(valid_580013, JString, required = false,
                                  default = nil)
-  if valid_578987 != nil:
-    section.add "oauth_token", valid_578987
-  var valid_578988 = query.getOrDefault("alt")
-  valid_578988 = validateParameter(valid_578988, JString, required = false,
+  if valid_580013 != nil:
+    section.add "oauth_token", valid_580013
+  var valid_580014 = query.getOrDefault("alt")
+  valid_580014 = validateParameter(valid_580014, JString, required = false,
                                  default = newJString("json"))
-  if valid_578988 != nil:
-    section.add "alt", valid_578988
-  var valid_578989 = query.getOrDefault("userIp")
-  valid_578989 = validateParameter(valid_578989, JString, required = false,
+  if valid_580014 != nil:
+    section.add "alt", valid_580014
+  var valid_580015 = query.getOrDefault("userIp")
+  valid_580015 = validateParameter(valid_580015, JString, required = false,
                                  default = nil)
-  if valid_578989 != nil:
-    section.add "userIp", valid_578989
-  var valid_578990 = query.getOrDefault("quotaUser")
-  valid_578990 = validateParameter(valid_578990, JString, required = false,
+  if valid_580015 != nil:
+    section.add "userIp", valid_580015
+  var valid_580016 = query.getOrDefault("quotaUser")
+  valid_580016 = validateParameter(valid_580016, JString, required = false,
                                  default = nil)
-  if valid_578990 != nil:
-    section.add "quotaUser", valid_578990
-  var valid_578991 = query.getOrDefault("pageToken")
-  valid_578991 = validateParameter(valid_578991, JString, required = false,
+  if valid_580016 != nil:
+    section.add "quotaUser", valid_580016
+  var valid_580017 = query.getOrDefault("pageToken")
+  valid_580017 = validateParameter(valid_580017, JString, required = false,
                                  default = nil)
-  if valid_578991 != nil:
-    section.add "pageToken", valid_578991
-  var valid_578992 = query.getOrDefault("orgUnitID")
-  valid_578992 = validateParameter(valid_578992, JString, required = false,
+  if valid_580017 != nil:
+    section.add "pageToken", valid_580017
+  var valid_580018 = query.getOrDefault("orgUnitID")
+  valid_580018 = validateParameter(valid_580018, JString, required = false,
                                  default = newJString(""))
-  if valid_578992 != nil:
-    section.add "orgUnitID", valid_578992
-  var valid_578993 = query.getOrDefault("filters")
-  valid_578993 = validateParameter(valid_578993, JString, required = false,
+  if valid_580018 != nil:
+    section.add "orgUnitID", valid_580018
+  var valid_580019 = query.getOrDefault("filters")
+  valid_580019 = validateParameter(valid_580019, JString, required = false,
                                  default = nil)
-  if valid_578993 != nil:
-    section.add "filters", valid_578993
-  var valid_578994 = query.getOrDefault("customerId")
-  valid_578994 = validateParameter(valid_578994, JString, required = false,
+  if valid_580019 != nil:
+    section.add "filters", valid_580019
+  var valid_580020 = query.getOrDefault("customerId")
+  valid_580020 = validateParameter(valid_580020, JString, required = false,
                                  default = nil)
-  if valid_578994 != nil:
-    section.add "customerId", valid_578994
-  var valid_578995 = query.getOrDefault("fields")
-  valid_578995 = validateParameter(valid_578995, JString, required = false,
+  if valid_580020 != nil:
+    section.add "customerId", valid_580020
+  var valid_580021 = query.getOrDefault("fields")
+  valid_580021 = validateParameter(valid_580021, JString, required = false,
                                  default = nil)
-  if valid_578995 != nil:
-    section.add "fields", valid_578995
-  var valid_578996 = query.getOrDefault("maxResults")
-  valid_578996 = validateParameter(valid_578996, JInt, required = false, default = nil)
-  if valid_578996 != nil:
-    section.add "maxResults", valid_578996
+  if valid_580021 != nil:
+    section.add "fields", valid_580021
+  var valid_580022 = query.getOrDefault("maxResults")
+  valid_580022 = validateParameter(valid_580022, JInt, required = false,
+                                 default = newJInt(1000))
+  if valid_580022 != nil:
+    section.add "maxResults", valid_580022
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1077,31 +1219,36 @@ proc validate_ReportsUserUsageReportGet_578980(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578997: Call_ReportsUserUsageReportGet_578979; path: JsonNode;
+proc call*(call_580023: Call_ReportsUserUsageReportGet_580005; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
-  ## Retrieves a report which is a collection of properties / statistics for a set of users.
+  ## Retrieves a report which is a collection of properties and statistics for a set of users with the account. For more information, see the User Usage Report guide. For more information about the user report's parameters, see the Users Usage parameters reference guides.
   ## 
-  let valid = call_578997.validator(path, query, header, formData, body)
-  let scheme = call_578997.pickScheme
+  let valid = call_580023.validator(path, query, header, formData, body)
+  let scheme = call_580023.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578997.url(scheme.get, call_578997.host, call_578997.base,
-                         call_578997.route, valid.getOrDefault("path"),
+  let url = call_580023.url(scheme.get, call_580023.host, call_580023.base,
+                         call_580023.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578997, url, valid)
+  result = hook(call_580023, url, valid)
 
-proc call*(call_578998: Call_ReportsUserUsageReportGet_578979; date: string;
+proc call*(call_580024: Call_ReportsUserUsageReportGet_580005; date: string;
           userKey: string; key: string = ""; parameters: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
           orgUnitID: string = ""; filters: string = ""; customerId: string = "";
-          fields: string = ""; maxResults: int = 0): Recallable =
+          fields: string = ""; maxResults: int = 1000): Recallable =
   ## reportsUserUsageReportGet
-  ## Retrieves a report which is a collection of properties / statistics for a set of users.
+  ## Retrieves a report which is a collection of properties and statistics for a set of users with the account. For more information, see the User Usage Report guide. For more information about the user report's parameters, see the Users Usage parameters reference guides.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   parameters: string
-  ##             : Represents the application name, parameter name pairs to fetch in csv as app_name1:param_name1, app_name2:param_name2.
+  ##             : The parameters query string is a comma-separated list of event parameters that refine a report's results. The parameter is associated with a specific application. The application values for the Customers usage report include accounts, app_maker, apps_scripts, calendar, classroom, cros, docs, gmail, gplus, device_management, meet, and sites.
+  ## A parameters query string is in the CSV form of app_name1:param_name1, app_name2:param_name2.
+  ## Note: The API doesn't accept multiple values of a parameter.
+  ## If a particular parameter is supplied more than once in the API request, the API only accepts the last value of that request parameter. In addition, if an invalid request parameter is supplied in the API request, the API ignores that request parameter and returns the response corresponding to the remaining valid request parameters.
+  ## 
+  ## An example of an invalid request parameter is one that does not belong to the application. If no parameters are requested, all parameters are returned.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
@@ -1113,49 +1260,63 @@ proc call*(call_578998: Call_ReportsUserUsageReportGet_578979; date: string;
   ##   quotaUser: string
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   pageToken: string
-  ##            : Token to specify next page.
+  ##            : Token to specify next page. A report with multiple pages has a nextPageToken property in the response. In your follow-on request getting the next page of the report, enter the nextPageToken value in the pageToken query string.
   ##   orgUnitID: string
-  ##            : the organizational unit's ID to filter usage parameters from users belonging to a specific OU or one of its sub-OU(s).
+  ##            : ID of the organizational unit to report on. User activity will be shown only for users who belong to the specified organizational unit. Data before Dec 17, 2018 doesn't appear in the filtered results.
   ##   filters: string
-  ##          : Represents the set of filters including parameter operator value.
+  ##          : The filters query string is a comma-separated list of an application's event parameters where the parameter's value is manipulated by a relational operator. The filters query string includes the name of the application whose usage is returned in the report. The application values for the Users Usage Report include accounts, docs, and gmail.
+  ## Filters are in the form [application name]:[parameter name][relational operator][parameter value],....
+  ## 
+  ## In this example, the <> 'not equal to' operator is URL-encoded in the request's query string (%3C%3E):
+  ## GET https://www.googleapis.com/admin/reports/v1/usage/users/all/dates/2013-03-03 ?parameters=accounts:last_login_time &filters=accounts:last_login_time>2010-10-28T10:26:35.000Z
+  ## 
+  ## 
+  ## The relational operators include:  
+  ## - == - 'equal to'. 
+  ## - <> - 'not equal to'. It is URL-encoded (%3C%3E). 
+  ## - < - 'less than'. It is URL-encoded (%3C). 
+  ## - <= - 'less than or equal to'. It is URL-encoded (%3C=). 
+  ## - > - 'greater than'. It is URL-encoded (%3E). 
+  ## - >= - 'greater than or equal to'. It is URL-encoded (%3E=).
   ##   customerId: string
-  ##             : Represents the customer for which the data is to be fetched.
+  ##             : The unique ID of the customer to retrieve data for.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
   ##   date: string (required)
-  ##       : Represents the date in yyyy-mm-dd format for which the data is to be fetched.
+  ##       : Represents the date the usage occurred. The timestamp is in the ISO 8601 format, yyyy-mm-dd. We recommend you use your account's time zone for this.
   ##   maxResults: int
-  ##             : Maximum number of results to return. Maximum allowed is 1000
+  ##             : Determines how many activity records are shown on each response page. For example, if the request sets maxResults=1 and the report has two activities, the report has two pages. The response's nextPageToken property has the token to the second page.
+  ## The maxResults query string is optional.
   ##   userKey: string (required)
-  ##          : Represents the profile id or the user email for which the data should be filtered.
-  var path_578999 = newJObject()
-  var query_579000 = newJObject()
-  add(query_579000, "key", newJString(key))
-  add(query_579000, "parameters", newJString(parameters))
-  add(query_579000, "prettyPrint", newJBool(prettyPrint))
-  add(query_579000, "oauth_token", newJString(oauthToken))
-  add(query_579000, "alt", newJString(alt))
-  add(query_579000, "userIp", newJString(userIp))
-  add(query_579000, "quotaUser", newJString(quotaUser))
-  add(query_579000, "pageToken", newJString(pageToken))
-  add(query_579000, "orgUnitID", newJString(orgUnitID))
-  add(query_579000, "filters", newJString(filters))
-  add(query_579000, "customerId", newJString(customerId))
-  add(query_579000, "fields", newJString(fields))
-  add(path_578999, "date", newJString(date))
-  add(query_579000, "maxResults", newJInt(maxResults))
-  add(path_578999, "userKey", newJString(userKey))
-  result = call_578998.call(path_578999, query_579000, nil, nil, nil)
+  ##          : Represents the profile ID or the user email for which the data should be filtered. Can be all for all information, or userKey for a user's unique G Suite profile ID or their primary email address.
+  var path_580025 = newJObject()
+  var query_580026 = newJObject()
+  add(query_580026, "key", newJString(key))
+  add(query_580026, "parameters", newJString(parameters))
+  add(query_580026, "prettyPrint", newJBool(prettyPrint))
+  add(query_580026, "oauth_token", newJString(oauthToken))
+  add(query_580026, "alt", newJString(alt))
+  add(query_580026, "userIp", newJString(userIp))
+  add(query_580026, "quotaUser", newJString(quotaUser))
+  add(query_580026, "pageToken", newJString(pageToken))
+  add(query_580026, "orgUnitID", newJString(orgUnitID))
+  add(query_580026, "filters", newJString(filters))
+  add(query_580026, "customerId", newJString(customerId))
+  add(query_580026, "fields", newJString(fields))
+  add(path_580025, "date", newJString(date))
+  add(query_580026, "maxResults", newJInt(maxResults))
+  add(path_580025, "userKey", newJString(userKey))
+  result = call_580024.call(path_580025, query_580026, nil, nil, nil)
 
-var reportsUserUsageReportGet* = Call_ReportsUserUsageReportGet_578979(
+var reportsUserUsageReportGet* = Call_ReportsUserUsageReportGet_580005(
     name: "reportsUserUsageReportGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/usage/users/{userKey}/dates/{date}",
-    validator: validate_ReportsUserUsageReportGet_578980,
-    base: "/admin/reports/v1", url: url_ReportsUserUsageReportGet_578981,
+    validator: validate_ReportsUserUsageReportGet_580006,
+    base: "/admin/reports/v1", url: url_ReportsUserUsageReportGet_580007,
     schemes: {Scheme.Https})
 type
-  Call_ReportsEntityUsageReportsGet_579001 = ref object of OpenApiRestCall_578355
-proc url_ReportsEntityUsageReportsGet_579003(protocol: Scheme; host: string;
+  Call_ReportsEntityUsageReportsGet_580027 = ref object of OpenApiRestCall_579380
+proc url_ReportsEntityUsageReportsGet_580029(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1174,38 +1335,43 @@ proc url_ReportsEntityUsageReportsGet_579003(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_ReportsEntityUsageReportsGet_579002(path: JsonNode; query: JsonNode;
+proc validate_ReportsEntityUsageReportsGet_580028(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
-  ## Retrieves a report which is a collection of properties / statistics for a set of objects.
+  ## Retrieves a report which is a collection of properties and statistics for entities used by users within the account. For more information, see the Entities Usage Report guide. For more information about the entities report's parameters, see the Entities Usage parameters reference guides.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
   ##   entityKey: JString (required)
-  ##            : Represents the key of object for which the data should be filtered.
+  ##            : Represents the key of the object to filter the data with.
   ##   entityType: JString (required)
-  ##             : Type of object. Should be one of - gplus_communities.
+  ##             : Represents the type of entity for the report.
   ##   date: JString (required)
-  ##       : Represents the date in yyyy-mm-dd format for which the data is to be fetched.
+  ##       : Represents the date the usage occurred. The timestamp is in the ISO 8601 format, yyyy-mm-dd. We recommend you use your account's time zone for this.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `entityKey` field"
-  var valid_579004 = path.getOrDefault("entityKey")
-  valid_579004 = validateParameter(valid_579004, JString, required = true,
+  var valid_580030 = path.getOrDefault("entityKey")
+  valid_580030 = validateParameter(valid_580030, JString, required = true,
+                                 default = newJString("all"))
+  if valid_580030 != nil:
+    section.add "entityKey", valid_580030
+  var valid_580031 = path.getOrDefault("entityType")
+  valid_580031 = validateParameter(valid_580031, JString, required = true,
+                                 default = newJString("gplus_communities"))
+  if valid_580031 != nil:
+    section.add "entityType", valid_580031
+  var valid_580032 = path.getOrDefault("date")
+  valid_580032 = validateParameter(valid_580032, JString, required = true,
                                  default = nil)
-  if valid_579004 != nil:
-    section.add "entityKey", valid_579004
-  var valid_579005 = path.getOrDefault("entityType")
-  valid_579005 = validateParameter(valid_579005, JString, required = true,
-                                 default = nil)
-  if valid_579005 != nil:
-    section.add "entityType", valid_579005
-  var valid_579006 = path.getOrDefault("date")
-  valid_579006 = validateParameter(valid_579006, JString, required = true,
-                                 default = nil)
-  if valid_579006 != nil:
-    section.add "date", valid_579006
+  if valid_580032 != nil:
+    section.add "date", valid_580032
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1221,77 +1387,97 @@ proc validate_ReportsEntityUsageReportsGet_579002(path: JsonNode; query: JsonNod
   ##   quotaUser: JString
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   pageToken: JString
-  ##            : Token to specify next page.
+  ##            : Token to specify next page. A report with multiple pages has a nextPageToken property in the response. In your follow-on request getting the next page of the report, enter the nextPageToken value in the pageToken query string.
   ##   filters: JString
-  ##          : Represents the set of filters including parameter operator value.
+  ##          : The filters query string is a comma-separated list of an application's event parameters where the parameter's value is manipulated by a relational operator. The filters query string includes the name of the application whose usage is returned in the report. The application values for the Entities usage report include accounts, docs, and gmail.
+  ## Filters are in the form [application name]:[parameter name][relational operator][parameter value],....
+  ## 
+  ## In this example, the <> 'not equal to' operator is URL-encoded in the request's query string (%3C%3E):
+  ## GET 
+  ## https://www.googleapis.com/admin/reports/v1/usage/gplus_communities/all/dates/2017-12-01 ?parameters=gplus:community_name,gplus:num_total_members &filters=gplus:num_total_members>0
+  ## 
+  ## 
+  ## The relational operators include:  
+  ## - == - 'equal to'. 
+  ## - <> - 'not equal to'. It is URL-encoded (%3C%3E). 
+  ## - < - 'less than'. It is URL-encoded (%3C). 
+  ## - <= - 'less than or equal to'. It is URL-encoded (%3C=). 
+  ## - > - 'greater than'. It is URL-encoded (%3E). 
+  ## - >= - 'greater than or equal to'. It is URL-encoded (%3E=).  Filters can only be applied to numeric parameters.
   ##   customerId: JString
-  ##             : Represents the customer for which the data is to be fetched.
+  ##             : The unique ID of the customer to retrieve data for.
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: JInt
-  ##             : Maximum number of results to return. Maximum allowed is 1000
+  ##             : Determines how many activity records are shown on each response page. For example, if the request sets maxResults=1 and the report has two activities, the report has two pages. The response's nextPageToken property has the token to the second page.
   ##   parameters: JString
-  ##             : Represents the application name, parameter name pairs to fetch in csv as app_name1:param_name1, app_name2:param_name2.
+  ##             : The parameters query string is a comma-separated list of event parameters that refine a report's results. The parameter is associated with a specific application. The application values for the Entities usage report are only gplus.
+  ## A parameter query string is in the CSV form of [app_name1:param_name1], [app_name2:param_name2]....
+  ## Note: The API doesn't accept multiple values of a parameter. If a particular parameter is supplied more than once in the API request, the API only accepts the last value of that request parameter.
+  ## In addition, if an invalid request parameter is supplied in the API request, the API ignores that request parameter and returns the response corresponding to the remaining valid request parameters.
+  ## 
+  ## An example of an invalid request parameter is one that does not belong to the application. If no parameters are requested, all parameters are returned.
   section = newJObject()
-  var valid_579007 = query.getOrDefault("key")
-  valid_579007 = validateParameter(valid_579007, JString, required = false,
+  var valid_580033 = query.getOrDefault("key")
+  valid_580033 = validateParameter(valid_580033, JString, required = false,
                                  default = nil)
-  if valid_579007 != nil:
-    section.add "key", valid_579007
-  var valid_579008 = query.getOrDefault("prettyPrint")
-  valid_579008 = validateParameter(valid_579008, JBool, required = false,
+  if valid_580033 != nil:
+    section.add "key", valid_580033
+  var valid_580034 = query.getOrDefault("prettyPrint")
+  valid_580034 = validateParameter(valid_580034, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579008 != nil:
-    section.add "prettyPrint", valid_579008
-  var valid_579009 = query.getOrDefault("oauth_token")
-  valid_579009 = validateParameter(valid_579009, JString, required = false,
+  if valid_580034 != nil:
+    section.add "prettyPrint", valid_580034
+  var valid_580035 = query.getOrDefault("oauth_token")
+  valid_580035 = validateParameter(valid_580035, JString, required = false,
                                  default = nil)
-  if valid_579009 != nil:
-    section.add "oauth_token", valid_579009
-  var valid_579010 = query.getOrDefault("alt")
-  valid_579010 = validateParameter(valid_579010, JString, required = false,
+  if valid_580035 != nil:
+    section.add "oauth_token", valid_580035
+  var valid_580036 = query.getOrDefault("alt")
+  valid_580036 = validateParameter(valid_580036, JString, required = false,
                                  default = newJString("json"))
-  if valid_579010 != nil:
-    section.add "alt", valid_579010
-  var valid_579011 = query.getOrDefault("userIp")
-  valid_579011 = validateParameter(valid_579011, JString, required = false,
+  if valid_580036 != nil:
+    section.add "alt", valid_580036
+  var valid_580037 = query.getOrDefault("userIp")
+  valid_580037 = validateParameter(valid_580037, JString, required = false,
                                  default = nil)
-  if valid_579011 != nil:
-    section.add "userIp", valid_579011
-  var valid_579012 = query.getOrDefault("quotaUser")
-  valid_579012 = validateParameter(valid_579012, JString, required = false,
+  if valid_580037 != nil:
+    section.add "userIp", valid_580037
+  var valid_580038 = query.getOrDefault("quotaUser")
+  valid_580038 = validateParameter(valid_580038, JString, required = false,
                                  default = nil)
-  if valid_579012 != nil:
-    section.add "quotaUser", valid_579012
-  var valid_579013 = query.getOrDefault("pageToken")
-  valid_579013 = validateParameter(valid_579013, JString, required = false,
+  if valid_580038 != nil:
+    section.add "quotaUser", valid_580038
+  var valid_580039 = query.getOrDefault("pageToken")
+  valid_580039 = validateParameter(valid_580039, JString, required = false,
                                  default = nil)
-  if valid_579013 != nil:
-    section.add "pageToken", valid_579013
-  var valid_579014 = query.getOrDefault("filters")
-  valid_579014 = validateParameter(valid_579014, JString, required = false,
+  if valid_580039 != nil:
+    section.add "pageToken", valid_580039
+  var valid_580040 = query.getOrDefault("filters")
+  valid_580040 = validateParameter(valid_580040, JString, required = false,
                                  default = nil)
-  if valid_579014 != nil:
-    section.add "filters", valid_579014
-  var valid_579015 = query.getOrDefault("customerId")
-  valid_579015 = validateParameter(valid_579015, JString, required = false,
+  if valid_580040 != nil:
+    section.add "filters", valid_580040
+  var valid_580041 = query.getOrDefault("customerId")
+  valid_580041 = validateParameter(valid_580041, JString, required = false,
                                  default = nil)
-  if valid_579015 != nil:
-    section.add "customerId", valid_579015
-  var valid_579016 = query.getOrDefault("fields")
-  valid_579016 = validateParameter(valid_579016, JString, required = false,
+  if valid_580041 != nil:
+    section.add "customerId", valid_580041
+  var valid_580042 = query.getOrDefault("fields")
+  valid_580042 = validateParameter(valid_580042, JString, required = false,
                                  default = nil)
-  if valid_579016 != nil:
-    section.add "fields", valid_579016
-  var valid_579017 = query.getOrDefault("maxResults")
-  valid_579017 = validateParameter(valid_579017, JInt, required = false, default = nil)
-  if valid_579017 != nil:
-    section.add "maxResults", valid_579017
-  var valid_579018 = query.getOrDefault("parameters")
-  valid_579018 = validateParameter(valid_579018, JString, required = false,
+  if valid_580042 != nil:
+    section.add "fields", valid_580042
+  var valid_580043 = query.getOrDefault("maxResults")
+  valid_580043 = validateParameter(valid_580043, JInt, required = false,
+                                 default = newJInt(1000))
+  if valid_580043 != nil:
+    section.add "maxResults", valid_580043
+  var valid_580044 = query.getOrDefault("parameters")
+  valid_580044 = validateParameter(valid_580044, JString, required = false,
                                  default = nil)
-  if valid_579018 != nil:
-    section.add "parameters", valid_579018
+  if valid_580044 != nil:
+    section.add "parameters", valid_580044
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1300,27 +1486,27 @@ proc validate_ReportsEntityUsageReportsGet_579002(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_579019: Call_ReportsEntityUsageReportsGet_579001; path: JsonNode;
+proc call*(call_580045: Call_ReportsEntityUsageReportsGet_580027; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
-  ## Retrieves a report which is a collection of properties / statistics for a set of objects.
+  ## Retrieves a report which is a collection of properties and statistics for entities used by users within the account. For more information, see the Entities Usage Report guide. For more information about the entities report's parameters, see the Entities Usage parameters reference guides.
   ## 
-  let valid = call_579019.validator(path, query, header, formData, body)
-  let scheme = call_579019.pickScheme
+  let valid = call_580045.validator(path, query, header, formData, body)
+  let scheme = call_580045.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579019.url(scheme.get, call_579019.host, call_579019.base,
-                         call_579019.route, valid.getOrDefault("path"),
+  let url = call_580045.url(scheme.get, call_580045.host, call_580045.base,
+                         call_580045.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579019, url, valid)
+  result = hook(call_580045, url, valid)
 
-proc call*(call_579020: Call_ReportsEntityUsageReportsGet_579001;
-          entityKey: string; entityType: string; date: string; key: string = "";
-          prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
-          userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
-          filters: string = ""; customerId: string = ""; fields: string = "";
-          maxResults: int = 0; parameters: string = ""): Recallable =
+proc call*(call_580046: Call_ReportsEntityUsageReportsGet_580027; date: string;
+          key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
+          entityKey: string = "all"; alt: string = "json"; userIp: string = "";
+          quotaUser: string = ""; pageToken: string = ""; filters: string = "";
+          customerId: string = ""; entityType: string = "gplus_communities";
+          fields: string = ""; maxResults: int = 1000; parameters: string = ""): Recallable =
   ## reportsEntityUsageReportsGet
-  ## Retrieves a report which is a collection of properties / statistics for a set of objects.
+  ## Retrieves a report which is a collection of properties and statistics for entities used by users within the account. For more information, see the Entities Usage Report guide. For more information about the entities report's parameters, see the Entities Usage parameters reference guides.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
@@ -1328,7 +1514,7 @@ proc call*(call_579020: Call_ReportsEntityUsageReportsGet_579001;
   ##   oauthToken: string
   ##             : OAuth 2.0 token for the current user.
   ##   entityKey: string (required)
-  ##            : Represents the key of object for which the data should be filtered.
+  ##            : Represents the key of the object to filter the data with.
   ##   alt: string
   ##      : Data format for the response.
   ##   userIp: string
@@ -1336,46 +1522,65 @@ proc call*(call_579020: Call_ReportsEntityUsageReportsGet_579001;
   ##   quotaUser: string
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   pageToken: string
-  ##            : Token to specify next page.
+  ##            : Token to specify next page. A report with multiple pages has a nextPageToken property in the response. In your follow-on request getting the next page of the report, enter the nextPageToken value in the pageToken query string.
   ##   filters: string
-  ##          : Represents the set of filters including parameter operator value.
+  ##          : The filters query string is a comma-separated list of an application's event parameters where the parameter's value is manipulated by a relational operator. The filters query string includes the name of the application whose usage is returned in the report. The application values for the Entities usage report include accounts, docs, and gmail.
+  ## Filters are in the form [application name]:[parameter name][relational operator][parameter value],....
+  ## 
+  ## In this example, the <> 'not equal to' operator is URL-encoded in the request's query string (%3C%3E):
+  ## GET 
+  ## https://www.googleapis.com/admin/reports/v1/usage/gplus_communities/all/dates/2017-12-01 ?parameters=gplus:community_name,gplus:num_total_members &filters=gplus:num_total_members>0
+  ## 
+  ## 
+  ## The relational operators include:  
+  ## - == - 'equal to'. 
+  ## - <> - 'not equal to'. It is URL-encoded (%3C%3E). 
+  ## - < - 'less than'. It is URL-encoded (%3C). 
+  ## - <= - 'less than or equal to'. It is URL-encoded (%3C=). 
+  ## - > - 'greater than'. It is URL-encoded (%3E). 
+  ## - >= - 'greater than or equal to'. It is URL-encoded (%3E=).  Filters can only be applied to numeric parameters.
   ##   customerId: string
-  ##             : Represents the customer for which the data is to be fetched.
+  ##             : The unique ID of the customer to retrieve data for.
   ##   entityType: string (required)
-  ##             : Type of object. Should be one of - gplus_communities.
+  ##             : Represents the type of entity for the report.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
   ##   date: string (required)
-  ##       : Represents the date in yyyy-mm-dd format for which the data is to be fetched.
+  ##       : Represents the date the usage occurred. The timestamp is in the ISO 8601 format, yyyy-mm-dd. We recommend you use your account's time zone for this.
   ##   maxResults: int
-  ##             : Maximum number of results to return. Maximum allowed is 1000
+  ##             : Determines how many activity records are shown on each response page. For example, if the request sets maxResults=1 and the report has two activities, the report has two pages. The response's nextPageToken property has the token to the second page.
   ##   parameters: string
-  ##             : Represents the application name, parameter name pairs to fetch in csv as app_name1:param_name1, app_name2:param_name2.
-  var path_579021 = newJObject()
-  var query_579022 = newJObject()
-  add(query_579022, "key", newJString(key))
-  add(query_579022, "prettyPrint", newJBool(prettyPrint))
-  add(query_579022, "oauth_token", newJString(oauthToken))
-  add(path_579021, "entityKey", newJString(entityKey))
-  add(query_579022, "alt", newJString(alt))
-  add(query_579022, "userIp", newJString(userIp))
-  add(query_579022, "quotaUser", newJString(quotaUser))
-  add(query_579022, "pageToken", newJString(pageToken))
-  add(query_579022, "filters", newJString(filters))
-  add(query_579022, "customerId", newJString(customerId))
-  add(path_579021, "entityType", newJString(entityType))
-  add(query_579022, "fields", newJString(fields))
-  add(path_579021, "date", newJString(date))
-  add(query_579022, "maxResults", newJInt(maxResults))
-  add(query_579022, "parameters", newJString(parameters))
-  result = call_579020.call(path_579021, query_579022, nil, nil, nil)
+  ##             : The parameters query string is a comma-separated list of event parameters that refine a report's results. The parameter is associated with a specific application. The application values for the Entities usage report are only gplus.
+  ## A parameter query string is in the CSV form of [app_name1:param_name1], [app_name2:param_name2]....
+  ## Note: The API doesn't accept multiple values of a parameter. If a particular parameter is supplied more than once in the API request, the API only accepts the last value of that request parameter.
+  ## In addition, if an invalid request parameter is supplied in the API request, the API ignores that request parameter and returns the response corresponding to the remaining valid request parameters.
+  ## 
+  ## An example of an invalid request parameter is one that does not belong to the application. If no parameters are requested, all parameters are returned.
+  var path_580047 = newJObject()
+  var query_580048 = newJObject()
+  add(query_580048, "key", newJString(key))
+  add(query_580048, "prettyPrint", newJBool(prettyPrint))
+  add(query_580048, "oauth_token", newJString(oauthToken))
+  add(path_580047, "entityKey", newJString(entityKey))
+  add(query_580048, "alt", newJString(alt))
+  add(query_580048, "userIp", newJString(userIp))
+  add(query_580048, "quotaUser", newJString(quotaUser))
+  add(query_580048, "pageToken", newJString(pageToken))
+  add(query_580048, "filters", newJString(filters))
+  add(query_580048, "customerId", newJString(customerId))
+  add(path_580047, "entityType", newJString(entityType))
+  add(query_580048, "fields", newJString(fields))
+  add(path_580047, "date", newJString(date))
+  add(query_580048, "maxResults", newJInt(maxResults))
+  add(query_580048, "parameters", newJString(parameters))
+  result = call_580046.call(path_580047, query_580048, nil, nil, nil)
 
-var reportsEntityUsageReportsGet* = Call_ReportsEntityUsageReportsGet_579001(
+var reportsEntityUsageReportsGet* = Call_ReportsEntityUsageReportsGet_580027(
     name: "reportsEntityUsageReportsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/usage/{entityType}/{entityKey}/dates/{date}",
-    validator: validate_ReportsEntityUsageReportsGet_579002,
-    base: "/admin/reports/v1", url: url_ReportsEntityUsageReportsGet_579003,
+    validator: validate_ReportsEntityUsageReportsGet_580028,
+    base: "/admin/reports/v1", url: url_ReportsEntityUsageReportsGet_580029,
     schemes: {Scheme.Https})
 export
   rest

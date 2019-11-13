@@ -1,19 +1,19 @@
 
 import
-  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
-  asyncdispatch, jwt
+  json, options, hashes, uri, strutils, rest, os, uri, strutils, times, httpcore,
+  httpclient, asyncdispatch, jwt
 
 ## auto-generated via openapi macro
-## title: Enterprise License Manager
+## title: Licensing
 ## version: v1
 ## termsOfService: https://developers.google.com/terms/
 ## license:
 ##     name: Creative Commons Attribution 3.0
 ##     url: http://creativecommons.org/licenses/by/3.0/
 ## 
-## Views and manages licenses for your domain.
+## Licensing API to view and manage licenses for your domain
 ## 
-## https://developers.google.com/google-apps/licensing/
+## https://developers.google.com/admin-sdk/licensing/
 type
   Scheme {.pure.} = enum
     Https = "https", Http = "http", Wss = "wss", Ws = "ws"
@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_578355 = ref object of OpenApiRestCall
+  OpenApiRestCall_579380 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_578355](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579380](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_578355): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579380): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -112,8 +112,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_LicensingLicenseAssignmentsInsert_578625 = ref object of OpenApiRestCall_578355
-proc url_LicensingLicenseAssignmentsInsert_578627(protocol: Scheme; host: string;
+  Call_LicensingLicenseAssignmentsInsert_579650 = ref object of OpenApiRestCall_579380
+proc url_LicensingLicenseAssignmentsInsert_579652(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -130,31 +130,36 @@ proc url_LicensingLicenseAssignmentsInsert_578627(protocol: Scheme; host: string
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_LicensingLicenseAssignmentsInsert_578626(path: JsonNode;
+proc validate_LicensingLicenseAssignmentsInsert_579651(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
-  ## Assign License.
+  ## Assign a license.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
   ##   skuId: JString (required)
-  ##        : Name for sku
+  ##        : A product SKU's unique identifier. For more information about available SKUs in this version of the API, see Products and SKUs.
   ##   productId: JString (required)
-  ##            : Name for product
+  ##            : A product's unique identifier. For more information about products in this version of the API, see Products and SKUs.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `skuId` field"
-  var valid_578753 = path.getOrDefault("skuId")
-  valid_578753 = validateParameter(valid_578753, JString, required = true,
+  var valid_579778 = path.getOrDefault("skuId")
+  valid_579778 = validateParameter(valid_579778, JString, required = true,
                                  default = nil)
-  if valid_578753 != nil:
-    section.add "skuId", valid_578753
-  var valid_578754 = path.getOrDefault("productId")
-  valid_578754 = validateParameter(valid_578754, JString, required = true,
+  if valid_579778 != nil:
+    section.add "skuId", valid_579778
+  var valid_579779 = path.getOrDefault("productId")
+  valid_579779 = validateParameter(valid_579779, JString, required = true,
                                  default = nil)
-  if valid_578754 != nil:
-    section.add "productId", valid_578754
+  if valid_579779 != nil:
+    section.add "productId", valid_579779
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -172,41 +177,41 @@ proc validate_LicensingLicenseAssignmentsInsert_578626(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578755 = query.getOrDefault("key")
-  valid_578755 = validateParameter(valid_578755, JString, required = false,
+  var valid_579780 = query.getOrDefault("key")
+  valid_579780 = validateParameter(valid_579780, JString, required = false,
                                  default = nil)
-  if valid_578755 != nil:
-    section.add "key", valid_578755
-  var valid_578769 = query.getOrDefault("prettyPrint")
-  valid_578769 = validateParameter(valid_578769, JBool, required = false,
+  if valid_579780 != nil:
+    section.add "key", valid_579780
+  var valid_579794 = query.getOrDefault("prettyPrint")
+  valid_579794 = validateParameter(valid_579794, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578769 != nil:
-    section.add "prettyPrint", valid_578769
-  var valid_578770 = query.getOrDefault("oauth_token")
-  valid_578770 = validateParameter(valid_578770, JString, required = false,
+  if valid_579794 != nil:
+    section.add "prettyPrint", valid_579794
+  var valid_579795 = query.getOrDefault("oauth_token")
+  valid_579795 = validateParameter(valid_579795, JString, required = false,
                                  default = nil)
-  if valid_578770 != nil:
-    section.add "oauth_token", valid_578770
-  var valid_578771 = query.getOrDefault("alt")
-  valid_578771 = validateParameter(valid_578771, JString, required = false,
+  if valid_579795 != nil:
+    section.add "oauth_token", valid_579795
+  var valid_579796 = query.getOrDefault("alt")
+  valid_579796 = validateParameter(valid_579796, JString, required = false,
                                  default = newJString("json"))
-  if valid_578771 != nil:
-    section.add "alt", valid_578771
-  var valid_578772 = query.getOrDefault("userIp")
-  valid_578772 = validateParameter(valid_578772, JString, required = false,
+  if valid_579796 != nil:
+    section.add "alt", valid_579796
+  var valid_579797 = query.getOrDefault("userIp")
+  valid_579797 = validateParameter(valid_579797, JString, required = false,
                                  default = nil)
-  if valid_578772 != nil:
-    section.add "userIp", valid_578772
-  var valid_578773 = query.getOrDefault("quotaUser")
-  valid_578773 = validateParameter(valid_578773, JString, required = false,
+  if valid_579797 != nil:
+    section.add "userIp", valid_579797
+  var valid_579798 = query.getOrDefault("quotaUser")
+  valid_579798 = validateParameter(valid_579798, JString, required = false,
                                  default = nil)
-  if valid_578773 != nil:
-    section.add "quotaUser", valid_578773
-  var valid_578774 = query.getOrDefault("fields")
-  valid_578774 = validateParameter(valid_578774, JString, required = false,
+  if valid_579798 != nil:
+    section.add "quotaUser", valid_579798
+  var valid_579799 = query.getOrDefault("fields")
+  valid_579799 = validateParameter(valid_579799, JString, required = false,
                                  default = nil)
-  if valid_578774 != nil:
-    section.add "fields", valid_578774
+  if valid_579799 != nil:
+    section.add "fields", valid_579799
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -218,30 +223,30 @@ proc validate_LicensingLicenseAssignmentsInsert_578626(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578798: Call_LicensingLicenseAssignmentsInsert_578625;
+proc call*(call_579823: Call_LicensingLicenseAssignmentsInsert_579650;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
-  ## Assign License.
+  ## Assign a license.
   ## 
-  let valid = call_578798.validator(path, query, header, formData, body)
-  let scheme = call_578798.pickScheme
+  let valid = call_579823.validator(path, query, header, formData, body)
+  let scheme = call_579823.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578798.url(scheme.get, call_578798.host, call_578798.base,
-                         call_578798.route, valid.getOrDefault("path"),
+  let url = call_579823.url(scheme.get, call_579823.host, call_579823.base,
+                         call_579823.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578798, url, valid)
+  result = hook(call_579823, url, valid)
 
-proc call*(call_578869: Call_LicensingLicenseAssignmentsInsert_578625;
+proc call*(call_579894: Call_LicensingLicenseAssignmentsInsert_579650;
           skuId: string; productId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; body: JsonNode = nil; fields: string = ""): Recallable =
   ## licensingLicenseAssignmentsInsert
-  ## Assign License.
+  ## Assign a license.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   skuId: string (required)
-  ##        : Name for sku
+  ##        : A product SKU's unique identifier. For more information about available SKUs in this version of the API, see Products and SKUs.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
@@ -256,32 +261,32 @@ proc call*(call_578869: Call_LicensingLicenseAssignmentsInsert_578625;
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
   ##   productId: string (required)
-  ##            : Name for product
-  var path_578870 = newJObject()
-  var query_578872 = newJObject()
-  var body_578873 = newJObject()
-  add(query_578872, "key", newJString(key))
-  add(path_578870, "skuId", newJString(skuId))
-  add(query_578872, "prettyPrint", newJBool(prettyPrint))
-  add(query_578872, "oauth_token", newJString(oauthToken))
-  add(query_578872, "alt", newJString(alt))
-  add(query_578872, "userIp", newJString(userIp))
-  add(query_578872, "quotaUser", newJString(quotaUser))
+  ##            : A product's unique identifier. For more information about products in this version of the API, see Products and SKUs.
+  var path_579895 = newJObject()
+  var query_579897 = newJObject()
+  var body_579898 = newJObject()
+  add(query_579897, "key", newJString(key))
+  add(path_579895, "skuId", newJString(skuId))
+  add(query_579897, "prettyPrint", newJBool(prettyPrint))
+  add(query_579897, "oauth_token", newJString(oauthToken))
+  add(query_579897, "alt", newJString(alt))
+  add(query_579897, "userIp", newJString(userIp))
+  add(query_579897, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_578873 = body
-  add(query_578872, "fields", newJString(fields))
-  add(path_578870, "productId", newJString(productId))
-  result = call_578869.call(path_578870, query_578872, nil, nil, body_578873)
+    body_579898 = body
+  add(query_579897, "fields", newJString(fields))
+  add(path_579895, "productId", newJString(productId))
+  result = call_579894.call(path_579895, query_579897, nil, nil, body_579898)
 
-var licensingLicenseAssignmentsInsert* = Call_LicensingLicenseAssignmentsInsert_578625(
+var licensingLicenseAssignmentsInsert* = Call_LicensingLicenseAssignmentsInsert_579650(
     name: "licensingLicenseAssignmentsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/{productId}/sku/{skuId}/user",
-    validator: validate_LicensingLicenseAssignmentsInsert_578626,
+    validator: validate_LicensingLicenseAssignmentsInsert_579651,
     base: "/apps/licensing/v1/product",
-    url: url_LicensingLicenseAssignmentsInsert_578627, schemes: {Scheme.Https})
+    url: url_LicensingLicenseAssignmentsInsert_579652, schemes: {Scheme.Https})
 type
-  Call_LicensingLicenseAssignmentsUpdate_578929 = ref object of OpenApiRestCall_578355
-proc url_LicensingLicenseAssignmentsUpdate_578931(protocol: Scheme; host: string;
+  Call_LicensingLicenseAssignmentsUpdate_579954 = ref object of OpenApiRestCall_579380
+proc url_LicensingLicenseAssignmentsUpdate_579956(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -300,38 +305,45 @@ proc url_LicensingLicenseAssignmentsUpdate_578931(protocol: Scheme; host: string
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_LicensingLicenseAssignmentsUpdate_578930(path: JsonNode;
+proc validate_LicensingLicenseAssignmentsUpdate_579955(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
-  ## Assign License.
+  ## Reassign a user's product SKU with a different SKU in the same product.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
   ##   skuId: JString (required)
-  ##        : Name for sku for which license would be revoked
+  ##        : A product SKU's unique identifier. For more information about available SKUs in this version of the API, see Products and SKUs.
   ##   userId: JString (required)
-  ##         : email id or unique Id of the user
+  ##         : The user's current primary email address. If the user's email address changes, use the new email address in your API requests.
+  ## Since a userId is subject to change, do not use a userId value as a key for persistent data. This key could break if the current user's email address changes.
+  ## If the userId is suspended, the license status changes.
   ##   productId: JString (required)
-  ##            : Name for product
+  ##            : A product's unique identifier. For more information about products in this version of the API, see Products and SKUs.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `skuId` field"
-  var valid_578932 = path.getOrDefault("skuId")
-  valid_578932 = validateParameter(valid_578932, JString, required = true,
+  var valid_579957 = path.getOrDefault("skuId")
+  valid_579957 = validateParameter(valid_579957, JString, required = true,
                                  default = nil)
-  if valid_578932 != nil:
-    section.add "skuId", valid_578932
-  var valid_578933 = path.getOrDefault("userId")
-  valid_578933 = validateParameter(valid_578933, JString, required = true,
+  if valid_579957 != nil:
+    section.add "skuId", valid_579957
+  var valid_579958 = path.getOrDefault("userId")
+  valid_579958 = validateParameter(valid_579958, JString, required = true,
                                  default = nil)
-  if valid_578933 != nil:
-    section.add "userId", valid_578933
-  var valid_578934 = path.getOrDefault("productId")
-  valid_578934 = validateParameter(valid_578934, JString, required = true,
+  if valid_579958 != nil:
+    section.add "userId", valid_579958
+  var valid_579959 = path.getOrDefault("productId")
+  valid_579959 = validateParameter(valid_579959, JString, required = true,
                                  default = nil)
-  if valid_578934 != nil:
-    section.add "productId", valid_578934
+  if valid_579959 != nil:
+    section.add "productId", valid_579959
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -349,41 +361,41 @@ proc validate_LicensingLicenseAssignmentsUpdate_578930(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578935 = query.getOrDefault("key")
-  valid_578935 = validateParameter(valid_578935, JString, required = false,
+  var valid_579960 = query.getOrDefault("key")
+  valid_579960 = validateParameter(valid_579960, JString, required = false,
                                  default = nil)
-  if valid_578935 != nil:
-    section.add "key", valid_578935
-  var valid_578936 = query.getOrDefault("prettyPrint")
-  valid_578936 = validateParameter(valid_578936, JBool, required = false,
+  if valid_579960 != nil:
+    section.add "key", valid_579960
+  var valid_579961 = query.getOrDefault("prettyPrint")
+  valid_579961 = validateParameter(valid_579961, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578936 != nil:
-    section.add "prettyPrint", valid_578936
-  var valid_578937 = query.getOrDefault("oauth_token")
-  valid_578937 = validateParameter(valid_578937, JString, required = false,
+  if valid_579961 != nil:
+    section.add "prettyPrint", valid_579961
+  var valid_579962 = query.getOrDefault("oauth_token")
+  valid_579962 = validateParameter(valid_579962, JString, required = false,
                                  default = nil)
-  if valid_578937 != nil:
-    section.add "oauth_token", valid_578937
-  var valid_578938 = query.getOrDefault("alt")
-  valid_578938 = validateParameter(valid_578938, JString, required = false,
+  if valid_579962 != nil:
+    section.add "oauth_token", valid_579962
+  var valid_579963 = query.getOrDefault("alt")
+  valid_579963 = validateParameter(valid_579963, JString, required = false,
                                  default = newJString("json"))
-  if valid_578938 != nil:
-    section.add "alt", valid_578938
-  var valid_578939 = query.getOrDefault("userIp")
-  valid_578939 = validateParameter(valid_578939, JString, required = false,
+  if valid_579963 != nil:
+    section.add "alt", valid_579963
+  var valid_579964 = query.getOrDefault("userIp")
+  valid_579964 = validateParameter(valid_579964, JString, required = false,
                                  default = nil)
-  if valid_578939 != nil:
-    section.add "userIp", valid_578939
-  var valid_578940 = query.getOrDefault("quotaUser")
-  valid_578940 = validateParameter(valid_578940, JString, required = false,
+  if valid_579964 != nil:
+    section.add "userIp", valid_579964
+  var valid_579965 = query.getOrDefault("quotaUser")
+  valid_579965 = validateParameter(valid_579965, JString, required = false,
                                  default = nil)
-  if valid_578940 != nil:
-    section.add "quotaUser", valid_578940
-  var valid_578941 = query.getOrDefault("fields")
-  valid_578941 = validateParameter(valid_578941, JString, required = false,
+  if valid_579965 != nil:
+    section.add "quotaUser", valid_579965
+  var valid_579966 = query.getOrDefault("fields")
+  valid_579966 = validateParameter(valid_579966, JString, required = false,
                                  default = nil)
-  if valid_578941 != nil:
-    section.add "fields", valid_578941
+  if valid_579966 != nil:
+    section.add "fields", valid_579966
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -395,31 +407,31 @@ proc validate_LicensingLicenseAssignmentsUpdate_578930(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578943: Call_LicensingLicenseAssignmentsUpdate_578929;
+proc call*(call_579968: Call_LicensingLicenseAssignmentsUpdate_579954;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
-  ## Assign License.
+  ## Reassign a user's product SKU with a different SKU in the same product.
   ## 
-  let valid = call_578943.validator(path, query, header, formData, body)
-  let scheme = call_578943.pickScheme
+  let valid = call_579968.validator(path, query, header, formData, body)
+  let scheme = call_579968.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578943.url(scheme.get, call_578943.host, call_578943.base,
-                         call_578943.route, valid.getOrDefault("path"),
+  let url = call_579968.url(scheme.get, call_579968.host, call_579968.base,
+                         call_579968.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578943, url, valid)
+  result = hook(call_579968, url, valid)
 
-proc call*(call_578944: Call_LicensingLicenseAssignmentsUpdate_578929;
+proc call*(call_579969: Call_LicensingLicenseAssignmentsUpdate_579954;
           skuId: string; userId: string; productId: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
           fields: string = ""): Recallable =
   ## licensingLicenseAssignmentsUpdate
-  ## Assign License.
+  ## Reassign a user's product SKU with a different SKU in the same product.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   skuId: string (required)
-  ##        : Name for sku for which license would be revoked
+  ##        : A product SKU's unique identifier. For more information about available SKUs in this version of the API, see Products and SKUs.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
@@ -431,38 +443,40 @@ proc call*(call_578944: Call_LicensingLicenseAssignmentsUpdate_578929;
   ##   quotaUser: string
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
-  ##         : email id or unique Id of the user
+  ##         : The user's current primary email address. If the user's email address changes, use the new email address in your API requests.
+  ## Since a userId is subject to change, do not use a userId value as a key for persistent data. This key could break if the current user's email address changes.
+  ## If the userId is suspended, the license status changes.
   ##   body: JObject
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
   ##   productId: string (required)
-  ##            : Name for product
-  var path_578945 = newJObject()
-  var query_578946 = newJObject()
-  var body_578947 = newJObject()
-  add(query_578946, "key", newJString(key))
-  add(path_578945, "skuId", newJString(skuId))
-  add(query_578946, "prettyPrint", newJBool(prettyPrint))
-  add(query_578946, "oauth_token", newJString(oauthToken))
-  add(query_578946, "alt", newJString(alt))
-  add(query_578946, "userIp", newJString(userIp))
-  add(query_578946, "quotaUser", newJString(quotaUser))
-  add(path_578945, "userId", newJString(userId))
+  ##            : A product's unique identifier. For more information about products in this version of the API, see Products and SKUs.
+  var path_579970 = newJObject()
+  var query_579971 = newJObject()
+  var body_579972 = newJObject()
+  add(query_579971, "key", newJString(key))
+  add(path_579970, "skuId", newJString(skuId))
+  add(query_579971, "prettyPrint", newJBool(prettyPrint))
+  add(query_579971, "oauth_token", newJString(oauthToken))
+  add(query_579971, "alt", newJString(alt))
+  add(query_579971, "userIp", newJString(userIp))
+  add(query_579971, "quotaUser", newJString(quotaUser))
+  add(path_579970, "userId", newJString(userId))
   if body != nil:
-    body_578947 = body
-  add(query_578946, "fields", newJString(fields))
-  add(path_578945, "productId", newJString(productId))
-  result = call_578944.call(path_578945, query_578946, nil, nil, body_578947)
+    body_579972 = body
+  add(query_579971, "fields", newJString(fields))
+  add(path_579970, "productId", newJString(productId))
+  result = call_579969.call(path_579970, query_579971, nil, nil, body_579972)
 
-var licensingLicenseAssignmentsUpdate* = Call_LicensingLicenseAssignmentsUpdate_578929(
+var licensingLicenseAssignmentsUpdate* = Call_LicensingLicenseAssignmentsUpdate_579954(
     name: "licensingLicenseAssignmentsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/{productId}/sku/{skuId}/user/{userId}",
-    validator: validate_LicensingLicenseAssignmentsUpdate_578930,
+    validator: validate_LicensingLicenseAssignmentsUpdate_579955,
     base: "/apps/licensing/v1/product",
-    url: url_LicensingLicenseAssignmentsUpdate_578931, schemes: {Scheme.Https})
+    url: url_LicensingLicenseAssignmentsUpdate_579956, schemes: {Scheme.Https})
 type
-  Call_LicensingLicenseAssignmentsGet_578912 = ref object of OpenApiRestCall_578355
-proc url_LicensingLicenseAssignmentsGet_578914(protocol: Scheme; host: string;
+  Call_LicensingLicenseAssignmentsGet_579937 = ref object of OpenApiRestCall_579380
+proc url_LicensingLicenseAssignmentsGet_579939(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -481,38 +495,45 @@ proc url_LicensingLicenseAssignmentsGet_578914(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_LicensingLicenseAssignmentsGet_578913(path: JsonNode;
+proc validate_LicensingLicenseAssignmentsGet_579938(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
-  ## Get license assignment of a particular product and sku for a user
+  ## Get a specific user's license by product SKU.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
   ##   skuId: JString (required)
-  ##        : Name for sku
+  ##        : A product SKU's unique identifier. For more information about available SKUs in this version of the API, see Products and SKUs.
   ##   userId: JString (required)
-  ##         : email id or unique Id of the user
+  ##         : The user's current primary email address. If the user's email address changes, use the new email address in your API requests.
+  ## Since a userId is subject to change, do not use a userId value as a key for persistent data. This key could break if the current user's email address changes.
+  ## If the userId is suspended, the license status changes.
   ##   productId: JString (required)
-  ##            : Name for product
+  ##            : A product's unique identifier. For more information about products in this version of the API, see Products and SKUs.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `skuId` field"
-  var valid_578915 = path.getOrDefault("skuId")
-  valid_578915 = validateParameter(valid_578915, JString, required = true,
+  var valid_579940 = path.getOrDefault("skuId")
+  valid_579940 = validateParameter(valid_579940, JString, required = true,
                                  default = nil)
-  if valid_578915 != nil:
-    section.add "skuId", valid_578915
-  var valid_578916 = path.getOrDefault("userId")
-  valid_578916 = validateParameter(valid_578916, JString, required = true,
+  if valid_579940 != nil:
+    section.add "skuId", valid_579940
+  var valid_579941 = path.getOrDefault("userId")
+  valid_579941 = validateParameter(valid_579941, JString, required = true,
                                  default = nil)
-  if valid_578916 != nil:
-    section.add "userId", valid_578916
-  var valid_578917 = path.getOrDefault("productId")
-  valid_578917 = validateParameter(valid_578917, JString, required = true,
+  if valid_579941 != nil:
+    section.add "userId", valid_579941
+  var valid_579942 = path.getOrDefault("productId")
+  valid_579942 = validateParameter(valid_579942, JString, required = true,
                                  default = nil)
-  if valid_578917 != nil:
-    section.add "productId", valid_578917
+  if valid_579942 != nil:
+    section.add "productId", valid_579942
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -530,41 +551,41 @@ proc validate_LicensingLicenseAssignmentsGet_578913(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578918 = query.getOrDefault("key")
-  valid_578918 = validateParameter(valid_578918, JString, required = false,
+  var valid_579943 = query.getOrDefault("key")
+  valid_579943 = validateParameter(valid_579943, JString, required = false,
                                  default = nil)
-  if valid_578918 != nil:
-    section.add "key", valid_578918
-  var valid_578919 = query.getOrDefault("prettyPrint")
-  valid_578919 = validateParameter(valid_578919, JBool, required = false,
+  if valid_579943 != nil:
+    section.add "key", valid_579943
+  var valid_579944 = query.getOrDefault("prettyPrint")
+  valid_579944 = validateParameter(valid_579944, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578919 != nil:
-    section.add "prettyPrint", valid_578919
-  var valid_578920 = query.getOrDefault("oauth_token")
-  valid_578920 = validateParameter(valid_578920, JString, required = false,
+  if valid_579944 != nil:
+    section.add "prettyPrint", valid_579944
+  var valid_579945 = query.getOrDefault("oauth_token")
+  valid_579945 = validateParameter(valid_579945, JString, required = false,
                                  default = nil)
-  if valid_578920 != nil:
-    section.add "oauth_token", valid_578920
-  var valid_578921 = query.getOrDefault("alt")
-  valid_578921 = validateParameter(valid_578921, JString, required = false,
+  if valid_579945 != nil:
+    section.add "oauth_token", valid_579945
+  var valid_579946 = query.getOrDefault("alt")
+  valid_579946 = validateParameter(valid_579946, JString, required = false,
                                  default = newJString("json"))
-  if valid_578921 != nil:
-    section.add "alt", valid_578921
-  var valid_578922 = query.getOrDefault("userIp")
-  valid_578922 = validateParameter(valid_578922, JString, required = false,
+  if valid_579946 != nil:
+    section.add "alt", valid_579946
+  var valid_579947 = query.getOrDefault("userIp")
+  valid_579947 = validateParameter(valid_579947, JString, required = false,
                                  default = nil)
-  if valid_578922 != nil:
-    section.add "userIp", valid_578922
-  var valid_578923 = query.getOrDefault("quotaUser")
-  valid_578923 = validateParameter(valid_578923, JString, required = false,
+  if valid_579947 != nil:
+    section.add "userIp", valid_579947
+  var valid_579948 = query.getOrDefault("quotaUser")
+  valid_579948 = validateParameter(valid_579948, JString, required = false,
                                  default = nil)
-  if valid_578923 != nil:
-    section.add "quotaUser", valid_578923
-  var valid_578924 = query.getOrDefault("fields")
-  valid_578924 = validateParameter(valid_578924, JString, required = false,
+  if valid_579948 != nil:
+    section.add "quotaUser", valid_579948
+  var valid_579949 = query.getOrDefault("fields")
+  valid_579949 = validateParameter(valid_579949, JString, required = false,
                                  default = nil)
-  if valid_578924 != nil:
-    section.add "fields", valid_578924
+  if valid_579949 != nil:
+    section.add "fields", valid_579949
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -573,29 +594,29 @@ proc validate_LicensingLicenseAssignmentsGet_578913(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578925: Call_LicensingLicenseAssignmentsGet_578912; path: JsonNode;
+proc call*(call_579950: Call_LicensingLicenseAssignmentsGet_579937; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
-  ## Get license assignment of a particular product and sku for a user
+  ## Get a specific user's license by product SKU.
   ## 
-  let valid = call_578925.validator(path, query, header, formData, body)
-  let scheme = call_578925.pickScheme
+  let valid = call_579950.validator(path, query, header, formData, body)
+  let scheme = call_579950.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578925.url(scheme.get, call_578925.host, call_578925.base,
-                         call_578925.route, valid.getOrDefault("path"),
+  let url = call_579950.url(scheme.get, call_579950.host, call_579950.base,
+                         call_579950.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578925, url, valid)
+  result = hook(call_579950, url, valid)
 
-proc call*(call_578926: Call_LicensingLicenseAssignmentsGet_578912; skuId: string;
+proc call*(call_579951: Call_LicensingLicenseAssignmentsGet_579937; skuId: string;
           userId: string; productId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; fields: string = ""): Recallable =
   ## licensingLicenseAssignmentsGet
-  ## Get license assignment of a particular product and sku for a user
+  ## Get a specific user's license by product SKU.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   skuId: string (required)
-  ##        : Name for sku
+  ##        : A product SKU's unique identifier. For more information about available SKUs in this version of the API, see Products and SKUs.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
@@ -607,34 +628,36 @@ proc call*(call_578926: Call_LicensingLicenseAssignmentsGet_578912; skuId: strin
   ##   quotaUser: string
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
-  ##         : email id or unique Id of the user
+  ##         : The user's current primary email address. If the user's email address changes, use the new email address in your API requests.
+  ## Since a userId is subject to change, do not use a userId value as a key for persistent data. This key could break if the current user's email address changes.
+  ## If the userId is suspended, the license status changes.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
   ##   productId: string (required)
-  ##            : Name for product
-  var path_578927 = newJObject()
-  var query_578928 = newJObject()
-  add(query_578928, "key", newJString(key))
-  add(path_578927, "skuId", newJString(skuId))
-  add(query_578928, "prettyPrint", newJBool(prettyPrint))
-  add(query_578928, "oauth_token", newJString(oauthToken))
-  add(query_578928, "alt", newJString(alt))
-  add(query_578928, "userIp", newJString(userIp))
-  add(query_578928, "quotaUser", newJString(quotaUser))
-  add(path_578927, "userId", newJString(userId))
-  add(query_578928, "fields", newJString(fields))
-  add(path_578927, "productId", newJString(productId))
-  result = call_578926.call(path_578927, query_578928, nil, nil, nil)
+  ##            : A product's unique identifier. For more information about products in this version of the API, see Products and SKUs.
+  var path_579952 = newJObject()
+  var query_579953 = newJObject()
+  add(query_579953, "key", newJString(key))
+  add(path_579952, "skuId", newJString(skuId))
+  add(query_579953, "prettyPrint", newJBool(prettyPrint))
+  add(query_579953, "oauth_token", newJString(oauthToken))
+  add(query_579953, "alt", newJString(alt))
+  add(query_579953, "userIp", newJString(userIp))
+  add(query_579953, "quotaUser", newJString(quotaUser))
+  add(path_579952, "userId", newJString(userId))
+  add(query_579953, "fields", newJString(fields))
+  add(path_579952, "productId", newJString(productId))
+  result = call_579951.call(path_579952, query_579953, nil, nil, nil)
 
-var licensingLicenseAssignmentsGet* = Call_LicensingLicenseAssignmentsGet_578912(
+var licensingLicenseAssignmentsGet* = Call_LicensingLicenseAssignmentsGet_579937(
     name: "licensingLicenseAssignmentsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{productId}/sku/{skuId}/user/{userId}",
-    validator: validate_LicensingLicenseAssignmentsGet_578913,
-    base: "/apps/licensing/v1/product", url: url_LicensingLicenseAssignmentsGet_578914,
+    validator: validate_LicensingLicenseAssignmentsGet_579938,
+    base: "/apps/licensing/v1/product", url: url_LicensingLicenseAssignmentsGet_579939,
     schemes: {Scheme.Https})
 type
-  Call_LicensingLicenseAssignmentsPatch_578965 = ref object of OpenApiRestCall_578355
-proc url_LicensingLicenseAssignmentsPatch_578967(protocol: Scheme; host: string;
+  Call_LicensingLicenseAssignmentsPatch_579990 = ref object of OpenApiRestCall_579380
+proc url_LicensingLicenseAssignmentsPatch_579992(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -653,38 +676,45 @@ proc url_LicensingLicenseAssignmentsPatch_578967(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_LicensingLicenseAssignmentsPatch_578966(path: JsonNode;
+proc validate_LicensingLicenseAssignmentsPatch_579991(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
-  ## Assign License. This method supports patch semantics.
+  ## Reassign a user's product SKU with a different SKU in the same product. This method supports patch semantics.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
   ##   skuId: JString (required)
-  ##        : Name for sku for which license would be revoked
+  ##        : A product SKU's unique identifier. For more information about available SKUs in this version of the API, see Products and SKUs.
   ##   userId: JString (required)
-  ##         : email id or unique Id of the user
+  ##         : The user's current primary email address. If the user's email address changes, use the new email address in your API requests.
+  ## Since a userId is subject to change, do not use a userId value as a key for persistent data. This key could break if the current user's email address changes.
+  ## If the userId is suspended, the license status changes.
   ##   productId: JString (required)
-  ##            : Name for product
+  ##            : A product's unique identifier. For more information about products in this version of the API, see Products and SKUs.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `skuId` field"
-  var valid_578968 = path.getOrDefault("skuId")
-  valid_578968 = validateParameter(valid_578968, JString, required = true,
+  var valid_579993 = path.getOrDefault("skuId")
+  valid_579993 = validateParameter(valid_579993, JString, required = true,
                                  default = nil)
-  if valid_578968 != nil:
-    section.add "skuId", valid_578968
-  var valid_578969 = path.getOrDefault("userId")
-  valid_578969 = validateParameter(valid_578969, JString, required = true,
+  if valid_579993 != nil:
+    section.add "skuId", valid_579993
+  var valid_579994 = path.getOrDefault("userId")
+  valid_579994 = validateParameter(valid_579994, JString, required = true,
                                  default = nil)
-  if valid_578969 != nil:
-    section.add "userId", valid_578969
-  var valid_578970 = path.getOrDefault("productId")
-  valid_578970 = validateParameter(valid_578970, JString, required = true,
+  if valid_579994 != nil:
+    section.add "userId", valid_579994
+  var valid_579995 = path.getOrDefault("productId")
+  valid_579995 = validateParameter(valid_579995, JString, required = true,
                                  default = nil)
-  if valid_578970 != nil:
-    section.add "productId", valid_578970
+  if valid_579995 != nil:
+    section.add "productId", valid_579995
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -702,41 +732,41 @@ proc validate_LicensingLicenseAssignmentsPatch_578966(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578971 = query.getOrDefault("key")
-  valid_578971 = validateParameter(valid_578971, JString, required = false,
+  var valid_579996 = query.getOrDefault("key")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_578971 != nil:
-    section.add "key", valid_578971
-  var valid_578972 = query.getOrDefault("prettyPrint")
-  valid_578972 = validateParameter(valid_578972, JBool, required = false,
+  if valid_579996 != nil:
+    section.add "key", valid_579996
+  var valid_579997 = query.getOrDefault("prettyPrint")
+  valid_579997 = validateParameter(valid_579997, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578972 != nil:
-    section.add "prettyPrint", valid_578972
-  var valid_578973 = query.getOrDefault("oauth_token")
-  valid_578973 = validateParameter(valid_578973, JString, required = false,
+  if valid_579997 != nil:
+    section.add "prettyPrint", valid_579997
+  var valid_579998 = query.getOrDefault("oauth_token")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = nil)
-  if valid_578973 != nil:
-    section.add "oauth_token", valid_578973
-  var valid_578974 = query.getOrDefault("alt")
-  valid_578974 = validateParameter(valid_578974, JString, required = false,
+  if valid_579998 != nil:
+    section.add "oauth_token", valid_579998
+  var valid_579999 = query.getOrDefault("alt")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = newJString("json"))
-  if valid_578974 != nil:
-    section.add "alt", valid_578974
-  var valid_578975 = query.getOrDefault("userIp")
-  valid_578975 = validateParameter(valid_578975, JString, required = false,
+  if valid_579999 != nil:
+    section.add "alt", valid_579999
+  var valid_580000 = query.getOrDefault("userIp")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = nil)
-  if valid_578975 != nil:
-    section.add "userIp", valid_578975
-  var valid_578976 = query.getOrDefault("quotaUser")
-  valid_578976 = validateParameter(valid_578976, JString, required = false,
+  if valid_580000 != nil:
+    section.add "userIp", valid_580000
+  var valid_580001 = query.getOrDefault("quotaUser")
+  valid_580001 = validateParameter(valid_580001, JString, required = false,
                                  default = nil)
-  if valid_578976 != nil:
-    section.add "quotaUser", valid_578976
-  var valid_578977 = query.getOrDefault("fields")
-  valid_578977 = validateParameter(valid_578977, JString, required = false,
+  if valid_580001 != nil:
+    section.add "quotaUser", valid_580001
+  var valid_580002 = query.getOrDefault("fields")
+  valid_580002 = validateParameter(valid_580002, JString, required = false,
                                  default = nil)
-  if valid_578977 != nil:
-    section.add "fields", valid_578977
+  if valid_580002 != nil:
+    section.add "fields", valid_580002
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -748,31 +778,31 @@ proc validate_LicensingLicenseAssignmentsPatch_578966(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578979: Call_LicensingLicenseAssignmentsPatch_578965;
+proc call*(call_580004: Call_LicensingLicenseAssignmentsPatch_579990;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
-  ## Assign License. This method supports patch semantics.
+  ## Reassign a user's product SKU with a different SKU in the same product. This method supports patch semantics.
   ## 
-  let valid = call_578979.validator(path, query, header, formData, body)
-  let scheme = call_578979.pickScheme
+  let valid = call_580004.validator(path, query, header, formData, body)
+  let scheme = call_580004.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578979.url(scheme.get, call_578979.host, call_578979.base,
-                         call_578979.route, valid.getOrDefault("path"),
+  let url = call_580004.url(scheme.get, call_580004.host, call_580004.base,
+                         call_580004.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578979, url, valid)
+  result = hook(call_580004, url, valid)
 
-proc call*(call_578980: Call_LicensingLicenseAssignmentsPatch_578965;
+proc call*(call_580005: Call_LicensingLicenseAssignmentsPatch_579990;
           skuId: string; userId: string; productId: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
           fields: string = ""): Recallable =
   ## licensingLicenseAssignmentsPatch
-  ## Assign License. This method supports patch semantics.
+  ## Reassign a user's product SKU with a different SKU in the same product. This method supports patch semantics.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   skuId: string (required)
-  ##        : Name for sku for which license would be revoked
+  ##        : A product SKU's unique identifier. For more information about available SKUs in this version of the API, see Products and SKUs.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
@@ -784,38 +814,40 @@ proc call*(call_578980: Call_LicensingLicenseAssignmentsPatch_578965;
   ##   quotaUser: string
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
-  ##         : email id or unique Id of the user
+  ##         : The user's current primary email address. If the user's email address changes, use the new email address in your API requests.
+  ## Since a userId is subject to change, do not use a userId value as a key for persistent data. This key could break if the current user's email address changes.
+  ## If the userId is suspended, the license status changes.
   ##   body: JObject
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
   ##   productId: string (required)
-  ##            : Name for product
-  var path_578981 = newJObject()
-  var query_578982 = newJObject()
-  var body_578983 = newJObject()
-  add(query_578982, "key", newJString(key))
-  add(path_578981, "skuId", newJString(skuId))
-  add(query_578982, "prettyPrint", newJBool(prettyPrint))
-  add(query_578982, "oauth_token", newJString(oauthToken))
-  add(query_578982, "alt", newJString(alt))
-  add(query_578982, "userIp", newJString(userIp))
-  add(query_578982, "quotaUser", newJString(quotaUser))
-  add(path_578981, "userId", newJString(userId))
+  ##            : A product's unique identifier. For more information about products in this version of the API, see Products and SKUs.
+  var path_580006 = newJObject()
+  var query_580007 = newJObject()
+  var body_580008 = newJObject()
+  add(query_580007, "key", newJString(key))
+  add(path_580006, "skuId", newJString(skuId))
+  add(query_580007, "prettyPrint", newJBool(prettyPrint))
+  add(query_580007, "oauth_token", newJString(oauthToken))
+  add(query_580007, "alt", newJString(alt))
+  add(query_580007, "userIp", newJString(userIp))
+  add(query_580007, "quotaUser", newJString(quotaUser))
+  add(path_580006, "userId", newJString(userId))
   if body != nil:
-    body_578983 = body
-  add(query_578982, "fields", newJString(fields))
-  add(path_578981, "productId", newJString(productId))
-  result = call_578980.call(path_578981, query_578982, nil, nil, body_578983)
+    body_580008 = body
+  add(query_580007, "fields", newJString(fields))
+  add(path_580006, "productId", newJString(productId))
+  result = call_580005.call(path_580006, query_580007, nil, nil, body_580008)
 
-var licensingLicenseAssignmentsPatch* = Call_LicensingLicenseAssignmentsPatch_578965(
+var licensingLicenseAssignmentsPatch* = Call_LicensingLicenseAssignmentsPatch_579990(
     name: "licensingLicenseAssignmentsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/{productId}/sku/{skuId}/user/{userId}",
-    validator: validate_LicensingLicenseAssignmentsPatch_578966,
-    base: "/apps/licensing/v1/product", url: url_LicensingLicenseAssignmentsPatch_578967,
+    validator: validate_LicensingLicenseAssignmentsPatch_579991,
+    base: "/apps/licensing/v1/product", url: url_LicensingLicenseAssignmentsPatch_579992,
     schemes: {Scheme.Https})
 type
-  Call_LicensingLicenseAssignmentsDelete_578948 = ref object of OpenApiRestCall_578355
-proc url_LicensingLicenseAssignmentsDelete_578950(protocol: Scheme; host: string;
+  Call_LicensingLicenseAssignmentsDelete_579973 = ref object of OpenApiRestCall_579380
+proc url_LicensingLicenseAssignmentsDelete_579975(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -834,38 +866,45 @@ proc url_LicensingLicenseAssignmentsDelete_578950(protocol: Scheme; host: string
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_LicensingLicenseAssignmentsDelete_578949(path: JsonNode;
+proc validate_LicensingLicenseAssignmentsDelete_579974(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
-  ## Revoke License.
+  ## Revoke a license.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
   ##   skuId: JString (required)
-  ##        : Name for sku
+  ##        : A product SKU's unique identifier. For more information about available SKUs in this version of the API, see Products and SKUs.
   ##   userId: JString (required)
-  ##         : email id or unique Id of the user
+  ##         : The user's current primary email address. If the user's email address changes, use the new email address in your API requests.
+  ## Since a userId is subject to change, do not use a userId value as a key for persistent data. This key could break if the current user's email address changes.
+  ## If the userId is suspended, the license status changes.
   ##   productId: JString (required)
-  ##            : Name for product
+  ##            : A product's unique identifier. For more information about products in this version of the API, see Products and SKUs.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `skuId` field"
-  var valid_578951 = path.getOrDefault("skuId")
-  valid_578951 = validateParameter(valid_578951, JString, required = true,
+  var valid_579976 = path.getOrDefault("skuId")
+  valid_579976 = validateParameter(valid_579976, JString, required = true,
                                  default = nil)
-  if valid_578951 != nil:
-    section.add "skuId", valid_578951
-  var valid_578952 = path.getOrDefault("userId")
-  valid_578952 = validateParameter(valid_578952, JString, required = true,
+  if valid_579976 != nil:
+    section.add "skuId", valid_579976
+  var valid_579977 = path.getOrDefault("userId")
+  valid_579977 = validateParameter(valid_579977, JString, required = true,
                                  default = nil)
-  if valid_578952 != nil:
-    section.add "userId", valid_578952
-  var valid_578953 = path.getOrDefault("productId")
-  valid_578953 = validateParameter(valid_578953, JString, required = true,
+  if valid_579977 != nil:
+    section.add "userId", valid_579977
+  var valid_579978 = path.getOrDefault("productId")
+  valid_579978 = validateParameter(valid_579978, JString, required = true,
                                  default = nil)
-  if valid_578953 != nil:
-    section.add "productId", valid_578953
+  if valid_579978 != nil:
+    section.add "productId", valid_579978
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -883,41 +922,41 @@ proc validate_LicensingLicenseAssignmentsDelete_578949(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578954 = query.getOrDefault("key")
-  valid_578954 = validateParameter(valid_578954, JString, required = false,
+  var valid_579979 = query.getOrDefault("key")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = nil)
-  if valid_578954 != nil:
-    section.add "key", valid_578954
-  var valid_578955 = query.getOrDefault("prettyPrint")
-  valid_578955 = validateParameter(valid_578955, JBool, required = false,
+  if valid_579979 != nil:
+    section.add "key", valid_579979
+  var valid_579980 = query.getOrDefault("prettyPrint")
+  valid_579980 = validateParameter(valid_579980, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578955 != nil:
-    section.add "prettyPrint", valid_578955
-  var valid_578956 = query.getOrDefault("oauth_token")
-  valid_578956 = validateParameter(valid_578956, JString, required = false,
+  if valid_579980 != nil:
+    section.add "prettyPrint", valid_579980
+  var valid_579981 = query.getOrDefault("oauth_token")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_578956 != nil:
-    section.add "oauth_token", valid_578956
-  var valid_578957 = query.getOrDefault("alt")
-  valid_578957 = validateParameter(valid_578957, JString, required = false,
+  if valid_579981 != nil:
+    section.add "oauth_token", valid_579981
+  var valid_579982 = query.getOrDefault("alt")
+  valid_579982 = validateParameter(valid_579982, JString, required = false,
                                  default = newJString("json"))
-  if valid_578957 != nil:
-    section.add "alt", valid_578957
-  var valid_578958 = query.getOrDefault("userIp")
-  valid_578958 = validateParameter(valid_578958, JString, required = false,
+  if valid_579982 != nil:
+    section.add "alt", valid_579982
+  var valid_579983 = query.getOrDefault("userIp")
+  valid_579983 = validateParameter(valid_579983, JString, required = false,
                                  default = nil)
-  if valid_578958 != nil:
-    section.add "userIp", valid_578958
-  var valid_578959 = query.getOrDefault("quotaUser")
-  valid_578959 = validateParameter(valid_578959, JString, required = false,
+  if valid_579983 != nil:
+    section.add "userIp", valid_579983
+  var valid_579984 = query.getOrDefault("quotaUser")
+  valid_579984 = validateParameter(valid_579984, JString, required = false,
                                  default = nil)
-  if valid_578959 != nil:
-    section.add "quotaUser", valid_578959
-  var valid_578960 = query.getOrDefault("fields")
-  valid_578960 = validateParameter(valid_578960, JString, required = false,
+  if valid_579984 != nil:
+    section.add "quotaUser", valid_579984
+  var valid_579985 = query.getOrDefault("fields")
+  valid_579985 = validateParameter(valid_579985, JString, required = false,
                                  default = nil)
-  if valid_578960 != nil:
-    section.add "fields", valid_578960
+  if valid_579985 != nil:
+    section.add "fields", valid_579985
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -926,30 +965,30 @@ proc validate_LicensingLicenseAssignmentsDelete_578949(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578961: Call_LicensingLicenseAssignmentsDelete_578948;
+proc call*(call_579986: Call_LicensingLicenseAssignmentsDelete_579973;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
-  ## Revoke License.
+  ## Revoke a license.
   ## 
-  let valid = call_578961.validator(path, query, header, formData, body)
-  let scheme = call_578961.pickScheme
+  let valid = call_579986.validator(path, query, header, formData, body)
+  let scheme = call_579986.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578961.url(scheme.get, call_578961.host, call_578961.base,
-                         call_578961.route, valid.getOrDefault("path"),
+  let url = call_579986.url(scheme.get, call_579986.host, call_579986.base,
+                         call_579986.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578961, url, valid)
+  result = hook(call_579986, url, valid)
 
-proc call*(call_578962: Call_LicensingLicenseAssignmentsDelete_578948;
+proc call*(call_579987: Call_LicensingLicenseAssignmentsDelete_579973;
           skuId: string; userId: string; productId: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
   ## licensingLicenseAssignmentsDelete
-  ## Revoke License.
+  ## Revoke a license.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   skuId: string (required)
-  ##        : Name for sku
+  ##        : A product SKU's unique identifier. For more information about available SKUs in this version of the API, see Products and SKUs.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
@@ -961,34 +1000,36 @@ proc call*(call_578962: Call_LicensingLicenseAssignmentsDelete_578948;
   ##   quotaUser: string
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   userId: string (required)
-  ##         : email id or unique Id of the user
+  ##         : The user's current primary email address. If the user's email address changes, use the new email address in your API requests.
+  ## Since a userId is subject to change, do not use a userId value as a key for persistent data. This key could break if the current user's email address changes.
+  ## If the userId is suspended, the license status changes.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
   ##   productId: string (required)
-  ##            : Name for product
-  var path_578963 = newJObject()
-  var query_578964 = newJObject()
-  add(query_578964, "key", newJString(key))
-  add(path_578963, "skuId", newJString(skuId))
-  add(query_578964, "prettyPrint", newJBool(prettyPrint))
-  add(query_578964, "oauth_token", newJString(oauthToken))
-  add(query_578964, "alt", newJString(alt))
-  add(query_578964, "userIp", newJString(userIp))
-  add(query_578964, "quotaUser", newJString(quotaUser))
-  add(path_578963, "userId", newJString(userId))
-  add(query_578964, "fields", newJString(fields))
-  add(path_578963, "productId", newJString(productId))
-  result = call_578962.call(path_578963, query_578964, nil, nil, nil)
+  ##            : A product's unique identifier. For more information about products in this version of the API, see Products and SKUs.
+  var path_579988 = newJObject()
+  var query_579989 = newJObject()
+  add(query_579989, "key", newJString(key))
+  add(path_579988, "skuId", newJString(skuId))
+  add(query_579989, "prettyPrint", newJBool(prettyPrint))
+  add(query_579989, "oauth_token", newJString(oauthToken))
+  add(query_579989, "alt", newJString(alt))
+  add(query_579989, "userIp", newJString(userIp))
+  add(query_579989, "quotaUser", newJString(quotaUser))
+  add(path_579988, "userId", newJString(userId))
+  add(query_579989, "fields", newJString(fields))
+  add(path_579988, "productId", newJString(productId))
+  result = call_579987.call(path_579988, query_579989, nil, nil, nil)
 
-var licensingLicenseAssignmentsDelete* = Call_LicensingLicenseAssignmentsDelete_578948(
+var licensingLicenseAssignmentsDelete* = Call_LicensingLicenseAssignmentsDelete_579973(
     name: "licensingLicenseAssignmentsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/{productId}/sku/{skuId}/user/{userId}",
-    validator: validate_LicensingLicenseAssignmentsDelete_578949,
+    validator: validate_LicensingLicenseAssignmentsDelete_579974,
     base: "/apps/licensing/v1/product",
-    url: url_LicensingLicenseAssignmentsDelete_578950, schemes: {Scheme.Https})
+    url: url_LicensingLicenseAssignmentsDelete_579975, schemes: {Scheme.Https})
 type
-  Call_LicensingLicenseAssignmentsListForProductAndSku_578984 = ref object of OpenApiRestCall_578355
-proc url_LicensingLicenseAssignmentsListForProductAndSku_578986(protocol: Scheme;
+  Call_LicensingLicenseAssignmentsListForProductAndSku_580009 = ref object of OpenApiRestCall_579380
+proc url_LicensingLicenseAssignmentsListForProductAndSku_580011(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1005,32 +1046,37 @@ proc url_LicensingLicenseAssignmentsListForProductAndSku_578986(protocol: Scheme
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_LicensingLicenseAssignmentsListForProductAndSku_578985(
+proc validate_LicensingLicenseAssignmentsListForProductAndSku_580010(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
-  ## List license assignments for given product and sku of the customer.
+  ## List all users assigned licenses for a specific product SKU.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
   ##   skuId: JString (required)
-  ##        : Name for sku
+  ##        : A product SKU's unique identifier. For more information about available SKUs in this version of the API, see Products and SKUs.
   ##   productId: JString (required)
-  ##            : Name for product
+  ##            : A product's unique identifier. For more information about products in this version of the API, see Products and SKUs.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `skuId` field"
-  var valid_578987 = path.getOrDefault("skuId")
-  valid_578987 = validateParameter(valid_578987, JString, required = true,
+  var valid_580012 = path.getOrDefault("skuId")
+  valid_580012 = validateParameter(valid_580012, JString, required = true,
                                  default = nil)
-  if valid_578987 != nil:
-    section.add "skuId", valid_578987
-  var valid_578988 = path.getOrDefault("productId")
-  valid_578988 = validateParameter(valid_578988, JString, required = true,
+  if valid_580012 != nil:
+    section.add "skuId", valid_580012
+  var valid_580013 = path.getOrDefault("productId")
+  valid_580013 = validateParameter(valid_580013, JString, required = true,
                                  default = nil)
-  if valid_578988 != nil:
-    section.add "productId", valid_578988
+  if valid_580013 != nil:
+    section.add "productId", valid_580013
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1046,66 +1092,67 @@ proc validate_LicensingLicenseAssignmentsListForProductAndSku_578985(
   ##   quotaUser: JString
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   pageToken: JString
-  ##            : Token to fetch the next page.Optional. By default server will return first page
+  ##            : Token to fetch the next page of data. The maxResults query string is related to the pageToken since maxResults determines how many entries are returned on each page. This is an optional query string. If not specified, the server returns the first page.
   ##   customerId: JString (required)
-  ##             : CustomerId represents the customer for whom licenseassignments are queried
+  ##             : Customer's customerId. A previous version of this API accepted the primary domain name as a value for this field.
+  ## If the customer is suspended, the server returns an error.
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: JInt
-  ##             : Maximum number of campaigns to return at one time. Must be positive. Optional. Default value is 100.
+  ##             : The maxResults query string determines how many entries are returned on each page of a large response. This is an optional parameter. The value must be a positive number.
   section = newJObject()
-  var valid_578989 = query.getOrDefault("key")
-  valid_578989 = validateParameter(valid_578989, JString, required = false,
+  var valid_580014 = query.getOrDefault("key")
+  valid_580014 = validateParameter(valid_580014, JString, required = false,
                                  default = nil)
-  if valid_578989 != nil:
-    section.add "key", valid_578989
-  var valid_578990 = query.getOrDefault("prettyPrint")
-  valid_578990 = validateParameter(valid_578990, JBool, required = false,
+  if valid_580014 != nil:
+    section.add "key", valid_580014
+  var valid_580015 = query.getOrDefault("prettyPrint")
+  valid_580015 = validateParameter(valid_580015, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578990 != nil:
-    section.add "prettyPrint", valid_578990
-  var valid_578991 = query.getOrDefault("oauth_token")
-  valid_578991 = validateParameter(valid_578991, JString, required = false,
+  if valid_580015 != nil:
+    section.add "prettyPrint", valid_580015
+  var valid_580016 = query.getOrDefault("oauth_token")
+  valid_580016 = validateParameter(valid_580016, JString, required = false,
                                  default = nil)
-  if valid_578991 != nil:
-    section.add "oauth_token", valid_578991
-  var valid_578992 = query.getOrDefault("alt")
-  valid_578992 = validateParameter(valid_578992, JString, required = false,
+  if valid_580016 != nil:
+    section.add "oauth_token", valid_580016
+  var valid_580017 = query.getOrDefault("alt")
+  valid_580017 = validateParameter(valid_580017, JString, required = false,
                                  default = newJString("json"))
-  if valid_578992 != nil:
-    section.add "alt", valid_578992
-  var valid_578993 = query.getOrDefault("userIp")
-  valid_578993 = validateParameter(valid_578993, JString, required = false,
+  if valid_580017 != nil:
+    section.add "alt", valid_580017
+  var valid_580018 = query.getOrDefault("userIp")
+  valid_580018 = validateParameter(valid_580018, JString, required = false,
                                  default = nil)
-  if valid_578993 != nil:
-    section.add "userIp", valid_578993
-  var valid_578994 = query.getOrDefault("quotaUser")
-  valid_578994 = validateParameter(valid_578994, JString, required = false,
+  if valid_580018 != nil:
+    section.add "userIp", valid_580018
+  var valid_580019 = query.getOrDefault("quotaUser")
+  valid_580019 = validateParameter(valid_580019, JString, required = false,
                                  default = nil)
-  if valid_578994 != nil:
-    section.add "quotaUser", valid_578994
-  var valid_578995 = query.getOrDefault("pageToken")
-  valid_578995 = validateParameter(valid_578995, JString, required = false,
+  if valid_580019 != nil:
+    section.add "quotaUser", valid_580019
+  var valid_580020 = query.getOrDefault("pageToken")
+  valid_580020 = validateParameter(valid_580020, JString, required = false,
                                  default = newJString(""))
-  if valid_578995 != nil:
-    section.add "pageToken", valid_578995
+  if valid_580020 != nil:
+    section.add "pageToken", valid_580020
   assert query != nil,
         "query argument is necessary due to required `customerId` field"
-  var valid_578996 = query.getOrDefault("customerId")
-  valid_578996 = validateParameter(valid_578996, JString, required = true,
+  var valid_580021 = query.getOrDefault("customerId")
+  valid_580021 = validateParameter(valid_580021, JString, required = true,
                                  default = nil)
-  if valid_578996 != nil:
-    section.add "customerId", valid_578996
-  var valid_578997 = query.getOrDefault("fields")
-  valid_578997 = validateParameter(valid_578997, JString, required = false,
+  if valid_580021 != nil:
+    section.add "customerId", valid_580021
+  var valid_580022 = query.getOrDefault("fields")
+  valid_580022 = validateParameter(valid_580022, JString, required = false,
                                  default = nil)
-  if valid_578997 != nil:
-    section.add "fields", valid_578997
-  var valid_578999 = query.getOrDefault("maxResults")
-  valid_578999 = validateParameter(valid_578999, JInt, required = false,
+  if valid_580022 != nil:
+    section.add "fields", valid_580022
+  var valid_580024 = query.getOrDefault("maxResults")
+  valid_580024 = validateParameter(valid_580024, JInt, required = false,
                                  default = newJInt(100))
-  if valid_578999 != nil:
-    section.add "maxResults", valid_578999
+  if valid_580024 != nil:
+    section.add "maxResults", valid_580024
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1114,31 +1161,31 @@ proc validate_LicensingLicenseAssignmentsListForProductAndSku_578985(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579000: Call_LicensingLicenseAssignmentsListForProductAndSku_578984;
+proc call*(call_580025: Call_LicensingLicenseAssignmentsListForProductAndSku_580009;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
-  ## List license assignments for given product and sku of the customer.
+  ## List all users assigned licenses for a specific product SKU.
   ## 
-  let valid = call_579000.validator(path, query, header, formData, body)
-  let scheme = call_579000.pickScheme
+  let valid = call_580025.validator(path, query, header, formData, body)
+  let scheme = call_580025.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579000.url(scheme.get, call_579000.host, call_579000.base,
-                         call_579000.route, valid.getOrDefault("path"),
+  let url = call_580025.url(scheme.get, call_580025.host, call_580025.base,
+                         call_580025.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579000, url, valid)
+  result = hook(call_580025, url, valid)
 
-proc call*(call_579001: Call_LicensingLicenseAssignmentsListForProductAndSku_578984;
+proc call*(call_580026: Call_LicensingLicenseAssignmentsListForProductAndSku_580009;
           skuId: string; customerId: string; productId: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
           fields: string = ""; maxResults: int = 100): Recallable =
   ## licensingLicenseAssignmentsListForProductAndSku
-  ## List license assignments for given product and sku of the customer.
+  ## List all users assigned licenses for a specific product SKU.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   skuId: string (required)
-  ##        : Name for sku
+  ##        : A product SKU's unique identifier. For more information about available SKUs in this version of the API, see Products and SKUs.
   ##   prettyPrint: bool
   ##              : Returns response with indentations and line breaks.
   ##   oauthToken: string
@@ -1150,42 +1197,43 @@ proc call*(call_579001: Call_LicensingLicenseAssignmentsListForProductAndSku_578
   ##   quotaUser: string
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   pageToken: string
-  ##            : Token to fetch the next page.Optional. By default server will return first page
+  ##            : Token to fetch the next page of data. The maxResults query string is related to the pageToken since maxResults determines how many entries are returned on each page. This is an optional query string. If not specified, the server returns the first page.
   ##   customerId: string (required)
-  ##             : CustomerId represents the customer for whom licenseassignments are queried
+  ##             : Customer's customerId. A previous version of this API accepted the primary domain name as a value for this field.
+  ## If the customer is suspended, the server returns an error.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
   ##   productId: string (required)
-  ##            : Name for product
+  ##            : A product's unique identifier. For more information about products in this version of the API, see Products and SKUs.
   ##   maxResults: int
-  ##             : Maximum number of campaigns to return at one time. Must be positive. Optional. Default value is 100.
-  var path_579002 = newJObject()
-  var query_579003 = newJObject()
-  add(query_579003, "key", newJString(key))
-  add(path_579002, "skuId", newJString(skuId))
-  add(query_579003, "prettyPrint", newJBool(prettyPrint))
-  add(query_579003, "oauth_token", newJString(oauthToken))
-  add(query_579003, "alt", newJString(alt))
-  add(query_579003, "userIp", newJString(userIp))
-  add(query_579003, "quotaUser", newJString(quotaUser))
-  add(query_579003, "pageToken", newJString(pageToken))
-  add(query_579003, "customerId", newJString(customerId))
-  add(query_579003, "fields", newJString(fields))
-  add(path_579002, "productId", newJString(productId))
-  add(query_579003, "maxResults", newJInt(maxResults))
-  result = call_579001.call(path_579002, query_579003, nil, nil, nil)
+  ##             : The maxResults query string determines how many entries are returned on each page of a large response. This is an optional parameter. The value must be a positive number.
+  var path_580027 = newJObject()
+  var query_580028 = newJObject()
+  add(query_580028, "key", newJString(key))
+  add(path_580027, "skuId", newJString(skuId))
+  add(query_580028, "prettyPrint", newJBool(prettyPrint))
+  add(query_580028, "oauth_token", newJString(oauthToken))
+  add(query_580028, "alt", newJString(alt))
+  add(query_580028, "userIp", newJString(userIp))
+  add(query_580028, "quotaUser", newJString(quotaUser))
+  add(query_580028, "pageToken", newJString(pageToken))
+  add(query_580028, "customerId", newJString(customerId))
+  add(query_580028, "fields", newJString(fields))
+  add(path_580027, "productId", newJString(productId))
+  add(query_580028, "maxResults", newJInt(maxResults))
+  result = call_580026.call(path_580027, query_580028, nil, nil, nil)
 
-var licensingLicenseAssignmentsListForProductAndSku* = Call_LicensingLicenseAssignmentsListForProductAndSku_578984(
+var licensingLicenseAssignmentsListForProductAndSku* = Call_LicensingLicenseAssignmentsListForProductAndSku_580009(
     name: "licensingLicenseAssignmentsListForProductAndSku",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
     route: "/{productId}/sku/{skuId}/users",
-    validator: validate_LicensingLicenseAssignmentsListForProductAndSku_578985,
+    validator: validate_LicensingLicenseAssignmentsListForProductAndSku_580010,
     base: "/apps/licensing/v1/product",
-    url: url_LicensingLicenseAssignmentsListForProductAndSku_578986,
+    url: url_LicensingLicenseAssignmentsListForProductAndSku_580011,
     schemes: {Scheme.Https})
 type
-  Call_LicensingLicenseAssignmentsListForProduct_579004 = ref object of OpenApiRestCall_578355
-proc url_LicensingLicenseAssignmentsListForProduct_579006(protocol: Scheme;
+  Call_LicensingLicenseAssignmentsListForProduct_580029 = ref object of OpenApiRestCall_579380
+proc url_LicensingLicenseAssignmentsListForProduct_580031(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1199,24 +1247,29 @@ proc url_LicensingLicenseAssignmentsListForProduct_579006(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_LicensingLicenseAssignmentsListForProduct_579005(path: JsonNode;
+proc validate_LicensingLicenseAssignmentsListForProduct_580030(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
-  ## List license assignments for given product of the customer.
+  ## List all users assigned licenses for a specific product SKU.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
   ##   productId: JString (required)
-  ##            : Name for product
+  ##            : A product's unique identifier. For more information about products in this version of the API, see Products and SKUs.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `productId` field"
-  var valid_579007 = path.getOrDefault("productId")
-  valid_579007 = validateParameter(valid_579007, JString, required = true,
+  var valid_580032 = path.getOrDefault("productId")
+  valid_580032 = validateParameter(valid_580032, JString, required = true,
                                  default = nil)
-  if valid_579007 != nil:
-    section.add "productId", valid_579007
+  if valid_580032 != nil:
+    section.add "productId", valid_580032
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1232,66 +1285,67 @@ proc validate_LicensingLicenseAssignmentsListForProduct_579005(path: JsonNode;
   ##   quotaUser: JString
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   pageToken: JString
-  ##            : Token to fetch the next page.Optional. By default server will return first page
+  ##            : Token to fetch the next page of data. The maxResults query string is related to the pageToken since maxResults determines how many entries are returned on each page. This is an optional query string. If not specified, the server returns the first page.
   ##   customerId: JString (required)
-  ##             : CustomerId represents the customer for whom licenseassignments are queried
+  ##             : Customer's customerId. A previous version of this API accepted the primary domain name as a value for this field.
+  ## If the customer is suspended, the server returns an error.
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: JInt
-  ##             : Maximum number of campaigns to return at one time. Must be positive. Optional. Default value is 100.
+  ##             : The maxResults query string determines how many entries are returned on each page of a large response. This is an optional parameter. The value must be a positive number.
   section = newJObject()
-  var valid_579008 = query.getOrDefault("key")
-  valid_579008 = validateParameter(valid_579008, JString, required = false,
+  var valid_580033 = query.getOrDefault("key")
+  valid_580033 = validateParameter(valid_580033, JString, required = false,
                                  default = nil)
-  if valid_579008 != nil:
-    section.add "key", valid_579008
-  var valid_579009 = query.getOrDefault("prettyPrint")
-  valid_579009 = validateParameter(valid_579009, JBool, required = false,
+  if valid_580033 != nil:
+    section.add "key", valid_580033
+  var valid_580034 = query.getOrDefault("prettyPrint")
+  valid_580034 = validateParameter(valid_580034, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579009 != nil:
-    section.add "prettyPrint", valid_579009
-  var valid_579010 = query.getOrDefault("oauth_token")
-  valid_579010 = validateParameter(valid_579010, JString, required = false,
+  if valid_580034 != nil:
+    section.add "prettyPrint", valid_580034
+  var valid_580035 = query.getOrDefault("oauth_token")
+  valid_580035 = validateParameter(valid_580035, JString, required = false,
                                  default = nil)
-  if valid_579010 != nil:
-    section.add "oauth_token", valid_579010
-  var valid_579011 = query.getOrDefault("alt")
-  valid_579011 = validateParameter(valid_579011, JString, required = false,
+  if valid_580035 != nil:
+    section.add "oauth_token", valid_580035
+  var valid_580036 = query.getOrDefault("alt")
+  valid_580036 = validateParameter(valid_580036, JString, required = false,
                                  default = newJString("json"))
-  if valid_579011 != nil:
-    section.add "alt", valid_579011
-  var valid_579012 = query.getOrDefault("userIp")
-  valid_579012 = validateParameter(valid_579012, JString, required = false,
+  if valid_580036 != nil:
+    section.add "alt", valid_580036
+  var valid_580037 = query.getOrDefault("userIp")
+  valid_580037 = validateParameter(valid_580037, JString, required = false,
                                  default = nil)
-  if valid_579012 != nil:
-    section.add "userIp", valid_579012
-  var valid_579013 = query.getOrDefault("quotaUser")
-  valid_579013 = validateParameter(valid_579013, JString, required = false,
+  if valid_580037 != nil:
+    section.add "userIp", valid_580037
+  var valid_580038 = query.getOrDefault("quotaUser")
+  valid_580038 = validateParameter(valid_580038, JString, required = false,
                                  default = nil)
-  if valid_579013 != nil:
-    section.add "quotaUser", valid_579013
-  var valid_579014 = query.getOrDefault("pageToken")
-  valid_579014 = validateParameter(valid_579014, JString, required = false,
+  if valid_580038 != nil:
+    section.add "quotaUser", valid_580038
+  var valid_580039 = query.getOrDefault("pageToken")
+  valid_580039 = validateParameter(valid_580039, JString, required = false,
                                  default = newJString(""))
-  if valid_579014 != nil:
-    section.add "pageToken", valid_579014
+  if valid_580039 != nil:
+    section.add "pageToken", valid_580039
   assert query != nil,
         "query argument is necessary due to required `customerId` field"
-  var valid_579015 = query.getOrDefault("customerId")
-  valid_579015 = validateParameter(valid_579015, JString, required = true,
+  var valid_580040 = query.getOrDefault("customerId")
+  valid_580040 = validateParameter(valid_580040, JString, required = true,
                                  default = nil)
-  if valid_579015 != nil:
-    section.add "customerId", valid_579015
-  var valid_579016 = query.getOrDefault("fields")
-  valid_579016 = validateParameter(valid_579016, JString, required = false,
+  if valid_580040 != nil:
+    section.add "customerId", valid_580040
+  var valid_580041 = query.getOrDefault("fields")
+  valid_580041 = validateParameter(valid_580041, JString, required = false,
                                  default = nil)
-  if valid_579016 != nil:
-    section.add "fields", valid_579016
-  var valid_579017 = query.getOrDefault("maxResults")
-  valid_579017 = validateParameter(valid_579017, JInt, required = false,
+  if valid_580041 != nil:
+    section.add "fields", valid_580041
+  var valid_580042 = query.getOrDefault("maxResults")
+  valid_580042 = validateParameter(valid_580042, JInt, required = false,
                                  default = newJInt(100))
-  if valid_579017 != nil:
-    section.add "maxResults", valid_579017
+  if valid_580042 != nil:
+    section.add "maxResults", valid_580042
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1300,27 +1354,27 @@ proc validate_LicensingLicenseAssignmentsListForProduct_579005(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579018: Call_LicensingLicenseAssignmentsListForProduct_579004;
+proc call*(call_580043: Call_LicensingLicenseAssignmentsListForProduct_580029;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
-  ## List license assignments for given product of the customer.
+  ## List all users assigned licenses for a specific product SKU.
   ## 
-  let valid = call_579018.validator(path, query, header, formData, body)
-  let scheme = call_579018.pickScheme
+  let valid = call_580043.validator(path, query, header, formData, body)
+  let scheme = call_580043.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579018.url(scheme.get, call_579018.host, call_579018.base,
-                         call_579018.route, valid.getOrDefault("path"),
+  let url = call_580043.url(scheme.get, call_580043.host, call_580043.base,
+                         call_580043.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579018, url, valid)
+  result = hook(call_580043, url, valid)
 
-proc call*(call_579019: Call_LicensingLicenseAssignmentsListForProduct_579004;
+proc call*(call_580044: Call_LicensingLicenseAssignmentsListForProduct_580029;
           customerId: string; productId: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
           fields: string = ""; maxResults: int = 100): Recallable =
   ## licensingLicenseAssignmentsListForProduct
-  ## List license assignments for given product of the customer.
+  ## List all users assigned licenses for a specific product SKU.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
@@ -1334,36 +1388,37 @@ proc call*(call_579019: Call_LicensingLicenseAssignmentsListForProduct_579004;
   ##   quotaUser: string
   ##            : An opaque string that represents a user for quota purposes. Must not exceed 40 characters.
   ##   pageToken: string
-  ##            : Token to fetch the next page.Optional. By default server will return first page
+  ##            : Token to fetch the next page of data. The maxResults query string is related to the pageToken since maxResults determines how many entries are returned on each page. This is an optional query string. If not specified, the server returns the first page.
   ##   customerId: string (required)
-  ##             : CustomerId represents the customer for whom licenseassignments are queried
+  ##             : Customer's customerId. A previous version of this API accepted the primary domain name as a value for this field.
+  ## If the customer is suspended, the server returns an error.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
   ##   productId: string (required)
-  ##            : Name for product
+  ##            : A product's unique identifier. For more information about products in this version of the API, see Products and SKUs.
   ##   maxResults: int
-  ##             : Maximum number of campaigns to return at one time. Must be positive. Optional. Default value is 100.
-  var path_579020 = newJObject()
-  var query_579021 = newJObject()
-  add(query_579021, "key", newJString(key))
-  add(query_579021, "prettyPrint", newJBool(prettyPrint))
-  add(query_579021, "oauth_token", newJString(oauthToken))
-  add(query_579021, "alt", newJString(alt))
-  add(query_579021, "userIp", newJString(userIp))
-  add(query_579021, "quotaUser", newJString(quotaUser))
-  add(query_579021, "pageToken", newJString(pageToken))
-  add(query_579021, "customerId", newJString(customerId))
-  add(query_579021, "fields", newJString(fields))
-  add(path_579020, "productId", newJString(productId))
-  add(query_579021, "maxResults", newJInt(maxResults))
-  result = call_579019.call(path_579020, query_579021, nil, nil, nil)
+  ##             : The maxResults query string determines how many entries are returned on each page of a large response. This is an optional parameter. The value must be a positive number.
+  var path_580045 = newJObject()
+  var query_580046 = newJObject()
+  add(query_580046, "key", newJString(key))
+  add(query_580046, "prettyPrint", newJBool(prettyPrint))
+  add(query_580046, "oauth_token", newJString(oauthToken))
+  add(query_580046, "alt", newJString(alt))
+  add(query_580046, "userIp", newJString(userIp))
+  add(query_580046, "quotaUser", newJString(quotaUser))
+  add(query_580046, "pageToken", newJString(pageToken))
+  add(query_580046, "customerId", newJString(customerId))
+  add(query_580046, "fields", newJString(fields))
+  add(path_580045, "productId", newJString(productId))
+  add(query_580046, "maxResults", newJInt(maxResults))
+  result = call_580044.call(path_580045, query_580046, nil, nil, nil)
 
-var licensingLicenseAssignmentsListForProduct* = Call_LicensingLicenseAssignmentsListForProduct_579004(
+var licensingLicenseAssignmentsListForProduct* = Call_LicensingLicenseAssignmentsListForProduct_580029(
     name: "licensingLicenseAssignmentsListForProduct", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/{productId}/users",
-    validator: validate_LicensingLicenseAssignmentsListForProduct_579005,
+    validator: validate_LicensingLicenseAssignmentsListForProduct_580030,
     base: "/apps/licensing/v1/product",
-    url: url_LicensingLicenseAssignmentsListForProduct_579006,
+    url: url_LicensingLicenseAssignmentsListForProduct_580031,
     schemes: {Scheme.Https})
 export
   rest

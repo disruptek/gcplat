@@ -1,7 +1,7 @@
 
 import
-  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
-  asyncdispatch, jwt
+  json, options, hashes, uri, strutils, rest, os, uri, strutils, times, httpcore,
+  httpclient, asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Cloud OS Login
@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_578339 = ref object of OpenApiRestCall
+  OpenApiRestCall_579364 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579364](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579364): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -112,8 +112,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_OsloginUsersSshPublicKeysGet_578610 = ref object of OpenApiRestCall_578339
-proc url_OsloginUsersSshPublicKeysGet_578612(protocol: Scheme; host: string;
+  Call_OsloginUsersSshPublicKeysGet_579635 = ref object of OpenApiRestCall_579364
+proc url_OsloginUsersSshPublicKeysGet_579637(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -126,9 +126,14 @@ proc url_OsloginUsersSshPublicKeysGet_578612(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_OsloginUsersSshPublicKeysGet_578611(path: JsonNode; query: JsonNode;
+proc validate_OsloginUsersSshPublicKeysGet_579636(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves an SSH public key.
   ## 
@@ -136,16 +141,16 @@ proc validate_OsloginUsersSshPublicKeysGet_578611(path: JsonNode; query: JsonNod
   result = newJObject()
   ## parameters in `path` object:
   ##   name: JString (required)
-  ##       : The fingerprint of the public key to retrieve. Public keys are identified
+  ##       : Required. The fingerprint of the public key to retrieve. Public keys are identified
   ## by their SHA-256 fingerprint. The fingerprint of the public key is in
   ## format `users/{user}/sshPublicKeys/{fingerprint}`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578738 = path.getOrDefault("name")
-  valid_578738 = validateParameter(valid_578738, JString, required = true,
+  var valid_579763 = path.getOrDefault("name")
+  valid_579763 = validateParameter(valid_579763, JString, required = true,
                                  default = nil)
-  if valid_578738 != nil:
-    section.add "name", valid_578738
+  if valid_579763 != nil:
+    section.add "name", valid_579763
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -171,61 +176,61 @@ proc validate_OsloginUsersSshPublicKeysGet_578611(path: JsonNode; query: JsonNod
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578739 = query.getOrDefault("key")
-  valid_578739 = validateParameter(valid_578739, JString, required = false,
+  var valid_579764 = query.getOrDefault("key")
+  valid_579764 = validateParameter(valid_579764, JString, required = false,
                                  default = nil)
-  if valid_578739 != nil:
-    section.add "key", valid_578739
-  var valid_578753 = query.getOrDefault("prettyPrint")
-  valid_578753 = validateParameter(valid_578753, JBool, required = false,
+  if valid_579764 != nil:
+    section.add "key", valid_579764
+  var valid_579778 = query.getOrDefault("prettyPrint")
+  valid_579778 = validateParameter(valid_579778, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578753 != nil:
-    section.add "prettyPrint", valid_578753
-  var valid_578754 = query.getOrDefault("oauth_token")
-  valid_578754 = validateParameter(valid_578754, JString, required = false,
+  if valid_579778 != nil:
+    section.add "prettyPrint", valid_579778
+  var valid_579779 = query.getOrDefault("oauth_token")
+  valid_579779 = validateParameter(valid_579779, JString, required = false,
                                  default = nil)
-  if valid_578754 != nil:
-    section.add "oauth_token", valid_578754
-  var valid_578755 = query.getOrDefault("$.xgafv")
-  valid_578755 = validateParameter(valid_578755, JString, required = false,
+  if valid_579779 != nil:
+    section.add "oauth_token", valid_579779
+  var valid_579780 = query.getOrDefault("$.xgafv")
+  valid_579780 = validateParameter(valid_579780, JString, required = false,
                                  default = newJString("1"))
-  if valid_578755 != nil:
-    section.add "$.xgafv", valid_578755
-  var valid_578756 = query.getOrDefault("alt")
-  valid_578756 = validateParameter(valid_578756, JString, required = false,
+  if valid_579780 != nil:
+    section.add "$.xgafv", valid_579780
+  var valid_579781 = query.getOrDefault("alt")
+  valid_579781 = validateParameter(valid_579781, JString, required = false,
                                  default = newJString("json"))
-  if valid_578756 != nil:
-    section.add "alt", valid_578756
-  var valid_578757 = query.getOrDefault("uploadType")
-  valid_578757 = validateParameter(valid_578757, JString, required = false,
+  if valid_579781 != nil:
+    section.add "alt", valid_579781
+  var valid_579782 = query.getOrDefault("uploadType")
+  valid_579782 = validateParameter(valid_579782, JString, required = false,
                                  default = nil)
-  if valid_578757 != nil:
-    section.add "uploadType", valid_578757
-  var valid_578758 = query.getOrDefault("quotaUser")
-  valid_578758 = validateParameter(valid_578758, JString, required = false,
+  if valid_579782 != nil:
+    section.add "uploadType", valid_579782
+  var valid_579783 = query.getOrDefault("quotaUser")
+  valid_579783 = validateParameter(valid_579783, JString, required = false,
                                  default = nil)
-  if valid_578758 != nil:
-    section.add "quotaUser", valid_578758
-  var valid_578759 = query.getOrDefault("callback")
-  valid_578759 = validateParameter(valid_578759, JString, required = false,
+  if valid_579783 != nil:
+    section.add "quotaUser", valid_579783
+  var valid_579784 = query.getOrDefault("callback")
+  valid_579784 = validateParameter(valid_579784, JString, required = false,
                                  default = nil)
-  if valid_578759 != nil:
-    section.add "callback", valid_578759
-  var valid_578760 = query.getOrDefault("fields")
-  valid_578760 = validateParameter(valid_578760, JString, required = false,
+  if valid_579784 != nil:
+    section.add "callback", valid_579784
+  var valid_579785 = query.getOrDefault("fields")
+  valid_579785 = validateParameter(valid_579785, JString, required = false,
                                  default = nil)
-  if valid_578760 != nil:
-    section.add "fields", valid_578760
-  var valid_578761 = query.getOrDefault("access_token")
-  valid_578761 = validateParameter(valid_578761, JString, required = false,
+  if valid_579785 != nil:
+    section.add "fields", valid_579785
+  var valid_579786 = query.getOrDefault("access_token")
+  valid_579786 = validateParameter(valid_579786, JString, required = false,
                                  default = nil)
-  if valid_578761 != nil:
-    section.add "access_token", valid_578761
-  var valid_578762 = query.getOrDefault("upload_protocol")
-  valid_578762 = validateParameter(valid_578762, JString, required = false,
+  if valid_579786 != nil:
+    section.add "access_token", valid_579786
+  var valid_579787 = query.getOrDefault("upload_protocol")
+  valid_579787 = validateParameter(valid_579787, JString, required = false,
                                  default = nil)
-  if valid_578762 != nil:
-    section.add "upload_protocol", valid_578762
+  if valid_579787 != nil:
+    section.add "upload_protocol", valid_579787
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -234,20 +239,20 @@ proc validate_OsloginUsersSshPublicKeysGet_578611(path: JsonNode; query: JsonNod
   if body != nil:
     result.add "body", body
 
-proc call*(call_578785: Call_OsloginUsersSshPublicKeysGet_578610; path: JsonNode;
+proc call*(call_579810: Call_OsloginUsersSshPublicKeysGet_579635; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves an SSH public key.
   ## 
-  let valid = call_578785.validator(path, query, header, formData, body)
-  let scheme = call_578785.pickScheme
+  let valid = call_579810.validator(path, query, header, formData, body)
+  let scheme = call_579810.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578785.url(scheme.get, call_578785.host, call_578785.base,
-                         call_578785.route, valid.getOrDefault("path"),
+  let url = call_579810.url(scheme.get, call_579810.host, call_579810.base,
+                         call_579810.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578785, url, valid)
+  result = hook(call_579810, url, valid)
 
-proc call*(call_578856: Call_OsloginUsersSshPublicKeysGet_578610; name: string;
+proc call*(call_579881: Call_OsloginUsersSshPublicKeysGet_579635; name: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           Xgafv: string = "1"; alt: string = "json"; uploadType: string = "";
           quotaUser: string = ""; callback: string = ""; fields: string = "";
@@ -269,7 +274,7 @@ proc call*(call_578856: Call_OsloginUsersSshPublicKeysGet_578610; name: string;
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
-  ##       : The fingerprint of the public key to retrieve. Public keys are identified
+  ##       : Required. The fingerprint of the public key to retrieve. Public keys are identified
   ## by their SHA-256 fingerprint. The fingerprint of the public key is in
   ## format `users/{user}/sshPublicKeys/{fingerprint}`.
   ##   callback: string
@@ -280,30 +285,30 @@ proc call*(call_578856: Call_OsloginUsersSshPublicKeysGet_578610; name: string;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578857 = newJObject()
-  var query_578859 = newJObject()
-  add(query_578859, "key", newJString(key))
-  add(query_578859, "prettyPrint", newJBool(prettyPrint))
-  add(query_578859, "oauth_token", newJString(oauthToken))
-  add(query_578859, "$.xgafv", newJString(Xgafv))
-  add(query_578859, "alt", newJString(alt))
-  add(query_578859, "uploadType", newJString(uploadType))
-  add(query_578859, "quotaUser", newJString(quotaUser))
-  add(path_578857, "name", newJString(name))
-  add(query_578859, "callback", newJString(callback))
-  add(query_578859, "fields", newJString(fields))
-  add(query_578859, "access_token", newJString(accessToken))
-  add(query_578859, "upload_protocol", newJString(uploadProtocol))
-  result = call_578856.call(path_578857, query_578859, nil, nil, nil)
+  var path_579882 = newJObject()
+  var query_579884 = newJObject()
+  add(query_579884, "key", newJString(key))
+  add(query_579884, "prettyPrint", newJBool(prettyPrint))
+  add(query_579884, "oauth_token", newJString(oauthToken))
+  add(query_579884, "$.xgafv", newJString(Xgafv))
+  add(query_579884, "alt", newJString(alt))
+  add(query_579884, "uploadType", newJString(uploadType))
+  add(query_579884, "quotaUser", newJString(quotaUser))
+  add(path_579882, "name", newJString(name))
+  add(query_579884, "callback", newJString(callback))
+  add(query_579884, "fields", newJString(fields))
+  add(query_579884, "access_token", newJString(accessToken))
+  add(query_579884, "upload_protocol", newJString(uploadProtocol))
+  result = call_579881.call(path_579882, query_579884, nil, nil, nil)
 
-var osloginUsersSshPublicKeysGet* = Call_OsloginUsersSshPublicKeysGet_578610(
+var osloginUsersSshPublicKeysGet* = Call_OsloginUsersSshPublicKeysGet_579635(
     name: "osloginUsersSshPublicKeysGet", meth: HttpMethod.HttpGet,
     host: "oslogin.googleapis.com", route: "/v1beta/{name}",
-    validator: validate_OsloginUsersSshPublicKeysGet_578611, base: "/",
-    url: url_OsloginUsersSshPublicKeysGet_578612, schemes: {Scheme.Https})
+    validator: validate_OsloginUsersSshPublicKeysGet_579636, base: "/",
+    url: url_OsloginUsersSshPublicKeysGet_579637, schemes: {Scheme.Https})
 type
-  Call_OsloginUsersSshPublicKeysPatch_578917 = ref object of OpenApiRestCall_578339
-proc url_OsloginUsersSshPublicKeysPatch_578919(protocol: Scheme; host: string;
+  Call_OsloginUsersSshPublicKeysPatch_579942 = ref object of OpenApiRestCall_579364
+proc url_OsloginUsersSshPublicKeysPatch_579944(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -316,9 +321,14 @@ proc url_OsloginUsersSshPublicKeysPatch_578919(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_OsloginUsersSshPublicKeysPatch_578918(path: JsonNode;
+proc validate_OsloginUsersSshPublicKeysPatch_579943(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an SSH public key and returns the profile information. This method
   ## supports patch semantics.
@@ -327,16 +337,16 @@ proc validate_OsloginUsersSshPublicKeysPatch_578918(path: JsonNode;
   result = newJObject()
   ## parameters in `path` object:
   ##   name: JString (required)
-  ##       : The fingerprint of the public key to update. Public keys are identified by
+  ##       : Required. The fingerprint of the public key to update. Public keys are identified by
   ## their SHA-256 fingerprint. The fingerprint of the public key is in format
   ## `users/{user}/sshPublicKeys/{fingerprint}`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578920 = path.getOrDefault("name")
-  valid_578920 = validateParameter(valid_578920, JString, required = true,
+  var valid_579945 = path.getOrDefault("name")
+  valid_579945 = validateParameter(valid_579945, JString, required = true,
                                  default = nil)
-  if valid_578920 != nil:
-    section.add "name", valid_578920
+  if valid_579945 != nil:
+    section.add "name", valid_579945
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -364,66 +374,66 @@ proc validate_OsloginUsersSshPublicKeysPatch_578918(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578921 = query.getOrDefault("key")
-  valid_578921 = validateParameter(valid_578921, JString, required = false,
+  var valid_579946 = query.getOrDefault("key")
+  valid_579946 = validateParameter(valid_579946, JString, required = false,
                                  default = nil)
-  if valid_578921 != nil:
-    section.add "key", valid_578921
-  var valid_578922 = query.getOrDefault("prettyPrint")
-  valid_578922 = validateParameter(valid_578922, JBool, required = false,
+  if valid_579946 != nil:
+    section.add "key", valid_579946
+  var valid_579947 = query.getOrDefault("prettyPrint")
+  valid_579947 = validateParameter(valid_579947, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578922 != nil:
-    section.add "prettyPrint", valid_578922
-  var valid_578923 = query.getOrDefault("oauth_token")
-  valid_578923 = validateParameter(valid_578923, JString, required = false,
+  if valid_579947 != nil:
+    section.add "prettyPrint", valid_579947
+  var valid_579948 = query.getOrDefault("oauth_token")
+  valid_579948 = validateParameter(valid_579948, JString, required = false,
                                  default = nil)
-  if valid_578923 != nil:
-    section.add "oauth_token", valid_578923
-  var valid_578924 = query.getOrDefault("$.xgafv")
-  valid_578924 = validateParameter(valid_578924, JString, required = false,
+  if valid_579948 != nil:
+    section.add "oauth_token", valid_579948
+  var valid_579949 = query.getOrDefault("$.xgafv")
+  valid_579949 = validateParameter(valid_579949, JString, required = false,
                                  default = newJString("1"))
-  if valid_578924 != nil:
-    section.add "$.xgafv", valid_578924
-  var valid_578925 = query.getOrDefault("alt")
-  valid_578925 = validateParameter(valid_578925, JString, required = false,
+  if valid_579949 != nil:
+    section.add "$.xgafv", valid_579949
+  var valid_579950 = query.getOrDefault("alt")
+  valid_579950 = validateParameter(valid_579950, JString, required = false,
                                  default = newJString("json"))
-  if valid_578925 != nil:
-    section.add "alt", valid_578925
-  var valid_578926 = query.getOrDefault("uploadType")
-  valid_578926 = validateParameter(valid_578926, JString, required = false,
+  if valid_579950 != nil:
+    section.add "alt", valid_579950
+  var valid_579951 = query.getOrDefault("uploadType")
+  valid_579951 = validateParameter(valid_579951, JString, required = false,
                                  default = nil)
-  if valid_578926 != nil:
-    section.add "uploadType", valid_578926
-  var valid_578927 = query.getOrDefault("quotaUser")
-  valid_578927 = validateParameter(valid_578927, JString, required = false,
+  if valid_579951 != nil:
+    section.add "uploadType", valid_579951
+  var valid_579952 = query.getOrDefault("quotaUser")
+  valid_579952 = validateParameter(valid_579952, JString, required = false,
                                  default = nil)
-  if valid_578927 != nil:
-    section.add "quotaUser", valid_578927
-  var valid_578928 = query.getOrDefault("updateMask")
-  valid_578928 = validateParameter(valid_578928, JString, required = false,
+  if valid_579952 != nil:
+    section.add "quotaUser", valid_579952
+  var valid_579953 = query.getOrDefault("updateMask")
+  valid_579953 = validateParameter(valid_579953, JString, required = false,
                                  default = nil)
-  if valid_578928 != nil:
-    section.add "updateMask", valid_578928
-  var valid_578929 = query.getOrDefault("callback")
-  valid_578929 = validateParameter(valid_578929, JString, required = false,
+  if valid_579953 != nil:
+    section.add "updateMask", valid_579953
+  var valid_579954 = query.getOrDefault("callback")
+  valid_579954 = validateParameter(valid_579954, JString, required = false,
                                  default = nil)
-  if valid_578929 != nil:
-    section.add "callback", valid_578929
-  var valid_578930 = query.getOrDefault("fields")
-  valid_578930 = validateParameter(valid_578930, JString, required = false,
+  if valid_579954 != nil:
+    section.add "callback", valid_579954
+  var valid_579955 = query.getOrDefault("fields")
+  valid_579955 = validateParameter(valid_579955, JString, required = false,
                                  default = nil)
-  if valid_578930 != nil:
-    section.add "fields", valid_578930
-  var valid_578931 = query.getOrDefault("access_token")
-  valid_578931 = validateParameter(valid_578931, JString, required = false,
+  if valid_579955 != nil:
+    section.add "fields", valid_579955
+  var valid_579956 = query.getOrDefault("access_token")
+  valid_579956 = validateParameter(valid_579956, JString, required = false,
                                  default = nil)
-  if valid_578931 != nil:
-    section.add "access_token", valid_578931
-  var valid_578932 = query.getOrDefault("upload_protocol")
-  valid_578932 = validateParameter(valid_578932, JString, required = false,
+  if valid_579956 != nil:
+    section.add "access_token", valid_579956
+  var valid_579957 = query.getOrDefault("upload_protocol")
+  valid_579957 = validateParameter(valid_579957, JString, required = false,
                                  default = nil)
-  if valid_578932 != nil:
-    section.add "upload_protocol", valid_578932
+  if valid_579957 != nil:
+    section.add "upload_protocol", valid_579957
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -435,21 +445,21 @@ proc validate_OsloginUsersSshPublicKeysPatch_578918(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578934: Call_OsloginUsersSshPublicKeysPatch_578917; path: JsonNode;
+proc call*(call_579959: Call_OsloginUsersSshPublicKeysPatch_579942; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an SSH public key and returns the profile information. This method
   ## supports patch semantics.
   ## 
-  let valid = call_578934.validator(path, query, header, formData, body)
-  let scheme = call_578934.pickScheme
+  let valid = call_579959.validator(path, query, header, formData, body)
+  let scheme = call_579959.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578934.url(scheme.get, call_578934.host, call_578934.base,
-                         call_578934.route, valid.getOrDefault("path"),
+  let url = call_579959.url(scheme.get, call_579959.host, call_579959.base,
+                         call_579959.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578934, url, valid)
+  result = hook(call_579959, url, valid)
 
-proc call*(call_578935: Call_OsloginUsersSshPublicKeysPatch_578917; name: string;
+proc call*(call_579960: Call_OsloginUsersSshPublicKeysPatch_579942; name: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           Xgafv: string = "1"; alt: string = "json"; uploadType: string = "";
           quotaUser: string = ""; updateMask: string = ""; body: JsonNode = nil;
@@ -473,7 +483,7 @@ proc call*(call_578935: Call_OsloginUsersSshPublicKeysPatch_578917; name: string
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
-  ##       : The fingerprint of the public key to update. Public keys are identified by
+  ##       : Required. The fingerprint of the public key to update. Public keys are identified by
   ## their SHA-256 fingerprint. The fingerprint of the public key is in format
   ## `users/{user}/sshPublicKeys/{fingerprint}`.
   ##   updateMask: string
@@ -487,34 +497,34 @@ proc call*(call_578935: Call_OsloginUsersSshPublicKeysPatch_578917; name: string
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578936 = newJObject()
-  var query_578937 = newJObject()
-  var body_578938 = newJObject()
-  add(query_578937, "key", newJString(key))
-  add(query_578937, "prettyPrint", newJBool(prettyPrint))
-  add(query_578937, "oauth_token", newJString(oauthToken))
-  add(query_578937, "$.xgafv", newJString(Xgafv))
-  add(query_578937, "alt", newJString(alt))
-  add(query_578937, "uploadType", newJString(uploadType))
-  add(query_578937, "quotaUser", newJString(quotaUser))
-  add(path_578936, "name", newJString(name))
-  add(query_578937, "updateMask", newJString(updateMask))
+  var path_579961 = newJObject()
+  var query_579962 = newJObject()
+  var body_579963 = newJObject()
+  add(query_579962, "key", newJString(key))
+  add(query_579962, "prettyPrint", newJBool(prettyPrint))
+  add(query_579962, "oauth_token", newJString(oauthToken))
+  add(query_579962, "$.xgafv", newJString(Xgafv))
+  add(query_579962, "alt", newJString(alt))
+  add(query_579962, "uploadType", newJString(uploadType))
+  add(query_579962, "quotaUser", newJString(quotaUser))
+  add(path_579961, "name", newJString(name))
+  add(query_579962, "updateMask", newJString(updateMask))
   if body != nil:
-    body_578938 = body
-  add(query_578937, "callback", newJString(callback))
-  add(query_578937, "fields", newJString(fields))
-  add(query_578937, "access_token", newJString(accessToken))
-  add(query_578937, "upload_protocol", newJString(uploadProtocol))
-  result = call_578935.call(path_578936, query_578937, nil, nil, body_578938)
+    body_579963 = body
+  add(query_579962, "callback", newJString(callback))
+  add(query_579962, "fields", newJString(fields))
+  add(query_579962, "access_token", newJString(accessToken))
+  add(query_579962, "upload_protocol", newJString(uploadProtocol))
+  result = call_579960.call(path_579961, query_579962, nil, nil, body_579963)
 
-var osloginUsersSshPublicKeysPatch* = Call_OsloginUsersSshPublicKeysPatch_578917(
+var osloginUsersSshPublicKeysPatch* = Call_OsloginUsersSshPublicKeysPatch_579942(
     name: "osloginUsersSshPublicKeysPatch", meth: HttpMethod.HttpPatch,
     host: "oslogin.googleapis.com", route: "/v1beta/{name}",
-    validator: validate_OsloginUsersSshPublicKeysPatch_578918, base: "/",
-    url: url_OsloginUsersSshPublicKeysPatch_578919, schemes: {Scheme.Https})
+    validator: validate_OsloginUsersSshPublicKeysPatch_579943, base: "/",
+    url: url_OsloginUsersSshPublicKeysPatch_579944, schemes: {Scheme.Https})
 type
-  Call_OsloginUsersProjectsDelete_578898 = ref object of OpenApiRestCall_578339
-proc url_OsloginUsersProjectsDelete_578900(protocol: Scheme; host: string;
+  Call_OsloginUsersProjectsDelete_579923 = ref object of OpenApiRestCall_579364
+proc url_OsloginUsersProjectsDelete_579925(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -527,9 +537,14 @@ proc url_OsloginUsersProjectsDelete_578900(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_OsloginUsersProjectsDelete_578899(path: JsonNode; query: JsonNode;
+proc validate_OsloginUsersProjectsDelete_579924(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a POSIX account.
   ## 
@@ -537,16 +552,16 @@ proc validate_OsloginUsersProjectsDelete_578899(path: JsonNode; query: JsonNode;
   result = newJObject()
   ## parameters in `path` object:
   ##   name: JString (required)
-  ##       : A reference to the POSIX account to update. POSIX accounts are identified
+  ##       : Required. A reference to the POSIX account to update. POSIX accounts are identified
   ## by the project ID they are associated with. A reference to the POSIX
   ## account is in format `users/{user}/projects/{project}`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578901 = path.getOrDefault("name")
-  valid_578901 = validateParameter(valid_578901, JString, required = true,
+  var valid_579926 = path.getOrDefault("name")
+  valid_579926 = validateParameter(valid_579926, JString, required = true,
                                  default = nil)
-  if valid_578901 != nil:
-    section.add "name", valid_578901
+  if valid_579926 != nil:
+    section.add "name", valid_579926
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -572,61 +587,61 @@ proc validate_OsloginUsersProjectsDelete_578899(path: JsonNode; query: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578902 = query.getOrDefault("key")
-  valid_578902 = validateParameter(valid_578902, JString, required = false,
+  var valid_579927 = query.getOrDefault("key")
+  valid_579927 = validateParameter(valid_579927, JString, required = false,
                                  default = nil)
-  if valid_578902 != nil:
-    section.add "key", valid_578902
-  var valid_578903 = query.getOrDefault("prettyPrint")
-  valid_578903 = validateParameter(valid_578903, JBool, required = false,
+  if valid_579927 != nil:
+    section.add "key", valid_579927
+  var valid_579928 = query.getOrDefault("prettyPrint")
+  valid_579928 = validateParameter(valid_579928, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578903 != nil:
-    section.add "prettyPrint", valid_578903
-  var valid_578904 = query.getOrDefault("oauth_token")
-  valid_578904 = validateParameter(valid_578904, JString, required = false,
+  if valid_579928 != nil:
+    section.add "prettyPrint", valid_579928
+  var valid_579929 = query.getOrDefault("oauth_token")
+  valid_579929 = validateParameter(valid_579929, JString, required = false,
                                  default = nil)
-  if valid_578904 != nil:
-    section.add "oauth_token", valid_578904
-  var valid_578905 = query.getOrDefault("$.xgafv")
-  valid_578905 = validateParameter(valid_578905, JString, required = false,
+  if valid_579929 != nil:
+    section.add "oauth_token", valid_579929
+  var valid_579930 = query.getOrDefault("$.xgafv")
+  valid_579930 = validateParameter(valid_579930, JString, required = false,
                                  default = newJString("1"))
-  if valid_578905 != nil:
-    section.add "$.xgafv", valid_578905
-  var valid_578906 = query.getOrDefault("alt")
-  valid_578906 = validateParameter(valid_578906, JString, required = false,
+  if valid_579930 != nil:
+    section.add "$.xgafv", valid_579930
+  var valid_579931 = query.getOrDefault("alt")
+  valid_579931 = validateParameter(valid_579931, JString, required = false,
                                  default = newJString("json"))
-  if valid_578906 != nil:
-    section.add "alt", valid_578906
-  var valid_578907 = query.getOrDefault("uploadType")
-  valid_578907 = validateParameter(valid_578907, JString, required = false,
+  if valid_579931 != nil:
+    section.add "alt", valid_579931
+  var valid_579932 = query.getOrDefault("uploadType")
+  valid_579932 = validateParameter(valid_579932, JString, required = false,
                                  default = nil)
-  if valid_578907 != nil:
-    section.add "uploadType", valid_578907
-  var valid_578908 = query.getOrDefault("quotaUser")
-  valid_578908 = validateParameter(valid_578908, JString, required = false,
+  if valid_579932 != nil:
+    section.add "uploadType", valid_579932
+  var valid_579933 = query.getOrDefault("quotaUser")
+  valid_579933 = validateParameter(valid_579933, JString, required = false,
                                  default = nil)
-  if valid_578908 != nil:
-    section.add "quotaUser", valid_578908
-  var valid_578909 = query.getOrDefault("callback")
-  valid_578909 = validateParameter(valid_578909, JString, required = false,
+  if valid_579933 != nil:
+    section.add "quotaUser", valid_579933
+  var valid_579934 = query.getOrDefault("callback")
+  valid_579934 = validateParameter(valid_579934, JString, required = false,
                                  default = nil)
-  if valid_578909 != nil:
-    section.add "callback", valid_578909
-  var valid_578910 = query.getOrDefault("fields")
-  valid_578910 = validateParameter(valid_578910, JString, required = false,
+  if valid_579934 != nil:
+    section.add "callback", valid_579934
+  var valid_579935 = query.getOrDefault("fields")
+  valid_579935 = validateParameter(valid_579935, JString, required = false,
                                  default = nil)
-  if valid_578910 != nil:
-    section.add "fields", valid_578910
-  var valid_578911 = query.getOrDefault("access_token")
-  valid_578911 = validateParameter(valid_578911, JString, required = false,
+  if valid_579935 != nil:
+    section.add "fields", valid_579935
+  var valid_579936 = query.getOrDefault("access_token")
+  valid_579936 = validateParameter(valid_579936, JString, required = false,
                                  default = nil)
-  if valid_578911 != nil:
-    section.add "access_token", valid_578911
-  var valid_578912 = query.getOrDefault("upload_protocol")
-  valid_578912 = validateParameter(valid_578912, JString, required = false,
+  if valid_579936 != nil:
+    section.add "access_token", valid_579936
+  var valid_579937 = query.getOrDefault("upload_protocol")
+  valid_579937 = validateParameter(valid_579937, JString, required = false,
                                  default = nil)
-  if valid_578912 != nil:
-    section.add "upload_protocol", valid_578912
+  if valid_579937 != nil:
+    section.add "upload_protocol", valid_579937
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -635,20 +650,20 @@ proc validate_OsloginUsersProjectsDelete_578899(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578913: Call_OsloginUsersProjectsDelete_578898; path: JsonNode;
+proc call*(call_579938: Call_OsloginUsersProjectsDelete_579923; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes a POSIX account.
   ## 
-  let valid = call_578913.validator(path, query, header, formData, body)
-  let scheme = call_578913.pickScheme
+  let valid = call_579938.validator(path, query, header, formData, body)
+  let scheme = call_579938.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578913.url(scheme.get, call_578913.host, call_578913.base,
-                         call_578913.route, valid.getOrDefault("path"),
+  let url = call_579938.url(scheme.get, call_579938.host, call_579938.base,
+                         call_579938.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578913, url, valid)
+  result = hook(call_579938, url, valid)
 
-proc call*(call_578914: Call_OsloginUsersProjectsDelete_578898; name: string;
+proc call*(call_579939: Call_OsloginUsersProjectsDelete_579923; name: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           Xgafv: string = "1"; alt: string = "json"; uploadType: string = "";
           quotaUser: string = ""; callback: string = ""; fields: string = "";
@@ -670,7 +685,7 @@ proc call*(call_578914: Call_OsloginUsersProjectsDelete_578898; name: string;
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
-  ##       : A reference to the POSIX account to update. POSIX accounts are identified
+  ##       : Required. A reference to the POSIX account to update. POSIX accounts are identified
   ## by the project ID they are associated with. A reference to the POSIX
   ## account is in format `users/{user}/projects/{project}`.
   ##   callback: string
@@ -681,30 +696,30 @@ proc call*(call_578914: Call_OsloginUsersProjectsDelete_578898; name: string;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578915 = newJObject()
-  var query_578916 = newJObject()
-  add(query_578916, "key", newJString(key))
-  add(query_578916, "prettyPrint", newJBool(prettyPrint))
-  add(query_578916, "oauth_token", newJString(oauthToken))
-  add(query_578916, "$.xgafv", newJString(Xgafv))
-  add(query_578916, "alt", newJString(alt))
-  add(query_578916, "uploadType", newJString(uploadType))
-  add(query_578916, "quotaUser", newJString(quotaUser))
-  add(path_578915, "name", newJString(name))
-  add(query_578916, "callback", newJString(callback))
-  add(query_578916, "fields", newJString(fields))
-  add(query_578916, "access_token", newJString(accessToken))
-  add(query_578916, "upload_protocol", newJString(uploadProtocol))
-  result = call_578914.call(path_578915, query_578916, nil, nil, nil)
+  var path_579940 = newJObject()
+  var query_579941 = newJObject()
+  add(query_579941, "key", newJString(key))
+  add(query_579941, "prettyPrint", newJBool(prettyPrint))
+  add(query_579941, "oauth_token", newJString(oauthToken))
+  add(query_579941, "$.xgafv", newJString(Xgafv))
+  add(query_579941, "alt", newJString(alt))
+  add(query_579941, "uploadType", newJString(uploadType))
+  add(query_579941, "quotaUser", newJString(quotaUser))
+  add(path_579940, "name", newJString(name))
+  add(query_579941, "callback", newJString(callback))
+  add(query_579941, "fields", newJString(fields))
+  add(query_579941, "access_token", newJString(accessToken))
+  add(query_579941, "upload_protocol", newJString(uploadProtocol))
+  result = call_579939.call(path_579940, query_579941, nil, nil, nil)
 
-var osloginUsersProjectsDelete* = Call_OsloginUsersProjectsDelete_578898(
+var osloginUsersProjectsDelete* = Call_OsloginUsersProjectsDelete_579923(
     name: "osloginUsersProjectsDelete", meth: HttpMethod.HttpDelete,
     host: "oslogin.googleapis.com", route: "/v1beta/{name}",
-    validator: validate_OsloginUsersProjectsDelete_578899, base: "/",
-    url: url_OsloginUsersProjectsDelete_578900, schemes: {Scheme.Https})
+    validator: validate_OsloginUsersProjectsDelete_579924, base: "/",
+    url: url_OsloginUsersProjectsDelete_579925, schemes: {Scheme.Https})
 type
-  Call_OsloginUsersGetLoginProfile_578939 = ref object of OpenApiRestCall_578339
-proc url_OsloginUsersGetLoginProfile_578941(protocol: Scheme; host: string;
+  Call_OsloginUsersGetLoginProfile_579964 = ref object of OpenApiRestCall_579364
+proc url_OsloginUsersGetLoginProfile_579966(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -718,9 +733,14 @@ proc url_OsloginUsersGetLoginProfile_578941(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_OsloginUsersGetLoginProfile_578940(path: JsonNode; query: JsonNode;
+proc validate_OsloginUsersGetLoginProfile_579965(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves the profile information used for logging in to a virtual machine
   ## on Google Compute Engine.
@@ -729,14 +749,14 @@ proc validate_OsloginUsersGetLoginProfile_578940(path: JsonNode; query: JsonNode
   result = newJObject()
   ## parameters in `path` object:
   ##   name: JString (required)
-  ##       : The unique ID for the user in format `users/{user}`.
+  ##       : Required. The unique ID for the user in format `users/{user}`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578942 = path.getOrDefault("name")
-  valid_578942 = validateParameter(valid_578942, JString, required = true,
+  var valid_579967 = path.getOrDefault("name")
+  valid_579967 = validateParameter(valid_579967, JString, required = true,
                                  default = nil)
-  if valid_578942 != nil:
-    section.add "name", valid_578942
+  if valid_579967 != nil:
+    section.add "name", valid_579967
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -766,71 +786,71 @@ proc validate_OsloginUsersGetLoginProfile_578940(path: JsonNode; query: JsonNode
   ##   projectId: JString
   ##            : The project ID of the Google Cloud Platform project.
   section = newJObject()
-  var valid_578943 = query.getOrDefault("key")
-  valid_578943 = validateParameter(valid_578943, JString, required = false,
+  var valid_579968 = query.getOrDefault("key")
+  valid_579968 = validateParameter(valid_579968, JString, required = false,
                                  default = nil)
-  if valid_578943 != nil:
-    section.add "key", valid_578943
-  var valid_578944 = query.getOrDefault("prettyPrint")
-  valid_578944 = validateParameter(valid_578944, JBool, required = false,
+  if valid_579968 != nil:
+    section.add "key", valid_579968
+  var valid_579969 = query.getOrDefault("prettyPrint")
+  valid_579969 = validateParameter(valid_579969, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578944 != nil:
-    section.add "prettyPrint", valid_578944
-  var valid_578945 = query.getOrDefault("oauth_token")
-  valid_578945 = validateParameter(valid_578945, JString, required = false,
+  if valid_579969 != nil:
+    section.add "prettyPrint", valid_579969
+  var valid_579970 = query.getOrDefault("oauth_token")
+  valid_579970 = validateParameter(valid_579970, JString, required = false,
                                  default = nil)
-  if valid_578945 != nil:
-    section.add "oauth_token", valid_578945
-  var valid_578946 = query.getOrDefault("$.xgafv")
-  valid_578946 = validateParameter(valid_578946, JString, required = false,
+  if valid_579970 != nil:
+    section.add "oauth_token", valid_579970
+  var valid_579971 = query.getOrDefault("$.xgafv")
+  valid_579971 = validateParameter(valid_579971, JString, required = false,
                                  default = newJString("1"))
-  if valid_578946 != nil:
-    section.add "$.xgafv", valid_578946
-  var valid_578947 = query.getOrDefault("alt")
-  valid_578947 = validateParameter(valid_578947, JString, required = false,
+  if valid_579971 != nil:
+    section.add "$.xgafv", valid_579971
+  var valid_579972 = query.getOrDefault("alt")
+  valid_579972 = validateParameter(valid_579972, JString, required = false,
                                  default = newJString("json"))
-  if valid_578947 != nil:
-    section.add "alt", valid_578947
-  var valid_578948 = query.getOrDefault("uploadType")
-  valid_578948 = validateParameter(valid_578948, JString, required = false,
+  if valid_579972 != nil:
+    section.add "alt", valid_579972
+  var valid_579973 = query.getOrDefault("uploadType")
+  valid_579973 = validateParameter(valid_579973, JString, required = false,
                                  default = nil)
-  if valid_578948 != nil:
-    section.add "uploadType", valid_578948
-  var valid_578949 = query.getOrDefault("quotaUser")
-  valid_578949 = validateParameter(valid_578949, JString, required = false,
+  if valid_579973 != nil:
+    section.add "uploadType", valid_579973
+  var valid_579974 = query.getOrDefault("quotaUser")
+  valid_579974 = validateParameter(valid_579974, JString, required = false,
                                  default = nil)
-  if valid_578949 != nil:
-    section.add "quotaUser", valid_578949
-  var valid_578950 = query.getOrDefault("callback")
-  valid_578950 = validateParameter(valid_578950, JString, required = false,
+  if valid_579974 != nil:
+    section.add "quotaUser", valid_579974
+  var valid_579975 = query.getOrDefault("callback")
+  valid_579975 = validateParameter(valid_579975, JString, required = false,
                                  default = nil)
-  if valid_578950 != nil:
-    section.add "callback", valid_578950
-  var valid_578951 = query.getOrDefault("fields")
-  valid_578951 = validateParameter(valid_578951, JString, required = false,
+  if valid_579975 != nil:
+    section.add "callback", valid_579975
+  var valid_579976 = query.getOrDefault("fields")
+  valid_579976 = validateParameter(valid_579976, JString, required = false,
                                  default = nil)
-  if valid_578951 != nil:
-    section.add "fields", valid_578951
-  var valid_578952 = query.getOrDefault("access_token")
-  valid_578952 = validateParameter(valid_578952, JString, required = false,
+  if valid_579976 != nil:
+    section.add "fields", valid_579976
+  var valid_579977 = query.getOrDefault("access_token")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
                                  default = nil)
-  if valid_578952 != nil:
-    section.add "access_token", valid_578952
-  var valid_578953 = query.getOrDefault("upload_protocol")
-  valid_578953 = validateParameter(valid_578953, JString, required = false,
+  if valid_579977 != nil:
+    section.add "access_token", valid_579977
+  var valid_579978 = query.getOrDefault("upload_protocol")
+  valid_579978 = validateParameter(valid_579978, JString, required = false,
                                  default = nil)
-  if valid_578953 != nil:
-    section.add "upload_protocol", valid_578953
-  var valid_578954 = query.getOrDefault("systemId")
-  valid_578954 = validateParameter(valid_578954, JString, required = false,
+  if valid_579978 != nil:
+    section.add "upload_protocol", valid_579978
+  var valid_579979 = query.getOrDefault("systemId")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = nil)
-  if valid_578954 != nil:
-    section.add "systemId", valid_578954
-  var valid_578955 = query.getOrDefault("projectId")
-  valid_578955 = validateParameter(valid_578955, JString, required = false,
+  if valid_579979 != nil:
+    section.add "systemId", valid_579979
+  var valid_579980 = query.getOrDefault("projectId")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = nil)
-  if valid_578955 != nil:
-    section.add "projectId", valid_578955
+  if valid_579980 != nil:
+    section.add "projectId", valid_579980
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -839,21 +859,21 @@ proc validate_OsloginUsersGetLoginProfile_578940(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_578956: Call_OsloginUsersGetLoginProfile_578939; path: JsonNode;
+proc call*(call_579981: Call_OsloginUsersGetLoginProfile_579964; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves the profile information used for logging in to a virtual machine
   ## on Google Compute Engine.
   ## 
-  let valid = call_578956.validator(path, query, header, formData, body)
-  let scheme = call_578956.pickScheme
+  let valid = call_579981.validator(path, query, header, formData, body)
+  let scheme = call_579981.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578956.url(scheme.get, call_578956.host, call_578956.base,
-                         call_578956.route, valid.getOrDefault("path"),
+  let url = call_579981.url(scheme.get, call_579981.host, call_579981.base,
+                         call_579981.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578956, url, valid)
+  result = hook(call_579981, url, valid)
 
-proc call*(call_578957: Call_OsloginUsersGetLoginProfile_578939; name: string;
+proc call*(call_579982: Call_OsloginUsersGetLoginProfile_579964; name: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           Xgafv: string = "1"; alt: string = "json"; uploadType: string = "";
           quotaUser: string = ""; callback: string = ""; fields: string = "";
@@ -877,7 +897,7 @@ proc call*(call_578957: Call_OsloginUsersGetLoginProfile_578939; name: string;
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
-  ##       : The unique ID for the user in format `users/{user}`.
+  ##       : Required. The unique ID for the user in format `users/{user}`.
   ##   callback: string
   ##           : JSONP
   ##   fields: string
@@ -890,32 +910,32 @@ proc call*(call_578957: Call_OsloginUsersGetLoginProfile_578939; name: string;
   ##           : A system ID for filtering the results of the request.
   ##   projectId: string
   ##            : The project ID of the Google Cloud Platform project.
-  var path_578958 = newJObject()
-  var query_578959 = newJObject()
-  add(query_578959, "key", newJString(key))
-  add(query_578959, "prettyPrint", newJBool(prettyPrint))
-  add(query_578959, "oauth_token", newJString(oauthToken))
-  add(query_578959, "$.xgafv", newJString(Xgafv))
-  add(query_578959, "alt", newJString(alt))
-  add(query_578959, "uploadType", newJString(uploadType))
-  add(query_578959, "quotaUser", newJString(quotaUser))
-  add(path_578958, "name", newJString(name))
-  add(query_578959, "callback", newJString(callback))
-  add(query_578959, "fields", newJString(fields))
-  add(query_578959, "access_token", newJString(accessToken))
-  add(query_578959, "upload_protocol", newJString(uploadProtocol))
-  add(query_578959, "systemId", newJString(systemId))
-  add(query_578959, "projectId", newJString(projectId))
-  result = call_578957.call(path_578958, query_578959, nil, nil, nil)
+  var path_579983 = newJObject()
+  var query_579984 = newJObject()
+  add(query_579984, "key", newJString(key))
+  add(query_579984, "prettyPrint", newJBool(prettyPrint))
+  add(query_579984, "oauth_token", newJString(oauthToken))
+  add(query_579984, "$.xgafv", newJString(Xgafv))
+  add(query_579984, "alt", newJString(alt))
+  add(query_579984, "uploadType", newJString(uploadType))
+  add(query_579984, "quotaUser", newJString(quotaUser))
+  add(path_579983, "name", newJString(name))
+  add(query_579984, "callback", newJString(callback))
+  add(query_579984, "fields", newJString(fields))
+  add(query_579984, "access_token", newJString(accessToken))
+  add(query_579984, "upload_protocol", newJString(uploadProtocol))
+  add(query_579984, "systemId", newJString(systemId))
+  add(query_579984, "projectId", newJString(projectId))
+  result = call_579982.call(path_579983, query_579984, nil, nil, nil)
 
-var osloginUsersGetLoginProfile* = Call_OsloginUsersGetLoginProfile_578939(
+var osloginUsersGetLoginProfile* = Call_OsloginUsersGetLoginProfile_579964(
     name: "osloginUsersGetLoginProfile", meth: HttpMethod.HttpGet,
     host: "oslogin.googleapis.com", route: "/v1beta/{name}/loginProfile",
-    validator: validate_OsloginUsersGetLoginProfile_578940, base: "/",
-    url: url_OsloginUsersGetLoginProfile_578941, schemes: {Scheme.Https})
+    validator: validate_OsloginUsersGetLoginProfile_579965, base: "/",
+    url: url_OsloginUsersGetLoginProfile_579966, schemes: {Scheme.Https})
 type
-  Call_OsloginUsersImportSshPublicKey_578960 = ref object of OpenApiRestCall_578339
-proc url_OsloginUsersImportSshPublicKey_578962(protocol: Scheme; host: string;
+  Call_OsloginUsersImportSshPublicKey_579985 = ref object of OpenApiRestCall_579364
+proc url_OsloginUsersImportSshPublicKey_579987(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -929,9 +949,14 @@ proc url_OsloginUsersImportSshPublicKey_578962(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_OsloginUsersImportSshPublicKey_578961(path: JsonNode;
+proc validate_OsloginUsersImportSshPublicKey_579986(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Adds an SSH public key and returns the profile information. Default POSIX
   ## account information is set when no username and UID exist as part of the
@@ -944,11 +969,11 @@ proc validate_OsloginUsersImportSshPublicKey_578961(path: JsonNode;
   ##         : The unique ID for the user in format `users/{user}`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_578963 = path.getOrDefault("parent")
-  valid_578963 = validateParameter(valid_578963, JString, required = true,
+  var valid_579988 = path.getOrDefault("parent")
+  valid_579988 = validateParameter(valid_579988, JString, required = true,
                                  default = nil)
-  if valid_578963 != nil:
-    section.add "parent", valid_578963
+  if valid_579988 != nil:
+    section.add "parent", valid_579988
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -976,66 +1001,66 @@ proc validate_OsloginUsersImportSshPublicKey_578961(path: JsonNode;
   ##   projectId: JString
   ##            : The project ID of the Google Cloud Platform project.
   section = newJObject()
-  var valid_578964 = query.getOrDefault("key")
-  valid_578964 = validateParameter(valid_578964, JString, required = false,
+  var valid_579989 = query.getOrDefault("key")
+  valid_579989 = validateParameter(valid_579989, JString, required = false,
                                  default = nil)
-  if valid_578964 != nil:
-    section.add "key", valid_578964
-  var valid_578965 = query.getOrDefault("prettyPrint")
-  valid_578965 = validateParameter(valid_578965, JBool, required = false,
+  if valid_579989 != nil:
+    section.add "key", valid_579989
+  var valid_579990 = query.getOrDefault("prettyPrint")
+  valid_579990 = validateParameter(valid_579990, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578965 != nil:
-    section.add "prettyPrint", valid_578965
-  var valid_578966 = query.getOrDefault("oauth_token")
-  valid_578966 = validateParameter(valid_578966, JString, required = false,
+  if valid_579990 != nil:
+    section.add "prettyPrint", valid_579990
+  var valid_579991 = query.getOrDefault("oauth_token")
+  valid_579991 = validateParameter(valid_579991, JString, required = false,
                                  default = nil)
-  if valid_578966 != nil:
-    section.add "oauth_token", valid_578966
-  var valid_578967 = query.getOrDefault("$.xgafv")
-  valid_578967 = validateParameter(valid_578967, JString, required = false,
+  if valid_579991 != nil:
+    section.add "oauth_token", valid_579991
+  var valid_579992 = query.getOrDefault("$.xgafv")
+  valid_579992 = validateParameter(valid_579992, JString, required = false,
                                  default = newJString("1"))
-  if valid_578967 != nil:
-    section.add "$.xgafv", valid_578967
-  var valid_578968 = query.getOrDefault("alt")
-  valid_578968 = validateParameter(valid_578968, JString, required = false,
+  if valid_579992 != nil:
+    section.add "$.xgafv", valid_579992
+  var valid_579993 = query.getOrDefault("alt")
+  valid_579993 = validateParameter(valid_579993, JString, required = false,
                                  default = newJString("json"))
-  if valid_578968 != nil:
-    section.add "alt", valid_578968
-  var valid_578969 = query.getOrDefault("uploadType")
-  valid_578969 = validateParameter(valid_578969, JString, required = false,
+  if valid_579993 != nil:
+    section.add "alt", valid_579993
+  var valid_579994 = query.getOrDefault("uploadType")
+  valid_579994 = validateParameter(valid_579994, JString, required = false,
                                  default = nil)
-  if valid_578969 != nil:
-    section.add "uploadType", valid_578969
-  var valid_578970 = query.getOrDefault("quotaUser")
-  valid_578970 = validateParameter(valid_578970, JString, required = false,
+  if valid_579994 != nil:
+    section.add "uploadType", valid_579994
+  var valid_579995 = query.getOrDefault("quotaUser")
+  valid_579995 = validateParameter(valid_579995, JString, required = false,
                                  default = nil)
-  if valid_578970 != nil:
-    section.add "quotaUser", valid_578970
-  var valid_578971 = query.getOrDefault("callback")
-  valid_578971 = validateParameter(valid_578971, JString, required = false,
+  if valid_579995 != nil:
+    section.add "quotaUser", valid_579995
+  var valid_579996 = query.getOrDefault("callback")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_578971 != nil:
-    section.add "callback", valid_578971
-  var valid_578972 = query.getOrDefault("fields")
-  valid_578972 = validateParameter(valid_578972, JString, required = false,
+  if valid_579996 != nil:
+    section.add "callback", valid_579996
+  var valid_579997 = query.getOrDefault("fields")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = nil)
-  if valid_578972 != nil:
-    section.add "fields", valid_578972
-  var valid_578973 = query.getOrDefault("access_token")
-  valid_578973 = validateParameter(valid_578973, JString, required = false,
+  if valid_579997 != nil:
+    section.add "fields", valid_579997
+  var valid_579998 = query.getOrDefault("access_token")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = nil)
-  if valid_578973 != nil:
-    section.add "access_token", valid_578973
-  var valid_578974 = query.getOrDefault("upload_protocol")
-  valid_578974 = validateParameter(valid_578974, JString, required = false,
+  if valid_579998 != nil:
+    section.add "access_token", valid_579998
+  var valid_579999 = query.getOrDefault("upload_protocol")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = nil)
-  if valid_578974 != nil:
-    section.add "upload_protocol", valid_578974
-  var valid_578975 = query.getOrDefault("projectId")
-  valid_578975 = validateParameter(valid_578975, JString, required = false,
+  if valid_579999 != nil:
+    section.add "upload_protocol", valid_579999
+  var valid_580000 = query.getOrDefault("projectId")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = nil)
-  if valid_578975 != nil:
-    section.add "projectId", valid_578975
+  if valid_580000 != nil:
+    section.add "projectId", valid_580000
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1047,22 +1072,22 @@ proc validate_OsloginUsersImportSshPublicKey_578961(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578977: Call_OsloginUsersImportSshPublicKey_578960; path: JsonNode;
+proc call*(call_580002: Call_OsloginUsersImportSshPublicKey_579985; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Adds an SSH public key and returns the profile information. Default POSIX
   ## account information is set when no username and UID exist as part of the
   ## login profile.
   ## 
-  let valid = call_578977.validator(path, query, header, formData, body)
-  let scheme = call_578977.pickScheme
+  let valid = call_580002.validator(path, query, header, formData, body)
+  let scheme = call_580002.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578977.url(scheme.get, call_578977.host, call_578977.base,
-                         call_578977.route, valid.getOrDefault("path"),
+  let url = call_580002.url(scheme.get, call_580002.host, call_580002.base,
+                         call_580002.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578977, url, valid)
+  result = hook(call_580002, url, valid)
 
-proc call*(call_578978: Call_OsloginUsersImportSshPublicKey_578960; parent: string;
+proc call*(call_580003: Call_OsloginUsersImportSshPublicKey_579985; parent: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           Xgafv: string = "1"; alt: string = "json"; uploadType: string = "";
           quotaUser: string = ""; body: JsonNode = nil; callback: string = "";
@@ -1099,31 +1124,31 @@ proc call*(call_578978: Call_OsloginUsersImportSshPublicKey_578960; parent: stri
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
   ##   projectId: string
   ##            : The project ID of the Google Cloud Platform project.
-  var path_578979 = newJObject()
-  var query_578980 = newJObject()
-  var body_578981 = newJObject()
-  add(query_578980, "key", newJString(key))
-  add(query_578980, "prettyPrint", newJBool(prettyPrint))
-  add(query_578980, "oauth_token", newJString(oauthToken))
-  add(query_578980, "$.xgafv", newJString(Xgafv))
-  add(query_578980, "alt", newJString(alt))
-  add(query_578980, "uploadType", newJString(uploadType))
-  add(query_578980, "quotaUser", newJString(quotaUser))
+  var path_580004 = newJObject()
+  var query_580005 = newJObject()
+  var body_580006 = newJObject()
+  add(query_580005, "key", newJString(key))
+  add(query_580005, "prettyPrint", newJBool(prettyPrint))
+  add(query_580005, "oauth_token", newJString(oauthToken))
+  add(query_580005, "$.xgafv", newJString(Xgafv))
+  add(query_580005, "alt", newJString(alt))
+  add(query_580005, "uploadType", newJString(uploadType))
+  add(query_580005, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_578981 = body
-  add(query_578980, "callback", newJString(callback))
-  add(path_578979, "parent", newJString(parent))
-  add(query_578980, "fields", newJString(fields))
-  add(query_578980, "access_token", newJString(accessToken))
-  add(query_578980, "upload_protocol", newJString(uploadProtocol))
-  add(query_578980, "projectId", newJString(projectId))
-  result = call_578978.call(path_578979, query_578980, nil, nil, body_578981)
+    body_580006 = body
+  add(query_580005, "callback", newJString(callback))
+  add(path_580004, "parent", newJString(parent))
+  add(query_580005, "fields", newJString(fields))
+  add(query_580005, "access_token", newJString(accessToken))
+  add(query_580005, "upload_protocol", newJString(uploadProtocol))
+  add(query_580005, "projectId", newJString(projectId))
+  result = call_580003.call(path_580004, query_580005, nil, nil, body_580006)
 
-var osloginUsersImportSshPublicKey* = Call_OsloginUsersImportSshPublicKey_578960(
+var osloginUsersImportSshPublicKey* = Call_OsloginUsersImportSshPublicKey_579985(
     name: "osloginUsersImportSshPublicKey", meth: HttpMethod.HttpPost,
     host: "oslogin.googleapis.com", route: "/v1beta/{parent}:importSshPublicKey",
-    validator: validate_OsloginUsersImportSshPublicKey_578961, base: "/",
-    url: url_OsloginUsersImportSshPublicKey_578962, schemes: {Scheme.Https})
+    validator: validate_OsloginUsersImportSshPublicKey_579986, base: "/",
+    url: url_OsloginUsersImportSshPublicKey_579987, schemes: {Scheme.Https})
 export
   rest
 

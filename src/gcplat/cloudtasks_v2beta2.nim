@@ -1,7 +1,7 @@
 
 import
-  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
-  asyncdispatch, jwt
+  json, options, hashes, uri, strutils, rest, os, uri, strutils, times, httpcore,
+  httpclient, asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Cloud Tasks
@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_578339 = ref object of OpenApiRestCall
+  OpenApiRestCall_579364 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579364](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579364): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -112,8 +112,8 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_CloudtasksProjectsLocationsQueuesTasksGet_578610 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesTasksGet_578612(protocol: Scheme;
+  Call_CloudtasksProjectsLocationsQueuesTasksGet_579635 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesTasksGet_579637(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -126,9 +126,14 @@ proc url_CloudtasksProjectsLocationsQueuesTasksGet_578612(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesTasksGet_578611(path: JsonNode;
+proc validate_CloudtasksProjectsLocationsQueuesTasksGet_579636(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Gets a task.
   ## 
@@ -140,11 +145,11 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksGet_578611(path: JsonNode;
   ## `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578738 = path.getOrDefault("name")
-  valid_578738 = validateParameter(valid_578738, JString, required = true,
+  var valid_579763 = path.getOrDefault("name")
+  valid_579763 = validateParameter(valid_579763, JString, required = true,
                                  default = nil)
-  if valid_578738 != nil:
-    section.add "name", valid_578738
+  if valid_579763 != nil:
+    section.add "name", valid_579763
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -183,66 +188,66 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksGet_578611(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578739 = query.getOrDefault("key")
-  valid_578739 = validateParameter(valid_578739, JString, required = false,
+  var valid_579764 = query.getOrDefault("key")
+  valid_579764 = validateParameter(valid_579764, JString, required = false,
                                  default = nil)
-  if valid_578739 != nil:
-    section.add "key", valid_578739
-  var valid_578753 = query.getOrDefault("prettyPrint")
-  valid_578753 = validateParameter(valid_578753, JBool, required = false,
+  if valid_579764 != nil:
+    section.add "key", valid_579764
+  var valid_579778 = query.getOrDefault("prettyPrint")
+  valid_579778 = validateParameter(valid_579778, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578753 != nil:
-    section.add "prettyPrint", valid_578753
-  var valid_578754 = query.getOrDefault("oauth_token")
-  valid_578754 = validateParameter(valid_578754, JString, required = false,
+  if valid_579778 != nil:
+    section.add "prettyPrint", valid_579778
+  var valid_579779 = query.getOrDefault("oauth_token")
+  valid_579779 = validateParameter(valid_579779, JString, required = false,
                                  default = nil)
-  if valid_578754 != nil:
-    section.add "oauth_token", valid_578754
-  var valid_578755 = query.getOrDefault("$.xgafv")
-  valid_578755 = validateParameter(valid_578755, JString, required = false,
+  if valid_579779 != nil:
+    section.add "oauth_token", valid_579779
+  var valid_579780 = query.getOrDefault("$.xgafv")
+  valid_579780 = validateParameter(valid_579780, JString, required = false,
                                  default = newJString("1"))
-  if valid_578755 != nil:
-    section.add "$.xgafv", valid_578755
-  var valid_578756 = query.getOrDefault("responseView")
-  valid_578756 = validateParameter(valid_578756, JString, required = false,
+  if valid_579780 != nil:
+    section.add "$.xgafv", valid_579780
+  var valid_579781 = query.getOrDefault("responseView")
+  valid_579781 = validateParameter(valid_579781, JString, required = false,
                                  default = newJString("VIEW_UNSPECIFIED"))
-  if valid_578756 != nil:
-    section.add "responseView", valid_578756
-  var valid_578757 = query.getOrDefault("alt")
-  valid_578757 = validateParameter(valid_578757, JString, required = false,
+  if valid_579781 != nil:
+    section.add "responseView", valid_579781
+  var valid_579782 = query.getOrDefault("alt")
+  valid_579782 = validateParameter(valid_579782, JString, required = false,
                                  default = newJString("json"))
-  if valid_578757 != nil:
-    section.add "alt", valid_578757
-  var valid_578758 = query.getOrDefault("uploadType")
-  valid_578758 = validateParameter(valid_578758, JString, required = false,
+  if valid_579782 != nil:
+    section.add "alt", valid_579782
+  var valid_579783 = query.getOrDefault("uploadType")
+  valid_579783 = validateParameter(valid_579783, JString, required = false,
                                  default = nil)
-  if valid_578758 != nil:
-    section.add "uploadType", valid_578758
-  var valid_578759 = query.getOrDefault("quotaUser")
-  valid_578759 = validateParameter(valid_578759, JString, required = false,
+  if valid_579783 != nil:
+    section.add "uploadType", valid_579783
+  var valid_579784 = query.getOrDefault("quotaUser")
+  valid_579784 = validateParameter(valid_579784, JString, required = false,
                                  default = nil)
-  if valid_578759 != nil:
-    section.add "quotaUser", valid_578759
-  var valid_578760 = query.getOrDefault("callback")
-  valid_578760 = validateParameter(valid_578760, JString, required = false,
+  if valid_579784 != nil:
+    section.add "quotaUser", valid_579784
+  var valid_579785 = query.getOrDefault("callback")
+  valid_579785 = validateParameter(valid_579785, JString, required = false,
                                  default = nil)
-  if valid_578760 != nil:
-    section.add "callback", valid_578760
-  var valid_578761 = query.getOrDefault("fields")
-  valid_578761 = validateParameter(valid_578761, JString, required = false,
+  if valid_579785 != nil:
+    section.add "callback", valid_579785
+  var valid_579786 = query.getOrDefault("fields")
+  valid_579786 = validateParameter(valid_579786, JString, required = false,
                                  default = nil)
-  if valid_578761 != nil:
-    section.add "fields", valid_578761
-  var valid_578762 = query.getOrDefault("access_token")
-  valid_578762 = validateParameter(valid_578762, JString, required = false,
+  if valid_579786 != nil:
+    section.add "fields", valid_579786
+  var valid_579787 = query.getOrDefault("access_token")
+  valid_579787 = validateParameter(valid_579787, JString, required = false,
                                  default = nil)
-  if valid_578762 != nil:
-    section.add "access_token", valid_578762
-  var valid_578763 = query.getOrDefault("upload_protocol")
-  valid_578763 = validateParameter(valid_578763, JString, required = false,
+  if valid_579787 != nil:
+    section.add "access_token", valid_579787
+  var valid_579788 = query.getOrDefault("upload_protocol")
+  valid_579788 = validateParameter(valid_579788, JString, required = false,
                                  default = nil)
-  if valid_578763 != nil:
-    section.add "upload_protocol", valid_578763
+  if valid_579788 != nil:
+    section.add "upload_protocol", valid_579788
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -251,21 +256,21 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksGet_578611(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578786: Call_CloudtasksProjectsLocationsQueuesTasksGet_578610;
+proc call*(call_579811: Call_CloudtasksProjectsLocationsQueuesTasksGet_579635;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets a task.
   ## 
-  let valid = call_578786.validator(path, query, header, formData, body)
-  let scheme = call_578786.pickScheme
+  let valid = call_579811.validator(path, query, header, formData, body)
+  let scheme = call_579811.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578786.url(scheme.get, call_578786.host, call_578786.base,
-                         call_578786.route, valid.getOrDefault("path"),
+  let url = call_579811.url(scheme.get, call_579811.host, call_579811.base,
+                         call_579811.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578786, url, valid)
+  result = hook(call_579811, url, valid)
 
-proc call*(call_578857: Call_CloudtasksProjectsLocationsQueuesTasksGet_578610;
+proc call*(call_579882: Call_CloudtasksProjectsLocationsQueuesTasksGet_579635;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1";
           responseView: string = "VIEW_UNSPECIFIED"; alt: string = "json";
@@ -311,32 +316,32 @@ proc call*(call_578857: Call_CloudtasksProjectsLocationsQueuesTasksGet_578610;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578858 = newJObject()
-  var query_578860 = newJObject()
-  add(query_578860, "key", newJString(key))
-  add(query_578860, "prettyPrint", newJBool(prettyPrint))
-  add(query_578860, "oauth_token", newJString(oauthToken))
-  add(query_578860, "$.xgafv", newJString(Xgafv))
-  add(query_578860, "responseView", newJString(responseView))
-  add(query_578860, "alt", newJString(alt))
-  add(query_578860, "uploadType", newJString(uploadType))
-  add(query_578860, "quotaUser", newJString(quotaUser))
-  add(path_578858, "name", newJString(name))
-  add(query_578860, "callback", newJString(callback))
-  add(query_578860, "fields", newJString(fields))
-  add(query_578860, "access_token", newJString(accessToken))
-  add(query_578860, "upload_protocol", newJString(uploadProtocol))
-  result = call_578857.call(path_578858, query_578860, nil, nil, nil)
+  var path_579883 = newJObject()
+  var query_579885 = newJObject()
+  add(query_579885, "key", newJString(key))
+  add(query_579885, "prettyPrint", newJBool(prettyPrint))
+  add(query_579885, "oauth_token", newJString(oauthToken))
+  add(query_579885, "$.xgafv", newJString(Xgafv))
+  add(query_579885, "responseView", newJString(responseView))
+  add(query_579885, "alt", newJString(alt))
+  add(query_579885, "uploadType", newJString(uploadType))
+  add(query_579885, "quotaUser", newJString(quotaUser))
+  add(path_579883, "name", newJString(name))
+  add(query_579885, "callback", newJString(callback))
+  add(query_579885, "fields", newJString(fields))
+  add(query_579885, "access_token", newJString(accessToken))
+  add(query_579885, "upload_protocol", newJString(uploadProtocol))
+  result = call_579882.call(path_579883, query_579885, nil, nil, nil)
 
-var cloudtasksProjectsLocationsQueuesTasksGet* = Call_CloudtasksProjectsLocationsQueuesTasksGet_578610(
+var cloudtasksProjectsLocationsQueuesTasksGet* = Call_CloudtasksProjectsLocationsQueuesTasksGet_579635(
     name: "cloudtasksProjectsLocationsQueuesTasksGet", meth: HttpMethod.HttpGet,
     host: "cloudtasks.googleapis.com", route: "/v2beta2/{name}",
-    validator: validate_CloudtasksProjectsLocationsQueuesTasksGet_578611,
-    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksGet_578612,
+    validator: validate_CloudtasksProjectsLocationsQueuesTasksGet_579636,
+    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksGet_579637,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesPatch_578918 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesPatch_578920(protocol: Scheme;
+  Call_CloudtasksProjectsLocationsQueuesPatch_579943 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesPatch_579945(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -349,9 +354,14 @@ proc url_CloudtasksProjectsLocationsQueuesPatch_578920(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesPatch_578919(path: JsonNode;
+proc validate_CloudtasksProjectsLocationsQueuesPatch_579944(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a queue.
   ## 
@@ -395,11 +405,11 @@ proc validate_CloudtasksProjectsLocationsQueuesPatch_578919(path: JsonNode;
   ##   hyphens (-). The maximum length is 100 characters.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578921 = path.getOrDefault("name")
-  valid_578921 = validateParameter(valid_578921, JString, required = true,
+  var valid_579946 = path.getOrDefault("name")
+  valid_579946 = validateParameter(valid_579946, JString, required = true,
                                  default = nil)
-  if valid_578921 != nil:
-    section.add "name", valid_578921
+  if valid_579946 != nil:
+    section.add "name", valid_579946
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -429,66 +439,66 @@ proc validate_CloudtasksProjectsLocationsQueuesPatch_578919(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578922 = query.getOrDefault("key")
-  valid_578922 = validateParameter(valid_578922, JString, required = false,
+  var valid_579947 = query.getOrDefault("key")
+  valid_579947 = validateParameter(valid_579947, JString, required = false,
                                  default = nil)
-  if valid_578922 != nil:
-    section.add "key", valid_578922
-  var valid_578923 = query.getOrDefault("prettyPrint")
-  valid_578923 = validateParameter(valid_578923, JBool, required = false,
+  if valid_579947 != nil:
+    section.add "key", valid_579947
+  var valid_579948 = query.getOrDefault("prettyPrint")
+  valid_579948 = validateParameter(valid_579948, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578923 != nil:
-    section.add "prettyPrint", valid_578923
-  var valid_578924 = query.getOrDefault("oauth_token")
-  valid_578924 = validateParameter(valid_578924, JString, required = false,
+  if valid_579948 != nil:
+    section.add "prettyPrint", valid_579948
+  var valid_579949 = query.getOrDefault("oauth_token")
+  valid_579949 = validateParameter(valid_579949, JString, required = false,
                                  default = nil)
-  if valid_578924 != nil:
-    section.add "oauth_token", valid_578924
-  var valid_578925 = query.getOrDefault("$.xgafv")
-  valid_578925 = validateParameter(valid_578925, JString, required = false,
+  if valid_579949 != nil:
+    section.add "oauth_token", valid_579949
+  var valid_579950 = query.getOrDefault("$.xgafv")
+  valid_579950 = validateParameter(valid_579950, JString, required = false,
                                  default = newJString("1"))
-  if valid_578925 != nil:
-    section.add "$.xgafv", valid_578925
-  var valid_578926 = query.getOrDefault("alt")
-  valid_578926 = validateParameter(valid_578926, JString, required = false,
+  if valid_579950 != nil:
+    section.add "$.xgafv", valid_579950
+  var valid_579951 = query.getOrDefault("alt")
+  valid_579951 = validateParameter(valid_579951, JString, required = false,
                                  default = newJString("json"))
-  if valid_578926 != nil:
-    section.add "alt", valid_578926
-  var valid_578927 = query.getOrDefault("uploadType")
-  valid_578927 = validateParameter(valid_578927, JString, required = false,
+  if valid_579951 != nil:
+    section.add "alt", valid_579951
+  var valid_579952 = query.getOrDefault("uploadType")
+  valid_579952 = validateParameter(valid_579952, JString, required = false,
                                  default = nil)
-  if valid_578927 != nil:
-    section.add "uploadType", valid_578927
-  var valid_578928 = query.getOrDefault("quotaUser")
-  valid_578928 = validateParameter(valid_578928, JString, required = false,
+  if valid_579952 != nil:
+    section.add "uploadType", valid_579952
+  var valid_579953 = query.getOrDefault("quotaUser")
+  valid_579953 = validateParameter(valid_579953, JString, required = false,
                                  default = nil)
-  if valid_578928 != nil:
-    section.add "quotaUser", valid_578928
-  var valid_578929 = query.getOrDefault("updateMask")
-  valid_578929 = validateParameter(valid_578929, JString, required = false,
+  if valid_579953 != nil:
+    section.add "quotaUser", valid_579953
+  var valid_579954 = query.getOrDefault("updateMask")
+  valid_579954 = validateParameter(valid_579954, JString, required = false,
                                  default = nil)
-  if valid_578929 != nil:
-    section.add "updateMask", valid_578929
-  var valid_578930 = query.getOrDefault("callback")
-  valid_578930 = validateParameter(valid_578930, JString, required = false,
+  if valid_579954 != nil:
+    section.add "updateMask", valid_579954
+  var valid_579955 = query.getOrDefault("callback")
+  valid_579955 = validateParameter(valid_579955, JString, required = false,
                                  default = nil)
-  if valid_578930 != nil:
-    section.add "callback", valid_578930
-  var valid_578931 = query.getOrDefault("fields")
-  valid_578931 = validateParameter(valid_578931, JString, required = false,
+  if valid_579955 != nil:
+    section.add "callback", valid_579955
+  var valid_579956 = query.getOrDefault("fields")
+  valid_579956 = validateParameter(valid_579956, JString, required = false,
                                  default = nil)
-  if valid_578931 != nil:
-    section.add "fields", valid_578931
-  var valid_578932 = query.getOrDefault("access_token")
-  valid_578932 = validateParameter(valid_578932, JString, required = false,
+  if valid_579956 != nil:
+    section.add "fields", valid_579956
+  var valid_579957 = query.getOrDefault("access_token")
+  valid_579957 = validateParameter(valid_579957, JString, required = false,
                                  default = nil)
-  if valid_578932 != nil:
-    section.add "access_token", valid_578932
-  var valid_578933 = query.getOrDefault("upload_protocol")
-  valid_578933 = validateParameter(valid_578933, JString, required = false,
+  if valid_579957 != nil:
+    section.add "access_token", valid_579957
+  var valid_579958 = query.getOrDefault("upload_protocol")
+  valid_579958 = validateParameter(valid_579958, JString, required = false,
                                  default = nil)
-  if valid_578933 != nil:
-    section.add "upload_protocol", valid_578933
+  if valid_579958 != nil:
+    section.add "upload_protocol", valid_579958
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -500,7 +510,7 @@ proc validate_CloudtasksProjectsLocationsQueuesPatch_578919(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578935: Call_CloudtasksProjectsLocationsQueuesPatch_578918;
+proc call*(call_579960: Call_CloudtasksProjectsLocationsQueuesPatch_579943;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a queue.
@@ -519,16 +529,16 @@ proc call*(call_578935: Call_CloudtasksProjectsLocationsQueuesPatch_578918;
   ## queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml) before using
   ## this method.
   ## 
-  let valid = call_578935.validator(path, query, header, formData, body)
-  let scheme = call_578935.pickScheme
+  let valid = call_579960.validator(path, query, header, formData, body)
+  let scheme = call_579960.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578935.url(scheme.get, call_578935.host, call_578935.base,
-                         call_578935.route, valid.getOrDefault("path"),
+  let url = call_579960.url(scheme.get, call_579960.host, call_579960.base,
+                         call_579960.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578935, url, valid)
+  result = hook(call_579960, url, valid)
 
-proc call*(call_578936: Call_CloudtasksProjectsLocationsQueuesPatch_578918;
+proc call*(call_579961: Call_CloudtasksProjectsLocationsQueuesPatch_579943;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; updateMask: string = "";
@@ -598,35 +608,35 @@ proc call*(call_578936: Call_CloudtasksProjectsLocationsQueuesPatch_578918;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578937 = newJObject()
-  var query_578938 = newJObject()
-  var body_578939 = newJObject()
-  add(query_578938, "key", newJString(key))
-  add(query_578938, "prettyPrint", newJBool(prettyPrint))
-  add(query_578938, "oauth_token", newJString(oauthToken))
-  add(query_578938, "$.xgafv", newJString(Xgafv))
-  add(query_578938, "alt", newJString(alt))
-  add(query_578938, "uploadType", newJString(uploadType))
-  add(query_578938, "quotaUser", newJString(quotaUser))
-  add(path_578937, "name", newJString(name))
-  add(query_578938, "updateMask", newJString(updateMask))
+  var path_579962 = newJObject()
+  var query_579963 = newJObject()
+  var body_579964 = newJObject()
+  add(query_579963, "key", newJString(key))
+  add(query_579963, "prettyPrint", newJBool(prettyPrint))
+  add(query_579963, "oauth_token", newJString(oauthToken))
+  add(query_579963, "$.xgafv", newJString(Xgafv))
+  add(query_579963, "alt", newJString(alt))
+  add(query_579963, "uploadType", newJString(uploadType))
+  add(query_579963, "quotaUser", newJString(quotaUser))
+  add(path_579962, "name", newJString(name))
+  add(query_579963, "updateMask", newJString(updateMask))
   if body != nil:
-    body_578939 = body
-  add(query_578938, "callback", newJString(callback))
-  add(query_578938, "fields", newJString(fields))
-  add(query_578938, "access_token", newJString(accessToken))
-  add(query_578938, "upload_protocol", newJString(uploadProtocol))
-  result = call_578936.call(path_578937, query_578938, nil, nil, body_578939)
+    body_579964 = body
+  add(query_579963, "callback", newJString(callback))
+  add(query_579963, "fields", newJString(fields))
+  add(query_579963, "access_token", newJString(accessToken))
+  add(query_579963, "upload_protocol", newJString(uploadProtocol))
+  result = call_579961.call(path_579962, query_579963, nil, nil, body_579964)
 
-var cloudtasksProjectsLocationsQueuesPatch* = Call_CloudtasksProjectsLocationsQueuesPatch_578918(
+var cloudtasksProjectsLocationsQueuesPatch* = Call_CloudtasksProjectsLocationsQueuesPatch_579943(
     name: "cloudtasksProjectsLocationsQueuesPatch", meth: HttpMethod.HttpPatch,
     host: "cloudtasks.googleapis.com", route: "/v2beta2/{name}",
-    validator: validate_CloudtasksProjectsLocationsQueuesPatch_578919, base: "/",
-    url: url_CloudtasksProjectsLocationsQueuesPatch_578920,
+    validator: validate_CloudtasksProjectsLocationsQueuesPatch_579944, base: "/",
+    url: url_CloudtasksProjectsLocationsQueuesPatch_579945,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesTasksDelete_578899 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesTasksDelete_578901(protocol: Scheme;
+  Call_CloudtasksProjectsLocationsQueuesTasksDelete_579924 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesTasksDelete_579926(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -639,9 +649,14 @@ proc url_CloudtasksProjectsLocationsQueuesTasksDelete_578901(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesTasksDelete_578900(path: JsonNode;
+proc validate_CloudtasksProjectsLocationsQueuesTasksDelete_579925(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes a task.
   ## 
@@ -657,11 +672,11 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksDelete_578900(path: JsonNode
   ## `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578902 = path.getOrDefault("name")
-  valid_578902 = validateParameter(valid_578902, JString, required = true,
+  var valid_579927 = path.getOrDefault("name")
+  valid_579927 = validateParameter(valid_579927, JString, required = true,
                                  default = nil)
-  if valid_578902 != nil:
-    section.add "name", valid_578902
+  if valid_579927 != nil:
+    section.add "name", valid_579927
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -687,61 +702,61 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksDelete_578900(path: JsonNode
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578903 = query.getOrDefault("key")
-  valid_578903 = validateParameter(valid_578903, JString, required = false,
+  var valid_579928 = query.getOrDefault("key")
+  valid_579928 = validateParameter(valid_579928, JString, required = false,
                                  default = nil)
-  if valid_578903 != nil:
-    section.add "key", valid_578903
-  var valid_578904 = query.getOrDefault("prettyPrint")
-  valid_578904 = validateParameter(valid_578904, JBool, required = false,
+  if valid_579928 != nil:
+    section.add "key", valid_579928
+  var valid_579929 = query.getOrDefault("prettyPrint")
+  valid_579929 = validateParameter(valid_579929, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578904 != nil:
-    section.add "prettyPrint", valid_578904
-  var valid_578905 = query.getOrDefault("oauth_token")
-  valid_578905 = validateParameter(valid_578905, JString, required = false,
+  if valid_579929 != nil:
+    section.add "prettyPrint", valid_579929
+  var valid_579930 = query.getOrDefault("oauth_token")
+  valid_579930 = validateParameter(valid_579930, JString, required = false,
                                  default = nil)
-  if valid_578905 != nil:
-    section.add "oauth_token", valid_578905
-  var valid_578906 = query.getOrDefault("$.xgafv")
-  valid_578906 = validateParameter(valid_578906, JString, required = false,
+  if valid_579930 != nil:
+    section.add "oauth_token", valid_579930
+  var valid_579931 = query.getOrDefault("$.xgafv")
+  valid_579931 = validateParameter(valid_579931, JString, required = false,
                                  default = newJString("1"))
-  if valid_578906 != nil:
-    section.add "$.xgafv", valid_578906
-  var valid_578907 = query.getOrDefault("alt")
-  valid_578907 = validateParameter(valid_578907, JString, required = false,
+  if valid_579931 != nil:
+    section.add "$.xgafv", valid_579931
+  var valid_579932 = query.getOrDefault("alt")
+  valid_579932 = validateParameter(valid_579932, JString, required = false,
                                  default = newJString("json"))
-  if valid_578907 != nil:
-    section.add "alt", valid_578907
-  var valid_578908 = query.getOrDefault("uploadType")
-  valid_578908 = validateParameter(valid_578908, JString, required = false,
+  if valid_579932 != nil:
+    section.add "alt", valid_579932
+  var valid_579933 = query.getOrDefault("uploadType")
+  valid_579933 = validateParameter(valid_579933, JString, required = false,
                                  default = nil)
-  if valid_578908 != nil:
-    section.add "uploadType", valid_578908
-  var valid_578909 = query.getOrDefault("quotaUser")
-  valid_578909 = validateParameter(valid_578909, JString, required = false,
+  if valid_579933 != nil:
+    section.add "uploadType", valid_579933
+  var valid_579934 = query.getOrDefault("quotaUser")
+  valid_579934 = validateParameter(valid_579934, JString, required = false,
                                  default = nil)
-  if valid_578909 != nil:
-    section.add "quotaUser", valid_578909
-  var valid_578910 = query.getOrDefault("callback")
-  valid_578910 = validateParameter(valid_578910, JString, required = false,
+  if valid_579934 != nil:
+    section.add "quotaUser", valid_579934
+  var valid_579935 = query.getOrDefault("callback")
+  valid_579935 = validateParameter(valid_579935, JString, required = false,
                                  default = nil)
-  if valid_578910 != nil:
-    section.add "callback", valid_578910
-  var valid_578911 = query.getOrDefault("fields")
-  valid_578911 = validateParameter(valid_578911, JString, required = false,
+  if valid_579935 != nil:
+    section.add "callback", valid_579935
+  var valid_579936 = query.getOrDefault("fields")
+  valid_579936 = validateParameter(valid_579936, JString, required = false,
                                  default = nil)
-  if valid_578911 != nil:
-    section.add "fields", valid_578911
-  var valid_578912 = query.getOrDefault("access_token")
-  valid_578912 = validateParameter(valid_578912, JString, required = false,
+  if valid_579936 != nil:
+    section.add "fields", valid_579936
+  var valid_579937 = query.getOrDefault("access_token")
+  valid_579937 = validateParameter(valid_579937, JString, required = false,
                                  default = nil)
-  if valid_578912 != nil:
-    section.add "access_token", valid_578912
-  var valid_578913 = query.getOrDefault("upload_protocol")
-  valid_578913 = validateParameter(valid_578913, JString, required = false,
+  if valid_579937 != nil:
+    section.add "access_token", valid_579937
+  var valid_579938 = query.getOrDefault("upload_protocol")
+  valid_579938 = validateParameter(valid_579938, JString, required = false,
                                  default = nil)
-  if valid_578913 != nil:
-    section.add "upload_protocol", valid_578913
+  if valid_579938 != nil:
+    section.add "upload_protocol", valid_579938
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -750,7 +765,7 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksDelete_578900(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_578914: Call_CloudtasksProjectsLocationsQueuesTasksDelete_578899;
+proc call*(call_579939: Call_CloudtasksProjectsLocationsQueuesTasksDelete_579924;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Deletes a task.
@@ -759,16 +774,16 @@ proc call*(call_578914: Call_CloudtasksProjectsLocationsQueuesTasksDelete_578899
   ## cannot be deleted if it has completed successfully or permanently
   ## failed.
   ## 
-  let valid = call_578914.validator(path, query, header, formData, body)
-  let scheme = call_578914.pickScheme
+  let valid = call_579939.validator(path, query, header, formData, body)
+  let scheme = call_579939.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578914.url(scheme.get, call_578914.host, call_578914.base,
-                         call_578914.route, valid.getOrDefault("path"),
+  let url = call_579939.url(scheme.get, call_579939.host, call_579939.base,
+                         call_579939.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578914, url, valid)
+  result = hook(call_579939, url, valid)
 
-proc call*(call_578915: Call_CloudtasksProjectsLocationsQueuesTasksDelete_578899;
+proc call*(call_579940: Call_CloudtasksProjectsLocationsQueuesTasksDelete_579924;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; callback: string = "";
@@ -804,32 +819,32 @@ proc call*(call_578915: Call_CloudtasksProjectsLocationsQueuesTasksDelete_578899
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578916 = newJObject()
-  var query_578917 = newJObject()
-  add(query_578917, "key", newJString(key))
-  add(query_578917, "prettyPrint", newJBool(prettyPrint))
-  add(query_578917, "oauth_token", newJString(oauthToken))
-  add(query_578917, "$.xgafv", newJString(Xgafv))
-  add(query_578917, "alt", newJString(alt))
-  add(query_578917, "uploadType", newJString(uploadType))
-  add(query_578917, "quotaUser", newJString(quotaUser))
-  add(path_578916, "name", newJString(name))
-  add(query_578917, "callback", newJString(callback))
-  add(query_578917, "fields", newJString(fields))
-  add(query_578917, "access_token", newJString(accessToken))
-  add(query_578917, "upload_protocol", newJString(uploadProtocol))
-  result = call_578915.call(path_578916, query_578917, nil, nil, nil)
+  var path_579941 = newJObject()
+  var query_579942 = newJObject()
+  add(query_579942, "key", newJString(key))
+  add(query_579942, "prettyPrint", newJBool(prettyPrint))
+  add(query_579942, "oauth_token", newJString(oauthToken))
+  add(query_579942, "$.xgafv", newJString(Xgafv))
+  add(query_579942, "alt", newJString(alt))
+  add(query_579942, "uploadType", newJString(uploadType))
+  add(query_579942, "quotaUser", newJString(quotaUser))
+  add(path_579941, "name", newJString(name))
+  add(query_579942, "callback", newJString(callback))
+  add(query_579942, "fields", newJString(fields))
+  add(query_579942, "access_token", newJString(accessToken))
+  add(query_579942, "upload_protocol", newJString(uploadProtocol))
+  result = call_579940.call(path_579941, query_579942, nil, nil, nil)
 
-var cloudtasksProjectsLocationsQueuesTasksDelete* = Call_CloudtasksProjectsLocationsQueuesTasksDelete_578899(
+var cloudtasksProjectsLocationsQueuesTasksDelete* = Call_CloudtasksProjectsLocationsQueuesTasksDelete_579924(
     name: "cloudtasksProjectsLocationsQueuesTasksDelete",
     meth: HttpMethod.HttpDelete, host: "cloudtasks.googleapis.com",
     route: "/v2beta2/{name}",
-    validator: validate_CloudtasksProjectsLocationsQueuesTasksDelete_578900,
-    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksDelete_578901,
+    validator: validate_CloudtasksProjectsLocationsQueuesTasksDelete_579925,
+    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksDelete_579926,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsList_578940 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsList_578942(protocol: Scheme; host: string;
+  Call_CloudtasksProjectsLocationsList_579965 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsList_579967(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -843,9 +858,14 @@ proc url_CloudtasksProjectsLocationsList_578942(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsList_578941(path: JsonNode;
+proc validate_CloudtasksProjectsLocationsList_579966(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists information about the supported locations for this service.
   ## 
@@ -856,11 +876,11 @@ proc validate_CloudtasksProjectsLocationsList_578941(path: JsonNode;
   ##       : The resource that owns the locations collection, if applicable.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578943 = path.getOrDefault("name")
-  valid_578943 = validateParameter(valid_578943, JString, required = true,
+  var valid_579968 = path.getOrDefault("name")
+  valid_579968 = validateParameter(valid_579968, JString, required = true,
                                  default = nil)
-  if valid_578943 != nil:
-    section.add "name", valid_578943
+  if valid_579968 != nil:
+    section.add "name", valid_579968
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -892,75 +912,75 @@ proc validate_CloudtasksProjectsLocationsList_578941(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578944 = query.getOrDefault("key")
-  valid_578944 = validateParameter(valid_578944, JString, required = false,
+  var valid_579969 = query.getOrDefault("key")
+  valid_579969 = validateParameter(valid_579969, JString, required = false,
                                  default = nil)
-  if valid_578944 != nil:
-    section.add "key", valid_578944
-  var valid_578945 = query.getOrDefault("prettyPrint")
-  valid_578945 = validateParameter(valid_578945, JBool, required = false,
+  if valid_579969 != nil:
+    section.add "key", valid_579969
+  var valid_579970 = query.getOrDefault("prettyPrint")
+  valid_579970 = validateParameter(valid_579970, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578945 != nil:
-    section.add "prettyPrint", valid_578945
-  var valid_578946 = query.getOrDefault("oauth_token")
-  valid_578946 = validateParameter(valid_578946, JString, required = false,
+  if valid_579970 != nil:
+    section.add "prettyPrint", valid_579970
+  var valid_579971 = query.getOrDefault("oauth_token")
+  valid_579971 = validateParameter(valid_579971, JString, required = false,
                                  default = nil)
-  if valid_578946 != nil:
-    section.add "oauth_token", valid_578946
-  var valid_578947 = query.getOrDefault("$.xgafv")
-  valid_578947 = validateParameter(valid_578947, JString, required = false,
+  if valid_579971 != nil:
+    section.add "oauth_token", valid_579971
+  var valid_579972 = query.getOrDefault("$.xgafv")
+  valid_579972 = validateParameter(valid_579972, JString, required = false,
                                  default = newJString("1"))
-  if valid_578947 != nil:
-    section.add "$.xgafv", valid_578947
-  var valid_578948 = query.getOrDefault("pageSize")
-  valid_578948 = validateParameter(valid_578948, JInt, required = false, default = nil)
-  if valid_578948 != nil:
-    section.add "pageSize", valid_578948
-  var valid_578949 = query.getOrDefault("alt")
-  valid_578949 = validateParameter(valid_578949, JString, required = false,
+  if valid_579972 != nil:
+    section.add "$.xgafv", valid_579972
+  var valid_579973 = query.getOrDefault("pageSize")
+  valid_579973 = validateParameter(valid_579973, JInt, required = false, default = nil)
+  if valid_579973 != nil:
+    section.add "pageSize", valid_579973
+  var valid_579974 = query.getOrDefault("alt")
+  valid_579974 = validateParameter(valid_579974, JString, required = false,
                                  default = newJString("json"))
-  if valid_578949 != nil:
-    section.add "alt", valid_578949
-  var valid_578950 = query.getOrDefault("uploadType")
-  valid_578950 = validateParameter(valid_578950, JString, required = false,
+  if valid_579974 != nil:
+    section.add "alt", valid_579974
+  var valid_579975 = query.getOrDefault("uploadType")
+  valid_579975 = validateParameter(valid_579975, JString, required = false,
                                  default = nil)
-  if valid_578950 != nil:
-    section.add "uploadType", valid_578950
-  var valid_578951 = query.getOrDefault("quotaUser")
-  valid_578951 = validateParameter(valid_578951, JString, required = false,
+  if valid_579975 != nil:
+    section.add "uploadType", valid_579975
+  var valid_579976 = query.getOrDefault("quotaUser")
+  valid_579976 = validateParameter(valid_579976, JString, required = false,
                                  default = nil)
-  if valid_578951 != nil:
-    section.add "quotaUser", valid_578951
-  var valid_578952 = query.getOrDefault("filter")
-  valid_578952 = validateParameter(valid_578952, JString, required = false,
+  if valid_579976 != nil:
+    section.add "quotaUser", valid_579976
+  var valid_579977 = query.getOrDefault("filter")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
                                  default = nil)
-  if valid_578952 != nil:
-    section.add "filter", valid_578952
-  var valid_578953 = query.getOrDefault("pageToken")
-  valid_578953 = validateParameter(valid_578953, JString, required = false,
+  if valid_579977 != nil:
+    section.add "filter", valid_579977
+  var valid_579978 = query.getOrDefault("pageToken")
+  valid_579978 = validateParameter(valid_579978, JString, required = false,
                                  default = nil)
-  if valid_578953 != nil:
-    section.add "pageToken", valid_578953
-  var valid_578954 = query.getOrDefault("callback")
-  valid_578954 = validateParameter(valid_578954, JString, required = false,
+  if valid_579978 != nil:
+    section.add "pageToken", valid_579978
+  var valid_579979 = query.getOrDefault("callback")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = nil)
-  if valid_578954 != nil:
-    section.add "callback", valid_578954
-  var valid_578955 = query.getOrDefault("fields")
-  valid_578955 = validateParameter(valid_578955, JString, required = false,
+  if valid_579979 != nil:
+    section.add "callback", valid_579979
+  var valid_579980 = query.getOrDefault("fields")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = nil)
-  if valid_578955 != nil:
-    section.add "fields", valid_578955
-  var valid_578956 = query.getOrDefault("access_token")
-  valid_578956 = validateParameter(valid_578956, JString, required = false,
+  if valid_579980 != nil:
+    section.add "fields", valid_579980
+  var valid_579981 = query.getOrDefault("access_token")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_578956 != nil:
-    section.add "access_token", valid_578956
-  var valid_578957 = query.getOrDefault("upload_protocol")
-  valid_578957 = validateParameter(valid_578957, JString, required = false,
+  if valid_579981 != nil:
+    section.add "access_token", valid_579981
+  var valid_579982 = query.getOrDefault("upload_protocol")
+  valid_579982 = validateParameter(valid_579982, JString, required = false,
                                  default = nil)
-  if valid_578957 != nil:
-    section.add "upload_protocol", valid_578957
+  if valid_579982 != nil:
+    section.add "upload_protocol", valid_579982
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -969,21 +989,21 @@ proc validate_CloudtasksProjectsLocationsList_578941(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578958: Call_CloudtasksProjectsLocationsList_578940;
+proc call*(call_579983: Call_CloudtasksProjectsLocationsList_579965;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists information about the supported locations for this service.
   ## 
-  let valid = call_578958.validator(path, query, header, formData, body)
-  let scheme = call_578958.pickScheme
+  let valid = call_579983.validator(path, query, header, formData, body)
+  let scheme = call_579983.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578958.url(scheme.get, call_578958.host, call_578958.base,
-                         call_578958.route, valid.getOrDefault("path"),
+  let url = call_579983.url(scheme.get, call_579983.host, call_579983.base,
+                         call_579983.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578958, url, valid)
+  result = hook(call_579983, url, valid)
 
-proc call*(call_578959: Call_CloudtasksProjectsLocationsList_578940; name: string;
+proc call*(call_579984: Call_CloudtasksProjectsLocationsList_579965; name: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           Xgafv: string = "1"; pageSize: int = 0; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; filter: string = "";
@@ -1021,33 +1041,33 @@ proc call*(call_578959: Call_CloudtasksProjectsLocationsList_578940; name: strin
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578960 = newJObject()
-  var query_578961 = newJObject()
-  add(query_578961, "key", newJString(key))
-  add(query_578961, "prettyPrint", newJBool(prettyPrint))
-  add(query_578961, "oauth_token", newJString(oauthToken))
-  add(query_578961, "$.xgafv", newJString(Xgafv))
-  add(query_578961, "pageSize", newJInt(pageSize))
-  add(query_578961, "alt", newJString(alt))
-  add(query_578961, "uploadType", newJString(uploadType))
-  add(query_578961, "quotaUser", newJString(quotaUser))
-  add(path_578960, "name", newJString(name))
-  add(query_578961, "filter", newJString(filter))
-  add(query_578961, "pageToken", newJString(pageToken))
-  add(query_578961, "callback", newJString(callback))
-  add(query_578961, "fields", newJString(fields))
-  add(query_578961, "access_token", newJString(accessToken))
-  add(query_578961, "upload_protocol", newJString(uploadProtocol))
-  result = call_578959.call(path_578960, query_578961, nil, nil, nil)
+  var path_579985 = newJObject()
+  var query_579986 = newJObject()
+  add(query_579986, "key", newJString(key))
+  add(query_579986, "prettyPrint", newJBool(prettyPrint))
+  add(query_579986, "oauth_token", newJString(oauthToken))
+  add(query_579986, "$.xgafv", newJString(Xgafv))
+  add(query_579986, "pageSize", newJInt(pageSize))
+  add(query_579986, "alt", newJString(alt))
+  add(query_579986, "uploadType", newJString(uploadType))
+  add(query_579986, "quotaUser", newJString(quotaUser))
+  add(path_579985, "name", newJString(name))
+  add(query_579986, "filter", newJString(filter))
+  add(query_579986, "pageToken", newJString(pageToken))
+  add(query_579986, "callback", newJString(callback))
+  add(query_579986, "fields", newJString(fields))
+  add(query_579986, "access_token", newJString(accessToken))
+  add(query_579986, "upload_protocol", newJString(uploadProtocol))
+  result = call_579984.call(path_579985, query_579986, nil, nil, nil)
 
-var cloudtasksProjectsLocationsList* = Call_CloudtasksProjectsLocationsList_578940(
+var cloudtasksProjectsLocationsList* = Call_CloudtasksProjectsLocationsList_579965(
     name: "cloudtasksProjectsLocationsList", meth: HttpMethod.HttpGet,
     host: "cloudtasks.googleapis.com", route: "/v2beta2/{name}/locations",
-    validator: validate_CloudtasksProjectsLocationsList_578941, base: "/",
-    url: url_CloudtasksProjectsLocationsList_578942, schemes: {Scheme.Https})
+    validator: validate_CloudtasksProjectsLocationsList_579966, base: "/",
+    url: url_CloudtasksProjectsLocationsList_579967, schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesTasksAcknowledge_578962 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesTasksAcknowledge_578964(
+  Call_CloudtasksProjectsLocationsQueuesTasksAcknowledge_579987 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesTasksAcknowledge_579989(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1062,9 +1082,14 @@ proc url_CloudtasksProjectsLocationsQueuesTasksAcknowledge_578964(
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesTasksAcknowledge_578963(
+proc validate_CloudtasksProjectsLocationsQueuesTasksAcknowledge_579988(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Acknowledges a pull task.
@@ -1089,11 +1114,11 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksAcknowledge_578963(
   ## `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578965 = path.getOrDefault("name")
-  valid_578965 = validateParameter(valid_578965, JString, required = true,
+  var valid_579990 = path.getOrDefault("name")
+  valid_579990 = validateParameter(valid_579990, JString, required = true,
                                  default = nil)
-  if valid_578965 != nil:
-    section.add "name", valid_578965
+  if valid_579990 != nil:
+    section.add "name", valid_579990
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1119,61 +1144,61 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksAcknowledge_578963(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578966 = query.getOrDefault("key")
-  valid_578966 = validateParameter(valid_578966, JString, required = false,
+  var valid_579991 = query.getOrDefault("key")
+  valid_579991 = validateParameter(valid_579991, JString, required = false,
                                  default = nil)
-  if valid_578966 != nil:
-    section.add "key", valid_578966
-  var valid_578967 = query.getOrDefault("prettyPrint")
-  valid_578967 = validateParameter(valid_578967, JBool, required = false,
+  if valid_579991 != nil:
+    section.add "key", valid_579991
+  var valid_579992 = query.getOrDefault("prettyPrint")
+  valid_579992 = validateParameter(valid_579992, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578967 != nil:
-    section.add "prettyPrint", valid_578967
-  var valid_578968 = query.getOrDefault("oauth_token")
-  valid_578968 = validateParameter(valid_578968, JString, required = false,
+  if valid_579992 != nil:
+    section.add "prettyPrint", valid_579992
+  var valid_579993 = query.getOrDefault("oauth_token")
+  valid_579993 = validateParameter(valid_579993, JString, required = false,
                                  default = nil)
-  if valid_578968 != nil:
-    section.add "oauth_token", valid_578968
-  var valid_578969 = query.getOrDefault("$.xgafv")
-  valid_578969 = validateParameter(valid_578969, JString, required = false,
+  if valid_579993 != nil:
+    section.add "oauth_token", valid_579993
+  var valid_579994 = query.getOrDefault("$.xgafv")
+  valid_579994 = validateParameter(valid_579994, JString, required = false,
                                  default = newJString("1"))
-  if valid_578969 != nil:
-    section.add "$.xgafv", valid_578969
-  var valid_578970 = query.getOrDefault("alt")
-  valid_578970 = validateParameter(valid_578970, JString, required = false,
+  if valid_579994 != nil:
+    section.add "$.xgafv", valid_579994
+  var valid_579995 = query.getOrDefault("alt")
+  valid_579995 = validateParameter(valid_579995, JString, required = false,
                                  default = newJString("json"))
-  if valid_578970 != nil:
-    section.add "alt", valid_578970
-  var valid_578971 = query.getOrDefault("uploadType")
-  valid_578971 = validateParameter(valid_578971, JString, required = false,
+  if valid_579995 != nil:
+    section.add "alt", valid_579995
+  var valid_579996 = query.getOrDefault("uploadType")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_578971 != nil:
-    section.add "uploadType", valid_578971
-  var valid_578972 = query.getOrDefault("quotaUser")
-  valid_578972 = validateParameter(valid_578972, JString, required = false,
+  if valid_579996 != nil:
+    section.add "uploadType", valid_579996
+  var valid_579997 = query.getOrDefault("quotaUser")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = nil)
-  if valid_578972 != nil:
-    section.add "quotaUser", valid_578972
-  var valid_578973 = query.getOrDefault("callback")
-  valid_578973 = validateParameter(valid_578973, JString, required = false,
+  if valid_579997 != nil:
+    section.add "quotaUser", valid_579997
+  var valid_579998 = query.getOrDefault("callback")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = nil)
-  if valid_578973 != nil:
-    section.add "callback", valid_578973
-  var valid_578974 = query.getOrDefault("fields")
-  valid_578974 = validateParameter(valid_578974, JString, required = false,
+  if valid_579998 != nil:
+    section.add "callback", valid_579998
+  var valid_579999 = query.getOrDefault("fields")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = nil)
-  if valid_578974 != nil:
-    section.add "fields", valid_578974
-  var valid_578975 = query.getOrDefault("access_token")
-  valid_578975 = validateParameter(valid_578975, JString, required = false,
+  if valid_579999 != nil:
+    section.add "fields", valid_579999
+  var valid_580000 = query.getOrDefault("access_token")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = nil)
-  if valid_578975 != nil:
-    section.add "access_token", valid_578975
-  var valid_578976 = query.getOrDefault("upload_protocol")
-  valid_578976 = validateParameter(valid_578976, JString, required = false,
+  if valid_580000 != nil:
+    section.add "access_token", valid_580000
+  var valid_580001 = query.getOrDefault("upload_protocol")
+  valid_580001 = validateParameter(valid_580001, JString, required = false,
                                  default = nil)
-  if valid_578976 != nil:
-    section.add "upload_protocol", valid_578976
+  if valid_580001 != nil:
+    section.add "upload_protocol", valid_580001
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1185,7 +1210,7 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksAcknowledge_578963(
   if body != nil:
     result.add "body", body
 
-proc call*(call_578978: Call_CloudtasksProjectsLocationsQueuesTasksAcknowledge_578962;
+proc call*(call_580003: Call_CloudtasksProjectsLocationsQueuesTasksAcknowledge_579987;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Acknowledges a pull task.
@@ -1202,16 +1227,16 @@ proc call*(call_578978: Call_CloudtasksProjectsLocationsQueuesTasksAcknowledge_5
   ## GetTask, or
   ## ListTasks.
   ## 
-  let valid = call_578978.validator(path, query, header, formData, body)
-  let scheme = call_578978.pickScheme
+  let valid = call_580003.validator(path, query, header, formData, body)
+  let scheme = call_580003.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578978.url(scheme.get, call_578978.host, call_578978.base,
-                         call_578978.route, valid.getOrDefault("path"),
+  let url = call_580003.url(scheme.get, call_580003.host, call_580003.base,
+                         call_580003.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578978, url, valid)
+  result = hook(call_580003, url, valid)
 
-proc call*(call_578979: Call_CloudtasksProjectsLocationsQueuesTasksAcknowledge_578962;
+proc call*(call_580004: Call_CloudtasksProjectsLocationsQueuesTasksAcknowledge_579987;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -1257,35 +1282,35 @@ proc call*(call_578979: Call_CloudtasksProjectsLocationsQueuesTasksAcknowledge_5
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578980 = newJObject()
-  var query_578981 = newJObject()
-  var body_578982 = newJObject()
-  add(query_578981, "key", newJString(key))
-  add(query_578981, "prettyPrint", newJBool(prettyPrint))
-  add(query_578981, "oauth_token", newJString(oauthToken))
-  add(query_578981, "$.xgafv", newJString(Xgafv))
-  add(query_578981, "alt", newJString(alt))
-  add(query_578981, "uploadType", newJString(uploadType))
-  add(query_578981, "quotaUser", newJString(quotaUser))
-  add(path_578980, "name", newJString(name))
+  var path_580005 = newJObject()
+  var query_580006 = newJObject()
+  var body_580007 = newJObject()
+  add(query_580006, "key", newJString(key))
+  add(query_580006, "prettyPrint", newJBool(prettyPrint))
+  add(query_580006, "oauth_token", newJString(oauthToken))
+  add(query_580006, "$.xgafv", newJString(Xgafv))
+  add(query_580006, "alt", newJString(alt))
+  add(query_580006, "uploadType", newJString(uploadType))
+  add(query_580006, "quotaUser", newJString(quotaUser))
+  add(path_580005, "name", newJString(name))
   if body != nil:
-    body_578982 = body
-  add(query_578981, "callback", newJString(callback))
-  add(query_578981, "fields", newJString(fields))
-  add(query_578981, "access_token", newJString(accessToken))
-  add(query_578981, "upload_protocol", newJString(uploadProtocol))
-  result = call_578979.call(path_578980, query_578981, nil, nil, body_578982)
+    body_580007 = body
+  add(query_580006, "callback", newJString(callback))
+  add(query_580006, "fields", newJString(fields))
+  add(query_580006, "access_token", newJString(accessToken))
+  add(query_580006, "upload_protocol", newJString(uploadProtocol))
+  result = call_580004.call(path_580005, query_580006, nil, nil, body_580007)
 
-var cloudtasksProjectsLocationsQueuesTasksAcknowledge* = Call_CloudtasksProjectsLocationsQueuesTasksAcknowledge_578962(
+var cloudtasksProjectsLocationsQueuesTasksAcknowledge* = Call_CloudtasksProjectsLocationsQueuesTasksAcknowledge_579987(
     name: "cloudtasksProjectsLocationsQueuesTasksAcknowledge",
     meth: HttpMethod.HttpPost, host: "cloudtasks.googleapis.com",
     route: "/v2beta2/{name}:acknowledge",
-    validator: validate_CloudtasksProjectsLocationsQueuesTasksAcknowledge_578963,
-    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksAcknowledge_578964,
+    validator: validate_CloudtasksProjectsLocationsQueuesTasksAcknowledge_579988,
+    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksAcknowledge_579989,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesTasksCancelLease_578983 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesTasksCancelLease_578985(
+  Call_CloudtasksProjectsLocationsQueuesTasksCancelLease_580008 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesTasksCancelLease_580010(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1300,9 +1325,14 @@ proc url_CloudtasksProjectsLocationsQueuesTasksCancelLease_578985(
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesTasksCancelLease_578984(
+proc validate_CloudtasksProjectsLocationsQueuesTasksCancelLease_580009(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Cancel a pull task's lease.
@@ -1320,11 +1350,11 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksCancelLease_578984(
   ## `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578986 = path.getOrDefault("name")
-  valid_578986 = validateParameter(valid_578986, JString, required = true,
+  var valid_580011 = path.getOrDefault("name")
+  valid_580011 = validateParameter(valid_580011, JString, required = true,
                                  default = nil)
-  if valid_578986 != nil:
-    section.add "name", valid_578986
+  if valid_580011 != nil:
+    section.add "name", valid_580011
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1350,61 +1380,61 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksCancelLease_578984(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578987 = query.getOrDefault("key")
-  valid_578987 = validateParameter(valid_578987, JString, required = false,
+  var valid_580012 = query.getOrDefault("key")
+  valid_580012 = validateParameter(valid_580012, JString, required = false,
                                  default = nil)
-  if valid_578987 != nil:
-    section.add "key", valid_578987
-  var valid_578988 = query.getOrDefault("prettyPrint")
-  valid_578988 = validateParameter(valid_578988, JBool, required = false,
+  if valid_580012 != nil:
+    section.add "key", valid_580012
+  var valid_580013 = query.getOrDefault("prettyPrint")
+  valid_580013 = validateParameter(valid_580013, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578988 != nil:
-    section.add "prettyPrint", valid_578988
-  var valid_578989 = query.getOrDefault("oauth_token")
-  valid_578989 = validateParameter(valid_578989, JString, required = false,
+  if valid_580013 != nil:
+    section.add "prettyPrint", valid_580013
+  var valid_580014 = query.getOrDefault("oauth_token")
+  valid_580014 = validateParameter(valid_580014, JString, required = false,
                                  default = nil)
-  if valid_578989 != nil:
-    section.add "oauth_token", valid_578989
-  var valid_578990 = query.getOrDefault("$.xgafv")
-  valid_578990 = validateParameter(valid_578990, JString, required = false,
+  if valid_580014 != nil:
+    section.add "oauth_token", valid_580014
+  var valid_580015 = query.getOrDefault("$.xgafv")
+  valid_580015 = validateParameter(valid_580015, JString, required = false,
                                  default = newJString("1"))
-  if valid_578990 != nil:
-    section.add "$.xgafv", valid_578990
-  var valid_578991 = query.getOrDefault("alt")
-  valid_578991 = validateParameter(valid_578991, JString, required = false,
+  if valid_580015 != nil:
+    section.add "$.xgafv", valid_580015
+  var valid_580016 = query.getOrDefault("alt")
+  valid_580016 = validateParameter(valid_580016, JString, required = false,
                                  default = newJString("json"))
-  if valid_578991 != nil:
-    section.add "alt", valid_578991
-  var valid_578992 = query.getOrDefault("uploadType")
-  valid_578992 = validateParameter(valid_578992, JString, required = false,
+  if valid_580016 != nil:
+    section.add "alt", valid_580016
+  var valid_580017 = query.getOrDefault("uploadType")
+  valid_580017 = validateParameter(valid_580017, JString, required = false,
                                  default = nil)
-  if valid_578992 != nil:
-    section.add "uploadType", valid_578992
-  var valid_578993 = query.getOrDefault("quotaUser")
-  valid_578993 = validateParameter(valid_578993, JString, required = false,
+  if valid_580017 != nil:
+    section.add "uploadType", valid_580017
+  var valid_580018 = query.getOrDefault("quotaUser")
+  valid_580018 = validateParameter(valid_580018, JString, required = false,
                                  default = nil)
-  if valid_578993 != nil:
-    section.add "quotaUser", valid_578993
-  var valid_578994 = query.getOrDefault("callback")
-  valid_578994 = validateParameter(valid_578994, JString, required = false,
+  if valid_580018 != nil:
+    section.add "quotaUser", valid_580018
+  var valid_580019 = query.getOrDefault("callback")
+  valid_580019 = validateParameter(valid_580019, JString, required = false,
                                  default = nil)
-  if valid_578994 != nil:
-    section.add "callback", valid_578994
-  var valid_578995 = query.getOrDefault("fields")
-  valid_578995 = validateParameter(valid_578995, JString, required = false,
+  if valid_580019 != nil:
+    section.add "callback", valid_580019
+  var valid_580020 = query.getOrDefault("fields")
+  valid_580020 = validateParameter(valid_580020, JString, required = false,
                                  default = nil)
-  if valid_578995 != nil:
-    section.add "fields", valid_578995
-  var valid_578996 = query.getOrDefault("access_token")
-  valid_578996 = validateParameter(valid_578996, JString, required = false,
+  if valid_580020 != nil:
+    section.add "fields", valid_580020
+  var valid_580021 = query.getOrDefault("access_token")
+  valid_580021 = validateParameter(valid_580021, JString, required = false,
                                  default = nil)
-  if valid_578996 != nil:
-    section.add "access_token", valid_578996
-  var valid_578997 = query.getOrDefault("upload_protocol")
-  valid_578997 = validateParameter(valid_578997, JString, required = false,
+  if valid_580021 != nil:
+    section.add "access_token", valid_580021
+  var valid_580022 = query.getOrDefault("upload_protocol")
+  valid_580022 = validateParameter(valid_580022, JString, required = false,
                                  default = nil)
-  if valid_578997 != nil:
-    section.add "upload_protocol", valid_578997
+  if valid_580022 != nil:
+    section.add "upload_protocol", valid_580022
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1416,7 +1446,7 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksCancelLease_578984(
   if body != nil:
     result.add "body", body
 
-proc call*(call_578999: Call_CloudtasksProjectsLocationsQueuesTasksCancelLease_578983;
+proc call*(call_580024: Call_CloudtasksProjectsLocationsQueuesTasksCancelLease_580008;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Cancel a pull task's lease.
@@ -1426,16 +1456,16 @@ proc call*(call_578999: Call_CloudtasksProjectsLocationsQueuesTasksCancelLease_5
   ## make the task available to be leased to the next caller of
   ## LeaseTasks.
   ## 
-  let valid = call_578999.validator(path, query, header, formData, body)
-  let scheme = call_578999.pickScheme
+  let valid = call_580024.validator(path, query, header, formData, body)
+  let scheme = call_580024.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578999.url(scheme.get, call_578999.host, call_578999.base,
-                         call_578999.route, valid.getOrDefault("path"),
+  let url = call_580024.url(scheme.get, call_580024.host, call_580024.base,
+                         call_580024.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578999, url, valid)
+  result = hook(call_580024, url, valid)
 
-proc call*(call_579000: Call_CloudtasksProjectsLocationsQueuesTasksCancelLease_578983;
+proc call*(call_580025: Call_CloudtasksProjectsLocationsQueuesTasksCancelLease_580008;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -1474,35 +1504,35 @@ proc call*(call_579000: Call_CloudtasksProjectsLocationsQueuesTasksCancelLease_5
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579001 = newJObject()
-  var query_579002 = newJObject()
-  var body_579003 = newJObject()
-  add(query_579002, "key", newJString(key))
-  add(query_579002, "prettyPrint", newJBool(prettyPrint))
-  add(query_579002, "oauth_token", newJString(oauthToken))
-  add(query_579002, "$.xgafv", newJString(Xgafv))
-  add(query_579002, "alt", newJString(alt))
-  add(query_579002, "uploadType", newJString(uploadType))
-  add(query_579002, "quotaUser", newJString(quotaUser))
-  add(path_579001, "name", newJString(name))
+  var path_580026 = newJObject()
+  var query_580027 = newJObject()
+  var body_580028 = newJObject()
+  add(query_580027, "key", newJString(key))
+  add(query_580027, "prettyPrint", newJBool(prettyPrint))
+  add(query_580027, "oauth_token", newJString(oauthToken))
+  add(query_580027, "$.xgafv", newJString(Xgafv))
+  add(query_580027, "alt", newJString(alt))
+  add(query_580027, "uploadType", newJString(uploadType))
+  add(query_580027, "quotaUser", newJString(quotaUser))
+  add(path_580026, "name", newJString(name))
   if body != nil:
-    body_579003 = body
-  add(query_579002, "callback", newJString(callback))
-  add(query_579002, "fields", newJString(fields))
-  add(query_579002, "access_token", newJString(accessToken))
-  add(query_579002, "upload_protocol", newJString(uploadProtocol))
-  result = call_579000.call(path_579001, query_579002, nil, nil, body_579003)
+    body_580028 = body
+  add(query_580027, "callback", newJString(callback))
+  add(query_580027, "fields", newJString(fields))
+  add(query_580027, "access_token", newJString(accessToken))
+  add(query_580027, "upload_protocol", newJString(uploadProtocol))
+  result = call_580025.call(path_580026, query_580027, nil, nil, body_580028)
 
-var cloudtasksProjectsLocationsQueuesTasksCancelLease* = Call_CloudtasksProjectsLocationsQueuesTasksCancelLease_578983(
+var cloudtasksProjectsLocationsQueuesTasksCancelLease* = Call_CloudtasksProjectsLocationsQueuesTasksCancelLease_580008(
     name: "cloudtasksProjectsLocationsQueuesTasksCancelLease",
     meth: HttpMethod.HttpPost, host: "cloudtasks.googleapis.com",
     route: "/v2beta2/{name}:cancelLease",
-    validator: validate_CloudtasksProjectsLocationsQueuesTasksCancelLease_578984,
-    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksCancelLease_578985,
+    validator: validate_CloudtasksProjectsLocationsQueuesTasksCancelLease_580009,
+    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksCancelLease_580010,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesPause_579004 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesPause_579006(protocol: Scheme;
+  Call_CloudtasksProjectsLocationsQueuesPause_580029 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesPause_580031(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1516,9 +1546,14 @@ proc url_CloudtasksProjectsLocationsQueuesPause_579006(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesPause_579005(path: JsonNode;
+proc validate_CloudtasksProjectsLocationsQueuesPause_580030(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Pauses the queue.
   ## 
@@ -1536,11 +1571,11 @@ proc validate_CloudtasksProjectsLocationsQueuesPause_579005(path: JsonNode;
   ## `projects/PROJECT_ID/location/LOCATION_ID/queues/QUEUE_ID`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579007 = path.getOrDefault("name")
-  valid_579007 = validateParameter(valid_579007, JString, required = true,
+  var valid_580032 = path.getOrDefault("name")
+  valid_580032 = validateParameter(valid_580032, JString, required = true,
                                  default = nil)
-  if valid_579007 != nil:
-    section.add "name", valid_579007
+  if valid_580032 != nil:
+    section.add "name", valid_580032
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1566,61 +1601,61 @@ proc validate_CloudtasksProjectsLocationsQueuesPause_579005(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579008 = query.getOrDefault("key")
-  valid_579008 = validateParameter(valid_579008, JString, required = false,
+  var valid_580033 = query.getOrDefault("key")
+  valid_580033 = validateParameter(valid_580033, JString, required = false,
                                  default = nil)
-  if valid_579008 != nil:
-    section.add "key", valid_579008
-  var valid_579009 = query.getOrDefault("prettyPrint")
-  valid_579009 = validateParameter(valid_579009, JBool, required = false,
+  if valid_580033 != nil:
+    section.add "key", valid_580033
+  var valid_580034 = query.getOrDefault("prettyPrint")
+  valid_580034 = validateParameter(valid_580034, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579009 != nil:
-    section.add "prettyPrint", valid_579009
-  var valid_579010 = query.getOrDefault("oauth_token")
-  valid_579010 = validateParameter(valid_579010, JString, required = false,
+  if valid_580034 != nil:
+    section.add "prettyPrint", valid_580034
+  var valid_580035 = query.getOrDefault("oauth_token")
+  valid_580035 = validateParameter(valid_580035, JString, required = false,
                                  default = nil)
-  if valid_579010 != nil:
-    section.add "oauth_token", valid_579010
-  var valid_579011 = query.getOrDefault("$.xgafv")
-  valid_579011 = validateParameter(valid_579011, JString, required = false,
+  if valid_580035 != nil:
+    section.add "oauth_token", valid_580035
+  var valid_580036 = query.getOrDefault("$.xgafv")
+  valid_580036 = validateParameter(valid_580036, JString, required = false,
                                  default = newJString("1"))
-  if valid_579011 != nil:
-    section.add "$.xgafv", valid_579011
-  var valid_579012 = query.getOrDefault("alt")
-  valid_579012 = validateParameter(valid_579012, JString, required = false,
+  if valid_580036 != nil:
+    section.add "$.xgafv", valid_580036
+  var valid_580037 = query.getOrDefault("alt")
+  valid_580037 = validateParameter(valid_580037, JString, required = false,
                                  default = newJString("json"))
-  if valid_579012 != nil:
-    section.add "alt", valid_579012
-  var valid_579013 = query.getOrDefault("uploadType")
-  valid_579013 = validateParameter(valid_579013, JString, required = false,
+  if valid_580037 != nil:
+    section.add "alt", valid_580037
+  var valid_580038 = query.getOrDefault("uploadType")
+  valid_580038 = validateParameter(valid_580038, JString, required = false,
                                  default = nil)
-  if valid_579013 != nil:
-    section.add "uploadType", valid_579013
-  var valid_579014 = query.getOrDefault("quotaUser")
-  valid_579014 = validateParameter(valid_579014, JString, required = false,
+  if valid_580038 != nil:
+    section.add "uploadType", valid_580038
+  var valid_580039 = query.getOrDefault("quotaUser")
+  valid_580039 = validateParameter(valid_580039, JString, required = false,
                                  default = nil)
-  if valid_579014 != nil:
-    section.add "quotaUser", valid_579014
-  var valid_579015 = query.getOrDefault("callback")
-  valid_579015 = validateParameter(valid_579015, JString, required = false,
+  if valid_580039 != nil:
+    section.add "quotaUser", valid_580039
+  var valid_580040 = query.getOrDefault("callback")
+  valid_580040 = validateParameter(valid_580040, JString, required = false,
                                  default = nil)
-  if valid_579015 != nil:
-    section.add "callback", valid_579015
-  var valid_579016 = query.getOrDefault("fields")
-  valid_579016 = validateParameter(valid_579016, JString, required = false,
+  if valid_580040 != nil:
+    section.add "callback", valid_580040
+  var valid_580041 = query.getOrDefault("fields")
+  valid_580041 = validateParameter(valid_580041, JString, required = false,
                                  default = nil)
-  if valid_579016 != nil:
-    section.add "fields", valid_579016
-  var valid_579017 = query.getOrDefault("access_token")
-  valid_579017 = validateParameter(valid_579017, JString, required = false,
+  if valid_580041 != nil:
+    section.add "fields", valid_580041
+  var valid_580042 = query.getOrDefault("access_token")
+  valid_580042 = validateParameter(valid_580042, JString, required = false,
                                  default = nil)
-  if valid_579017 != nil:
-    section.add "access_token", valid_579017
-  var valid_579018 = query.getOrDefault("upload_protocol")
-  valid_579018 = validateParameter(valid_579018, JString, required = false,
+  if valid_580042 != nil:
+    section.add "access_token", valid_580042
+  var valid_580043 = query.getOrDefault("upload_protocol")
+  valid_580043 = validateParameter(valid_580043, JString, required = false,
                                  default = nil)
-  if valid_579018 != nil:
-    section.add "upload_protocol", valid_579018
+  if valid_580043 != nil:
+    section.add "upload_protocol", valid_580043
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1632,7 +1667,7 @@ proc validate_CloudtasksProjectsLocationsQueuesPause_579005(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579020: Call_CloudtasksProjectsLocationsQueuesPause_579004;
+proc call*(call_580045: Call_CloudtasksProjectsLocationsQueuesPause_580029;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Pauses the queue.
@@ -1643,16 +1678,16 @@ proc call*(call_579020: Call_CloudtasksProjectsLocationsQueuesPause_579004;
   ## when the queue is paused. A queue is paused if its
   ## state is PAUSED.
   ## 
-  let valid = call_579020.validator(path, query, header, formData, body)
-  let scheme = call_579020.pickScheme
+  let valid = call_580045.validator(path, query, header, formData, body)
+  let scheme = call_580045.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579020.url(scheme.get, call_579020.host, call_579020.base,
-                         call_579020.route, valid.getOrDefault("path"),
+  let url = call_580045.url(scheme.get, call_580045.host, call_580045.base,
+                         call_580045.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579020, url, valid)
+  result = hook(call_580045, url, valid)
 
-proc call*(call_579021: Call_CloudtasksProjectsLocationsQueuesPause_579004;
+proc call*(call_580046: Call_CloudtasksProjectsLocationsQueuesPause_580029;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -1692,34 +1727,34 @@ proc call*(call_579021: Call_CloudtasksProjectsLocationsQueuesPause_579004;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579022 = newJObject()
-  var query_579023 = newJObject()
-  var body_579024 = newJObject()
-  add(query_579023, "key", newJString(key))
-  add(query_579023, "prettyPrint", newJBool(prettyPrint))
-  add(query_579023, "oauth_token", newJString(oauthToken))
-  add(query_579023, "$.xgafv", newJString(Xgafv))
-  add(query_579023, "alt", newJString(alt))
-  add(query_579023, "uploadType", newJString(uploadType))
-  add(query_579023, "quotaUser", newJString(quotaUser))
-  add(path_579022, "name", newJString(name))
+  var path_580047 = newJObject()
+  var query_580048 = newJObject()
+  var body_580049 = newJObject()
+  add(query_580048, "key", newJString(key))
+  add(query_580048, "prettyPrint", newJBool(prettyPrint))
+  add(query_580048, "oauth_token", newJString(oauthToken))
+  add(query_580048, "$.xgafv", newJString(Xgafv))
+  add(query_580048, "alt", newJString(alt))
+  add(query_580048, "uploadType", newJString(uploadType))
+  add(query_580048, "quotaUser", newJString(quotaUser))
+  add(path_580047, "name", newJString(name))
   if body != nil:
-    body_579024 = body
-  add(query_579023, "callback", newJString(callback))
-  add(query_579023, "fields", newJString(fields))
-  add(query_579023, "access_token", newJString(accessToken))
-  add(query_579023, "upload_protocol", newJString(uploadProtocol))
-  result = call_579021.call(path_579022, query_579023, nil, nil, body_579024)
+    body_580049 = body
+  add(query_580048, "callback", newJString(callback))
+  add(query_580048, "fields", newJString(fields))
+  add(query_580048, "access_token", newJString(accessToken))
+  add(query_580048, "upload_protocol", newJString(uploadProtocol))
+  result = call_580046.call(path_580047, query_580048, nil, nil, body_580049)
 
-var cloudtasksProjectsLocationsQueuesPause* = Call_CloudtasksProjectsLocationsQueuesPause_579004(
+var cloudtasksProjectsLocationsQueuesPause* = Call_CloudtasksProjectsLocationsQueuesPause_580029(
     name: "cloudtasksProjectsLocationsQueuesPause", meth: HttpMethod.HttpPost,
     host: "cloudtasks.googleapis.com", route: "/v2beta2/{name}:pause",
-    validator: validate_CloudtasksProjectsLocationsQueuesPause_579005, base: "/",
-    url: url_CloudtasksProjectsLocationsQueuesPause_579006,
+    validator: validate_CloudtasksProjectsLocationsQueuesPause_580030, base: "/",
+    url: url_CloudtasksProjectsLocationsQueuesPause_580031,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesPurge_579025 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesPurge_579027(protocol: Scheme;
+  Call_CloudtasksProjectsLocationsQueuesPurge_580050 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesPurge_580052(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1733,9 +1768,14 @@ proc url_CloudtasksProjectsLocationsQueuesPurge_579027(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesPurge_579026(path: JsonNode;
+proc validate_CloudtasksProjectsLocationsQueuesPurge_580051(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Purges a queue by deleting all of its tasks.
   ## 
@@ -1752,11 +1792,11 @@ proc validate_CloudtasksProjectsLocationsQueuesPurge_579026(path: JsonNode;
   ## `projects/PROJECT_ID/location/LOCATION_ID/queues/QUEUE_ID`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579028 = path.getOrDefault("name")
-  valid_579028 = validateParameter(valid_579028, JString, required = true,
+  var valid_580053 = path.getOrDefault("name")
+  valid_580053 = validateParameter(valid_580053, JString, required = true,
                                  default = nil)
-  if valid_579028 != nil:
-    section.add "name", valid_579028
+  if valid_580053 != nil:
+    section.add "name", valid_580053
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1782,61 +1822,61 @@ proc validate_CloudtasksProjectsLocationsQueuesPurge_579026(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579029 = query.getOrDefault("key")
-  valid_579029 = validateParameter(valid_579029, JString, required = false,
+  var valid_580054 = query.getOrDefault("key")
+  valid_580054 = validateParameter(valid_580054, JString, required = false,
                                  default = nil)
-  if valid_579029 != nil:
-    section.add "key", valid_579029
-  var valid_579030 = query.getOrDefault("prettyPrint")
-  valid_579030 = validateParameter(valid_579030, JBool, required = false,
+  if valid_580054 != nil:
+    section.add "key", valid_580054
+  var valid_580055 = query.getOrDefault("prettyPrint")
+  valid_580055 = validateParameter(valid_580055, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579030 != nil:
-    section.add "prettyPrint", valid_579030
-  var valid_579031 = query.getOrDefault("oauth_token")
-  valid_579031 = validateParameter(valid_579031, JString, required = false,
+  if valid_580055 != nil:
+    section.add "prettyPrint", valid_580055
+  var valid_580056 = query.getOrDefault("oauth_token")
+  valid_580056 = validateParameter(valid_580056, JString, required = false,
                                  default = nil)
-  if valid_579031 != nil:
-    section.add "oauth_token", valid_579031
-  var valid_579032 = query.getOrDefault("$.xgafv")
-  valid_579032 = validateParameter(valid_579032, JString, required = false,
+  if valid_580056 != nil:
+    section.add "oauth_token", valid_580056
+  var valid_580057 = query.getOrDefault("$.xgafv")
+  valid_580057 = validateParameter(valid_580057, JString, required = false,
                                  default = newJString("1"))
-  if valid_579032 != nil:
-    section.add "$.xgafv", valid_579032
-  var valid_579033 = query.getOrDefault("alt")
-  valid_579033 = validateParameter(valid_579033, JString, required = false,
+  if valid_580057 != nil:
+    section.add "$.xgafv", valid_580057
+  var valid_580058 = query.getOrDefault("alt")
+  valid_580058 = validateParameter(valid_580058, JString, required = false,
                                  default = newJString("json"))
-  if valid_579033 != nil:
-    section.add "alt", valid_579033
-  var valid_579034 = query.getOrDefault("uploadType")
-  valid_579034 = validateParameter(valid_579034, JString, required = false,
+  if valid_580058 != nil:
+    section.add "alt", valid_580058
+  var valid_580059 = query.getOrDefault("uploadType")
+  valid_580059 = validateParameter(valid_580059, JString, required = false,
                                  default = nil)
-  if valid_579034 != nil:
-    section.add "uploadType", valid_579034
-  var valid_579035 = query.getOrDefault("quotaUser")
-  valid_579035 = validateParameter(valid_579035, JString, required = false,
+  if valid_580059 != nil:
+    section.add "uploadType", valid_580059
+  var valid_580060 = query.getOrDefault("quotaUser")
+  valid_580060 = validateParameter(valid_580060, JString, required = false,
                                  default = nil)
-  if valid_579035 != nil:
-    section.add "quotaUser", valid_579035
-  var valid_579036 = query.getOrDefault("callback")
-  valid_579036 = validateParameter(valid_579036, JString, required = false,
+  if valid_580060 != nil:
+    section.add "quotaUser", valid_580060
+  var valid_580061 = query.getOrDefault("callback")
+  valid_580061 = validateParameter(valid_580061, JString, required = false,
                                  default = nil)
-  if valid_579036 != nil:
-    section.add "callback", valid_579036
-  var valid_579037 = query.getOrDefault("fields")
-  valid_579037 = validateParameter(valid_579037, JString, required = false,
+  if valid_580061 != nil:
+    section.add "callback", valid_580061
+  var valid_580062 = query.getOrDefault("fields")
+  valid_580062 = validateParameter(valid_580062, JString, required = false,
                                  default = nil)
-  if valid_579037 != nil:
-    section.add "fields", valid_579037
-  var valid_579038 = query.getOrDefault("access_token")
-  valid_579038 = validateParameter(valid_579038, JString, required = false,
+  if valid_580062 != nil:
+    section.add "fields", valid_580062
+  var valid_580063 = query.getOrDefault("access_token")
+  valid_580063 = validateParameter(valid_580063, JString, required = false,
                                  default = nil)
-  if valid_579038 != nil:
-    section.add "access_token", valid_579038
-  var valid_579039 = query.getOrDefault("upload_protocol")
-  valid_579039 = validateParameter(valid_579039, JString, required = false,
+  if valid_580063 != nil:
+    section.add "access_token", valid_580063
+  var valid_580064 = query.getOrDefault("upload_protocol")
+  valid_580064 = validateParameter(valid_580064, JString, required = false,
                                  default = nil)
-  if valid_579039 != nil:
-    section.add "upload_protocol", valid_579039
+  if valid_580064 != nil:
+    section.add "upload_protocol", valid_580064
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1848,7 +1888,7 @@ proc validate_CloudtasksProjectsLocationsQueuesPurge_579026(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579041: Call_CloudtasksProjectsLocationsQueuesPurge_579025;
+proc call*(call_580066: Call_CloudtasksProjectsLocationsQueuesPurge_580050;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Purges a queue by deleting all of its tasks.
@@ -1858,16 +1898,16 @@ proc call*(call_579041: Call_CloudtasksProjectsLocationsQueuesPurge_579025;
   ## Purge operations can take up to one minute to take effect. Tasks
   ## might be dispatched before the purge takes effect. A purge is irreversible.
   ## 
-  let valid = call_579041.validator(path, query, header, formData, body)
-  let scheme = call_579041.pickScheme
+  let valid = call_580066.validator(path, query, header, formData, body)
+  let scheme = call_580066.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579041.url(scheme.get, call_579041.host, call_579041.base,
-                         call_579041.route, valid.getOrDefault("path"),
+  let url = call_580066.url(scheme.get, call_580066.host, call_580066.base,
+                         call_580066.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579041, url, valid)
+  result = hook(call_580066, url, valid)
 
-proc call*(call_579042: Call_CloudtasksProjectsLocationsQueuesPurge_579025;
+proc call*(call_580067: Call_CloudtasksProjectsLocationsQueuesPurge_580050;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -1906,34 +1946,34 @@ proc call*(call_579042: Call_CloudtasksProjectsLocationsQueuesPurge_579025;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579043 = newJObject()
-  var query_579044 = newJObject()
-  var body_579045 = newJObject()
-  add(query_579044, "key", newJString(key))
-  add(query_579044, "prettyPrint", newJBool(prettyPrint))
-  add(query_579044, "oauth_token", newJString(oauthToken))
-  add(query_579044, "$.xgafv", newJString(Xgafv))
-  add(query_579044, "alt", newJString(alt))
-  add(query_579044, "uploadType", newJString(uploadType))
-  add(query_579044, "quotaUser", newJString(quotaUser))
-  add(path_579043, "name", newJString(name))
+  var path_580068 = newJObject()
+  var query_580069 = newJObject()
+  var body_580070 = newJObject()
+  add(query_580069, "key", newJString(key))
+  add(query_580069, "prettyPrint", newJBool(prettyPrint))
+  add(query_580069, "oauth_token", newJString(oauthToken))
+  add(query_580069, "$.xgafv", newJString(Xgafv))
+  add(query_580069, "alt", newJString(alt))
+  add(query_580069, "uploadType", newJString(uploadType))
+  add(query_580069, "quotaUser", newJString(quotaUser))
+  add(path_580068, "name", newJString(name))
   if body != nil:
-    body_579045 = body
-  add(query_579044, "callback", newJString(callback))
-  add(query_579044, "fields", newJString(fields))
-  add(query_579044, "access_token", newJString(accessToken))
-  add(query_579044, "upload_protocol", newJString(uploadProtocol))
-  result = call_579042.call(path_579043, query_579044, nil, nil, body_579045)
+    body_580070 = body
+  add(query_580069, "callback", newJString(callback))
+  add(query_580069, "fields", newJString(fields))
+  add(query_580069, "access_token", newJString(accessToken))
+  add(query_580069, "upload_protocol", newJString(uploadProtocol))
+  result = call_580067.call(path_580068, query_580069, nil, nil, body_580070)
 
-var cloudtasksProjectsLocationsQueuesPurge* = Call_CloudtasksProjectsLocationsQueuesPurge_579025(
+var cloudtasksProjectsLocationsQueuesPurge* = Call_CloudtasksProjectsLocationsQueuesPurge_580050(
     name: "cloudtasksProjectsLocationsQueuesPurge", meth: HttpMethod.HttpPost,
     host: "cloudtasks.googleapis.com", route: "/v2beta2/{name}:purge",
-    validator: validate_CloudtasksProjectsLocationsQueuesPurge_579026, base: "/",
-    url: url_CloudtasksProjectsLocationsQueuesPurge_579027,
+    validator: validate_CloudtasksProjectsLocationsQueuesPurge_580051, base: "/",
+    url: url_CloudtasksProjectsLocationsQueuesPurge_580052,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesTasksRenewLease_579046 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesTasksRenewLease_579048(
+  Call_CloudtasksProjectsLocationsQueuesTasksRenewLease_580071 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesTasksRenewLease_580073(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1948,9 +1988,14 @@ proc url_CloudtasksProjectsLocationsQueuesTasksRenewLease_579048(
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesTasksRenewLease_579047(
+proc validate_CloudtasksProjectsLocationsQueuesTasksRenewLease_580072(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Renew the current lease of a pull task.
@@ -1967,11 +2012,11 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksRenewLease_579047(
   ## `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579049 = path.getOrDefault("name")
-  valid_579049 = validateParameter(valid_579049, JString, required = true,
+  var valid_580074 = path.getOrDefault("name")
+  valid_580074 = validateParameter(valid_580074, JString, required = true,
                                  default = nil)
-  if valid_579049 != nil:
-    section.add "name", valid_579049
+  if valid_580074 != nil:
+    section.add "name", valid_580074
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1997,61 +2042,61 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksRenewLease_579047(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579050 = query.getOrDefault("key")
-  valid_579050 = validateParameter(valid_579050, JString, required = false,
+  var valid_580075 = query.getOrDefault("key")
+  valid_580075 = validateParameter(valid_580075, JString, required = false,
                                  default = nil)
-  if valid_579050 != nil:
-    section.add "key", valid_579050
-  var valid_579051 = query.getOrDefault("prettyPrint")
-  valid_579051 = validateParameter(valid_579051, JBool, required = false,
+  if valid_580075 != nil:
+    section.add "key", valid_580075
+  var valid_580076 = query.getOrDefault("prettyPrint")
+  valid_580076 = validateParameter(valid_580076, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579051 != nil:
-    section.add "prettyPrint", valid_579051
-  var valid_579052 = query.getOrDefault("oauth_token")
-  valid_579052 = validateParameter(valid_579052, JString, required = false,
+  if valid_580076 != nil:
+    section.add "prettyPrint", valid_580076
+  var valid_580077 = query.getOrDefault("oauth_token")
+  valid_580077 = validateParameter(valid_580077, JString, required = false,
                                  default = nil)
-  if valid_579052 != nil:
-    section.add "oauth_token", valid_579052
-  var valid_579053 = query.getOrDefault("$.xgafv")
-  valid_579053 = validateParameter(valid_579053, JString, required = false,
+  if valid_580077 != nil:
+    section.add "oauth_token", valid_580077
+  var valid_580078 = query.getOrDefault("$.xgafv")
+  valid_580078 = validateParameter(valid_580078, JString, required = false,
                                  default = newJString("1"))
-  if valid_579053 != nil:
-    section.add "$.xgafv", valid_579053
-  var valid_579054 = query.getOrDefault("alt")
-  valid_579054 = validateParameter(valid_579054, JString, required = false,
+  if valid_580078 != nil:
+    section.add "$.xgafv", valid_580078
+  var valid_580079 = query.getOrDefault("alt")
+  valid_580079 = validateParameter(valid_580079, JString, required = false,
                                  default = newJString("json"))
-  if valid_579054 != nil:
-    section.add "alt", valid_579054
-  var valid_579055 = query.getOrDefault("uploadType")
-  valid_579055 = validateParameter(valid_579055, JString, required = false,
+  if valid_580079 != nil:
+    section.add "alt", valid_580079
+  var valid_580080 = query.getOrDefault("uploadType")
+  valid_580080 = validateParameter(valid_580080, JString, required = false,
                                  default = nil)
-  if valid_579055 != nil:
-    section.add "uploadType", valid_579055
-  var valid_579056 = query.getOrDefault("quotaUser")
-  valid_579056 = validateParameter(valid_579056, JString, required = false,
+  if valid_580080 != nil:
+    section.add "uploadType", valid_580080
+  var valid_580081 = query.getOrDefault("quotaUser")
+  valid_580081 = validateParameter(valid_580081, JString, required = false,
                                  default = nil)
-  if valid_579056 != nil:
-    section.add "quotaUser", valid_579056
-  var valid_579057 = query.getOrDefault("callback")
-  valid_579057 = validateParameter(valid_579057, JString, required = false,
+  if valid_580081 != nil:
+    section.add "quotaUser", valid_580081
+  var valid_580082 = query.getOrDefault("callback")
+  valid_580082 = validateParameter(valid_580082, JString, required = false,
                                  default = nil)
-  if valid_579057 != nil:
-    section.add "callback", valid_579057
-  var valid_579058 = query.getOrDefault("fields")
-  valid_579058 = validateParameter(valid_579058, JString, required = false,
+  if valid_580082 != nil:
+    section.add "callback", valid_580082
+  var valid_580083 = query.getOrDefault("fields")
+  valid_580083 = validateParameter(valid_580083, JString, required = false,
                                  default = nil)
-  if valid_579058 != nil:
-    section.add "fields", valid_579058
-  var valid_579059 = query.getOrDefault("access_token")
-  valid_579059 = validateParameter(valid_579059, JString, required = false,
+  if valid_580083 != nil:
+    section.add "fields", valid_580083
+  var valid_580084 = query.getOrDefault("access_token")
+  valid_580084 = validateParameter(valid_580084, JString, required = false,
                                  default = nil)
-  if valid_579059 != nil:
-    section.add "access_token", valid_579059
-  var valid_579060 = query.getOrDefault("upload_protocol")
-  valid_579060 = validateParameter(valid_579060, JString, required = false,
+  if valid_580084 != nil:
+    section.add "access_token", valid_580084
+  var valid_580085 = query.getOrDefault("upload_protocol")
+  valid_580085 = validateParameter(valid_580085, JString, required = false,
                                  default = nil)
-  if valid_579060 != nil:
-    section.add "upload_protocol", valid_579060
+  if valid_580085 != nil:
+    section.add "upload_protocol", valid_580085
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2063,7 +2108,7 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksRenewLease_579047(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579062: Call_CloudtasksProjectsLocationsQueuesTasksRenewLease_579046;
+proc call*(call_580087: Call_CloudtasksProjectsLocationsQueuesTasksRenewLease_580071;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Renew the current lease of a pull task.
@@ -2072,16 +2117,16 @@ proc call*(call_579062: Call_CloudtasksProjectsLocationsQueuesTasksRenewLease_57
   ## duration, starting from now. The new task lease will be
   ## returned in the task's schedule_time.
   ## 
-  let valid = call_579062.validator(path, query, header, formData, body)
-  let scheme = call_579062.pickScheme
+  let valid = call_580087.validator(path, query, header, formData, body)
+  let scheme = call_580087.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579062.url(scheme.get, call_579062.host, call_579062.base,
-                         call_579062.route, valid.getOrDefault("path"),
+  let url = call_580087.url(scheme.get, call_580087.host, call_580087.base,
+                         call_580087.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579062, url, valid)
+  result = hook(call_580087, url, valid)
 
-proc call*(call_579063: Call_CloudtasksProjectsLocationsQueuesTasksRenewLease_579046;
+proc call*(call_580088: Call_CloudtasksProjectsLocationsQueuesTasksRenewLease_580071;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -2119,35 +2164,35 @@ proc call*(call_579063: Call_CloudtasksProjectsLocationsQueuesTasksRenewLease_57
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579064 = newJObject()
-  var query_579065 = newJObject()
-  var body_579066 = newJObject()
-  add(query_579065, "key", newJString(key))
-  add(query_579065, "prettyPrint", newJBool(prettyPrint))
-  add(query_579065, "oauth_token", newJString(oauthToken))
-  add(query_579065, "$.xgafv", newJString(Xgafv))
-  add(query_579065, "alt", newJString(alt))
-  add(query_579065, "uploadType", newJString(uploadType))
-  add(query_579065, "quotaUser", newJString(quotaUser))
-  add(path_579064, "name", newJString(name))
+  var path_580089 = newJObject()
+  var query_580090 = newJObject()
+  var body_580091 = newJObject()
+  add(query_580090, "key", newJString(key))
+  add(query_580090, "prettyPrint", newJBool(prettyPrint))
+  add(query_580090, "oauth_token", newJString(oauthToken))
+  add(query_580090, "$.xgafv", newJString(Xgafv))
+  add(query_580090, "alt", newJString(alt))
+  add(query_580090, "uploadType", newJString(uploadType))
+  add(query_580090, "quotaUser", newJString(quotaUser))
+  add(path_580089, "name", newJString(name))
   if body != nil:
-    body_579066 = body
-  add(query_579065, "callback", newJString(callback))
-  add(query_579065, "fields", newJString(fields))
-  add(query_579065, "access_token", newJString(accessToken))
-  add(query_579065, "upload_protocol", newJString(uploadProtocol))
-  result = call_579063.call(path_579064, query_579065, nil, nil, body_579066)
+    body_580091 = body
+  add(query_580090, "callback", newJString(callback))
+  add(query_580090, "fields", newJString(fields))
+  add(query_580090, "access_token", newJString(accessToken))
+  add(query_580090, "upload_protocol", newJString(uploadProtocol))
+  result = call_580088.call(path_580089, query_580090, nil, nil, body_580091)
 
-var cloudtasksProjectsLocationsQueuesTasksRenewLease* = Call_CloudtasksProjectsLocationsQueuesTasksRenewLease_579046(
+var cloudtasksProjectsLocationsQueuesTasksRenewLease* = Call_CloudtasksProjectsLocationsQueuesTasksRenewLease_580071(
     name: "cloudtasksProjectsLocationsQueuesTasksRenewLease",
     meth: HttpMethod.HttpPost, host: "cloudtasks.googleapis.com",
     route: "/v2beta2/{name}:renewLease",
-    validator: validate_CloudtasksProjectsLocationsQueuesTasksRenewLease_579047,
-    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksRenewLease_579048,
+    validator: validate_CloudtasksProjectsLocationsQueuesTasksRenewLease_580072,
+    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksRenewLease_580073,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesResume_579067 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesResume_579069(protocol: Scheme;
+  Call_CloudtasksProjectsLocationsQueuesResume_580092 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesResume_580094(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2161,9 +2206,14 @@ proc url_CloudtasksProjectsLocationsQueuesResume_579069(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesResume_579068(path: JsonNode;
+proc validate_CloudtasksProjectsLocationsQueuesResume_580093(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Resume a queue.
   ## 
@@ -2187,11 +2237,11 @@ proc validate_CloudtasksProjectsLocationsQueuesResume_579068(path: JsonNode;
   ## `projects/PROJECT_ID/location/LOCATION_ID/queues/QUEUE_ID`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579070 = path.getOrDefault("name")
-  valid_579070 = validateParameter(valid_579070, JString, required = true,
+  var valid_580095 = path.getOrDefault("name")
+  valid_580095 = validateParameter(valid_580095, JString, required = true,
                                  default = nil)
-  if valid_579070 != nil:
-    section.add "name", valid_579070
+  if valid_580095 != nil:
+    section.add "name", valid_580095
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2217,61 +2267,61 @@ proc validate_CloudtasksProjectsLocationsQueuesResume_579068(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579071 = query.getOrDefault("key")
-  valid_579071 = validateParameter(valid_579071, JString, required = false,
+  var valid_580096 = query.getOrDefault("key")
+  valid_580096 = validateParameter(valid_580096, JString, required = false,
                                  default = nil)
-  if valid_579071 != nil:
-    section.add "key", valid_579071
-  var valid_579072 = query.getOrDefault("prettyPrint")
-  valid_579072 = validateParameter(valid_579072, JBool, required = false,
+  if valid_580096 != nil:
+    section.add "key", valid_580096
+  var valid_580097 = query.getOrDefault("prettyPrint")
+  valid_580097 = validateParameter(valid_580097, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579072 != nil:
-    section.add "prettyPrint", valid_579072
-  var valid_579073 = query.getOrDefault("oauth_token")
-  valid_579073 = validateParameter(valid_579073, JString, required = false,
+  if valid_580097 != nil:
+    section.add "prettyPrint", valid_580097
+  var valid_580098 = query.getOrDefault("oauth_token")
+  valid_580098 = validateParameter(valid_580098, JString, required = false,
                                  default = nil)
-  if valid_579073 != nil:
-    section.add "oauth_token", valid_579073
-  var valid_579074 = query.getOrDefault("$.xgafv")
-  valid_579074 = validateParameter(valid_579074, JString, required = false,
+  if valid_580098 != nil:
+    section.add "oauth_token", valid_580098
+  var valid_580099 = query.getOrDefault("$.xgafv")
+  valid_580099 = validateParameter(valid_580099, JString, required = false,
                                  default = newJString("1"))
-  if valid_579074 != nil:
-    section.add "$.xgafv", valid_579074
-  var valid_579075 = query.getOrDefault("alt")
-  valid_579075 = validateParameter(valid_579075, JString, required = false,
+  if valid_580099 != nil:
+    section.add "$.xgafv", valid_580099
+  var valid_580100 = query.getOrDefault("alt")
+  valid_580100 = validateParameter(valid_580100, JString, required = false,
                                  default = newJString("json"))
-  if valid_579075 != nil:
-    section.add "alt", valid_579075
-  var valid_579076 = query.getOrDefault("uploadType")
-  valid_579076 = validateParameter(valid_579076, JString, required = false,
+  if valid_580100 != nil:
+    section.add "alt", valid_580100
+  var valid_580101 = query.getOrDefault("uploadType")
+  valid_580101 = validateParameter(valid_580101, JString, required = false,
                                  default = nil)
-  if valid_579076 != nil:
-    section.add "uploadType", valid_579076
-  var valid_579077 = query.getOrDefault("quotaUser")
-  valid_579077 = validateParameter(valid_579077, JString, required = false,
+  if valid_580101 != nil:
+    section.add "uploadType", valid_580101
+  var valid_580102 = query.getOrDefault("quotaUser")
+  valid_580102 = validateParameter(valid_580102, JString, required = false,
                                  default = nil)
-  if valid_579077 != nil:
-    section.add "quotaUser", valid_579077
-  var valid_579078 = query.getOrDefault("callback")
-  valid_579078 = validateParameter(valid_579078, JString, required = false,
+  if valid_580102 != nil:
+    section.add "quotaUser", valid_580102
+  var valid_580103 = query.getOrDefault("callback")
+  valid_580103 = validateParameter(valid_580103, JString, required = false,
                                  default = nil)
-  if valid_579078 != nil:
-    section.add "callback", valid_579078
-  var valid_579079 = query.getOrDefault("fields")
-  valid_579079 = validateParameter(valid_579079, JString, required = false,
+  if valid_580103 != nil:
+    section.add "callback", valid_580103
+  var valid_580104 = query.getOrDefault("fields")
+  valid_580104 = validateParameter(valid_580104, JString, required = false,
                                  default = nil)
-  if valid_579079 != nil:
-    section.add "fields", valid_579079
-  var valid_579080 = query.getOrDefault("access_token")
-  valid_579080 = validateParameter(valid_579080, JString, required = false,
+  if valid_580104 != nil:
+    section.add "fields", valid_580104
+  var valid_580105 = query.getOrDefault("access_token")
+  valid_580105 = validateParameter(valid_580105, JString, required = false,
                                  default = nil)
-  if valid_579080 != nil:
-    section.add "access_token", valid_579080
-  var valid_579081 = query.getOrDefault("upload_protocol")
-  valid_579081 = validateParameter(valid_579081, JString, required = false,
+  if valid_580105 != nil:
+    section.add "access_token", valid_580105
+  var valid_580106 = query.getOrDefault("upload_protocol")
+  valid_580106 = validateParameter(valid_580106, JString, required = false,
                                  default = nil)
-  if valid_579081 != nil:
-    section.add "upload_protocol", valid_579081
+  if valid_580106 != nil:
+    section.add "upload_protocol", valid_580106
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2283,7 +2333,7 @@ proc validate_CloudtasksProjectsLocationsQueuesResume_579068(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579083: Call_CloudtasksProjectsLocationsQueuesResume_579067;
+proc call*(call_580108: Call_CloudtasksProjectsLocationsQueuesResume_580092;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Resume a queue.
@@ -2300,16 +2350,16 @@ proc call*(call_579083: Call_CloudtasksProjectsLocationsQueuesResume_579067;
   ## [Managing Cloud Tasks Scaling
   ## Risks](https://cloud.google.com/tasks/docs/manage-cloud-task-scaling).
   ## 
-  let valid = call_579083.validator(path, query, header, formData, body)
-  let scheme = call_579083.pickScheme
+  let valid = call_580108.validator(path, query, header, formData, body)
+  let scheme = call_580108.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579083.url(scheme.get, call_579083.host, call_579083.base,
-                         call_579083.route, valid.getOrDefault("path"),
+  let url = call_580108.url(scheme.get, call_580108.host, call_580108.base,
+                         call_580108.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579083, url, valid)
+  result = hook(call_580108, url, valid)
 
-proc call*(call_579084: Call_CloudtasksProjectsLocationsQueuesResume_579067;
+proc call*(call_580109: Call_CloudtasksProjectsLocationsQueuesResume_580092;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -2355,34 +2405,34 @@ proc call*(call_579084: Call_CloudtasksProjectsLocationsQueuesResume_579067;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579085 = newJObject()
-  var query_579086 = newJObject()
-  var body_579087 = newJObject()
-  add(query_579086, "key", newJString(key))
-  add(query_579086, "prettyPrint", newJBool(prettyPrint))
-  add(query_579086, "oauth_token", newJString(oauthToken))
-  add(query_579086, "$.xgafv", newJString(Xgafv))
-  add(query_579086, "alt", newJString(alt))
-  add(query_579086, "uploadType", newJString(uploadType))
-  add(query_579086, "quotaUser", newJString(quotaUser))
-  add(path_579085, "name", newJString(name))
+  var path_580110 = newJObject()
+  var query_580111 = newJObject()
+  var body_580112 = newJObject()
+  add(query_580111, "key", newJString(key))
+  add(query_580111, "prettyPrint", newJBool(prettyPrint))
+  add(query_580111, "oauth_token", newJString(oauthToken))
+  add(query_580111, "$.xgafv", newJString(Xgafv))
+  add(query_580111, "alt", newJString(alt))
+  add(query_580111, "uploadType", newJString(uploadType))
+  add(query_580111, "quotaUser", newJString(quotaUser))
+  add(path_580110, "name", newJString(name))
   if body != nil:
-    body_579087 = body
-  add(query_579086, "callback", newJString(callback))
-  add(query_579086, "fields", newJString(fields))
-  add(query_579086, "access_token", newJString(accessToken))
-  add(query_579086, "upload_protocol", newJString(uploadProtocol))
-  result = call_579084.call(path_579085, query_579086, nil, nil, body_579087)
+    body_580112 = body
+  add(query_580111, "callback", newJString(callback))
+  add(query_580111, "fields", newJString(fields))
+  add(query_580111, "access_token", newJString(accessToken))
+  add(query_580111, "upload_protocol", newJString(uploadProtocol))
+  result = call_580109.call(path_580110, query_580111, nil, nil, body_580112)
 
-var cloudtasksProjectsLocationsQueuesResume* = Call_CloudtasksProjectsLocationsQueuesResume_579067(
+var cloudtasksProjectsLocationsQueuesResume* = Call_CloudtasksProjectsLocationsQueuesResume_580092(
     name: "cloudtasksProjectsLocationsQueuesResume", meth: HttpMethod.HttpPost,
     host: "cloudtasks.googleapis.com", route: "/v2beta2/{name}:resume",
-    validator: validate_CloudtasksProjectsLocationsQueuesResume_579068, base: "/",
-    url: url_CloudtasksProjectsLocationsQueuesResume_579069,
+    validator: validate_CloudtasksProjectsLocationsQueuesResume_580093, base: "/",
+    url: url_CloudtasksProjectsLocationsQueuesResume_580094,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesTasksRun_579088 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesTasksRun_579090(protocol: Scheme;
+  Call_CloudtasksProjectsLocationsQueuesTasksRun_580113 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesTasksRun_580115(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2396,9 +2446,14 @@ proc url_CloudtasksProjectsLocationsQueuesTasksRun_579090(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesTasksRun_579089(path: JsonNode;
+proc validate_CloudtasksProjectsLocationsQueuesTasksRun_580114(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Forces a task to run now.
   ## 
@@ -2436,11 +2491,11 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksRun_579089(path: JsonNode;
   ## `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579091 = path.getOrDefault("name")
-  valid_579091 = validateParameter(valid_579091, JString, required = true,
+  var valid_580116 = path.getOrDefault("name")
+  valid_580116 = validateParameter(valid_580116, JString, required = true,
                                  default = nil)
-  if valid_579091 != nil:
-    section.add "name", valid_579091
+  if valid_580116 != nil:
+    section.add "name", valid_580116
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2466,61 +2521,61 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksRun_579089(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579092 = query.getOrDefault("key")
-  valid_579092 = validateParameter(valid_579092, JString, required = false,
+  var valid_580117 = query.getOrDefault("key")
+  valid_580117 = validateParameter(valid_580117, JString, required = false,
                                  default = nil)
-  if valid_579092 != nil:
-    section.add "key", valid_579092
-  var valid_579093 = query.getOrDefault("prettyPrint")
-  valid_579093 = validateParameter(valid_579093, JBool, required = false,
+  if valid_580117 != nil:
+    section.add "key", valid_580117
+  var valid_580118 = query.getOrDefault("prettyPrint")
+  valid_580118 = validateParameter(valid_580118, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579093 != nil:
-    section.add "prettyPrint", valid_579093
-  var valid_579094 = query.getOrDefault("oauth_token")
-  valid_579094 = validateParameter(valid_579094, JString, required = false,
+  if valid_580118 != nil:
+    section.add "prettyPrint", valid_580118
+  var valid_580119 = query.getOrDefault("oauth_token")
+  valid_580119 = validateParameter(valid_580119, JString, required = false,
                                  default = nil)
-  if valid_579094 != nil:
-    section.add "oauth_token", valid_579094
-  var valid_579095 = query.getOrDefault("$.xgafv")
-  valid_579095 = validateParameter(valid_579095, JString, required = false,
+  if valid_580119 != nil:
+    section.add "oauth_token", valid_580119
+  var valid_580120 = query.getOrDefault("$.xgafv")
+  valid_580120 = validateParameter(valid_580120, JString, required = false,
                                  default = newJString("1"))
-  if valid_579095 != nil:
-    section.add "$.xgafv", valid_579095
-  var valid_579096 = query.getOrDefault("alt")
-  valid_579096 = validateParameter(valid_579096, JString, required = false,
+  if valid_580120 != nil:
+    section.add "$.xgafv", valid_580120
+  var valid_580121 = query.getOrDefault("alt")
+  valid_580121 = validateParameter(valid_580121, JString, required = false,
                                  default = newJString("json"))
-  if valid_579096 != nil:
-    section.add "alt", valid_579096
-  var valid_579097 = query.getOrDefault("uploadType")
-  valid_579097 = validateParameter(valid_579097, JString, required = false,
+  if valid_580121 != nil:
+    section.add "alt", valid_580121
+  var valid_580122 = query.getOrDefault("uploadType")
+  valid_580122 = validateParameter(valid_580122, JString, required = false,
                                  default = nil)
-  if valid_579097 != nil:
-    section.add "uploadType", valid_579097
-  var valid_579098 = query.getOrDefault("quotaUser")
-  valid_579098 = validateParameter(valid_579098, JString, required = false,
+  if valid_580122 != nil:
+    section.add "uploadType", valid_580122
+  var valid_580123 = query.getOrDefault("quotaUser")
+  valid_580123 = validateParameter(valid_580123, JString, required = false,
                                  default = nil)
-  if valid_579098 != nil:
-    section.add "quotaUser", valid_579098
-  var valid_579099 = query.getOrDefault("callback")
-  valid_579099 = validateParameter(valid_579099, JString, required = false,
+  if valid_580123 != nil:
+    section.add "quotaUser", valid_580123
+  var valid_580124 = query.getOrDefault("callback")
+  valid_580124 = validateParameter(valid_580124, JString, required = false,
                                  default = nil)
-  if valid_579099 != nil:
-    section.add "callback", valid_579099
-  var valid_579100 = query.getOrDefault("fields")
-  valid_579100 = validateParameter(valid_579100, JString, required = false,
+  if valid_580124 != nil:
+    section.add "callback", valid_580124
+  var valid_580125 = query.getOrDefault("fields")
+  valid_580125 = validateParameter(valid_580125, JString, required = false,
                                  default = nil)
-  if valid_579100 != nil:
-    section.add "fields", valid_579100
-  var valid_579101 = query.getOrDefault("access_token")
-  valid_579101 = validateParameter(valid_579101, JString, required = false,
+  if valid_580125 != nil:
+    section.add "fields", valid_580125
+  var valid_580126 = query.getOrDefault("access_token")
+  valid_580126 = validateParameter(valid_580126, JString, required = false,
                                  default = nil)
-  if valid_579101 != nil:
-    section.add "access_token", valid_579101
-  var valid_579102 = query.getOrDefault("upload_protocol")
-  valid_579102 = validateParameter(valid_579102, JString, required = false,
+  if valid_580126 != nil:
+    section.add "access_token", valid_580126
+  var valid_580127 = query.getOrDefault("upload_protocol")
+  valid_580127 = validateParameter(valid_580127, JString, required = false,
                                  default = nil)
-  if valid_579102 != nil:
-    section.add "upload_protocol", valid_579102
+  if valid_580127 != nil:
+    section.add "upload_protocol", valid_580127
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2532,7 +2587,7 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksRun_579089(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579104: Call_CloudtasksProjectsLocationsQueuesTasksRun_579088;
+proc call*(call_580129: Call_CloudtasksProjectsLocationsQueuesTasksRun_580113;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Forces a task to run now.
@@ -2563,16 +2618,16 @@ proc call*(call_579104: Call_CloudtasksProjectsLocationsQueuesTasksRun_579088;
   ## RunTask cannot be called on a
   ## pull task.
   ## 
-  let valid = call_579104.validator(path, query, header, formData, body)
-  let scheme = call_579104.pickScheme
+  let valid = call_580129.validator(path, query, header, formData, body)
+  let scheme = call_580129.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579104.url(scheme.get, call_579104.host, call_579104.base,
-                         call_579104.route, valid.getOrDefault("path"),
+  let url = call_580129.url(scheme.get, call_580129.host, call_580129.base,
+                         call_580129.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579104, url, valid)
+  result = hook(call_580129, url, valid)
 
-proc call*(call_579105: Call_CloudtasksProjectsLocationsQueuesTasksRun_579088;
+proc call*(call_580130: Call_CloudtasksProjectsLocationsQueuesTasksRun_580113;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -2632,34 +2687,34 @@ proc call*(call_579105: Call_CloudtasksProjectsLocationsQueuesTasksRun_579088;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579106 = newJObject()
-  var query_579107 = newJObject()
-  var body_579108 = newJObject()
-  add(query_579107, "key", newJString(key))
-  add(query_579107, "prettyPrint", newJBool(prettyPrint))
-  add(query_579107, "oauth_token", newJString(oauthToken))
-  add(query_579107, "$.xgafv", newJString(Xgafv))
-  add(query_579107, "alt", newJString(alt))
-  add(query_579107, "uploadType", newJString(uploadType))
-  add(query_579107, "quotaUser", newJString(quotaUser))
-  add(path_579106, "name", newJString(name))
+  var path_580131 = newJObject()
+  var query_580132 = newJObject()
+  var body_580133 = newJObject()
+  add(query_580132, "key", newJString(key))
+  add(query_580132, "prettyPrint", newJBool(prettyPrint))
+  add(query_580132, "oauth_token", newJString(oauthToken))
+  add(query_580132, "$.xgafv", newJString(Xgafv))
+  add(query_580132, "alt", newJString(alt))
+  add(query_580132, "uploadType", newJString(uploadType))
+  add(query_580132, "quotaUser", newJString(quotaUser))
+  add(path_580131, "name", newJString(name))
   if body != nil:
-    body_579108 = body
-  add(query_579107, "callback", newJString(callback))
-  add(query_579107, "fields", newJString(fields))
-  add(query_579107, "access_token", newJString(accessToken))
-  add(query_579107, "upload_protocol", newJString(uploadProtocol))
-  result = call_579105.call(path_579106, query_579107, nil, nil, body_579108)
+    body_580133 = body
+  add(query_580132, "callback", newJString(callback))
+  add(query_580132, "fields", newJString(fields))
+  add(query_580132, "access_token", newJString(accessToken))
+  add(query_580132, "upload_protocol", newJString(uploadProtocol))
+  result = call_580130.call(path_580131, query_580132, nil, nil, body_580133)
 
-var cloudtasksProjectsLocationsQueuesTasksRun* = Call_CloudtasksProjectsLocationsQueuesTasksRun_579088(
+var cloudtasksProjectsLocationsQueuesTasksRun* = Call_CloudtasksProjectsLocationsQueuesTasksRun_580113(
     name: "cloudtasksProjectsLocationsQueuesTasksRun", meth: HttpMethod.HttpPost,
     host: "cloudtasks.googleapis.com", route: "/v2beta2/{name}:run",
-    validator: validate_CloudtasksProjectsLocationsQueuesTasksRun_579089,
-    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksRun_579090,
+    validator: validate_CloudtasksProjectsLocationsQueuesTasksRun_580114,
+    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksRun_580115,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesCreate_579131 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesCreate_579133(protocol: Scheme;
+  Call_CloudtasksProjectsLocationsQueuesCreate_580156 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesCreate_580158(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2673,9 +2728,14 @@ proc url_CloudtasksProjectsLocationsQueuesCreate_579133(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesCreate_579132(path: JsonNode;
+proc validate_CloudtasksProjectsLocationsQueuesCreate_580157(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a queue.
   ## 
@@ -2702,11 +2762,11 @@ proc validate_CloudtasksProjectsLocationsQueuesCreate_579132(path: JsonNode;
   ## ListLocations.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_579134 = path.getOrDefault("parent")
-  valid_579134 = validateParameter(valid_579134, JString, required = true,
+  var valid_580159 = path.getOrDefault("parent")
+  valid_580159 = validateParameter(valid_580159, JString, required = true,
                                  default = nil)
-  if valid_579134 != nil:
-    section.add "parent", valid_579134
+  if valid_580159 != nil:
+    section.add "parent", valid_580159
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2732,61 +2792,61 @@ proc validate_CloudtasksProjectsLocationsQueuesCreate_579132(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579135 = query.getOrDefault("key")
-  valid_579135 = validateParameter(valid_579135, JString, required = false,
+  var valid_580160 = query.getOrDefault("key")
+  valid_580160 = validateParameter(valid_580160, JString, required = false,
                                  default = nil)
-  if valid_579135 != nil:
-    section.add "key", valid_579135
-  var valid_579136 = query.getOrDefault("prettyPrint")
-  valid_579136 = validateParameter(valid_579136, JBool, required = false,
+  if valid_580160 != nil:
+    section.add "key", valid_580160
+  var valid_580161 = query.getOrDefault("prettyPrint")
+  valid_580161 = validateParameter(valid_580161, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579136 != nil:
-    section.add "prettyPrint", valid_579136
-  var valid_579137 = query.getOrDefault("oauth_token")
-  valid_579137 = validateParameter(valid_579137, JString, required = false,
+  if valid_580161 != nil:
+    section.add "prettyPrint", valid_580161
+  var valid_580162 = query.getOrDefault("oauth_token")
+  valid_580162 = validateParameter(valid_580162, JString, required = false,
                                  default = nil)
-  if valid_579137 != nil:
-    section.add "oauth_token", valid_579137
-  var valid_579138 = query.getOrDefault("$.xgafv")
-  valid_579138 = validateParameter(valid_579138, JString, required = false,
+  if valid_580162 != nil:
+    section.add "oauth_token", valid_580162
+  var valid_580163 = query.getOrDefault("$.xgafv")
+  valid_580163 = validateParameter(valid_580163, JString, required = false,
                                  default = newJString("1"))
-  if valid_579138 != nil:
-    section.add "$.xgafv", valid_579138
-  var valid_579139 = query.getOrDefault("alt")
-  valid_579139 = validateParameter(valid_579139, JString, required = false,
+  if valid_580163 != nil:
+    section.add "$.xgafv", valid_580163
+  var valid_580164 = query.getOrDefault("alt")
+  valid_580164 = validateParameter(valid_580164, JString, required = false,
                                  default = newJString("json"))
-  if valid_579139 != nil:
-    section.add "alt", valid_579139
-  var valid_579140 = query.getOrDefault("uploadType")
-  valid_579140 = validateParameter(valid_579140, JString, required = false,
+  if valid_580164 != nil:
+    section.add "alt", valid_580164
+  var valid_580165 = query.getOrDefault("uploadType")
+  valid_580165 = validateParameter(valid_580165, JString, required = false,
                                  default = nil)
-  if valid_579140 != nil:
-    section.add "uploadType", valid_579140
-  var valid_579141 = query.getOrDefault("quotaUser")
-  valid_579141 = validateParameter(valid_579141, JString, required = false,
+  if valid_580165 != nil:
+    section.add "uploadType", valid_580165
+  var valid_580166 = query.getOrDefault("quotaUser")
+  valid_580166 = validateParameter(valid_580166, JString, required = false,
                                  default = nil)
-  if valid_579141 != nil:
-    section.add "quotaUser", valid_579141
-  var valid_579142 = query.getOrDefault("callback")
-  valid_579142 = validateParameter(valid_579142, JString, required = false,
+  if valid_580166 != nil:
+    section.add "quotaUser", valid_580166
+  var valid_580167 = query.getOrDefault("callback")
+  valid_580167 = validateParameter(valid_580167, JString, required = false,
                                  default = nil)
-  if valid_579142 != nil:
-    section.add "callback", valid_579142
-  var valid_579143 = query.getOrDefault("fields")
-  valid_579143 = validateParameter(valid_579143, JString, required = false,
+  if valid_580167 != nil:
+    section.add "callback", valid_580167
+  var valid_580168 = query.getOrDefault("fields")
+  valid_580168 = validateParameter(valid_580168, JString, required = false,
                                  default = nil)
-  if valid_579143 != nil:
-    section.add "fields", valid_579143
-  var valid_579144 = query.getOrDefault("access_token")
-  valid_579144 = validateParameter(valid_579144, JString, required = false,
+  if valid_580168 != nil:
+    section.add "fields", valid_580168
+  var valid_580169 = query.getOrDefault("access_token")
+  valid_580169 = validateParameter(valid_580169, JString, required = false,
                                  default = nil)
-  if valid_579144 != nil:
-    section.add "access_token", valid_579144
-  var valid_579145 = query.getOrDefault("upload_protocol")
-  valid_579145 = validateParameter(valid_579145, JString, required = false,
+  if valid_580169 != nil:
+    section.add "access_token", valid_580169
+  var valid_580170 = query.getOrDefault("upload_protocol")
+  valid_580170 = validateParameter(valid_580170, JString, required = false,
                                  default = nil)
-  if valid_579145 != nil:
-    section.add "upload_protocol", valid_579145
+  if valid_580170 != nil:
+    section.add "upload_protocol", valid_580170
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2798,7 +2858,7 @@ proc validate_CloudtasksProjectsLocationsQueuesCreate_579132(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579147: Call_CloudtasksProjectsLocationsQueuesCreate_579131;
+proc call*(call_580172: Call_CloudtasksProjectsLocationsQueuesCreate_580156;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a queue.
@@ -2814,16 +2874,16 @@ proc call*(call_579147: Call_CloudtasksProjectsLocationsQueuesCreate_579131;
   ## queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml) before using
   ## this method.
   ## 
-  let valid = call_579147.validator(path, query, header, formData, body)
-  let scheme = call_579147.pickScheme
+  let valid = call_580172.validator(path, query, header, formData, body)
+  let scheme = call_580172.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579147.url(scheme.get, call_579147.host, call_579147.base,
-                         call_579147.route, valid.getOrDefault("path"),
+  let url = call_580172.url(scheme.get, call_580172.host, call_580172.base,
+                         call_580172.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579147, url, valid)
+  result = hook(call_580172, url, valid)
 
-proc call*(call_579148: Call_CloudtasksProjectsLocationsQueuesCreate_579131;
+proc call*(call_580173: Call_CloudtasksProjectsLocationsQueuesCreate_580156;
           parent: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -2872,34 +2932,34 @@ proc call*(call_579148: Call_CloudtasksProjectsLocationsQueuesCreate_579131;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579149 = newJObject()
-  var query_579150 = newJObject()
-  var body_579151 = newJObject()
-  add(query_579150, "key", newJString(key))
-  add(query_579150, "prettyPrint", newJBool(prettyPrint))
-  add(query_579150, "oauth_token", newJString(oauthToken))
-  add(query_579150, "$.xgafv", newJString(Xgafv))
-  add(query_579150, "alt", newJString(alt))
-  add(query_579150, "uploadType", newJString(uploadType))
-  add(query_579150, "quotaUser", newJString(quotaUser))
+  var path_580174 = newJObject()
+  var query_580175 = newJObject()
+  var body_580176 = newJObject()
+  add(query_580175, "key", newJString(key))
+  add(query_580175, "prettyPrint", newJBool(prettyPrint))
+  add(query_580175, "oauth_token", newJString(oauthToken))
+  add(query_580175, "$.xgafv", newJString(Xgafv))
+  add(query_580175, "alt", newJString(alt))
+  add(query_580175, "uploadType", newJString(uploadType))
+  add(query_580175, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579151 = body
-  add(query_579150, "callback", newJString(callback))
-  add(path_579149, "parent", newJString(parent))
-  add(query_579150, "fields", newJString(fields))
-  add(query_579150, "access_token", newJString(accessToken))
-  add(query_579150, "upload_protocol", newJString(uploadProtocol))
-  result = call_579148.call(path_579149, query_579150, nil, nil, body_579151)
+    body_580176 = body
+  add(query_580175, "callback", newJString(callback))
+  add(path_580174, "parent", newJString(parent))
+  add(query_580175, "fields", newJString(fields))
+  add(query_580175, "access_token", newJString(accessToken))
+  add(query_580175, "upload_protocol", newJString(uploadProtocol))
+  result = call_580173.call(path_580174, query_580175, nil, nil, body_580176)
 
-var cloudtasksProjectsLocationsQueuesCreate* = Call_CloudtasksProjectsLocationsQueuesCreate_579131(
+var cloudtasksProjectsLocationsQueuesCreate* = Call_CloudtasksProjectsLocationsQueuesCreate_580156(
     name: "cloudtasksProjectsLocationsQueuesCreate", meth: HttpMethod.HttpPost,
     host: "cloudtasks.googleapis.com", route: "/v2beta2/{parent}/queues",
-    validator: validate_CloudtasksProjectsLocationsQueuesCreate_579132, base: "/",
-    url: url_CloudtasksProjectsLocationsQueuesCreate_579133,
+    validator: validate_CloudtasksProjectsLocationsQueuesCreate_580157, base: "/",
+    url: url_CloudtasksProjectsLocationsQueuesCreate_580158,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesList_579109 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesList_579111(protocol: Scheme;
+  Call_CloudtasksProjectsLocationsQueuesList_580134 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesList_580136(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2913,9 +2973,14 @@ proc url_CloudtasksProjectsLocationsQueuesList_579111(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesList_579110(path: JsonNode;
+proc validate_CloudtasksProjectsLocationsQueuesList_580135(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists queues.
   ## 
@@ -2929,11 +2994,11 @@ proc validate_CloudtasksProjectsLocationsQueuesList_579110(path: JsonNode;
   ## For example: `projects/PROJECT_ID/locations/LOCATION_ID`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_579112 = path.getOrDefault("parent")
-  valid_579112 = validateParameter(valid_579112, JString, required = true,
+  var valid_580137 = path.getOrDefault("parent")
+  valid_580137 = validateParameter(valid_580137, JString, required = true,
                                  default = nil)
-  if valid_579112 != nil:
-    section.add "parent", valid_579112
+  if valid_580137 != nil:
+    section.add "parent", valid_580137
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2988,75 +3053,75 @@ proc validate_CloudtasksProjectsLocationsQueuesList_579110(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579113 = query.getOrDefault("key")
-  valid_579113 = validateParameter(valid_579113, JString, required = false,
+  var valid_580138 = query.getOrDefault("key")
+  valid_580138 = validateParameter(valid_580138, JString, required = false,
                                  default = nil)
-  if valid_579113 != nil:
-    section.add "key", valid_579113
-  var valid_579114 = query.getOrDefault("prettyPrint")
-  valid_579114 = validateParameter(valid_579114, JBool, required = false,
+  if valid_580138 != nil:
+    section.add "key", valid_580138
+  var valid_580139 = query.getOrDefault("prettyPrint")
+  valid_580139 = validateParameter(valid_580139, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579114 != nil:
-    section.add "prettyPrint", valid_579114
-  var valid_579115 = query.getOrDefault("oauth_token")
-  valid_579115 = validateParameter(valid_579115, JString, required = false,
+  if valid_580139 != nil:
+    section.add "prettyPrint", valid_580139
+  var valid_580140 = query.getOrDefault("oauth_token")
+  valid_580140 = validateParameter(valid_580140, JString, required = false,
                                  default = nil)
-  if valid_579115 != nil:
-    section.add "oauth_token", valid_579115
-  var valid_579116 = query.getOrDefault("$.xgafv")
-  valid_579116 = validateParameter(valid_579116, JString, required = false,
+  if valid_580140 != nil:
+    section.add "oauth_token", valid_580140
+  var valid_580141 = query.getOrDefault("$.xgafv")
+  valid_580141 = validateParameter(valid_580141, JString, required = false,
                                  default = newJString("1"))
-  if valid_579116 != nil:
-    section.add "$.xgafv", valid_579116
-  var valid_579117 = query.getOrDefault("pageSize")
-  valid_579117 = validateParameter(valid_579117, JInt, required = false, default = nil)
-  if valid_579117 != nil:
-    section.add "pageSize", valid_579117
-  var valid_579118 = query.getOrDefault("alt")
-  valid_579118 = validateParameter(valid_579118, JString, required = false,
+  if valid_580141 != nil:
+    section.add "$.xgafv", valid_580141
+  var valid_580142 = query.getOrDefault("pageSize")
+  valid_580142 = validateParameter(valid_580142, JInt, required = false, default = nil)
+  if valid_580142 != nil:
+    section.add "pageSize", valid_580142
+  var valid_580143 = query.getOrDefault("alt")
+  valid_580143 = validateParameter(valid_580143, JString, required = false,
                                  default = newJString("json"))
-  if valid_579118 != nil:
-    section.add "alt", valid_579118
-  var valid_579119 = query.getOrDefault("uploadType")
-  valid_579119 = validateParameter(valid_579119, JString, required = false,
+  if valid_580143 != nil:
+    section.add "alt", valid_580143
+  var valid_580144 = query.getOrDefault("uploadType")
+  valid_580144 = validateParameter(valid_580144, JString, required = false,
                                  default = nil)
-  if valid_579119 != nil:
-    section.add "uploadType", valid_579119
-  var valid_579120 = query.getOrDefault("quotaUser")
-  valid_579120 = validateParameter(valid_579120, JString, required = false,
+  if valid_580144 != nil:
+    section.add "uploadType", valid_580144
+  var valid_580145 = query.getOrDefault("quotaUser")
+  valid_580145 = validateParameter(valid_580145, JString, required = false,
                                  default = nil)
-  if valid_579120 != nil:
-    section.add "quotaUser", valid_579120
-  var valid_579121 = query.getOrDefault("filter")
-  valid_579121 = validateParameter(valid_579121, JString, required = false,
+  if valid_580145 != nil:
+    section.add "quotaUser", valid_580145
+  var valid_580146 = query.getOrDefault("filter")
+  valid_580146 = validateParameter(valid_580146, JString, required = false,
                                  default = nil)
-  if valid_579121 != nil:
-    section.add "filter", valid_579121
-  var valid_579122 = query.getOrDefault("pageToken")
-  valid_579122 = validateParameter(valid_579122, JString, required = false,
+  if valid_580146 != nil:
+    section.add "filter", valid_580146
+  var valid_580147 = query.getOrDefault("pageToken")
+  valid_580147 = validateParameter(valid_580147, JString, required = false,
                                  default = nil)
-  if valid_579122 != nil:
-    section.add "pageToken", valid_579122
-  var valid_579123 = query.getOrDefault("callback")
-  valid_579123 = validateParameter(valid_579123, JString, required = false,
+  if valid_580147 != nil:
+    section.add "pageToken", valid_580147
+  var valid_580148 = query.getOrDefault("callback")
+  valid_580148 = validateParameter(valid_580148, JString, required = false,
                                  default = nil)
-  if valid_579123 != nil:
-    section.add "callback", valid_579123
-  var valid_579124 = query.getOrDefault("fields")
-  valid_579124 = validateParameter(valid_579124, JString, required = false,
+  if valid_580148 != nil:
+    section.add "callback", valid_580148
+  var valid_580149 = query.getOrDefault("fields")
+  valid_580149 = validateParameter(valid_580149, JString, required = false,
                                  default = nil)
-  if valid_579124 != nil:
-    section.add "fields", valid_579124
-  var valid_579125 = query.getOrDefault("access_token")
-  valid_579125 = validateParameter(valid_579125, JString, required = false,
+  if valid_580149 != nil:
+    section.add "fields", valid_580149
+  var valid_580150 = query.getOrDefault("access_token")
+  valid_580150 = validateParameter(valid_580150, JString, required = false,
                                  default = nil)
-  if valid_579125 != nil:
-    section.add "access_token", valid_579125
-  var valid_579126 = query.getOrDefault("upload_protocol")
-  valid_579126 = validateParameter(valid_579126, JString, required = false,
+  if valid_580150 != nil:
+    section.add "access_token", valid_580150
+  var valid_580151 = query.getOrDefault("upload_protocol")
+  valid_580151 = validateParameter(valid_580151, JString, required = false,
                                  default = nil)
-  if valid_579126 != nil:
-    section.add "upload_protocol", valid_579126
+  if valid_580151 != nil:
+    section.add "upload_protocol", valid_580151
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3065,23 +3130,23 @@ proc validate_CloudtasksProjectsLocationsQueuesList_579110(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579127: Call_CloudtasksProjectsLocationsQueuesList_579109;
+proc call*(call_580152: Call_CloudtasksProjectsLocationsQueuesList_580134;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists queues.
   ## 
   ## Queues are returned in lexicographical order.
   ## 
-  let valid = call_579127.validator(path, query, header, formData, body)
-  let scheme = call_579127.pickScheme
+  let valid = call_580152.validator(path, query, header, formData, body)
+  let scheme = call_580152.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579127.url(scheme.get, call_579127.host, call_579127.base,
-                         call_579127.route, valid.getOrDefault("path"),
+  let url = call_580152.url(scheme.get, call_580152.host, call_580152.base,
+                         call_580152.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579127, url, valid)
+  result = hook(call_580152, url, valid)
 
-proc call*(call_579128: Call_CloudtasksProjectsLocationsQueuesList_579109;
+proc call*(call_580153: Call_CloudtasksProjectsLocationsQueuesList_580134;
           parent: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; pageSize: int = 0;
           alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
@@ -3145,33 +3210,33 @@ proc call*(call_579128: Call_CloudtasksProjectsLocationsQueuesList_579109;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579129 = newJObject()
-  var query_579130 = newJObject()
-  add(query_579130, "key", newJString(key))
-  add(query_579130, "prettyPrint", newJBool(prettyPrint))
-  add(query_579130, "oauth_token", newJString(oauthToken))
-  add(query_579130, "$.xgafv", newJString(Xgafv))
-  add(query_579130, "pageSize", newJInt(pageSize))
-  add(query_579130, "alt", newJString(alt))
-  add(query_579130, "uploadType", newJString(uploadType))
-  add(query_579130, "quotaUser", newJString(quotaUser))
-  add(query_579130, "filter", newJString(filter))
-  add(query_579130, "pageToken", newJString(pageToken))
-  add(query_579130, "callback", newJString(callback))
-  add(path_579129, "parent", newJString(parent))
-  add(query_579130, "fields", newJString(fields))
-  add(query_579130, "access_token", newJString(accessToken))
-  add(query_579130, "upload_protocol", newJString(uploadProtocol))
-  result = call_579128.call(path_579129, query_579130, nil, nil, nil)
+  var path_580154 = newJObject()
+  var query_580155 = newJObject()
+  add(query_580155, "key", newJString(key))
+  add(query_580155, "prettyPrint", newJBool(prettyPrint))
+  add(query_580155, "oauth_token", newJString(oauthToken))
+  add(query_580155, "$.xgafv", newJString(Xgafv))
+  add(query_580155, "pageSize", newJInt(pageSize))
+  add(query_580155, "alt", newJString(alt))
+  add(query_580155, "uploadType", newJString(uploadType))
+  add(query_580155, "quotaUser", newJString(quotaUser))
+  add(query_580155, "filter", newJString(filter))
+  add(query_580155, "pageToken", newJString(pageToken))
+  add(query_580155, "callback", newJString(callback))
+  add(path_580154, "parent", newJString(parent))
+  add(query_580155, "fields", newJString(fields))
+  add(query_580155, "access_token", newJString(accessToken))
+  add(query_580155, "upload_protocol", newJString(uploadProtocol))
+  result = call_580153.call(path_580154, query_580155, nil, nil, nil)
 
-var cloudtasksProjectsLocationsQueuesList* = Call_CloudtasksProjectsLocationsQueuesList_579109(
+var cloudtasksProjectsLocationsQueuesList* = Call_CloudtasksProjectsLocationsQueuesList_580134(
     name: "cloudtasksProjectsLocationsQueuesList", meth: HttpMethod.HttpGet,
     host: "cloudtasks.googleapis.com", route: "/v2beta2/{parent}/queues",
-    validator: validate_CloudtasksProjectsLocationsQueuesList_579110, base: "/",
-    url: url_CloudtasksProjectsLocationsQueuesList_579111, schemes: {Scheme.Https})
+    validator: validate_CloudtasksProjectsLocationsQueuesList_580135, base: "/",
+    url: url_CloudtasksProjectsLocationsQueuesList_580136, schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesTasksCreate_579174 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesTasksCreate_579176(protocol: Scheme;
+  Call_CloudtasksProjectsLocationsQueuesTasksCreate_580199 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesTasksCreate_580201(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3185,9 +3250,14 @@ proc url_CloudtasksProjectsLocationsQueuesTasksCreate_579176(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesTasksCreate_579175(path: JsonNode;
+proc validate_CloudtasksProjectsLocationsQueuesTasksCreate_580200(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a task and adds it to a queue.
   ## 
@@ -3207,11 +3277,11 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksCreate_579175(path: JsonNode
   ## The queue must already exist.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_579177 = path.getOrDefault("parent")
-  valid_579177 = validateParameter(valid_579177, JString, required = true,
+  var valid_580202 = path.getOrDefault("parent")
+  valid_580202 = validateParameter(valid_580202, JString, required = true,
                                  default = nil)
-  if valid_579177 != nil:
-    section.add "parent", valid_579177
+  if valid_580202 != nil:
+    section.add "parent", valid_580202
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3237,61 +3307,61 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksCreate_579175(path: JsonNode
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579178 = query.getOrDefault("key")
-  valid_579178 = validateParameter(valid_579178, JString, required = false,
+  var valid_580203 = query.getOrDefault("key")
+  valid_580203 = validateParameter(valid_580203, JString, required = false,
                                  default = nil)
-  if valid_579178 != nil:
-    section.add "key", valid_579178
-  var valid_579179 = query.getOrDefault("prettyPrint")
-  valid_579179 = validateParameter(valid_579179, JBool, required = false,
+  if valid_580203 != nil:
+    section.add "key", valid_580203
+  var valid_580204 = query.getOrDefault("prettyPrint")
+  valid_580204 = validateParameter(valid_580204, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579179 != nil:
-    section.add "prettyPrint", valid_579179
-  var valid_579180 = query.getOrDefault("oauth_token")
-  valid_579180 = validateParameter(valid_579180, JString, required = false,
+  if valid_580204 != nil:
+    section.add "prettyPrint", valid_580204
+  var valid_580205 = query.getOrDefault("oauth_token")
+  valid_580205 = validateParameter(valid_580205, JString, required = false,
                                  default = nil)
-  if valid_579180 != nil:
-    section.add "oauth_token", valid_579180
-  var valid_579181 = query.getOrDefault("$.xgafv")
-  valid_579181 = validateParameter(valid_579181, JString, required = false,
+  if valid_580205 != nil:
+    section.add "oauth_token", valid_580205
+  var valid_580206 = query.getOrDefault("$.xgafv")
+  valid_580206 = validateParameter(valid_580206, JString, required = false,
                                  default = newJString("1"))
-  if valid_579181 != nil:
-    section.add "$.xgafv", valid_579181
-  var valid_579182 = query.getOrDefault("alt")
-  valid_579182 = validateParameter(valid_579182, JString, required = false,
+  if valid_580206 != nil:
+    section.add "$.xgafv", valid_580206
+  var valid_580207 = query.getOrDefault("alt")
+  valid_580207 = validateParameter(valid_580207, JString, required = false,
                                  default = newJString("json"))
-  if valid_579182 != nil:
-    section.add "alt", valid_579182
-  var valid_579183 = query.getOrDefault("uploadType")
-  valid_579183 = validateParameter(valid_579183, JString, required = false,
+  if valid_580207 != nil:
+    section.add "alt", valid_580207
+  var valid_580208 = query.getOrDefault("uploadType")
+  valid_580208 = validateParameter(valid_580208, JString, required = false,
                                  default = nil)
-  if valid_579183 != nil:
-    section.add "uploadType", valid_579183
-  var valid_579184 = query.getOrDefault("quotaUser")
-  valid_579184 = validateParameter(valid_579184, JString, required = false,
+  if valid_580208 != nil:
+    section.add "uploadType", valid_580208
+  var valid_580209 = query.getOrDefault("quotaUser")
+  valid_580209 = validateParameter(valid_580209, JString, required = false,
                                  default = nil)
-  if valid_579184 != nil:
-    section.add "quotaUser", valid_579184
-  var valid_579185 = query.getOrDefault("callback")
-  valid_579185 = validateParameter(valid_579185, JString, required = false,
+  if valid_580209 != nil:
+    section.add "quotaUser", valid_580209
+  var valid_580210 = query.getOrDefault("callback")
+  valid_580210 = validateParameter(valid_580210, JString, required = false,
                                  default = nil)
-  if valid_579185 != nil:
-    section.add "callback", valid_579185
-  var valid_579186 = query.getOrDefault("fields")
-  valid_579186 = validateParameter(valid_579186, JString, required = false,
+  if valid_580210 != nil:
+    section.add "callback", valid_580210
+  var valid_580211 = query.getOrDefault("fields")
+  valid_580211 = validateParameter(valid_580211, JString, required = false,
                                  default = nil)
-  if valid_579186 != nil:
-    section.add "fields", valid_579186
-  var valid_579187 = query.getOrDefault("access_token")
-  valid_579187 = validateParameter(valid_579187, JString, required = false,
+  if valid_580211 != nil:
+    section.add "fields", valid_580211
+  var valid_580212 = query.getOrDefault("access_token")
+  valid_580212 = validateParameter(valid_580212, JString, required = false,
                                  default = nil)
-  if valid_579187 != nil:
-    section.add "access_token", valid_579187
-  var valid_579188 = query.getOrDefault("upload_protocol")
-  valid_579188 = validateParameter(valid_579188, JString, required = false,
+  if valid_580212 != nil:
+    section.add "access_token", valid_580212
+  var valid_580213 = query.getOrDefault("upload_protocol")
+  valid_580213 = validateParameter(valid_580213, JString, required = false,
                                  default = nil)
-  if valid_579188 != nil:
-    section.add "upload_protocol", valid_579188
+  if valid_580213 != nil:
+    section.add "upload_protocol", valid_580213
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3303,7 +3373,7 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksCreate_579175(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_579190: Call_CloudtasksProjectsLocationsQueuesTasksCreate_579174;
+proc call*(call_580215: Call_CloudtasksProjectsLocationsQueuesTasksCreate_580199;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a task and adds it to a queue.
@@ -3314,16 +3384,16 @@ proc call*(call_579190: Call_CloudtasksProjectsLocationsQueuesTasksCreate_579174
   ##   100KB.
   ## * For pull queues, the maximum task size is 1MB.
   ## 
-  let valid = call_579190.validator(path, query, header, formData, body)
-  let scheme = call_579190.pickScheme
+  let valid = call_580215.validator(path, query, header, formData, body)
+  let scheme = call_580215.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579190.url(scheme.get, call_579190.host, call_579190.base,
-                         call_579190.route, valid.getOrDefault("path"),
+  let url = call_580215.url(scheme.get, call_580215.host, call_580215.base,
+                         call_580215.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579190, url, valid)
+  result = hook(call_580215, url, valid)
 
-proc call*(call_579191: Call_CloudtasksProjectsLocationsQueuesTasksCreate_579174;
+proc call*(call_580216: Call_CloudtasksProjectsLocationsQueuesTasksCreate_580199;
           parent: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -3365,35 +3435,35 @@ proc call*(call_579191: Call_CloudtasksProjectsLocationsQueuesTasksCreate_579174
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579192 = newJObject()
-  var query_579193 = newJObject()
-  var body_579194 = newJObject()
-  add(query_579193, "key", newJString(key))
-  add(query_579193, "prettyPrint", newJBool(prettyPrint))
-  add(query_579193, "oauth_token", newJString(oauthToken))
-  add(query_579193, "$.xgafv", newJString(Xgafv))
-  add(query_579193, "alt", newJString(alt))
-  add(query_579193, "uploadType", newJString(uploadType))
-  add(query_579193, "quotaUser", newJString(quotaUser))
+  var path_580217 = newJObject()
+  var query_580218 = newJObject()
+  var body_580219 = newJObject()
+  add(query_580218, "key", newJString(key))
+  add(query_580218, "prettyPrint", newJBool(prettyPrint))
+  add(query_580218, "oauth_token", newJString(oauthToken))
+  add(query_580218, "$.xgafv", newJString(Xgafv))
+  add(query_580218, "alt", newJString(alt))
+  add(query_580218, "uploadType", newJString(uploadType))
+  add(query_580218, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579194 = body
-  add(query_579193, "callback", newJString(callback))
-  add(path_579192, "parent", newJString(parent))
-  add(query_579193, "fields", newJString(fields))
-  add(query_579193, "access_token", newJString(accessToken))
-  add(query_579193, "upload_protocol", newJString(uploadProtocol))
-  result = call_579191.call(path_579192, query_579193, nil, nil, body_579194)
+    body_580219 = body
+  add(query_580218, "callback", newJString(callback))
+  add(path_580217, "parent", newJString(parent))
+  add(query_580218, "fields", newJString(fields))
+  add(query_580218, "access_token", newJString(accessToken))
+  add(query_580218, "upload_protocol", newJString(uploadProtocol))
+  result = call_580216.call(path_580217, query_580218, nil, nil, body_580219)
 
-var cloudtasksProjectsLocationsQueuesTasksCreate* = Call_CloudtasksProjectsLocationsQueuesTasksCreate_579174(
+var cloudtasksProjectsLocationsQueuesTasksCreate* = Call_CloudtasksProjectsLocationsQueuesTasksCreate_580199(
     name: "cloudtasksProjectsLocationsQueuesTasksCreate",
     meth: HttpMethod.HttpPost, host: "cloudtasks.googleapis.com",
     route: "/v2beta2/{parent}/tasks",
-    validator: validate_CloudtasksProjectsLocationsQueuesTasksCreate_579175,
-    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksCreate_579176,
+    validator: validate_CloudtasksProjectsLocationsQueuesTasksCreate_580200,
+    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksCreate_580201,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesTasksList_579152 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesTasksList_579154(protocol: Scheme;
+  Call_CloudtasksProjectsLocationsQueuesTasksList_580177 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesTasksList_580179(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3407,9 +3477,14 @@ proc url_CloudtasksProjectsLocationsQueuesTasksList_579154(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesTasksList_579153(path: JsonNode;
+proc validate_CloudtasksProjectsLocationsQueuesTasksList_580178(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists the tasks in a queue.
   ## 
@@ -3429,11 +3504,11 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksList_579153(path: JsonNode;
   ## `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_579155 = path.getOrDefault("parent")
-  valid_579155 = validateParameter(valid_579155, JString, required = true,
+  var valid_580180 = path.getOrDefault("parent")
+  valid_580180 = validateParameter(valid_580180, JString, required = true,
                                  default = nil)
-  if valid_579155 != nil:
-    section.add "parent", valid_579155
+  if valid_580180 != nil:
+    section.add "parent", valid_580180
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3491,75 +3566,75 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksList_579153(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579156 = query.getOrDefault("key")
-  valid_579156 = validateParameter(valid_579156, JString, required = false,
+  var valid_580181 = query.getOrDefault("key")
+  valid_580181 = validateParameter(valid_580181, JString, required = false,
                                  default = nil)
-  if valid_579156 != nil:
-    section.add "key", valid_579156
-  var valid_579157 = query.getOrDefault("prettyPrint")
-  valid_579157 = validateParameter(valid_579157, JBool, required = false,
+  if valid_580181 != nil:
+    section.add "key", valid_580181
+  var valid_580182 = query.getOrDefault("prettyPrint")
+  valid_580182 = validateParameter(valid_580182, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579157 != nil:
-    section.add "prettyPrint", valid_579157
-  var valid_579158 = query.getOrDefault("oauth_token")
-  valid_579158 = validateParameter(valid_579158, JString, required = false,
+  if valid_580182 != nil:
+    section.add "prettyPrint", valid_580182
+  var valid_580183 = query.getOrDefault("oauth_token")
+  valid_580183 = validateParameter(valid_580183, JString, required = false,
                                  default = nil)
-  if valid_579158 != nil:
-    section.add "oauth_token", valid_579158
-  var valid_579159 = query.getOrDefault("$.xgafv")
-  valid_579159 = validateParameter(valid_579159, JString, required = false,
+  if valid_580183 != nil:
+    section.add "oauth_token", valid_580183
+  var valid_580184 = query.getOrDefault("$.xgafv")
+  valid_580184 = validateParameter(valid_580184, JString, required = false,
                                  default = newJString("1"))
-  if valid_579159 != nil:
-    section.add "$.xgafv", valid_579159
-  var valid_579160 = query.getOrDefault("pageSize")
-  valid_579160 = validateParameter(valid_579160, JInt, required = false, default = nil)
-  if valid_579160 != nil:
-    section.add "pageSize", valid_579160
-  var valid_579161 = query.getOrDefault("responseView")
-  valid_579161 = validateParameter(valid_579161, JString, required = false,
+  if valid_580184 != nil:
+    section.add "$.xgafv", valid_580184
+  var valid_580185 = query.getOrDefault("pageSize")
+  valid_580185 = validateParameter(valid_580185, JInt, required = false, default = nil)
+  if valid_580185 != nil:
+    section.add "pageSize", valid_580185
+  var valid_580186 = query.getOrDefault("responseView")
+  valid_580186 = validateParameter(valid_580186, JString, required = false,
                                  default = newJString("VIEW_UNSPECIFIED"))
-  if valid_579161 != nil:
-    section.add "responseView", valid_579161
-  var valid_579162 = query.getOrDefault("alt")
-  valid_579162 = validateParameter(valid_579162, JString, required = false,
+  if valid_580186 != nil:
+    section.add "responseView", valid_580186
+  var valid_580187 = query.getOrDefault("alt")
+  valid_580187 = validateParameter(valid_580187, JString, required = false,
                                  default = newJString("json"))
-  if valid_579162 != nil:
-    section.add "alt", valid_579162
-  var valid_579163 = query.getOrDefault("uploadType")
-  valid_579163 = validateParameter(valid_579163, JString, required = false,
+  if valid_580187 != nil:
+    section.add "alt", valid_580187
+  var valid_580188 = query.getOrDefault("uploadType")
+  valid_580188 = validateParameter(valid_580188, JString, required = false,
                                  default = nil)
-  if valid_579163 != nil:
-    section.add "uploadType", valid_579163
-  var valid_579164 = query.getOrDefault("quotaUser")
-  valid_579164 = validateParameter(valid_579164, JString, required = false,
+  if valid_580188 != nil:
+    section.add "uploadType", valid_580188
+  var valid_580189 = query.getOrDefault("quotaUser")
+  valid_580189 = validateParameter(valid_580189, JString, required = false,
                                  default = nil)
-  if valid_579164 != nil:
-    section.add "quotaUser", valid_579164
-  var valid_579165 = query.getOrDefault("pageToken")
-  valid_579165 = validateParameter(valid_579165, JString, required = false,
+  if valid_580189 != nil:
+    section.add "quotaUser", valid_580189
+  var valid_580190 = query.getOrDefault("pageToken")
+  valid_580190 = validateParameter(valid_580190, JString, required = false,
                                  default = nil)
-  if valid_579165 != nil:
-    section.add "pageToken", valid_579165
-  var valid_579166 = query.getOrDefault("callback")
-  valid_579166 = validateParameter(valid_579166, JString, required = false,
+  if valid_580190 != nil:
+    section.add "pageToken", valid_580190
+  var valid_580191 = query.getOrDefault("callback")
+  valid_580191 = validateParameter(valid_580191, JString, required = false,
                                  default = nil)
-  if valid_579166 != nil:
-    section.add "callback", valid_579166
-  var valid_579167 = query.getOrDefault("fields")
-  valid_579167 = validateParameter(valid_579167, JString, required = false,
+  if valid_580191 != nil:
+    section.add "callback", valid_580191
+  var valid_580192 = query.getOrDefault("fields")
+  valid_580192 = validateParameter(valid_580192, JString, required = false,
                                  default = nil)
-  if valid_579167 != nil:
-    section.add "fields", valid_579167
-  var valid_579168 = query.getOrDefault("access_token")
-  valid_579168 = validateParameter(valid_579168, JString, required = false,
+  if valid_580192 != nil:
+    section.add "fields", valid_580192
+  var valid_580193 = query.getOrDefault("access_token")
+  valid_580193 = validateParameter(valid_580193, JString, required = false,
                                  default = nil)
-  if valid_579168 != nil:
-    section.add "access_token", valid_579168
-  var valid_579169 = query.getOrDefault("upload_protocol")
-  valid_579169 = validateParameter(valid_579169, JString, required = false,
+  if valid_580193 != nil:
+    section.add "access_token", valid_580193
+  var valid_580194 = query.getOrDefault("upload_protocol")
+  valid_580194 = validateParameter(valid_580194, JString, required = false,
                                  default = nil)
-  if valid_579169 != nil:
-    section.add "upload_protocol", valid_579169
+  if valid_580194 != nil:
+    section.add "upload_protocol", valid_580194
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3568,7 +3643,7 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksList_579153(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579170: Call_CloudtasksProjectsLocationsQueuesTasksList_579152;
+proc call*(call_580195: Call_CloudtasksProjectsLocationsQueuesTasksList_580177;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists the tasks in a queue.
@@ -3581,16 +3656,16 @@ proc call*(call_579170: Call_CloudtasksProjectsLocationsQueuesTasksList_579152;
   ## The tasks may be returned in any order. The ordering may change at any
   ## time.
   ## 
-  let valid = call_579170.validator(path, query, header, formData, body)
-  let scheme = call_579170.pickScheme
+  let valid = call_580195.validator(path, query, header, formData, body)
+  let scheme = call_580195.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579170.url(scheme.get, call_579170.host, call_579170.base,
-                         call_579170.route, valid.getOrDefault("path"),
+  let url = call_580195.url(scheme.get, call_580195.host, call_580195.base,
+                         call_580195.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579170, url, valid)
+  result = hook(call_580195, url, valid)
 
-proc call*(call_579171: Call_CloudtasksProjectsLocationsQueuesTasksList_579152;
+proc call*(call_580196: Call_CloudtasksProjectsLocationsQueuesTasksList_580177;
           parent: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; pageSize: int = 0;
           responseView: string = "VIEW_UNSPECIFIED"; alt: string = "json";
@@ -3664,34 +3739,34 @@ proc call*(call_579171: Call_CloudtasksProjectsLocationsQueuesTasksList_579152;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579172 = newJObject()
-  var query_579173 = newJObject()
-  add(query_579173, "key", newJString(key))
-  add(query_579173, "prettyPrint", newJBool(prettyPrint))
-  add(query_579173, "oauth_token", newJString(oauthToken))
-  add(query_579173, "$.xgafv", newJString(Xgafv))
-  add(query_579173, "pageSize", newJInt(pageSize))
-  add(query_579173, "responseView", newJString(responseView))
-  add(query_579173, "alt", newJString(alt))
-  add(query_579173, "uploadType", newJString(uploadType))
-  add(query_579173, "quotaUser", newJString(quotaUser))
-  add(query_579173, "pageToken", newJString(pageToken))
-  add(query_579173, "callback", newJString(callback))
-  add(path_579172, "parent", newJString(parent))
-  add(query_579173, "fields", newJString(fields))
-  add(query_579173, "access_token", newJString(accessToken))
-  add(query_579173, "upload_protocol", newJString(uploadProtocol))
-  result = call_579171.call(path_579172, query_579173, nil, nil, nil)
+  var path_580197 = newJObject()
+  var query_580198 = newJObject()
+  add(query_580198, "key", newJString(key))
+  add(query_580198, "prettyPrint", newJBool(prettyPrint))
+  add(query_580198, "oauth_token", newJString(oauthToken))
+  add(query_580198, "$.xgafv", newJString(Xgafv))
+  add(query_580198, "pageSize", newJInt(pageSize))
+  add(query_580198, "responseView", newJString(responseView))
+  add(query_580198, "alt", newJString(alt))
+  add(query_580198, "uploadType", newJString(uploadType))
+  add(query_580198, "quotaUser", newJString(quotaUser))
+  add(query_580198, "pageToken", newJString(pageToken))
+  add(query_580198, "callback", newJString(callback))
+  add(path_580197, "parent", newJString(parent))
+  add(query_580198, "fields", newJString(fields))
+  add(query_580198, "access_token", newJString(accessToken))
+  add(query_580198, "upload_protocol", newJString(uploadProtocol))
+  result = call_580196.call(path_580197, query_580198, nil, nil, nil)
 
-var cloudtasksProjectsLocationsQueuesTasksList* = Call_CloudtasksProjectsLocationsQueuesTasksList_579152(
+var cloudtasksProjectsLocationsQueuesTasksList* = Call_CloudtasksProjectsLocationsQueuesTasksList_580177(
     name: "cloudtasksProjectsLocationsQueuesTasksList", meth: HttpMethod.HttpGet,
     host: "cloudtasks.googleapis.com", route: "/v2beta2/{parent}/tasks",
-    validator: validate_CloudtasksProjectsLocationsQueuesTasksList_579153,
-    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksList_579154,
+    validator: validate_CloudtasksProjectsLocationsQueuesTasksList_580178,
+    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksList_580179,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesTasksLease_579195 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesTasksLease_579197(protocol: Scheme;
+  Call_CloudtasksProjectsLocationsQueuesTasksLease_580220 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesTasksLease_580222(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3705,9 +3780,14 @@ proc url_CloudtasksProjectsLocationsQueuesTasksLease_579197(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesTasksLease_579196(path: JsonNode;
+proc validate_CloudtasksProjectsLocationsQueuesTasksLease_580221(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Leases tasks from a pull queue for
   ## lease_duration.
@@ -3740,11 +3820,11 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksLease_579196(path: JsonNode;
   ## `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_579198 = path.getOrDefault("parent")
-  valid_579198 = validateParameter(valid_579198, JString, required = true,
+  var valid_580223 = path.getOrDefault("parent")
+  valid_580223 = validateParameter(valid_580223, JString, required = true,
                                  default = nil)
-  if valid_579198 != nil:
-    section.add "parent", valid_579198
+  if valid_580223 != nil:
+    section.add "parent", valid_580223
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3770,61 +3850,61 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksLease_579196(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579199 = query.getOrDefault("key")
-  valid_579199 = validateParameter(valid_579199, JString, required = false,
+  var valid_580224 = query.getOrDefault("key")
+  valid_580224 = validateParameter(valid_580224, JString, required = false,
                                  default = nil)
-  if valid_579199 != nil:
-    section.add "key", valid_579199
-  var valid_579200 = query.getOrDefault("prettyPrint")
-  valid_579200 = validateParameter(valid_579200, JBool, required = false,
+  if valid_580224 != nil:
+    section.add "key", valid_580224
+  var valid_580225 = query.getOrDefault("prettyPrint")
+  valid_580225 = validateParameter(valid_580225, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579200 != nil:
-    section.add "prettyPrint", valid_579200
-  var valid_579201 = query.getOrDefault("oauth_token")
-  valid_579201 = validateParameter(valid_579201, JString, required = false,
+  if valid_580225 != nil:
+    section.add "prettyPrint", valid_580225
+  var valid_580226 = query.getOrDefault("oauth_token")
+  valid_580226 = validateParameter(valid_580226, JString, required = false,
                                  default = nil)
-  if valid_579201 != nil:
-    section.add "oauth_token", valid_579201
-  var valid_579202 = query.getOrDefault("$.xgafv")
-  valid_579202 = validateParameter(valid_579202, JString, required = false,
+  if valid_580226 != nil:
+    section.add "oauth_token", valid_580226
+  var valid_580227 = query.getOrDefault("$.xgafv")
+  valid_580227 = validateParameter(valid_580227, JString, required = false,
                                  default = newJString("1"))
-  if valid_579202 != nil:
-    section.add "$.xgafv", valid_579202
-  var valid_579203 = query.getOrDefault("alt")
-  valid_579203 = validateParameter(valid_579203, JString, required = false,
+  if valid_580227 != nil:
+    section.add "$.xgafv", valid_580227
+  var valid_580228 = query.getOrDefault("alt")
+  valid_580228 = validateParameter(valid_580228, JString, required = false,
                                  default = newJString("json"))
-  if valid_579203 != nil:
-    section.add "alt", valid_579203
-  var valid_579204 = query.getOrDefault("uploadType")
-  valid_579204 = validateParameter(valid_579204, JString, required = false,
+  if valid_580228 != nil:
+    section.add "alt", valid_580228
+  var valid_580229 = query.getOrDefault("uploadType")
+  valid_580229 = validateParameter(valid_580229, JString, required = false,
                                  default = nil)
-  if valid_579204 != nil:
-    section.add "uploadType", valid_579204
-  var valid_579205 = query.getOrDefault("quotaUser")
-  valid_579205 = validateParameter(valid_579205, JString, required = false,
+  if valid_580229 != nil:
+    section.add "uploadType", valid_580229
+  var valid_580230 = query.getOrDefault("quotaUser")
+  valid_580230 = validateParameter(valid_580230, JString, required = false,
                                  default = nil)
-  if valid_579205 != nil:
-    section.add "quotaUser", valid_579205
-  var valid_579206 = query.getOrDefault("callback")
-  valid_579206 = validateParameter(valid_579206, JString, required = false,
+  if valid_580230 != nil:
+    section.add "quotaUser", valid_580230
+  var valid_580231 = query.getOrDefault("callback")
+  valid_580231 = validateParameter(valid_580231, JString, required = false,
                                  default = nil)
-  if valid_579206 != nil:
-    section.add "callback", valid_579206
-  var valid_579207 = query.getOrDefault("fields")
-  valid_579207 = validateParameter(valid_579207, JString, required = false,
+  if valid_580231 != nil:
+    section.add "callback", valid_580231
+  var valid_580232 = query.getOrDefault("fields")
+  valid_580232 = validateParameter(valid_580232, JString, required = false,
                                  default = nil)
-  if valid_579207 != nil:
-    section.add "fields", valid_579207
-  var valid_579208 = query.getOrDefault("access_token")
-  valid_579208 = validateParameter(valid_579208, JString, required = false,
+  if valid_580232 != nil:
+    section.add "fields", valid_580232
+  var valid_580233 = query.getOrDefault("access_token")
+  valid_580233 = validateParameter(valid_580233, JString, required = false,
                                  default = nil)
-  if valid_579208 != nil:
-    section.add "access_token", valid_579208
-  var valid_579209 = query.getOrDefault("upload_protocol")
-  valid_579209 = validateParameter(valid_579209, JString, required = false,
+  if valid_580233 != nil:
+    section.add "access_token", valid_580233
+  var valid_580234 = query.getOrDefault("upload_protocol")
+  valid_580234 = validateParameter(valid_580234, JString, required = false,
                                  default = nil)
-  if valid_579209 != nil:
-    section.add "upload_protocol", valid_579209
+  if valid_580234 != nil:
+    section.add "upload_protocol", valid_580234
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3836,7 +3916,7 @@ proc validate_CloudtasksProjectsLocationsQueuesTasksLease_579196(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579211: Call_CloudtasksProjectsLocationsQueuesTasksLease_579195;
+proc call*(call_580236: Call_CloudtasksProjectsLocationsQueuesTasksLease_580220;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Leases tasks from a pull queue for
@@ -3862,16 +3942,16 @@ proc call*(call_579211: Call_CloudtasksProjectsLocationsQueuesTasksLease_579195;
   ## max_tasks_dispatched_per_second
   ## is exceeded.
   ## 
-  let valid = call_579211.validator(path, query, header, formData, body)
-  let scheme = call_579211.pickScheme
+  let valid = call_580236.validator(path, query, header, formData, body)
+  let scheme = call_580236.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579211.url(scheme.get, call_579211.host, call_579211.base,
-                         call_579211.route, valid.getOrDefault("path"),
+  let url = call_580236.url(scheme.get, call_580236.host, call_580236.base,
+                         call_580236.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579211, url, valid)
+  result = hook(call_580236, url, valid)
 
-proc call*(call_579212: Call_CloudtasksProjectsLocationsQueuesTasksLease_579195;
+proc call*(call_580237: Call_CloudtasksProjectsLocationsQueuesTasksLease_580220;
           parent: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -3926,35 +4006,35 @@ proc call*(call_579212: Call_CloudtasksProjectsLocationsQueuesTasksLease_579195;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579213 = newJObject()
-  var query_579214 = newJObject()
-  var body_579215 = newJObject()
-  add(query_579214, "key", newJString(key))
-  add(query_579214, "prettyPrint", newJBool(prettyPrint))
-  add(query_579214, "oauth_token", newJString(oauthToken))
-  add(query_579214, "$.xgafv", newJString(Xgafv))
-  add(query_579214, "alt", newJString(alt))
-  add(query_579214, "uploadType", newJString(uploadType))
-  add(query_579214, "quotaUser", newJString(quotaUser))
+  var path_580238 = newJObject()
+  var query_580239 = newJObject()
+  var body_580240 = newJObject()
+  add(query_580239, "key", newJString(key))
+  add(query_580239, "prettyPrint", newJBool(prettyPrint))
+  add(query_580239, "oauth_token", newJString(oauthToken))
+  add(query_580239, "$.xgafv", newJString(Xgafv))
+  add(query_580239, "alt", newJString(alt))
+  add(query_580239, "uploadType", newJString(uploadType))
+  add(query_580239, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579215 = body
-  add(query_579214, "callback", newJString(callback))
-  add(path_579213, "parent", newJString(parent))
-  add(query_579214, "fields", newJString(fields))
-  add(query_579214, "access_token", newJString(accessToken))
-  add(query_579214, "upload_protocol", newJString(uploadProtocol))
-  result = call_579212.call(path_579213, query_579214, nil, nil, body_579215)
+    body_580240 = body
+  add(query_580239, "callback", newJString(callback))
+  add(path_580238, "parent", newJString(parent))
+  add(query_580239, "fields", newJString(fields))
+  add(query_580239, "access_token", newJString(accessToken))
+  add(query_580239, "upload_protocol", newJString(uploadProtocol))
+  result = call_580237.call(path_580238, query_580239, nil, nil, body_580240)
 
-var cloudtasksProjectsLocationsQueuesTasksLease* = Call_CloudtasksProjectsLocationsQueuesTasksLease_579195(
+var cloudtasksProjectsLocationsQueuesTasksLease* = Call_CloudtasksProjectsLocationsQueuesTasksLease_580220(
     name: "cloudtasksProjectsLocationsQueuesTasksLease",
     meth: HttpMethod.HttpPost, host: "cloudtasks.googleapis.com",
     route: "/v2beta2/{parent}/tasks:lease",
-    validator: validate_CloudtasksProjectsLocationsQueuesTasksLease_579196,
-    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksLease_579197,
+    validator: validate_CloudtasksProjectsLocationsQueuesTasksLease_580221,
+    base: "/", url: url_CloudtasksProjectsLocationsQueuesTasksLease_580222,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesGetIamPolicy_579216 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesGetIamPolicy_579218(protocol: Scheme;
+  Call_CloudtasksProjectsLocationsQueuesGetIamPolicy_580241 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesGetIamPolicy_580243(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3968,9 +4048,14 @@ proc url_CloudtasksProjectsLocationsQueuesGetIamPolicy_579218(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesGetIamPolicy_579217(
+proc validate_CloudtasksProjectsLocationsQueuesGetIamPolicy_580242(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Gets the access control policy for a Queue.
@@ -3991,11 +4076,11 @@ proc validate_CloudtasksProjectsLocationsQueuesGetIamPolicy_579217(
   ## See the operation documentation for the appropriate value for this field.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_579219 = path.getOrDefault("resource")
-  valid_579219 = validateParameter(valid_579219, JString, required = true,
+  var valid_580244 = path.getOrDefault("resource")
+  valid_580244 = validateParameter(valid_580244, JString, required = true,
                                  default = nil)
-  if valid_579219 != nil:
-    section.add "resource", valid_579219
+  if valid_580244 != nil:
+    section.add "resource", valid_580244
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -4021,61 +4106,61 @@ proc validate_CloudtasksProjectsLocationsQueuesGetIamPolicy_579217(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579220 = query.getOrDefault("key")
-  valid_579220 = validateParameter(valid_579220, JString, required = false,
+  var valid_580245 = query.getOrDefault("key")
+  valid_580245 = validateParameter(valid_580245, JString, required = false,
                                  default = nil)
-  if valid_579220 != nil:
-    section.add "key", valid_579220
-  var valid_579221 = query.getOrDefault("prettyPrint")
-  valid_579221 = validateParameter(valid_579221, JBool, required = false,
+  if valid_580245 != nil:
+    section.add "key", valid_580245
+  var valid_580246 = query.getOrDefault("prettyPrint")
+  valid_580246 = validateParameter(valid_580246, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579221 != nil:
-    section.add "prettyPrint", valid_579221
-  var valid_579222 = query.getOrDefault("oauth_token")
-  valid_579222 = validateParameter(valid_579222, JString, required = false,
+  if valid_580246 != nil:
+    section.add "prettyPrint", valid_580246
+  var valid_580247 = query.getOrDefault("oauth_token")
+  valid_580247 = validateParameter(valid_580247, JString, required = false,
                                  default = nil)
-  if valid_579222 != nil:
-    section.add "oauth_token", valid_579222
-  var valid_579223 = query.getOrDefault("$.xgafv")
-  valid_579223 = validateParameter(valid_579223, JString, required = false,
+  if valid_580247 != nil:
+    section.add "oauth_token", valid_580247
+  var valid_580248 = query.getOrDefault("$.xgafv")
+  valid_580248 = validateParameter(valid_580248, JString, required = false,
                                  default = newJString("1"))
-  if valid_579223 != nil:
-    section.add "$.xgafv", valid_579223
-  var valid_579224 = query.getOrDefault("alt")
-  valid_579224 = validateParameter(valid_579224, JString, required = false,
+  if valid_580248 != nil:
+    section.add "$.xgafv", valid_580248
+  var valid_580249 = query.getOrDefault("alt")
+  valid_580249 = validateParameter(valid_580249, JString, required = false,
                                  default = newJString("json"))
-  if valid_579224 != nil:
-    section.add "alt", valid_579224
-  var valid_579225 = query.getOrDefault("uploadType")
-  valid_579225 = validateParameter(valid_579225, JString, required = false,
+  if valid_580249 != nil:
+    section.add "alt", valid_580249
+  var valid_580250 = query.getOrDefault("uploadType")
+  valid_580250 = validateParameter(valid_580250, JString, required = false,
                                  default = nil)
-  if valid_579225 != nil:
-    section.add "uploadType", valid_579225
-  var valid_579226 = query.getOrDefault("quotaUser")
-  valid_579226 = validateParameter(valid_579226, JString, required = false,
+  if valid_580250 != nil:
+    section.add "uploadType", valid_580250
+  var valid_580251 = query.getOrDefault("quotaUser")
+  valid_580251 = validateParameter(valid_580251, JString, required = false,
                                  default = nil)
-  if valid_579226 != nil:
-    section.add "quotaUser", valid_579226
-  var valid_579227 = query.getOrDefault("callback")
-  valid_579227 = validateParameter(valid_579227, JString, required = false,
+  if valid_580251 != nil:
+    section.add "quotaUser", valid_580251
+  var valid_580252 = query.getOrDefault("callback")
+  valid_580252 = validateParameter(valid_580252, JString, required = false,
                                  default = nil)
-  if valid_579227 != nil:
-    section.add "callback", valid_579227
-  var valid_579228 = query.getOrDefault("fields")
-  valid_579228 = validateParameter(valid_579228, JString, required = false,
+  if valid_580252 != nil:
+    section.add "callback", valid_580252
+  var valid_580253 = query.getOrDefault("fields")
+  valid_580253 = validateParameter(valid_580253, JString, required = false,
                                  default = nil)
-  if valid_579228 != nil:
-    section.add "fields", valid_579228
-  var valid_579229 = query.getOrDefault("access_token")
-  valid_579229 = validateParameter(valid_579229, JString, required = false,
+  if valid_580253 != nil:
+    section.add "fields", valid_580253
+  var valid_580254 = query.getOrDefault("access_token")
+  valid_580254 = validateParameter(valid_580254, JString, required = false,
                                  default = nil)
-  if valid_579229 != nil:
-    section.add "access_token", valid_579229
-  var valid_579230 = query.getOrDefault("upload_protocol")
-  valid_579230 = validateParameter(valid_579230, JString, required = false,
+  if valid_580254 != nil:
+    section.add "access_token", valid_580254
+  var valid_580255 = query.getOrDefault("upload_protocol")
+  valid_580255 = validateParameter(valid_580255, JString, required = false,
                                  default = nil)
-  if valid_579230 != nil:
-    section.add "upload_protocol", valid_579230
+  if valid_580255 != nil:
+    section.add "upload_protocol", valid_580255
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4087,7 +4172,7 @@ proc validate_CloudtasksProjectsLocationsQueuesGetIamPolicy_579217(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579232: Call_CloudtasksProjectsLocationsQueuesGetIamPolicy_579216;
+proc call*(call_580257: Call_CloudtasksProjectsLocationsQueuesGetIamPolicy_580241;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets the access control policy for a Queue.
@@ -4100,16 +4185,16 @@ proc call*(call_579232: Call_CloudtasksProjectsLocationsQueuesGetIamPolicy_57921
   ## 
   ## * `cloudtasks.queues.getIamPolicy`
   ## 
-  let valid = call_579232.validator(path, query, header, formData, body)
-  let scheme = call_579232.pickScheme
+  let valid = call_580257.validator(path, query, header, formData, body)
+  let scheme = call_580257.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579232.url(scheme.get, call_579232.host, call_579232.base,
-                         call_579232.route, valid.getOrDefault("path"),
+  let url = call_580257.url(scheme.get, call_580257.host, call_580257.base,
+                         call_580257.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579232, url, valid)
+  result = hook(call_580257, url, valid)
 
-proc call*(call_579233: Call_CloudtasksProjectsLocationsQueuesGetIamPolicy_579216;
+proc call*(call_580258: Call_CloudtasksProjectsLocationsQueuesGetIamPolicy_580241;
           resource: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -4151,35 +4236,35 @@ proc call*(call_579233: Call_CloudtasksProjectsLocationsQueuesGetIamPolicy_57921
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579234 = newJObject()
-  var query_579235 = newJObject()
-  var body_579236 = newJObject()
-  add(query_579235, "key", newJString(key))
-  add(query_579235, "prettyPrint", newJBool(prettyPrint))
-  add(query_579235, "oauth_token", newJString(oauthToken))
-  add(query_579235, "$.xgafv", newJString(Xgafv))
-  add(query_579235, "alt", newJString(alt))
-  add(query_579235, "uploadType", newJString(uploadType))
-  add(query_579235, "quotaUser", newJString(quotaUser))
-  add(path_579234, "resource", newJString(resource))
+  var path_580259 = newJObject()
+  var query_580260 = newJObject()
+  var body_580261 = newJObject()
+  add(query_580260, "key", newJString(key))
+  add(query_580260, "prettyPrint", newJBool(prettyPrint))
+  add(query_580260, "oauth_token", newJString(oauthToken))
+  add(query_580260, "$.xgafv", newJString(Xgafv))
+  add(query_580260, "alt", newJString(alt))
+  add(query_580260, "uploadType", newJString(uploadType))
+  add(query_580260, "quotaUser", newJString(quotaUser))
+  add(path_580259, "resource", newJString(resource))
   if body != nil:
-    body_579236 = body
-  add(query_579235, "callback", newJString(callback))
-  add(query_579235, "fields", newJString(fields))
-  add(query_579235, "access_token", newJString(accessToken))
-  add(query_579235, "upload_protocol", newJString(uploadProtocol))
-  result = call_579233.call(path_579234, query_579235, nil, nil, body_579236)
+    body_580261 = body
+  add(query_580260, "callback", newJString(callback))
+  add(query_580260, "fields", newJString(fields))
+  add(query_580260, "access_token", newJString(accessToken))
+  add(query_580260, "upload_protocol", newJString(uploadProtocol))
+  result = call_580258.call(path_580259, query_580260, nil, nil, body_580261)
 
-var cloudtasksProjectsLocationsQueuesGetIamPolicy* = Call_CloudtasksProjectsLocationsQueuesGetIamPolicy_579216(
+var cloudtasksProjectsLocationsQueuesGetIamPolicy* = Call_CloudtasksProjectsLocationsQueuesGetIamPolicy_580241(
     name: "cloudtasksProjectsLocationsQueuesGetIamPolicy",
     meth: HttpMethod.HttpPost, host: "cloudtasks.googleapis.com",
     route: "/v2beta2/{resource}:getIamPolicy",
-    validator: validate_CloudtasksProjectsLocationsQueuesGetIamPolicy_579217,
-    base: "/", url: url_CloudtasksProjectsLocationsQueuesGetIamPolicy_579218,
+    validator: validate_CloudtasksProjectsLocationsQueuesGetIamPolicy_580242,
+    base: "/", url: url_CloudtasksProjectsLocationsQueuesGetIamPolicy_580243,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesSetIamPolicy_579237 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesSetIamPolicy_579239(protocol: Scheme;
+  Call_CloudtasksProjectsLocationsQueuesSetIamPolicy_580262 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesSetIamPolicy_580264(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4193,9 +4278,14 @@ proc url_CloudtasksProjectsLocationsQueuesSetIamPolicy_579239(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesSetIamPolicy_579238(
+proc validate_CloudtasksProjectsLocationsQueuesSetIamPolicy_580263(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Sets the access control policy for a Queue. Replaces any existing
@@ -4218,11 +4308,11 @@ proc validate_CloudtasksProjectsLocationsQueuesSetIamPolicy_579238(
   ## See the operation documentation for the appropriate value for this field.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_579240 = path.getOrDefault("resource")
-  valid_579240 = validateParameter(valid_579240, JString, required = true,
+  var valid_580265 = path.getOrDefault("resource")
+  valid_580265 = validateParameter(valid_580265, JString, required = true,
                                  default = nil)
-  if valid_579240 != nil:
-    section.add "resource", valid_579240
+  if valid_580265 != nil:
+    section.add "resource", valid_580265
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -4248,61 +4338,61 @@ proc validate_CloudtasksProjectsLocationsQueuesSetIamPolicy_579238(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579241 = query.getOrDefault("key")
-  valid_579241 = validateParameter(valid_579241, JString, required = false,
+  var valid_580266 = query.getOrDefault("key")
+  valid_580266 = validateParameter(valid_580266, JString, required = false,
                                  default = nil)
-  if valid_579241 != nil:
-    section.add "key", valid_579241
-  var valid_579242 = query.getOrDefault("prettyPrint")
-  valid_579242 = validateParameter(valid_579242, JBool, required = false,
+  if valid_580266 != nil:
+    section.add "key", valid_580266
+  var valid_580267 = query.getOrDefault("prettyPrint")
+  valid_580267 = validateParameter(valid_580267, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579242 != nil:
-    section.add "prettyPrint", valid_579242
-  var valid_579243 = query.getOrDefault("oauth_token")
-  valid_579243 = validateParameter(valid_579243, JString, required = false,
+  if valid_580267 != nil:
+    section.add "prettyPrint", valid_580267
+  var valid_580268 = query.getOrDefault("oauth_token")
+  valid_580268 = validateParameter(valid_580268, JString, required = false,
                                  default = nil)
-  if valid_579243 != nil:
-    section.add "oauth_token", valid_579243
-  var valid_579244 = query.getOrDefault("$.xgafv")
-  valid_579244 = validateParameter(valid_579244, JString, required = false,
+  if valid_580268 != nil:
+    section.add "oauth_token", valid_580268
+  var valid_580269 = query.getOrDefault("$.xgafv")
+  valid_580269 = validateParameter(valid_580269, JString, required = false,
                                  default = newJString("1"))
-  if valid_579244 != nil:
-    section.add "$.xgafv", valid_579244
-  var valid_579245 = query.getOrDefault("alt")
-  valid_579245 = validateParameter(valid_579245, JString, required = false,
+  if valid_580269 != nil:
+    section.add "$.xgafv", valid_580269
+  var valid_580270 = query.getOrDefault("alt")
+  valid_580270 = validateParameter(valid_580270, JString, required = false,
                                  default = newJString("json"))
-  if valid_579245 != nil:
-    section.add "alt", valid_579245
-  var valid_579246 = query.getOrDefault("uploadType")
-  valid_579246 = validateParameter(valid_579246, JString, required = false,
+  if valid_580270 != nil:
+    section.add "alt", valid_580270
+  var valid_580271 = query.getOrDefault("uploadType")
+  valid_580271 = validateParameter(valid_580271, JString, required = false,
                                  default = nil)
-  if valid_579246 != nil:
-    section.add "uploadType", valid_579246
-  var valid_579247 = query.getOrDefault("quotaUser")
-  valid_579247 = validateParameter(valid_579247, JString, required = false,
+  if valid_580271 != nil:
+    section.add "uploadType", valid_580271
+  var valid_580272 = query.getOrDefault("quotaUser")
+  valid_580272 = validateParameter(valid_580272, JString, required = false,
                                  default = nil)
-  if valid_579247 != nil:
-    section.add "quotaUser", valid_579247
-  var valid_579248 = query.getOrDefault("callback")
-  valid_579248 = validateParameter(valid_579248, JString, required = false,
+  if valid_580272 != nil:
+    section.add "quotaUser", valid_580272
+  var valid_580273 = query.getOrDefault("callback")
+  valid_580273 = validateParameter(valid_580273, JString, required = false,
                                  default = nil)
-  if valid_579248 != nil:
-    section.add "callback", valid_579248
-  var valid_579249 = query.getOrDefault("fields")
-  valid_579249 = validateParameter(valid_579249, JString, required = false,
+  if valid_580273 != nil:
+    section.add "callback", valid_580273
+  var valid_580274 = query.getOrDefault("fields")
+  valid_580274 = validateParameter(valid_580274, JString, required = false,
                                  default = nil)
-  if valid_579249 != nil:
-    section.add "fields", valid_579249
-  var valid_579250 = query.getOrDefault("access_token")
-  valid_579250 = validateParameter(valid_579250, JString, required = false,
+  if valid_580274 != nil:
+    section.add "fields", valid_580274
+  var valid_580275 = query.getOrDefault("access_token")
+  valid_580275 = validateParameter(valid_580275, JString, required = false,
                                  default = nil)
-  if valid_579250 != nil:
-    section.add "access_token", valid_579250
-  var valid_579251 = query.getOrDefault("upload_protocol")
-  valid_579251 = validateParameter(valid_579251, JString, required = false,
+  if valid_580275 != nil:
+    section.add "access_token", valid_580275
+  var valid_580276 = query.getOrDefault("upload_protocol")
+  valid_580276 = validateParameter(valid_580276, JString, required = false,
                                  default = nil)
-  if valid_579251 != nil:
-    section.add "upload_protocol", valid_579251
+  if valid_580276 != nil:
+    section.add "upload_protocol", valid_580276
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4314,7 +4404,7 @@ proc validate_CloudtasksProjectsLocationsQueuesSetIamPolicy_579238(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579253: Call_CloudtasksProjectsLocationsQueuesSetIamPolicy_579237;
+proc call*(call_580278: Call_CloudtasksProjectsLocationsQueuesSetIamPolicy_580262;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the access control policy for a Queue. Replaces any existing
@@ -4329,16 +4419,16 @@ proc call*(call_579253: Call_CloudtasksProjectsLocationsQueuesSetIamPolicy_57923
   ## 
   ## * `cloudtasks.queues.setIamPolicy`
   ## 
-  let valid = call_579253.validator(path, query, header, formData, body)
-  let scheme = call_579253.pickScheme
+  let valid = call_580278.validator(path, query, header, formData, body)
+  let scheme = call_580278.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579253.url(scheme.get, call_579253.host, call_579253.base,
-                         call_579253.route, valid.getOrDefault("path"),
+  let url = call_580278.url(scheme.get, call_580278.host, call_580278.base,
+                         call_580278.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579253, url, valid)
+  result = hook(call_580278, url, valid)
 
-proc call*(call_579254: Call_CloudtasksProjectsLocationsQueuesSetIamPolicy_579237;
+proc call*(call_580279: Call_CloudtasksProjectsLocationsQueuesSetIamPolicy_580262;
           resource: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -4382,35 +4472,35 @@ proc call*(call_579254: Call_CloudtasksProjectsLocationsQueuesSetIamPolicy_57923
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579255 = newJObject()
-  var query_579256 = newJObject()
-  var body_579257 = newJObject()
-  add(query_579256, "key", newJString(key))
-  add(query_579256, "prettyPrint", newJBool(prettyPrint))
-  add(query_579256, "oauth_token", newJString(oauthToken))
-  add(query_579256, "$.xgafv", newJString(Xgafv))
-  add(query_579256, "alt", newJString(alt))
-  add(query_579256, "uploadType", newJString(uploadType))
-  add(query_579256, "quotaUser", newJString(quotaUser))
-  add(path_579255, "resource", newJString(resource))
+  var path_580280 = newJObject()
+  var query_580281 = newJObject()
+  var body_580282 = newJObject()
+  add(query_580281, "key", newJString(key))
+  add(query_580281, "prettyPrint", newJBool(prettyPrint))
+  add(query_580281, "oauth_token", newJString(oauthToken))
+  add(query_580281, "$.xgafv", newJString(Xgafv))
+  add(query_580281, "alt", newJString(alt))
+  add(query_580281, "uploadType", newJString(uploadType))
+  add(query_580281, "quotaUser", newJString(quotaUser))
+  add(path_580280, "resource", newJString(resource))
   if body != nil:
-    body_579257 = body
-  add(query_579256, "callback", newJString(callback))
-  add(query_579256, "fields", newJString(fields))
-  add(query_579256, "access_token", newJString(accessToken))
-  add(query_579256, "upload_protocol", newJString(uploadProtocol))
-  result = call_579254.call(path_579255, query_579256, nil, nil, body_579257)
+    body_580282 = body
+  add(query_580281, "callback", newJString(callback))
+  add(query_580281, "fields", newJString(fields))
+  add(query_580281, "access_token", newJString(accessToken))
+  add(query_580281, "upload_protocol", newJString(uploadProtocol))
+  result = call_580279.call(path_580280, query_580281, nil, nil, body_580282)
 
-var cloudtasksProjectsLocationsQueuesSetIamPolicy* = Call_CloudtasksProjectsLocationsQueuesSetIamPolicy_579237(
+var cloudtasksProjectsLocationsQueuesSetIamPolicy* = Call_CloudtasksProjectsLocationsQueuesSetIamPolicy_580262(
     name: "cloudtasksProjectsLocationsQueuesSetIamPolicy",
     meth: HttpMethod.HttpPost, host: "cloudtasks.googleapis.com",
     route: "/v2beta2/{resource}:setIamPolicy",
-    validator: validate_CloudtasksProjectsLocationsQueuesSetIamPolicy_579238,
-    base: "/", url: url_CloudtasksProjectsLocationsQueuesSetIamPolicy_579239,
+    validator: validate_CloudtasksProjectsLocationsQueuesSetIamPolicy_580263,
+    base: "/", url: url_CloudtasksProjectsLocationsQueuesSetIamPolicy_580264,
     schemes: {Scheme.Https})
 type
-  Call_CloudtasksProjectsLocationsQueuesTestIamPermissions_579258 = ref object of OpenApiRestCall_578339
-proc url_CloudtasksProjectsLocationsQueuesTestIamPermissions_579260(
+  Call_CloudtasksProjectsLocationsQueuesTestIamPermissions_580283 = ref object of OpenApiRestCall_579364
+proc url_CloudtasksProjectsLocationsQueuesTestIamPermissions_580285(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -4425,9 +4515,14 @@ proc url_CloudtasksProjectsLocationsQueuesTestIamPermissions_579260(
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudtasksProjectsLocationsQueuesTestIamPermissions_579259(
+proc validate_CloudtasksProjectsLocationsQueuesTestIamPermissions_580284(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Returns permissions that a caller has on a Queue.
@@ -4446,11 +4541,11 @@ proc validate_CloudtasksProjectsLocationsQueuesTestIamPermissions_579259(
   ## See the operation documentation for the appropriate value for this field.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_579261 = path.getOrDefault("resource")
-  valid_579261 = validateParameter(valid_579261, JString, required = true,
+  var valid_580286 = path.getOrDefault("resource")
+  valid_580286 = validateParameter(valid_580286, JString, required = true,
                                  default = nil)
-  if valid_579261 != nil:
-    section.add "resource", valid_579261
+  if valid_580286 != nil:
+    section.add "resource", valid_580286
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -4476,61 +4571,61 @@ proc validate_CloudtasksProjectsLocationsQueuesTestIamPermissions_579259(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579262 = query.getOrDefault("key")
-  valid_579262 = validateParameter(valid_579262, JString, required = false,
+  var valid_580287 = query.getOrDefault("key")
+  valid_580287 = validateParameter(valid_580287, JString, required = false,
                                  default = nil)
-  if valid_579262 != nil:
-    section.add "key", valid_579262
-  var valid_579263 = query.getOrDefault("prettyPrint")
-  valid_579263 = validateParameter(valid_579263, JBool, required = false,
+  if valid_580287 != nil:
+    section.add "key", valid_580287
+  var valid_580288 = query.getOrDefault("prettyPrint")
+  valid_580288 = validateParameter(valid_580288, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579263 != nil:
-    section.add "prettyPrint", valid_579263
-  var valid_579264 = query.getOrDefault("oauth_token")
-  valid_579264 = validateParameter(valid_579264, JString, required = false,
+  if valid_580288 != nil:
+    section.add "prettyPrint", valid_580288
+  var valid_580289 = query.getOrDefault("oauth_token")
+  valid_580289 = validateParameter(valid_580289, JString, required = false,
                                  default = nil)
-  if valid_579264 != nil:
-    section.add "oauth_token", valid_579264
-  var valid_579265 = query.getOrDefault("$.xgafv")
-  valid_579265 = validateParameter(valid_579265, JString, required = false,
+  if valid_580289 != nil:
+    section.add "oauth_token", valid_580289
+  var valid_580290 = query.getOrDefault("$.xgafv")
+  valid_580290 = validateParameter(valid_580290, JString, required = false,
                                  default = newJString("1"))
-  if valid_579265 != nil:
-    section.add "$.xgafv", valid_579265
-  var valid_579266 = query.getOrDefault("alt")
-  valid_579266 = validateParameter(valid_579266, JString, required = false,
+  if valid_580290 != nil:
+    section.add "$.xgafv", valid_580290
+  var valid_580291 = query.getOrDefault("alt")
+  valid_580291 = validateParameter(valid_580291, JString, required = false,
                                  default = newJString("json"))
-  if valid_579266 != nil:
-    section.add "alt", valid_579266
-  var valid_579267 = query.getOrDefault("uploadType")
-  valid_579267 = validateParameter(valid_579267, JString, required = false,
+  if valid_580291 != nil:
+    section.add "alt", valid_580291
+  var valid_580292 = query.getOrDefault("uploadType")
+  valid_580292 = validateParameter(valid_580292, JString, required = false,
                                  default = nil)
-  if valid_579267 != nil:
-    section.add "uploadType", valid_579267
-  var valid_579268 = query.getOrDefault("quotaUser")
-  valid_579268 = validateParameter(valid_579268, JString, required = false,
+  if valid_580292 != nil:
+    section.add "uploadType", valid_580292
+  var valid_580293 = query.getOrDefault("quotaUser")
+  valid_580293 = validateParameter(valid_580293, JString, required = false,
                                  default = nil)
-  if valid_579268 != nil:
-    section.add "quotaUser", valid_579268
-  var valid_579269 = query.getOrDefault("callback")
-  valid_579269 = validateParameter(valid_579269, JString, required = false,
+  if valid_580293 != nil:
+    section.add "quotaUser", valid_580293
+  var valid_580294 = query.getOrDefault("callback")
+  valid_580294 = validateParameter(valid_580294, JString, required = false,
                                  default = nil)
-  if valid_579269 != nil:
-    section.add "callback", valid_579269
-  var valid_579270 = query.getOrDefault("fields")
-  valid_579270 = validateParameter(valid_579270, JString, required = false,
+  if valid_580294 != nil:
+    section.add "callback", valid_580294
+  var valid_580295 = query.getOrDefault("fields")
+  valid_580295 = validateParameter(valid_580295, JString, required = false,
                                  default = nil)
-  if valid_579270 != nil:
-    section.add "fields", valid_579270
-  var valid_579271 = query.getOrDefault("access_token")
-  valid_579271 = validateParameter(valid_579271, JString, required = false,
+  if valid_580295 != nil:
+    section.add "fields", valid_580295
+  var valid_580296 = query.getOrDefault("access_token")
+  valid_580296 = validateParameter(valid_580296, JString, required = false,
                                  default = nil)
-  if valid_579271 != nil:
-    section.add "access_token", valid_579271
-  var valid_579272 = query.getOrDefault("upload_protocol")
-  valid_579272 = validateParameter(valid_579272, JString, required = false,
+  if valid_580296 != nil:
+    section.add "access_token", valid_580296
+  var valid_580297 = query.getOrDefault("upload_protocol")
+  valid_580297 = validateParameter(valid_580297, JString, required = false,
                                  default = nil)
-  if valid_579272 != nil:
-    section.add "upload_protocol", valid_579272
+  if valid_580297 != nil:
+    section.add "upload_protocol", valid_580297
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4542,7 +4637,7 @@ proc validate_CloudtasksProjectsLocationsQueuesTestIamPermissions_579259(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579274: Call_CloudtasksProjectsLocationsQueuesTestIamPermissions_579258;
+proc call*(call_580299: Call_CloudtasksProjectsLocationsQueuesTestIamPermissions_580283;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns permissions that a caller has on a Queue.
@@ -4553,16 +4648,16 @@ proc call*(call_579274: Call_CloudtasksProjectsLocationsQueuesTestIamPermissions
   ## UIs and command-line tools, not for authorization checking. This operation
   ## may "fail open" without warning.
   ## 
-  let valid = call_579274.validator(path, query, header, formData, body)
-  let scheme = call_579274.pickScheme
+  let valid = call_580299.validator(path, query, header, formData, body)
+  let scheme = call_580299.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579274.url(scheme.get, call_579274.host, call_579274.base,
-                         call_579274.route, valid.getOrDefault("path"),
+  let url = call_580299.url(scheme.get, call_580299.host, call_580299.base,
+                         call_580299.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579274, url, valid)
+  result = hook(call_580299, url, valid)
 
-proc call*(call_579275: Call_CloudtasksProjectsLocationsQueuesTestIamPermissions_579258;
+proc call*(call_580300: Call_CloudtasksProjectsLocationsQueuesTestIamPermissions_580283;
           resource: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -4602,31 +4697,31 @@ proc call*(call_579275: Call_CloudtasksProjectsLocationsQueuesTestIamPermissions
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579276 = newJObject()
-  var query_579277 = newJObject()
-  var body_579278 = newJObject()
-  add(query_579277, "key", newJString(key))
-  add(query_579277, "prettyPrint", newJBool(prettyPrint))
-  add(query_579277, "oauth_token", newJString(oauthToken))
-  add(query_579277, "$.xgafv", newJString(Xgafv))
-  add(query_579277, "alt", newJString(alt))
-  add(query_579277, "uploadType", newJString(uploadType))
-  add(query_579277, "quotaUser", newJString(quotaUser))
-  add(path_579276, "resource", newJString(resource))
+  var path_580301 = newJObject()
+  var query_580302 = newJObject()
+  var body_580303 = newJObject()
+  add(query_580302, "key", newJString(key))
+  add(query_580302, "prettyPrint", newJBool(prettyPrint))
+  add(query_580302, "oauth_token", newJString(oauthToken))
+  add(query_580302, "$.xgafv", newJString(Xgafv))
+  add(query_580302, "alt", newJString(alt))
+  add(query_580302, "uploadType", newJString(uploadType))
+  add(query_580302, "quotaUser", newJString(quotaUser))
+  add(path_580301, "resource", newJString(resource))
   if body != nil:
-    body_579278 = body
-  add(query_579277, "callback", newJString(callback))
-  add(query_579277, "fields", newJString(fields))
-  add(query_579277, "access_token", newJString(accessToken))
-  add(query_579277, "upload_protocol", newJString(uploadProtocol))
-  result = call_579275.call(path_579276, query_579277, nil, nil, body_579278)
+    body_580303 = body
+  add(query_580302, "callback", newJString(callback))
+  add(query_580302, "fields", newJString(fields))
+  add(query_580302, "access_token", newJString(accessToken))
+  add(query_580302, "upload_protocol", newJString(uploadProtocol))
+  result = call_580300.call(path_580301, query_580302, nil, nil, body_580303)
 
-var cloudtasksProjectsLocationsQueuesTestIamPermissions* = Call_CloudtasksProjectsLocationsQueuesTestIamPermissions_579258(
+var cloudtasksProjectsLocationsQueuesTestIamPermissions* = Call_CloudtasksProjectsLocationsQueuesTestIamPermissions_580283(
     name: "cloudtasksProjectsLocationsQueuesTestIamPermissions",
     meth: HttpMethod.HttpPost, host: "cloudtasks.googleapis.com",
     route: "/v2beta2/{resource}:testIamPermissions",
-    validator: validate_CloudtasksProjectsLocationsQueuesTestIamPermissions_579259,
-    base: "/", url: url_CloudtasksProjectsLocationsQueuesTestIamPermissions_579260,
+    validator: validate_CloudtasksProjectsLocationsQueuesTestIamPermissions_580284,
+    base: "/", url: url_CloudtasksProjectsLocationsQueuesTestIamPermissions_580285,
     schemes: {Scheme.Https})
 export
   rest

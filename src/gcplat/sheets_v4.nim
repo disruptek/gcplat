@@ -1,7 +1,7 @@
 
 import
-  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
-  asyncdispatch, jwt
+  json, options, hashes, uri, strutils, rest, os, uri, strutils, times, httpcore,
+  httpclient, asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Google Sheets
@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_578348 = ref object of OpenApiRestCall
+  OpenApiRestCall_579373 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_578348](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579373](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_578348): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579373): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -112,16 +112,21 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_SheetsSpreadsheetsCreate_578619 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsCreate_578621(protocol: Scheme; host: string;
+  Call_SheetsSpreadsheetsCreate_579644 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsCreate_579646(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
-  result.path = base & route
+  if base ==
+      "/" and
+      route.startsWith "/":
+    result.path = route
+  else:
+    result.path = base & route
 
-proc validate_SheetsSpreadsheetsCreate_578620(path: JsonNode; query: JsonNode;
+proc validate_SheetsSpreadsheetsCreate_579645(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a spreadsheet, returning the newly created spreadsheet.
   ## 
@@ -153,61 +158,61 @@ proc validate_SheetsSpreadsheetsCreate_578620(path: JsonNode; query: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578733 = query.getOrDefault("key")
-  valid_578733 = validateParameter(valid_578733, JString, required = false,
+  var valid_579758 = query.getOrDefault("key")
+  valid_579758 = validateParameter(valid_579758, JString, required = false,
                                  default = nil)
-  if valid_578733 != nil:
-    section.add "key", valid_578733
-  var valid_578747 = query.getOrDefault("prettyPrint")
-  valid_578747 = validateParameter(valid_578747, JBool, required = false,
+  if valid_579758 != nil:
+    section.add "key", valid_579758
+  var valid_579772 = query.getOrDefault("prettyPrint")
+  valid_579772 = validateParameter(valid_579772, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578747 != nil:
-    section.add "prettyPrint", valid_578747
-  var valid_578748 = query.getOrDefault("oauth_token")
-  valid_578748 = validateParameter(valid_578748, JString, required = false,
+  if valid_579772 != nil:
+    section.add "prettyPrint", valid_579772
+  var valid_579773 = query.getOrDefault("oauth_token")
+  valid_579773 = validateParameter(valid_579773, JString, required = false,
                                  default = nil)
-  if valid_578748 != nil:
-    section.add "oauth_token", valid_578748
-  var valid_578749 = query.getOrDefault("$.xgafv")
-  valid_578749 = validateParameter(valid_578749, JString, required = false,
+  if valid_579773 != nil:
+    section.add "oauth_token", valid_579773
+  var valid_579774 = query.getOrDefault("$.xgafv")
+  valid_579774 = validateParameter(valid_579774, JString, required = false,
                                  default = newJString("1"))
-  if valid_578749 != nil:
-    section.add "$.xgafv", valid_578749
-  var valid_578750 = query.getOrDefault("alt")
-  valid_578750 = validateParameter(valid_578750, JString, required = false,
+  if valid_579774 != nil:
+    section.add "$.xgafv", valid_579774
+  var valid_579775 = query.getOrDefault("alt")
+  valid_579775 = validateParameter(valid_579775, JString, required = false,
                                  default = newJString("json"))
-  if valid_578750 != nil:
-    section.add "alt", valid_578750
-  var valid_578751 = query.getOrDefault("uploadType")
-  valid_578751 = validateParameter(valid_578751, JString, required = false,
+  if valid_579775 != nil:
+    section.add "alt", valid_579775
+  var valid_579776 = query.getOrDefault("uploadType")
+  valid_579776 = validateParameter(valid_579776, JString, required = false,
                                  default = nil)
-  if valid_578751 != nil:
-    section.add "uploadType", valid_578751
-  var valid_578752 = query.getOrDefault("quotaUser")
-  valid_578752 = validateParameter(valid_578752, JString, required = false,
+  if valid_579776 != nil:
+    section.add "uploadType", valid_579776
+  var valid_579777 = query.getOrDefault("quotaUser")
+  valid_579777 = validateParameter(valid_579777, JString, required = false,
                                  default = nil)
-  if valid_578752 != nil:
-    section.add "quotaUser", valid_578752
-  var valid_578753 = query.getOrDefault("callback")
-  valid_578753 = validateParameter(valid_578753, JString, required = false,
+  if valid_579777 != nil:
+    section.add "quotaUser", valid_579777
+  var valid_579778 = query.getOrDefault("callback")
+  valid_579778 = validateParameter(valid_579778, JString, required = false,
                                  default = nil)
-  if valid_578753 != nil:
-    section.add "callback", valid_578753
-  var valid_578754 = query.getOrDefault("fields")
-  valid_578754 = validateParameter(valid_578754, JString, required = false,
+  if valid_579778 != nil:
+    section.add "callback", valid_579778
+  var valid_579779 = query.getOrDefault("fields")
+  valid_579779 = validateParameter(valid_579779, JString, required = false,
                                  default = nil)
-  if valid_578754 != nil:
-    section.add "fields", valid_578754
-  var valid_578755 = query.getOrDefault("access_token")
-  valid_578755 = validateParameter(valid_578755, JString, required = false,
+  if valid_579779 != nil:
+    section.add "fields", valid_579779
+  var valid_579780 = query.getOrDefault("access_token")
+  valid_579780 = validateParameter(valid_579780, JString, required = false,
                                  default = nil)
-  if valid_578755 != nil:
-    section.add "access_token", valid_578755
-  var valid_578756 = query.getOrDefault("upload_protocol")
-  valid_578756 = validateParameter(valid_578756, JString, required = false,
+  if valid_579780 != nil:
+    section.add "access_token", valid_579780
+  var valid_579781 = query.getOrDefault("upload_protocol")
+  valid_579781 = validateParameter(valid_579781, JString, required = false,
                                  default = nil)
-  if valid_578756 != nil:
-    section.add "upload_protocol", valid_578756
+  if valid_579781 != nil:
+    section.add "upload_protocol", valid_579781
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -219,20 +224,20 @@ proc validate_SheetsSpreadsheetsCreate_578620(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578780: Call_SheetsSpreadsheetsCreate_578619; path: JsonNode;
+proc call*(call_579805: Call_SheetsSpreadsheetsCreate_579644; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a spreadsheet, returning the newly created spreadsheet.
   ## 
-  let valid = call_578780.validator(path, query, header, formData, body)
-  let scheme = call_578780.pickScheme
+  let valid = call_579805.validator(path, query, header, formData, body)
+  let scheme = call_579805.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578780.url(scheme.get, call_578780.host, call_578780.base,
-                         call_578780.route, valid.getOrDefault("path"),
+  let url = call_579805.url(scheme.get, call_579805.host, call_579805.base,
+                         call_579805.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578780, url, valid)
+  result = hook(call_579805, url, valid)
 
-proc call*(call_578851: Call_SheetsSpreadsheetsCreate_578619; key: string = "";
+proc call*(call_579876: Call_SheetsSpreadsheetsCreate_579644; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; Xgafv: string = "1";
           alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
           body: JsonNode = nil; callback: string = ""; fields: string = "";
@@ -262,31 +267,31 @@ proc call*(call_578851: Call_SheetsSpreadsheetsCreate_578619; key: string = "";
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var query_578852 = newJObject()
-  var body_578854 = newJObject()
-  add(query_578852, "key", newJString(key))
-  add(query_578852, "prettyPrint", newJBool(prettyPrint))
-  add(query_578852, "oauth_token", newJString(oauthToken))
-  add(query_578852, "$.xgafv", newJString(Xgafv))
-  add(query_578852, "alt", newJString(alt))
-  add(query_578852, "uploadType", newJString(uploadType))
-  add(query_578852, "quotaUser", newJString(quotaUser))
+  var query_579877 = newJObject()
+  var body_579879 = newJObject()
+  add(query_579877, "key", newJString(key))
+  add(query_579877, "prettyPrint", newJBool(prettyPrint))
+  add(query_579877, "oauth_token", newJString(oauthToken))
+  add(query_579877, "$.xgafv", newJString(Xgafv))
+  add(query_579877, "alt", newJString(alt))
+  add(query_579877, "uploadType", newJString(uploadType))
+  add(query_579877, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_578854 = body
-  add(query_578852, "callback", newJString(callback))
-  add(query_578852, "fields", newJString(fields))
-  add(query_578852, "access_token", newJString(accessToken))
-  add(query_578852, "upload_protocol", newJString(uploadProtocol))
-  result = call_578851.call(nil, query_578852, nil, nil, body_578854)
+    body_579879 = body
+  add(query_579877, "callback", newJString(callback))
+  add(query_579877, "fields", newJString(fields))
+  add(query_579877, "access_token", newJString(accessToken))
+  add(query_579877, "upload_protocol", newJString(uploadProtocol))
+  result = call_579876.call(nil, query_579877, nil, nil, body_579879)
 
-var sheetsSpreadsheetsCreate* = Call_SheetsSpreadsheetsCreate_578619(
+var sheetsSpreadsheetsCreate* = Call_SheetsSpreadsheetsCreate_579644(
     name: "sheetsSpreadsheetsCreate", meth: HttpMethod.HttpPost,
     host: "sheets.googleapis.com", route: "/v4/spreadsheets",
-    validator: validate_SheetsSpreadsheetsCreate_578620, base: "/",
-    url: url_SheetsSpreadsheetsCreate_578621, schemes: {Scheme.Https})
+    validator: validate_SheetsSpreadsheetsCreate_579645, base: "/",
+    url: url_SheetsSpreadsheetsCreate_579646, schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsGet_578893 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsGet_578895(protocol: Scheme; host: string; base: string;
+  Call_SheetsSpreadsheetsGet_579918 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsGet_579920(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -299,9 +304,14 @@ proc url_SheetsSpreadsheetsGet_578895(protocol: Scheme; host: string; base: stri
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsGet_578894(path: JsonNode; query: JsonNode;
+proc validate_SheetsSpreadsheetsGet_579919(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the spreadsheet at the given ID.
   ## The caller must specify the spreadsheet ID.
@@ -333,11 +343,11 @@ proc validate_SheetsSpreadsheetsGet_578894(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `spreadsheetId` field"
-  var valid_578910 = path.getOrDefault("spreadsheetId")
-  valid_578910 = validateParameter(valid_578910, JString, required = true,
+  var valid_579935 = path.getOrDefault("spreadsheetId")
+  valid_579935 = validateParameter(valid_579935, JString, required = true,
                                  default = nil)
-  if valid_578910 != nil:
-    section.add "spreadsheetId", valid_578910
+  if valid_579935 != nil:
+    section.add "spreadsheetId", valid_579935
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -368,70 +378,70 @@ proc validate_SheetsSpreadsheetsGet_578894(path: JsonNode; query: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578911 = query.getOrDefault("key")
-  valid_578911 = validateParameter(valid_578911, JString, required = false,
+  var valid_579936 = query.getOrDefault("key")
+  valid_579936 = validateParameter(valid_579936, JString, required = false,
                                  default = nil)
-  if valid_578911 != nil:
-    section.add "key", valid_578911
-  var valid_578912 = query.getOrDefault("ranges")
-  valid_578912 = validateParameter(valid_578912, JArray, required = false,
+  if valid_579936 != nil:
+    section.add "key", valid_579936
+  var valid_579937 = query.getOrDefault("ranges")
+  valid_579937 = validateParameter(valid_579937, JArray, required = false,
                                  default = nil)
-  if valid_578912 != nil:
-    section.add "ranges", valid_578912
-  var valid_578913 = query.getOrDefault("prettyPrint")
-  valid_578913 = validateParameter(valid_578913, JBool, required = false,
+  if valid_579937 != nil:
+    section.add "ranges", valid_579937
+  var valid_579938 = query.getOrDefault("prettyPrint")
+  valid_579938 = validateParameter(valid_579938, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578913 != nil:
-    section.add "prettyPrint", valid_578913
-  var valid_578914 = query.getOrDefault("oauth_token")
-  valid_578914 = validateParameter(valid_578914, JString, required = false,
+  if valid_579938 != nil:
+    section.add "prettyPrint", valid_579938
+  var valid_579939 = query.getOrDefault("oauth_token")
+  valid_579939 = validateParameter(valid_579939, JString, required = false,
                                  default = nil)
-  if valid_578914 != nil:
-    section.add "oauth_token", valid_578914
-  var valid_578915 = query.getOrDefault("includeGridData")
-  valid_578915 = validateParameter(valid_578915, JBool, required = false, default = nil)
-  if valid_578915 != nil:
-    section.add "includeGridData", valid_578915
-  var valid_578916 = query.getOrDefault("$.xgafv")
-  valid_578916 = validateParameter(valid_578916, JString, required = false,
+  if valid_579939 != nil:
+    section.add "oauth_token", valid_579939
+  var valid_579940 = query.getOrDefault("includeGridData")
+  valid_579940 = validateParameter(valid_579940, JBool, required = false, default = nil)
+  if valid_579940 != nil:
+    section.add "includeGridData", valid_579940
+  var valid_579941 = query.getOrDefault("$.xgafv")
+  valid_579941 = validateParameter(valid_579941, JString, required = false,
                                  default = newJString("1"))
-  if valid_578916 != nil:
-    section.add "$.xgafv", valid_578916
-  var valid_578917 = query.getOrDefault("alt")
-  valid_578917 = validateParameter(valid_578917, JString, required = false,
+  if valid_579941 != nil:
+    section.add "$.xgafv", valid_579941
+  var valid_579942 = query.getOrDefault("alt")
+  valid_579942 = validateParameter(valid_579942, JString, required = false,
                                  default = newJString("json"))
-  if valid_578917 != nil:
-    section.add "alt", valid_578917
-  var valid_578918 = query.getOrDefault("uploadType")
-  valid_578918 = validateParameter(valid_578918, JString, required = false,
+  if valid_579942 != nil:
+    section.add "alt", valid_579942
+  var valid_579943 = query.getOrDefault("uploadType")
+  valid_579943 = validateParameter(valid_579943, JString, required = false,
                                  default = nil)
-  if valid_578918 != nil:
-    section.add "uploadType", valid_578918
-  var valid_578919 = query.getOrDefault("quotaUser")
-  valid_578919 = validateParameter(valid_578919, JString, required = false,
+  if valid_579943 != nil:
+    section.add "uploadType", valid_579943
+  var valid_579944 = query.getOrDefault("quotaUser")
+  valid_579944 = validateParameter(valid_579944, JString, required = false,
                                  default = nil)
-  if valid_578919 != nil:
-    section.add "quotaUser", valid_578919
-  var valid_578920 = query.getOrDefault("callback")
-  valid_578920 = validateParameter(valid_578920, JString, required = false,
+  if valid_579944 != nil:
+    section.add "quotaUser", valid_579944
+  var valid_579945 = query.getOrDefault("callback")
+  valid_579945 = validateParameter(valid_579945, JString, required = false,
                                  default = nil)
-  if valid_578920 != nil:
-    section.add "callback", valid_578920
-  var valid_578921 = query.getOrDefault("fields")
-  valid_578921 = validateParameter(valid_578921, JString, required = false,
+  if valid_579945 != nil:
+    section.add "callback", valid_579945
+  var valid_579946 = query.getOrDefault("fields")
+  valid_579946 = validateParameter(valid_579946, JString, required = false,
                                  default = nil)
-  if valid_578921 != nil:
-    section.add "fields", valid_578921
-  var valid_578922 = query.getOrDefault("access_token")
-  valid_578922 = validateParameter(valid_578922, JString, required = false,
+  if valid_579946 != nil:
+    section.add "fields", valid_579946
+  var valid_579947 = query.getOrDefault("access_token")
+  valid_579947 = validateParameter(valid_579947, JString, required = false,
                                  default = nil)
-  if valid_578922 != nil:
-    section.add "access_token", valid_578922
-  var valid_578923 = query.getOrDefault("upload_protocol")
-  valid_578923 = validateParameter(valid_578923, JString, required = false,
+  if valid_579947 != nil:
+    section.add "access_token", valid_579947
+  var valid_579948 = query.getOrDefault("upload_protocol")
+  valid_579948 = validateParameter(valid_579948, JString, required = false,
                                  default = nil)
-  if valid_578923 != nil:
-    section.add "upload_protocol", valid_578923
+  if valid_579948 != nil:
+    section.add "upload_protocol", valid_579948
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -440,7 +450,7 @@ proc validate_SheetsSpreadsheetsGet_578894(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578924: Call_SheetsSpreadsheetsGet_578893; path: JsonNode;
+proc call*(call_579949: Call_SheetsSpreadsheetsGet_579918; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns the spreadsheet at the given ID.
   ## The caller must specify the spreadsheet ID.
@@ -464,16 +474,16 @@ proc call*(call_578924: Call_SheetsSpreadsheetsGet_578893; path: JsonNode;
   ## return only the portions of the spreadsheet that intersect the requested
   ## ranges. Ranges are specified using A1 notation.
   ## 
-  let valid = call_578924.validator(path, query, header, formData, body)
-  let scheme = call_578924.pickScheme
+  let valid = call_579949.validator(path, query, header, formData, body)
+  let scheme = call_579949.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578924.url(scheme.get, call_578924.host, call_578924.base,
-                         call_578924.route, valid.getOrDefault("path"),
+  let url = call_579949.url(scheme.get, call_579949.host, call_579949.base,
+                         call_579949.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578924, url, valid)
+  result = hook(call_579949, url, valid)
 
-proc call*(call_578925: Call_SheetsSpreadsheetsGet_578893; spreadsheetId: string;
+proc call*(call_579950: Call_SheetsSpreadsheetsGet_579918; spreadsheetId: string;
           key: string = ""; ranges: JsonNode = nil; prettyPrint: bool = true;
           oauthToken: string = ""; includeGridData: bool = false; Xgafv: string = "1";
           alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
@@ -530,33 +540,33 @@ proc call*(call_578925: Call_SheetsSpreadsheetsGet_578893; spreadsheetId: string
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578926 = newJObject()
-  var query_578927 = newJObject()
-  add(query_578927, "key", newJString(key))
+  var path_579951 = newJObject()
+  var query_579952 = newJObject()
+  add(query_579952, "key", newJString(key))
   if ranges != nil:
-    query_578927.add "ranges", ranges
-  add(query_578927, "prettyPrint", newJBool(prettyPrint))
-  add(query_578927, "oauth_token", newJString(oauthToken))
-  add(query_578927, "includeGridData", newJBool(includeGridData))
-  add(query_578927, "$.xgafv", newJString(Xgafv))
-  add(query_578927, "alt", newJString(alt))
-  add(query_578927, "uploadType", newJString(uploadType))
-  add(query_578927, "quotaUser", newJString(quotaUser))
-  add(query_578927, "callback", newJString(callback))
-  add(path_578926, "spreadsheetId", newJString(spreadsheetId))
-  add(query_578927, "fields", newJString(fields))
-  add(query_578927, "access_token", newJString(accessToken))
-  add(query_578927, "upload_protocol", newJString(uploadProtocol))
-  result = call_578925.call(path_578926, query_578927, nil, nil, nil)
+    query_579952.add "ranges", ranges
+  add(query_579952, "prettyPrint", newJBool(prettyPrint))
+  add(query_579952, "oauth_token", newJString(oauthToken))
+  add(query_579952, "includeGridData", newJBool(includeGridData))
+  add(query_579952, "$.xgafv", newJString(Xgafv))
+  add(query_579952, "alt", newJString(alt))
+  add(query_579952, "uploadType", newJString(uploadType))
+  add(query_579952, "quotaUser", newJString(quotaUser))
+  add(query_579952, "callback", newJString(callback))
+  add(path_579951, "spreadsheetId", newJString(spreadsheetId))
+  add(query_579952, "fields", newJString(fields))
+  add(query_579952, "access_token", newJString(accessToken))
+  add(query_579952, "upload_protocol", newJString(uploadProtocol))
+  result = call_579950.call(path_579951, query_579952, nil, nil, nil)
 
-var sheetsSpreadsheetsGet* = Call_SheetsSpreadsheetsGet_578893(
+var sheetsSpreadsheetsGet* = Call_SheetsSpreadsheetsGet_579918(
     name: "sheetsSpreadsheetsGet", meth: HttpMethod.HttpGet,
     host: "sheets.googleapis.com", route: "/v4/spreadsheets/{spreadsheetId}",
-    validator: validate_SheetsSpreadsheetsGet_578894, base: "/",
-    url: url_SheetsSpreadsheetsGet_578895, schemes: {Scheme.Https})
+    validator: validate_SheetsSpreadsheetsGet_579919, base: "/",
+    url: url_SheetsSpreadsheetsGet_579920, schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsDeveloperMetadataGet_578928 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsDeveloperMetadataGet_578930(protocol: Scheme;
+  Call_SheetsSpreadsheetsDeveloperMetadataGet_579953 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsDeveloperMetadataGet_579955(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -572,9 +582,14 @@ proc url_SheetsSpreadsheetsDeveloperMetadataGet_578930(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsDeveloperMetadataGet_578929(path: JsonNode;
+proc validate_SheetsSpreadsheetsDeveloperMetadataGet_579954(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the developer metadata with the specified ID.
   ## The caller must specify the spreadsheet ID and the developer metadata's
@@ -590,15 +605,15 @@ proc validate_SheetsSpreadsheetsDeveloperMetadataGet_578929(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `metadataId` field"
-  var valid_578931 = path.getOrDefault("metadataId")
-  valid_578931 = validateParameter(valid_578931, JInt, required = true, default = nil)
-  if valid_578931 != nil:
-    section.add "metadataId", valid_578931
-  var valid_578932 = path.getOrDefault("spreadsheetId")
-  valid_578932 = validateParameter(valid_578932, JString, required = true,
+  var valid_579956 = path.getOrDefault("metadataId")
+  valid_579956 = validateParameter(valid_579956, JInt, required = true, default = nil)
+  if valid_579956 != nil:
+    section.add "metadataId", valid_579956
+  var valid_579957 = path.getOrDefault("spreadsheetId")
+  valid_579957 = validateParameter(valid_579957, JString, required = true,
                                  default = nil)
-  if valid_578932 != nil:
-    section.add "spreadsheetId", valid_578932
+  if valid_579957 != nil:
+    section.add "spreadsheetId", valid_579957
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -624,61 +639,61 @@ proc validate_SheetsSpreadsheetsDeveloperMetadataGet_578929(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578933 = query.getOrDefault("key")
-  valid_578933 = validateParameter(valid_578933, JString, required = false,
+  var valid_579958 = query.getOrDefault("key")
+  valid_579958 = validateParameter(valid_579958, JString, required = false,
                                  default = nil)
-  if valid_578933 != nil:
-    section.add "key", valid_578933
-  var valid_578934 = query.getOrDefault("prettyPrint")
-  valid_578934 = validateParameter(valid_578934, JBool, required = false,
+  if valid_579958 != nil:
+    section.add "key", valid_579958
+  var valid_579959 = query.getOrDefault("prettyPrint")
+  valid_579959 = validateParameter(valid_579959, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578934 != nil:
-    section.add "prettyPrint", valid_578934
-  var valid_578935 = query.getOrDefault("oauth_token")
-  valid_578935 = validateParameter(valid_578935, JString, required = false,
+  if valid_579959 != nil:
+    section.add "prettyPrint", valid_579959
+  var valid_579960 = query.getOrDefault("oauth_token")
+  valid_579960 = validateParameter(valid_579960, JString, required = false,
                                  default = nil)
-  if valid_578935 != nil:
-    section.add "oauth_token", valid_578935
-  var valid_578936 = query.getOrDefault("$.xgafv")
-  valid_578936 = validateParameter(valid_578936, JString, required = false,
+  if valid_579960 != nil:
+    section.add "oauth_token", valid_579960
+  var valid_579961 = query.getOrDefault("$.xgafv")
+  valid_579961 = validateParameter(valid_579961, JString, required = false,
                                  default = newJString("1"))
-  if valid_578936 != nil:
-    section.add "$.xgafv", valid_578936
-  var valid_578937 = query.getOrDefault("alt")
-  valid_578937 = validateParameter(valid_578937, JString, required = false,
+  if valid_579961 != nil:
+    section.add "$.xgafv", valid_579961
+  var valid_579962 = query.getOrDefault("alt")
+  valid_579962 = validateParameter(valid_579962, JString, required = false,
                                  default = newJString("json"))
-  if valid_578937 != nil:
-    section.add "alt", valid_578937
-  var valid_578938 = query.getOrDefault("uploadType")
-  valid_578938 = validateParameter(valid_578938, JString, required = false,
+  if valid_579962 != nil:
+    section.add "alt", valid_579962
+  var valid_579963 = query.getOrDefault("uploadType")
+  valid_579963 = validateParameter(valid_579963, JString, required = false,
                                  default = nil)
-  if valid_578938 != nil:
-    section.add "uploadType", valid_578938
-  var valid_578939 = query.getOrDefault("quotaUser")
-  valid_578939 = validateParameter(valid_578939, JString, required = false,
+  if valid_579963 != nil:
+    section.add "uploadType", valid_579963
+  var valid_579964 = query.getOrDefault("quotaUser")
+  valid_579964 = validateParameter(valid_579964, JString, required = false,
                                  default = nil)
-  if valid_578939 != nil:
-    section.add "quotaUser", valid_578939
-  var valid_578940 = query.getOrDefault("callback")
-  valid_578940 = validateParameter(valid_578940, JString, required = false,
+  if valid_579964 != nil:
+    section.add "quotaUser", valid_579964
+  var valid_579965 = query.getOrDefault("callback")
+  valid_579965 = validateParameter(valid_579965, JString, required = false,
                                  default = nil)
-  if valid_578940 != nil:
-    section.add "callback", valid_578940
-  var valid_578941 = query.getOrDefault("fields")
-  valid_578941 = validateParameter(valid_578941, JString, required = false,
+  if valid_579965 != nil:
+    section.add "callback", valid_579965
+  var valid_579966 = query.getOrDefault("fields")
+  valid_579966 = validateParameter(valid_579966, JString, required = false,
                                  default = nil)
-  if valid_578941 != nil:
-    section.add "fields", valid_578941
-  var valid_578942 = query.getOrDefault("access_token")
-  valid_578942 = validateParameter(valid_578942, JString, required = false,
+  if valid_579966 != nil:
+    section.add "fields", valid_579966
+  var valid_579967 = query.getOrDefault("access_token")
+  valid_579967 = validateParameter(valid_579967, JString, required = false,
                                  default = nil)
-  if valid_578942 != nil:
-    section.add "access_token", valid_578942
-  var valid_578943 = query.getOrDefault("upload_protocol")
-  valid_578943 = validateParameter(valid_578943, JString, required = false,
+  if valid_579967 != nil:
+    section.add "access_token", valid_579967
+  var valid_579968 = query.getOrDefault("upload_protocol")
+  valid_579968 = validateParameter(valid_579968, JString, required = false,
                                  default = nil)
-  if valid_578943 != nil:
-    section.add "upload_protocol", valid_578943
+  if valid_579968 != nil:
+    section.add "upload_protocol", valid_579968
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -687,23 +702,23 @@ proc validate_SheetsSpreadsheetsDeveloperMetadataGet_578929(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578944: Call_SheetsSpreadsheetsDeveloperMetadataGet_578928;
+proc call*(call_579969: Call_SheetsSpreadsheetsDeveloperMetadataGet_579953;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns the developer metadata with the specified ID.
   ## The caller must specify the spreadsheet ID and the developer metadata's
   ## unique metadataId.
   ## 
-  let valid = call_578944.validator(path, query, header, formData, body)
-  let scheme = call_578944.pickScheme
+  let valid = call_579969.validator(path, query, header, formData, body)
+  let scheme = call_579969.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578944.url(scheme.get, call_578944.host, call_578944.base,
-                         call_578944.route, valid.getOrDefault("path"),
+  let url = call_579969.url(scheme.get, call_579969.host, call_579969.base,
+                         call_579969.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578944, url, valid)
+  result = hook(call_579969, url, valid)
 
-proc call*(call_578945: Call_SheetsSpreadsheetsDeveloperMetadataGet_578928;
+proc call*(call_579970: Call_SheetsSpreadsheetsDeveloperMetadataGet_579953;
           metadataId: int; spreadsheetId: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; Xgafv: string = "1";
           alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
@@ -739,33 +754,33 @@ proc call*(call_578945: Call_SheetsSpreadsheetsDeveloperMetadataGet_578928;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578946 = newJObject()
-  var query_578947 = newJObject()
-  add(query_578947, "key", newJString(key))
-  add(query_578947, "prettyPrint", newJBool(prettyPrint))
-  add(query_578947, "oauth_token", newJString(oauthToken))
-  add(query_578947, "$.xgafv", newJString(Xgafv))
-  add(path_578946, "metadataId", newJInt(metadataId))
-  add(query_578947, "alt", newJString(alt))
-  add(query_578947, "uploadType", newJString(uploadType))
-  add(query_578947, "quotaUser", newJString(quotaUser))
-  add(query_578947, "callback", newJString(callback))
-  add(path_578946, "spreadsheetId", newJString(spreadsheetId))
-  add(query_578947, "fields", newJString(fields))
-  add(query_578947, "access_token", newJString(accessToken))
-  add(query_578947, "upload_protocol", newJString(uploadProtocol))
-  result = call_578945.call(path_578946, query_578947, nil, nil, nil)
+  var path_579971 = newJObject()
+  var query_579972 = newJObject()
+  add(query_579972, "key", newJString(key))
+  add(query_579972, "prettyPrint", newJBool(prettyPrint))
+  add(query_579972, "oauth_token", newJString(oauthToken))
+  add(query_579972, "$.xgafv", newJString(Xgafv))
+  add(path_579971, "metadataId", newJInt(metadataId))
+  add(query_579972, "alt", newJString(alt))
+  add(query_579972, "uploadType", newJString(uploadType))
+  add(query_579972, "quotaUser", newJString(quotaUser))
+  add(query_579972, "callback", newJString(callback))
+  add(path_579971, "spreadsheetId", newJString(spreadsheetId))
+  add(query_579972, "fields", newJString(fields))
+  add(query_579972, "access_token", newJString(accessToken))
+  add(query_579972, "upload_protocol", newJString(uploadProtocol))
+  result = call_579970.call(path_579971, query_579972, nil, nil, nil)
 
-var sheetsSpreadsheetsDeveloperMetadataGet* = Call_SheetsSpreadsheetsDeveloperMetadataGet_578928(
+var sheetsSpreadsheetsDeveloperMetadataGet* = Call_SheetsSpreadsheetsDeveloperMetadataGet_579953(
     name: "sheetsSpreadsheetsDeveloperMetadataGet", meth: HttpMethod.HttpGet,
     host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}/developerMetadata/{metadataId}",
-    validator: validate_SheetsSpreadsheetsDeveloperMetadataGet_578929, base: "/",
-    url: url_SheetsSpreadsheetsDeveloperMetadataGet_578930,
+    validator: validate_SheetsSpreadsheetsDeveloperMetadataGet_579954, base: "/",
+    url: url_SheetsSpreadsheetsDeveloperMetadataGet_579955,
     schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsDeveloperMetadataSearch_578948 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsDeveloperMetadataSearch_578950(protocol: Scheme;
+  Call_SheetsSpreadsheetsDeveloperMetadataSearch_579973 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsDeveloperMetadataSearch_579975(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -779,9 +794,14 @@ proc url_SheetsSpreadsheetsDeveloperMetadataSearch_578950(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsDeveloperMetadataSearch_578949(path: JsonNode;
+proc validate_SheetsSpreadsheetsDeveloperMetadataSearch_579974(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns all developer metadata matching the specified DataFilter.
   ## If the provided DataFilter represents a DeveloperMetadataLookup object,
@@ -797,11 +817,11 @@ proc validate_SheetsSpreadsheetsDeveloperMetadataSearch_578949(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `spreadsheetId` field"
-  var valid_578951 = path.getOrDefault("spreadsheetId")
-  valid_578951 = validateParameter(valid_578951, JString, required = true,
+  var valid_579976 = path.getOrDefault("spreadsheetId")
+  valid_579976 = validateParameter(valid_579976, JString, required = true,
                                  default = nil)
-  if valid_578951 != nil:
-    section.add "spreadsheetId", valid_578951
+  if valid_579976 != nil:
+    section.add "spreadsheetId", valid_579976
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -827,61 +847,61 @@ proc validate_SheetsSpreadsheetsDeveloperMetadataSearch_578949(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578952 = query.getOrDefault("key")
-  valid_578952 = validateParameter(valid_578952, JString, required = false,
+  var valid_579977 = query.getOrDefault("key")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
                                  default = nil)
-  if valid_578952 != nil:
-    section.add "key", valid_578952
-  var valid_578953 = query.getOrDefault("prettyPrint")
-  valid_578953 = validateParameter(valid_578953, JBool, required = false,
+  if valid_579977 != nil:
+    section.add "key", valid_579977
+  var valid_579978 = query.getOrDefault("prettyPrint")
+  valid_579978 = validateParameter(valid_579978, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578953 != nil:
-    section.add "prettyPrint", valid_578953
-  var valid_578954 = query.getOrDefault("oauth_token")
-  valid_578954 = validateParameter(valid_578954, JString, required = false,
+  if valid_579978 != nil:
+    section.add "prettyPrint", valid_579978
+  var valid_579979 = query.getOrDefault("oauth_token")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = nil)
-  if valid_578954 != nil:
-    section.add "oauth_token", valid_578954
-  var valid_578955 = query.getOrDefault("$.xgafv")
-  valid_578955 = validateParameter(valid_578955, JString, required = false,
+  if valid_579979 != nil:
+    section.add "oauth_token", valid_579979
+  var valid_579980 = query.getOrDefault("$.xgafv")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = newJString("1"))
-  if valid_578955 != nil:
-    section.add "$.xgafv", valid_578955
-  var valid_578956 = query.getOrDefault("alt")
-  valid_578956 = validateParameter(valid_578956, JString, required = false,
+  if valid_579980 != nil:
+    section.add "$.xgafv", valid_579980
+  var valid_579981 = query.getOrDefault("alt")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = newJString("json"))
-  if valid_578956 != nil:
-    section.add "alt", valid_578956
-  var valid_578957 = query.getOrDefault("uploadType")
-  valid_578957 = validateParameter(valid_578957, JString, required = false,
+  if valid_579981 != nil:
+    section.add "alt", valid_579981
+  var valid_579982 = query.getOrDefault("uploadType")
+  valid_579982 = validateParameter(valid_579982, JString, required = false,
                                  default = nil)
-  if valid_578957 != nil:
-    section.add "uploadType", valid_578957
-  var valid_578958 = query.getOrDefault("quotaUser")
-  valid_578958 = validateParameter(valid_578958, JString, required = false,
+  if valid_579982 != nil:
+    section.add "uploadType", valid_579982
+  var valid_579983 = query.getOrDefault("quotaUser")
+  valid_579983 = validateParameter(valid_579983, JString, required = false,
                                  default = nil)
-  if valid_578958 != nil:
-    section.add "quotaUser", valid_578958
-  var valid_578959 = query.getOrDefault("callback")
-  valid_578959 = validateParameter(valid_578959, JString, required = false,
+  if valid_579983 != nil:
+    section.add "quotaUser", valid_579983
+  var valid_579984 = query.getOrDefault("callback")
+  valid_579984 = validateParameter(valid_579984, JString, required = false,
                                  default = nil)
-  if valid_578959 != nil:
-    section.add "callback", valid_578959
-  var valid_578960 = query.getOrDefault("fields")
-  valid_578960 = validateParameter(valid_578960, JString, required = false,
+  if valid_579984 != nil:
+    section.add "callback", valid_579984
+  var valid_579985 = query.getOrDefault("fields")
+  valid_579985 = validateParameter(valid_579985, JString, required = false,
                                  default = nil)
-  if valid_578960 != nil:
-    section.add "fields", valid_578960
-  var valid_578961 = query.getOrDefault("access_token")
-  valid_578961 = validateParameter(valid_578961, JString, required = false,
+  if valid_579985 != nil:
+    section.add "fields", valid_579985
+  var valid_579986 = query.getOrDefault("access_token")
+  valid_579986 = validateParameter(valid_579986, JString, required = false,
                                  default = nil)
-  if valid_578961 != nil:
-    section.add "access_token", valid_578961
-  var valid_578962 = query.getOrDefault("upload_protocol")
-  valid_578962 = validateParameter(valid_578962, JString, required = false,
+  if valid_579986 != nil:
+    section.add "access_token", valid_579986
+  var valid_579987 = query.getOrDefault("upload_protocol")
+  valid_579987 = validateParameter(valid_579987, JString, required = false,
                                  default = nil)
-  if valid_578962 != nil:
-    section.add "upload_protocol", valid_578962
+  if valid_579987 != nil:
+    section.add "upload_protocol", valid_579987
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -893,7 +913,7 @@ proc validate_SheetsSpreadsheetsDeveloperMetadataSearch_578949(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578964: Call_SheetsSpreadsheetsDeveloperMetadataSearch_578948;
+proc call*(call_579989: Call_SheetsSpreadsheetsDeveloperMetadataSearch_579973;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns all developer metadata matching the specified DataFilter.
@@ -902,16 +922,16 @@ proc call*(call_578964: Call_SheetsSpreadsheetsDeveloperMetadataSearch_578948;
   ## DataFilter represents a location in a spreadsheet, this will return all
   ## developer metadata associated with locations intersecting that region.
   ## 
-  let valid = call_578964.validator(path, query, header, formData, body)
-  let scheme = call_578964.pickScheme
+  let valid = call_579989.validator(path, query, header, formData, body)
+  let scheme = call_579989.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578964.url(scheme.get, call_578964.host, call_578964.base,
-                         call_578964.route, valid.getOrDefault("path"),
+  let url = call_579989.url(scheme.get, call_579989.host, call_579989.base,
+                         call_579989.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578964, url, valid)
+  result = hook(call_579989, url, valid)
 
-proc call*(call_578965: Call_SheetsSpreadsheetsDeveloperMetadataSearch_578948;
+proc call*(call_579990: Call_SheetsSpreadsheetsDeveloperMetadataSearch_579973;
           spreadsheetId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -948,35 +968,35 @@ proc call*(call_578965: Call_SheetsSpreadsheetsDeveloperMetadataSearch_578948;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578966 = newJObject()
-  var query_578967 = newJObject()
-  var body_578968 = newJObject()
-  add(query_578967, "key", newJString(key))
-  add(query_578967, "prettyPrint", newJBool(prettyPrint))
-  add(query_578967, "oauth_token", newJString(oauthToken))
-  add(query_578967, "$.xgafv", newJString(Xgafv))
-  add(query_578967, "alt", newJString(alt))
-  add(query_578967, "uploadType", newJString(uploadType))
-  add(query_578967, "quotaUser", newJString(quotaUser))
+  var path_579991 = newJObject()
+  var query_579992 = newJObject()
+  var body_579993 = newJObject()
+  add(query_579992, "key", newJString(key))
+  add(query_579992, "prettyPrint", newJBool(prettyPrint))
+  add(query_579992, "oauth_token", newJString(oauthToken))
+  add(query_579992, "$.xgafv", newJString(Xgafv))
+  add(query_579992, "alt", newJString(alt))
+  add(query_579992, "uploadType", newJString(uploadType))
+  add(query_579992, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_578968 = body
-  add(query_578967, "callback", newJString(callback))
-  add(path_578966, "spreadsheetId", newJString(spreadsheetId))
-  add(query_578967, "fields", newJString(fields))
-  add(query_578967, "access_token", newJString(accessToken))
-  add(query_578967, "upload_protocol", newJString(uploadProtocol))
-  result = call_578965.call(path_578966, query_578967, nil, nil, body_578968)
+    body_579993 = body
+  add(query_579992, "callback", newJString(callback))
+  add(path_579991, "spreadsheetId", newJString(spreadsheetId))
+  add(query_579992, "fields", newJString(fields))
+  add(query_579992, "access_token", newJString(accessToken))
+  add(query_579992, "upload_protocol", newJString(uploadProtocol))
+  result = call_579990.call(path_579991, query_579992, nil, nil, body_579993)
 
-var sheetsSpreadsheetsDeveloperMetadataSearch* = Call_SheetsSpreadsheetsDeveloperMetadataSearch_578948(
+var sheetsSpreadsheetsDeveloperMetadataSearch* = Call_SheetsSpreadsheetsDeveloperMetadataSearch_579973(
     name: "sheetsSpreadsheetsDeveloperMetadataSearch", meth: HttpMethod.HttpPost,
     host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}/developerMetadata:search",
-    validator: validate_SheetsSpreadsheetsDeveloperMetadataSearch_578949,
-    base: "/", url: url_SheetsSpreadsheetsDeveloperMetadataSearch_578950,
+    validator: validate_SheetsSpreadsheetsDeveloperMetadataSearch_579974,
+    base: "/", url: url_SheetsSpreadsheetsDeveloperMetadataSearch_579975,
     schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsSheetsCopyTo_578969 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsSheetsCopyTo_578971(protocol: Scheme; host: string;
+  Call_SheetsSpreadsheetsSheetsCopyTo_579994 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsSheetsCopyTo_579996(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -993,9 +1013,14 @@ proc url_SheetsSpreadsheetsSheetsCopyTo_578971(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsSheetsCopyTo_578970(path: JsonNode;
+proc validate_SheetsSpreadsheetsSheetsCopyTo_579995(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Copies a single sheet from a spreadsheet to another spreadsheet.
   ## Returns the properties of the newly created sheet.
@@ -1009,15 +1034,15 @@ proc validate_SheetsSpreadsheetsSheetsCopyTo_578970(path: JsonNode;
   ##                : The ID of the spreadsheet containing the sheet to copy.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `sheetId` field"
-  var valid_578972 = path.getOrDefault("sheetId")
-  valid_578972 = validateParameter(valid_578972, JInt, required = true, default = nil)
-  if valid_578972 != nil:
-    section.add "sheetId", valid_578972
-  var valid_578973 = path.getOrDefault("spreadsheetId")
-  valid_578973 = validateParameter(valid_578973, JString, required = true,
+  var valid_579997 = path.getOrDefault("sheetId")
+  valid_579997 = validateParameter(valid_579997, JInt, required = true, default = nil)
+  if valid_579997 != nil:
+    section.add "sheetId", valid_579997
+  var valid_579998 = path.getOrDefault("spreadsheetId")
+  valid_579998 = validateParameter(valid_579998, JString, required = true,
                                  default = nil)
-  if valid_578973 != nil:
-    section.add "spreadsheetId", valid_578973
+  if valid_579998 != nil:
+    section.add "spreadsheetId", valid_579998
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1043,61 +1068,61 @@ proc validate_SheetsSpreadsheetsSheetsCopyTo_578970(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578974 = query.getOrDefault("key")
-  valid_578974 = validateParameter(valid_578974, JString, required = false,
+  var valid_579999 = query.getOrDefault("key")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = nil)
-  if valid_578974 != nil:
-    section.add "key", valid_578974
-  var valid_578975 = query.getOrDefault("prettyPrint")
-  valid_578975 = validateParameter(valid_578975, JBool, required = false,
+  if valid_579999 != nil:
+    section.add "key", valid_579999
+  var valid_580000 = query.getOrDefault("prettyPrint")
+  valid_580000 = validateParameter(valid_580000, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578975 != nil:
-    section.add "prettyPrint", valid_578975
-  var valid_578976 = query.getOrDefault("oauth_token")
-  valid_578976 = validateParameter(valid_578976, JString, required = false,
+  if valid_580000 != nil:
+    section.add "prettyPrint", valid_580000
+  var valid_580001 = query.getOrDefault("oauth_token")
+  valid_580001 = validateParameter(valid_580001, JString, required = false,
                                  default = nil)
-  if valid_578976 != nil:
-    section.add "oauth_token", valid_578976
-  var valid_578977 = query.getOrDefault("$.xgafv")
-  valid_578977 = validateParameter(valid_578977, JString, required = false,
+  if valid_580001 != nil:
+    section.add "oauth_token", valid_580001
+  var valid_580002 = query.getOrDefault("$.xgafv")
+  valid_580002 = validateParameter(valid_580002, JString, required = false,
                                  default = newJString("1"))
-  if valid_578977 != nil:
-    section.add "$.xgafv", valid_578977
-  var valid_578978 = query.getOrDefault("alt")
-  valid_578978 = validateParameter(valid_578978, JString, required = false,
+  if valid_580002 != nil:
+    section.add "$.xgafv", valid_580002
+  var valid_580003 = query.getOrDefault("alt")
+  valid_580003 = validateParameter(valid_580003, JString, required = false,
                                  default = newJString("json"))
-  if valid_578978 != nil:
-    section.add "alt", valid_578978
-  var valid_578979 = query.getOrDefault("uploadType")
-  valid_578979 = validateParameter(valid_578979, JString, required = false,
+  if valid_580003 != nil:
+    section.add "alt", valid_580003
+  var valid_580004 = query.getOrDefault("uploadType")
+  valid_580004 = validateParameter(valid_580004, JString, required = false,
                                  default = nil)
-  if valid_578979 != nil:
-    section.add "uploadType", valid_578979
-  var valid_578980 = query.getOrDefault("quotaUser")
-  valid_578980 = validateParameter(valid_578980, JString, required = false,
+  if valid_580004 != nil:
+    section.add "uploadType", valid_580004
+  var valid_580005 = query.getOrDefault("quotaUser")
+  valid_580005 = validateParameter(valid_580005, JString, required = false,
                                  default = nil)
-  if valid_578980 != nil:
-    section.add "quotaUser", valid_578980
-  var valid_578981 = query.getOrDefault("callback")
-  valid_578981 = validateParameter(valid_578981, JString, required = false,
+  if valid_580005 != nil:
+    section.add "quotaUser", valid_580005
+  var valid_580006 = query.getOrDefault("callback")
+  valid_580006 = validateParameter(valid_580006, JString, required = false,
                                  default = nil)
-  if valid_578981 != nil:
-    section.add "callback", valid_578981
-  var valid_578982 = query.getOrDefault("fields")
-  valid_578982 = validateParameter(valid_578982, JString, required = false,
+  if valid_580006 != nil:
+    section.add "callback", valid_580006
+  var valid_580007 = query.getOrDefault("fields")
+  valid_580007 = validateParameter(valid_580007, JString, required = false,
                                  default = nil)
-  if valid_578982 != nil:
-    section.add "fields", valid_578982
-  var valid_578983 = query.getOrDefault("access_token")
-  valid_578983 = validateParameter(valid_578983, JString, required = false,
+  if valid_580007 != nil:
+    section.add "fields", valid_580007
+  var valid_580008 = query.getOrDefault("access_token")
+  valid_580008 = validateParameter(valid_580008, JString, required = false,
                                  default = nil)
-  if valid_578983 != nil:
-    section.add "access_token", valid_578983
-  var valid_578984 = query.getOrDefault("upload_protocol")
-  valid_578984 = validateParameter(valid_578984, JString, required = false,
+  if valid_580008 != nil:
+    section.add "access_token", valid_580008
+  var valid_580009 = query.getOrDefault("upload_protocol")
+  valid_580009 = validateParameter(valid_580009, JString, required = false,
                                  default = nil)
-  if valid_578984 != nil:
-    section.add "upload_protocol", valid_578984
+  if valid_580009 != nil:
+    section.add "upload_protocol", valid_580009
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1109,21 +1134,21 @@ proc validate_SheetsSpreadsheetsSheetsCopyTo_578970(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578986: Call_SheetsSpreadsheetsSheetsCopyTo_578969; path: JsonNode;
+proc call*(call_580011: Call_SheetsSpreadsheetsSheetsCopyTo_579994; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Copies a single sheet from a spreadsheet to another spreadsheet.
   ## Returns the properties of the newly created sheet.
   ## 
-  let valid = call_578986.validator(path, query, header, formData, body)
-  let scheme = call_578986.pickScheme
+  let valid = call_580011.validator(path, query, header, formData, body)
+  let scheme = call_580011.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578986.url(scheme.get, call_578986.host, call_578986.base,
-                         call_578986.route, valid.getOrDefault("path"),
+  let url = call_580011.url(scheme.get, call_580011.host, call_580011.base,
+                         call_580011.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578986, url, valid)
+  result = hook(call_580011, url, valid)
 
-proc call*(call_578987: Call_SheetsSpreadsheetsSheetsCopyTo_578969; sheetId: int;
+proc call*(call_580012: Call_SheetsSpreadsheetsSheetsCopyTo_579994; sheetId: int;
           spreadsheetId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -1159,35 +1184,35 @@ proc call*(call_578987: Call_SheetsSpreadsheetsSheetsCopyTo_578969; sheetId: int
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578988 = newJObject()
-  var query_578989 = newJObject()
-  var body_578990 = newJObject()
-  add(query_578989, "key", newJString(key))
-  add(query_578989, "prettyPrint", newJBool(prettyPrint))
-  add(query_578989, "oauth_token", newJString(oauthToken))
-  add(path_578988, "sheetId", newJInt(sheetId))
-  add(query_578989, "$.xgafv", newJString(Xgafv))
-  add(query_578989, "alt", newJString(alt))
-  add(query_578989, "uploadType", newJString(uploadType))
-  add(query_578989, "quotaUser", newJString(quotaUser))
+  var path_580013 = newJObject()
+  var query_580014 = newJObject()
+  var body_580015 = newJObject()
+  add(query_580014, "key", newJString(key))
+  add(query_580014, "prettyPrint", newJBool(prettyPrint))
+  add(query_580014, "oauth_token", newJString(oauthToken))
+  add(path_580013, "sheetId", newJInt(sheetId))
+  add(query_580014, "$.xgafv", newJString(Xgafv))
+  add(query_580014, "alt", newJString(alt))
+  add(query_580014, "uploadType", newJString(uploadType))
+  add(query_580014, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_578990 = body
-  add(query_578989, "callback", newJString(callback))
-  add(path_578988, "spreadsheetId", newJString(spreadsheetId))
-  add(query_578989, "fields", newJString(fields))
-  add(query_578989, "access_token", newJString(accessToken))
-  add(query_578989, "upload_protocol", newJString(uploadProtocol))
-  result = call_578987.call(path_578988, query_578989, nil, nil, body_578990)
+    body_580015 = body
+  add(query_580014, "callback", newJString(callback))
+  add(path_580013, "spreadsheetId", newJString(spreadsheetId))
+  add(query_580014, "fields", newJString(fields))
+  add(query_580014, "access_token", newJString(accessToken))
+  add(query_580014, "upload_protocol", newJString(uploadProtocol))
+  result = call_580012.call(path_580013, query_580014, nil, nil, body_580015)
 
-var sheetsSpreadsheetsSheetsCopyTo* = Call_SheetsSpreadsheetsSheetsCopyTo_578969(
+var sheetsSpreadsheetsSheetsCopyTo* = Call_SheetsSpreadsheetsSheetsCopyTo_579994(
     name: "sheetsSpreadsheetsSheetsCopyTo", meth: HttpMethod.HttpPost,
     host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}/sheets/{sheetId}:copyTo",
-    validator: validate_SheetsSpreadsheetsSheetsCopyTo_578970, base: "/",
-    url: url_SheetsSpreadsheetsSheetsCopyTo_578971, schemes: {Scheme.Https})
+    validator: validate_SheetsSpreadsheetsSheetsCopyTo_579995, base: "/",
+    url: url_SheetsSpreadsheetsSheetsCopyTo_579996, schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsValuesUpdate_579014 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsValuesUpdate_579016(protocol: Scheme; host: string;
+  Call_SheetsSpreadsheetsValuesUpdate_580039 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsValuesUpdate_580041(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1203,9 +1228,14 @@ proc url_SheetsSpreadsheetsValuesUpdate_579016(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsValuesUpdate_579015(path: JsonNode;
+proc validate_SheetsSpreadsheetsValuesUpdate_580040(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets values in a range of a spreadsheet.
   ## The caller must specify the spreadsheet ID, range, and
@@ -1221,16 +1251,16 @@ proc validate_SheetsSpreadsheetsValuesUpdate_579015(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `spreadsheetId` field"
-  var valid_579017 = path.getOrDefault("spreadsheetId")
-  valid_579017 = validateParameter(valid_579017, JString, required = true,
+  var valid_580042 = path.getOrDefault("spreadsheetId")
+  valid_580042 = validateParameter(valid_580042, JString, required = true,
                                  default = nil)
-  if valid_579017 != nil:
-    section.add "spreadsheetId", valid_579017
-  var valid_579018 = path.getOrDefault("range")
-  valid_579018 = validateParameter(valid_579018, JString, required = true,
+  if valid_580042 != nil:
+    section.add "spreadsheetId", valid_580042
+  var valid_580043 = path.getOrDefault("range")
+  valid_580043 = validateParameter(valid_580043, JString, required = true,
                                  default = nil)
-  if valid_579018 != nil:
-    section.add "range", valid_579018
+  if valid_580043 != nil:
+    section.add "range", valid_580043
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1274,80 +1304,80 @@ proc validate_SheetsSpreadsheetsValuesUpdate_579015(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579019 = query.getOrDefault("key")
-  valid_579019 = validateParameter(valid_579019, JString, required = false,
+  var valid_580044 = query.getOrDefault("key")
+  valid_580044 = validateParameter(valid_580044, JString, required = false,
                                  default = nil)
-  if valid_579019 != nil:
-    section.add "key", valid_579019
-  var valid_579020 = query.getOrDefault("prettyPrint")
-  valid_579020 = validateParameter(valid_579020, JBool, required = false,
+  if valid_580044 != nil:
+    section.add "key", valid_580044
+  var valid_580045 = query.getOrDefault("prettyPrint")
+  valid_580045 = validateParameter(valid_580045, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579020 != nil:
-    section.add "prettyPrint", valid_579020
-  var valid_579021 = query.getOrDefault("oauth_token")
-  valid_579021 = validateParameter(valid_579021, JString, required = false,
+  if valid_580045 != nil:
+    section.add "prettyPrint", valid_580045
+  var valid_580046 = query.getOrDefault("oauth_token")
+  valid_580046 = validateParameter(valid_580046, JString, required = false,
                                  default = nil)
-  if valid_579021 != nil:
-    section.add "oauth_token", valid_579021
-  var valid_579022 = query.getOrDefault("$.xgafv")
-  valid_579022 = validateParameter(valid_579022, JString, required = false,
+  if valid_580046 != nil:
+    section.add "oauth_token", valid_580046
+  var valid_580047 = query.getOrDefault("$.xgafv")
+  valid_580047 = validateParameter(valid_580047, JString, required = false,
                                  default = newJString("1"))
-  if valid_579022 != nil:
-    section.add "$.xgafv", valid_579022
-  var valid_579023 = query.getOrDefault("responseValueRenderOption")
-  valid_579023 = validateParameter(valid_579023, JString, required = false,
+  if valid_580047 != nil:
+    section.add "$.xgafv", valid_580047
+  var valid_580048 = query.getOrDefault("responseValueRenderOption")
+  valid_580048 = validateParameter(valid_580048, JString, required = false,
                                  default = newJString("FORMATTED_VALUE"))
-  if valid_579023 != nil:
-    section.add "responseValueRenderOption", valid_579023
-  var valid_579024 = query.getOrDefault("responseDateTimeRenderOption")
-  valid_579024 = validateParameter(valid_579024, JString, required = false,
+  if valid_580048 != nil:
+    section.add "responseValueRenderOption", valid_580048
+  var valid_580049 = query.getOrDefault("responseDateTimeRenderOption")
+  valid_580049 = validateParameter(valid_580049, JString, required = false,
                                  default = newJString("SERIAL_NUMBER"))
-  if valid_579024 != nil:
-    section.add "responseDateTimeRenderOption", valid_579024
-  var valid_579025 = query.getOrDefault("alt")
-  valid_579025 = validateParameter(valid_579025, JString, required = false,
+  if valid_580049 != nil:
+    section.add "responseDateTimeRenderOption", valid_580049
+  var valid_580050 = query.getOrDefault("alt")
+  valid_580050 = validateParameter(valid_580050, JString, required = false,
                                  default = newJString("json"))
-  if valid_579025 != nil:
-    section.add "alt", valid_579025
-  var valid_579026 = query.getOrDefault("uploadType")
-  valid_579026 = validateParameter(valid_579026, JString, required = false,
+  if valid_580050 != nil:
+    section.add "alt", valid_580050
+  var valid_580051 = query.getOrDefault("uploadType")
+  valid_580051 = validateParameter(valid_580051, JString, required = false,
                                  default = nil)
-  if valid_579026 != nil:
-    section.add "uploadType", valid_579026
-  var valid_579027 = query.getOrDefault("includeValuesInResponse")
-  valid_579027 = validateParameter(valid_579027, JBool, required = false, default = nil)
-  if valid_579027 != nil:
-    section.add "includeValuesInResponse", valid_579027
-  var valid_579028 = query.getOrDefault("quotaUser")
-  valid_579028 = validateParameter(valid_579028, JString, required = false,
+  if valid_580051 != nil:
+    section.add "uploadType", valid_580051
+  var valid_580052 = query.getOrDefault("includeValuesInResponse")
+  valid_580052 = validateParameter(valid_580052, JBool, required = false, default = nil)
+  if valid_580052 != nil:
+    section.add "includeValuesInResponse", valid_580052
+  var valid_580053 = query.getOrDefault("quotaUser")
+  valid_580053 = validateParameter(valid_580053, JString, required = false,
                                  default = nil)
-  if valid_579028 != nil:
-    section.add "quotaUser", valid_579028
-  var valid_579029 = query.getOrDefault("callback")
-  valid_579029 = validateParameter(valid_579029, JString, required = false,
+  if valid_580053 != nil:
+    section.add "quotaUser", valid_580053
+  var valid_580054 = query.getOrDefault("callback")
+  valid_580054 = validateParameter(valid_580054, JString, required = false,
                                  default = nil)
-  if valid_579029 != nil:
-    section.add "callback", valid_579029
-  var valid_579030 = query.getOrDefault("valueInputOption")
-  valid_579030 = validateParameter(valid_579030, JString, required = false, default = newJString(
+  if valid_580054 != nil:
+    section.add "callback", valid_580054
+  var valid_580055 = query.getOrDefault("valueInputOption")
+  valid_580055 = validateParameter(valid_580055, JString, required = false, default = newJString(
       "INPUT_VALUE_OPTION_UNSPECIFIED"))
-  if valid_579030 != nil:
-    section.add "valueInputOption", valid_579030
-  var valid_579031 = query.getOrDefault("fields")
-  valid_579031 = validateParameter(valid_579031, JString, required = false,
+  if valid_580055 != nil:
+    section.add "valueInputOption", valid_580055
+  var valid_580056 = query.getOrDefault("fields")
+  valid_580056 = validateParameter(valid_580056, JString, required = false,
                                  default = nil)
-  if valid_579031 != nil:
-    section.add "fields", valid_579031
-  var valid_579032 = query.getOrDefault("access_token")
-  valid_579032 = validateParameter(valid_579032, JString, required = false,
+  if valid_580056 != nil:
+    section.add "fields", valid_580056
+  var valid_580057 = query.getOrDefault("access_token")
+  valid_580057 = validateParameter(valid_580057, JString, required = false,
                                  default = nil)
-  if valid_579032 != nil:
-    section.add "access_token", valid_579032
-  var valid_579033 = query.getOrDefault("upload_protocol")
-  valid_579033 = validateParameter(valid_579033, JString, required = false,
+  if valid_580057 != nil:
+    section.add "access_token", valid_580057
+  var valid_580058 = query.getOrDefault("upload_protocol")
+  valid_580058 = validateParameter(valid_580058, JString, required = false,
                                  default = nil)
-  if valid_579033 != nil:
-    section.add "upload_protocol", valid_579033
+  if valid_580058 != nil:
+    section.add "upload_protocol", valid_580058
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1359,22 +1389,22 @@ proc validate_SheetsSpreadsheetsValuesUpdate_579015(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579035: Call_SheetsSpreadsheetsValuesUpdate_579014; path: JsonNode;
+proc call*(call_580060: Call_SheetsSpreadsheetsValuesUpdate_580039; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Sets values in a range of a spreadsheet.
   ## The caller must specify the spreadsheet ID, range, and
   ## a valueInputOption.
   ## 
-  let valid = call_579035.validator(path, query, header, formData, body)
-  let scheme = call_579035.pickScheme
+  let valid = call_580060.validator(path, query, header, formData, body)
+  let scheme = call_580060.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579035.url(scheme.get, call_579035.host, call_579035.base,
-                         call_579035.route, valid.getOrDefault("path"),
+  let url = call_580060.url(scheme.get, call_580060.host, call_580060.base,
+                         call_580060.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579035, url, valid)
+  result = hook(call_580060, url, valid)
 
-proc call*(call_579036: Call_SheetsSpreadsheetsValuesUpdate_579014;
+proc call*(call_580061: Call_SheetsSpreadsheetsValuesUpdate_580039;
           spreadsheetId: string; range: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; Xgafv: string = "1";
           responseValueRenderOption: string = "FORMATTED_VALUE";
@@ -1433,41 +1463,41 @@ proc call*(call_579036: Call_SheetsSpreadsheetsValuesUpdate_579014;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579037 = newJObject()
-  var query_579038 = newJObject()
-  var body_579039 = newJObject()
-  add(query_579038, "key", newJString(key))
-  add(query_579038, "prettyPrint", newJBool(prettyPrint))
-  add(query_579038, "oauth_token", newJString(oauthToken))
-  add(query_579038, "$.xgafv", newJString(Xgafv))
-  add(query_579038, "responseValueRenderOption",
+  var path_580062 = newJObject()
+  var query_580063 = newJObject()
+  var body_580064 = newJObject()
+  add(query_580063, "key", newJString(key))
+  add(query_580063, "prettyPrint", newJBool(prettyPrint))
+  add(query_580063, "oauth_token", newJString(oauthToken))
+  add(query_580063, "$.xgafv", newJString(Xgafv))
+  add(query_580063, "responseValueRenderOption",
       newJString(responseValueRenderOption))
-  add(query_579038, "responseDateTimeRenderOption",
+  add(query_580063, "responseDateTimeRenderOption",
       newJString(responseDateTimeRenderOption))
-  add(query_579038, "alt", newJString(alt))
-  add(query_579038, "uploadType", newJString(uploadType))
-  add(query_579038, "includeValuesInResponse", newJBool(includeValuesInResponse))
-  add(query_579038, "quotaUser", newJString(quotaUser))
+  add(query_580063, "alt", newJString(alt))
+  add(query_580063, "uploadType", newJString(uploadType))
+  add(query_580063, "includeValuesInResponse", newJBool(includeValuesInResponse))
+  add(query_580063, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579039 = body
-  add(query_579038, "callback", newJString(callback))
-  add(path_579037, "spreadsheetId", newJString(spreadsheetId))
-  add(path_579037, "range", newJString(range))
-  add(query_579038, "valueInputOption", newJString(valueInputOption))
-  add(query_579038, "fields", newJString(fields))
-  add(query_579038, "access_token", newJString(accessToken))
-  add(query_579038, "upload_protocol", newJString(uploadProtocol))
-  result = call_579036.call(path_579037, query_579038, nil, nil, body_579039)
+    body_580064 = body
+  add(query_580063, "callback", newJString(callback))
+  add(path_580062, "spreadsheetId", newJString(spreadsheetId))
+  add(path_580062, "range", newJString(range))
+  add(query_580063, "valueInputOption", newJString(valueInputOption))
+  add(query_580063, "fields", newJString(fields))
+  add(query_580063, "access_token", newJString(accessToken))
+  add(query_580063, "upload_protocol", newJString(uploadProtocol))
+  result = call_580061.call(path_580062, query_580063, nil, nil, body_580064)
 
-var sheetsSpreadsheetsValuesUpdate* = Call_SheetsSpreadsheetsValuesUpdate_579014(
+var sheetsSpreadsheetsValuesUpdate* = Call_SheetsSpreadsheetsValuesUpdate_580039(
     name: "sheetsSpreadsheetsValuesUpdate", meth: HttpMethod.HttpPut,
     host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}/values/{range}",
-    validator: validate_SheetsSpreadsheetsValuesUpdate_579015, base: "/",
-    url: url_SheetsSpreadsheetsValuesUpdate_579016, schemes: {Scheme.Https})
+    validator: validate_SheetsSpreadsheetsValuesUpdate_580040, base: "/",
+    url: url_SheetsSpreadsheetsValuesUpdate_580041, schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsValuesGet_578991 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsValuesGet_578993(protocol: Scheme; host: string;
+  Call_SheetsSpreadsheetsValuesGet_580016 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsValuesGet_580018(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1483,9 +1513,14 @@ proc url_SheetsSpreadsheetsValuesGet_578993(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsValuesGet_578992(path: JsonNode; query: JsonNode;
+proc validate_SheetsSpreadsheetsValuesGet_580017(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns a range of values from a spreadsheet.
   ## The caller must specify the spreadsheet ID and a range.
@@ -1500,16 +1535,16 @@ proc validate_SheetsSpreadsheetsValuesGet_578992(path: JsonNode; query: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `spreadsheetId` field"
-  var valid_578994 = path.getOrDefault("spreadsheetId")
-  valid_578994 = validateParameter(valid_578994, JString, required = true,
+  var valid_580019 = path.getOrDefault("spreadsheetId")
+  valid_580019 = validateParameter(valid_580019, JString, required = true,
                                  default = nil)
-  if valid_578994 != nil:
-    section.add "spreadsheetId", valid_578994
-  var valid_578995 = path.getOrDefault("range")
-  valid_578995 = validateParameter(valid_578995, JString, required = true,
+  if valid_580019 != nil:
+    section.add "spreadsheetId", valid_580019
+  var valid_580020 = path.getOrDefault("range")
+  valid_580020 = validateParameter(valid_580020, JString, required = true,
                                  default = nil)
-  if valid_578995 != nil:
-    section.add "range", valid_578995
+  if valid_580020 != nil:
+    section.add "range", valid_580020
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1551,76 +1586,76 @@ proc validate_SheetsSpreadsheetsValuesGet_578992(path: JsonNode; query: JsonNode
   ##                    : How values should be represented in the output.
   ## The default render option is ValueRenderOption.FORMATTED_VALUE.
   section = newJObject()
-  var valid_578996 = query.getOrDefault("key")
-  valid_578996 = validateParameter(valid_578996, JString, required = false,
+  var valid_580021 = query.getOrDefault("key")
+  valid_580021 = validateParameter(valid_580021, JString, required = false,
                                  default = nil)
-  if valid_578996 != nil:
-    section.add "key", valid_578996
-  var valid_578997 = query.getOrDefault("prettyPrint")
-  valid_578997 = validateParameter(valid_578997, JBool, required = false,
+  if valid_580021 != nil:
+    section.add "key", valid_580021
+  var valid_580022 = query.getOrDefault("prettyPrint")
+  valid_580022 = validateParameter(valid_580022, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578997 != nil:
-    section.add "prettyPrint", valid_578997
-  var valid_578998 = query.getOrDefault("oauth_token")
-  valid_578998 = validateParameter(valid_578998, JString, required = false,
+  if valid_580022 != nil:
+    section.add "prettyPrint", valid_580022
+  var valid_580023 = query.getOrDefault("oauth_token")
+  valid_580023 = validateParameter(valid_580023, JString, required = false,
                                  default = nil)
-  if valid_578998 != nil:
-    section.add "oauth_token", valid_578998
-  var valid_578999 = query.getOrDefault("majorDimension")
-  valid_578999 = validateParameter(valid_578999, JString, required = false,
+  if valid_580023 != nil:
+    section.add "oauth_token", valid_580023
+  var valid_580024 = query.getOrDefault("majorDimension")
+  valid_580024 = validateParameter(valid_580024, JString, required = false,
                                  default = newJString("DIMENSION_UNSPECIFIED"))
-  if valid_578999 != nil:
-    section.add "majorDimension", valid_578999
-  var valid_579000 = query.getOrDefault("$.xgafv")
-  valid_579000 = validateParameter(valid_579000, JString, required = false,
+  if valid_580024 != nil:
+    section.add "majorDimension", valid_580024
+  var valid_580025 = query.getOrDefault("$.xgafv")
+  valid_580025 = validateParameter(valid_580025, JString, required = false,
                                  default = newJString("1"))
-  if valid_579000 != nil:
-    section.add "$.xgafv", valid_579000
-  var valid_579001 = query.getOrDefault("alt")
-  valid_579001 = validateParameter(valid_579001, JString, required = false,
+  if valid_580025 != nil:
+    section.add "$.xgafv", valid_580025
+  var valid_580026 = query.getOrDefault("alt")
+  valid_580026 = validateParameter(valid_580026, JString, required = false,
                                  default = newJString("json"))
-  if valid_579001 != nil:
-    section.add "alt", valid_579001
-  var valid_579002 = query.getOrDefault("uploadType")
-  valid_579002 = validateParameter(valid_579002, JString, required = false,
+  if valid_580026 != nil:
+    section.add "alt", valid_580026
+  var valid_580027 = query.getOrDefault("uploadType")
+  valid_580027 = validateParameter(valid_580027, JString, required = false,
                                  default = nil)
-  if valid_579002 != nil:
-    section.add "uploadType", valid_579002
-  var valid_579003 = query.getOrDefault("quotaUser")
-  valid_579003 = validateParameter(valid_579003, JString, required = false,
+  if valid_580027 != nil:
+    section.add "uploadType", valid_580027
+  var valid_580028 = query.getOrDefault("quotaUser")
+  valid_580028 = validateParameter(valid_580028, JString, required = false,
                                  default = nil)
-  if valid_579003 != nil:
-    section.add "quotaUser", valid_579003
-  var valid_579004 = query.getOrDefault("dateTimeRenderOption")
-  valid_579004 = validateParameter(valid_579004, JString, required = false,
+  if valid_580028 != nil:
+    section.add "quotaUser", valid_580028
+  var valid_580029 = query.getOrDefault("dateTimeRenderOption")
+  valid_580029 = validateParameter(valid_580029, JString, required = false,
                                  default = newJString("SERIAL_NUMBER"))
-  if valid_579004 != nil:
-    section.add "dateTimeRenderOption", valid_579004
-  var valid_579005 = query.getOrDefault("callback")
-  valid_579005 = validateParameter(valid_579005, JString, required = false,
+  if valid_580029 != nil:
+    section.add "dateTimeRenderOption", valid_580029
+  var valid_580030 = query.getOrDefault("callback")
+  valid_580030 = validateParameter(valid_580030, JString, required = false,
                                  default = nil)
-  if valid_579005 != nil:
-    section.add "callback", valid_579005
-  var valid_579006 = query.getOrDefault("fields")
-  valid_579006 = validateParameter(valid_579006, JString, required = false,
+  if valid_580030 != nil:
+    section.add "callback", valid_580030
+  var valid_580031 = query.getOrDefault("fields")
+  valid_580031 = validateParameter(valid_580031, JString, required = false,
                                  default = nil)
-  if valid_579006 != nil:
-    section.add "fields", valid_579006
-  var valid_579007 = query.getOrDefault("access_token")
-  valid_579007 = validateParameter(valid_579007, JString, required = false,
+  if valid_580031 != nil:
+    section.add "fields", valid_580031
+  var valid_580032 = query.getOrDefault("access_token")
+  valid_580032 = validateParameter(valid_580032, JString, required = false,
                                  default = nil)
-  if valid_579007 != nil:
-    section.add "access_token", valid_579007
-  var valid_579008 = query.getOrDefault("upload_protocol")
-  valid_579008 = validateParameter(valid_579008, JString, required = false,
+  if valid_580032 != nil:
+    section.add "access_token", valid_580032
+  var valid_580033 = query.getOrDefault("upload_protocol")
+  valid_580033 = validateParameter(valid_580033, JString, required = false,
                                  default = nil)
-  if valid_579008 != nil:
-    section.add "upload_protocol", valid_579008
-  var valid_579009 = query.getOrDefault("valueRenderOption")
-  valid_579009 = validateParameter(valid_579009, JString, required = false,
+  if valid_580033 != nil:
+    section.add "upload_protocol", valid_580033
+  var valid_580034 = query.getOrDefault("valueRenderOption")
+  valid_580034 = validateParameter(valid_580034, JString, required = false,
                                  default = newJString("FORMATTED_VALUE"))
-  if valid_579009 != nil:
-    section.add "valueRenderOption", valid_579009
+  if valid_580034 != nil:
+    section.add "valueRenderOption", valid_580034
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1629,21 +1664,21 @@ proc validate_SheetsSpreadsheetsValuesGet_578992(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_579010: Call_SheetsSpreadsheetsValuesGet_578991; path: JsonNode;
+proc call*(call_580035: Call_SheetsSpreadsheetsValuesGet_580016; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns a range of values from a spreadsheet.
   ## The caller must specify the spreadsheet ID and a range.
   ## 
-  let valid = call_579010.validator(path, query, header, formData, body)
-  let scheme = call_579010.pickScheme
+  let valid = call_580035.validator(path, query, header, formData, body)
+  let scheme = call_580035.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579010.url(scheme.get, call_579010.host, call_579010.base,
-                         call_579010.route, valid.getOrDefault("path"),
+  let url = call_580035.url(scheme.get, call_580035.host, call_580035.base,
+                         call_580035.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579010, url, valid)
+  result = hook(call_580035, url, valid)
 
-proc call*(call_579011: Call_SheetsSpreadsheetsValuesGet_578991;
+proc call*(call_580036: Call_SheetsSpreadsheetsValuesGet_580016;
           spreadsheetId: string; range: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = "";
           majorDimension: string = "DIMENSION_UNSPECIFIED"; Xgafv: string = "1";
@@ -1696,35 +1731,35 @@ proc call*(call_579011: Call_SheetsSpreadsheetsValuesGet_578991;
   ##   valueRenderOption: string
   ##                    : How values should be represented in the output.
   ## The default render option is ValueRenderOption.FORMATTED_VALUE.
-  var path_579012 = newJObject()
-  var query_579013 = newJObject()
-  add(query_579013, "key", newJString(key))
-  add(query_579013, "prettyPrint", newJBool(prettyPrint))
-  add(query_579013, "oauth_token", newJString(oauthToken))
-  add(query_579013, "majorDimension", newJString(majorDimension))
-  add(query_579013, "$.xgafv", newJString(Xgafv))
-  add(query_579013, "alt", newJString(alt))
-  add(query_579013, "uploadType", newJString(uploadType))
-  add(query_579013, "quotaUser", newJString(quotaUser))
-  add(query_579013, "dateTimeRenderOption", newJString(dateTimeRenderOption))
-  add(query_579013, "callback", newJString(callback))
-  add(path_579012, "spreadsheetId", newJString(spreadsheetId))
-  add(path_579012, "range", newJString(range))
-  add(query_579013, "fields", newJString(fields))
-  add(query_579013, "access_token", newJString(accessToken))
-  add(query_579013, "upload_protocol", newJString(uploadProtocol))
-  add(query_579013, "valueRenderOption", newJString(valueRenderOption))
-  result = call_579011.call(path_579012, query_579013, nil, nil, nil)
+  var path_580037 = newJObject()
+  var query_580038 = newJObject()
+  add(query_580038, "key", newJString(key))
+  add(query_580038, "prettyPrint", newJBool(prettyPrint))
+  add(query_580038, "oauth_token", newJString(oauthToken))
+  add(query_580038, "majorDimension", newJString(majorDimension))
+  add(query_580038, "$.xgafv", newJString(Xgafv))
+  add(query_580038, "alt", newJString(alt))
+  add(query_580038, "uploadType", newJString(uploadType))
+  add(query_580038, "quotaUser", newJString(quotaUser))
+  add(query_580038, "dateTimeRenderOption", newJString(dateTimeRenderOption))
+  add(query_580038, "callback", newJString(callback))
+  add(path_580037, "spreadsheetId", newJString(spreadsheetId))
+  add(path_580037, "range", newJString(range))
+  add(query_580038, "fields", newJString(fields))
+  add(query_580038, "access_token", newJString(accessToken))
+  add(query_580038, "upload_protocol", newJString(uploadProtocol))
+  add(query_580038, "valueRenderOption", newJString(valueRenderOption))
+  result = call_580036.call(path_580037, query_580038, nil, nil, nil)
 
-var sheetsSpreadsheetsValuesGet* = Call_SheetsSpreadsheetsValuesGet_578991(
+var sheetsSpreadsheetsValuesGet* = Call_SheetsSpreadsheetsValuesGet_580016(
     name: "sheetsSpreadsheetsValuesGet", meth: HttpMethod.HttpGet,
     host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}/values/{range}",
-    validator: validate_SheetsSpreadsheetsValuesGet_578992, base: "/",
-    url: url_SheetsSpreadsheetsValuesGet_578993, schemes: {Scheme.Https})
+    validator: validate_SheetsSpreadsheetsValuesGet_580017, base: "/",
+    url: url_SheetsSpreadsheetsValuesGet_580018, schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsValuesAppend_579040 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsValuesAppend_579042(protocol: Scheme; host: string;
+  Call_SheetsSpreadsheetsValuesAppend_580065 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsValuesAppend_580067(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1741,9 +1776,14 @@ proc url_SheetsSpreadsheetsValuesAppend_579042(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsValuesAppend_579041(path: JsonNode;
+proc validate_SheetsSpreadsheetsValuesAppend_580066(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Appends values to a spreadsheet. The input range is used to search for
   ## existing data and find a "table" within that range. Values will be
@@ -1771,16 +1811,16 @@ proc validate_SheetsSpreadsheetsValuesAppend_579041(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `spreadsheetId` field"
-  var valid_579043 = path.getOrDefault("spreadsheetId")
-  valid_579043 = validateParameter(valid_579043, JString, required = true,
+  var valid_580068 = path.getOrDefault("spreadsheetId")
+  valid_580068 = validateParameter(valid_580068, JString, required = true,
                                  default = nil)
-  if valid_579043 != nil:
-    section.add "spreadsheetId", valid_579043
-  var valid_579044 = path.getOrDefault("range")
-  valid_579044 = validateParameter(valid_579044, JString, required = true,
+  if valid_580068 != nil:
+    section.add "spreadsheetId", valid_580068
+  var valid_580069 = path.getOrDefault("range")
+  valid_580069 = validateParameter(valid_580069, JString, required = true,
                                  default = nil)
-  if valid_579044 != nil:
-    section.add "range", valid_579044
+  if valid_580069 != nil:
+    section.add "range", valid_580069
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1822,85 +1862,85 @@ proc validate_SheetsSpreadsheetsValuesAppend_579041(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579045 = query.getOrDefault("key")
-  valid_579045 = validateParameter(valid_579045, JString, required = false,
+  var valid_580070 = query.getOrDefault("key")
+  valid_580070 = validateParameter(valid_580070, JString, required = false,
                                  default = nil)
-  if valid_579045 != nil:
-    section.add "key", valid_579045
-  var valid_579046 = query.getOrDefault("insertDataOption")
-  valid_579046 = validateParameter(valid_579046, JString, required = false,
+  if valid_580070 != nil:
+    section.add "key", valid_580070
+  var valid_580071 = query.getOrDefault("insertDataOption")
+  valid_580071 = validateParameter(valid_580071, JString, required = false,
                                  default = newJString("OVERWRITE"))
-  if valid_579046 != nil:
-    section.add "insertDataOption", valid_579046
-  var valid_579047 = query.getOrDefault("prettyPrint")
-  valid_579047 = validateParameter(valid_579047, JBool, required = false,
+  if valid_580071 != nil:
+    section.add "insertDataOption", valid_580071
+  var valid_580072 = query.getOrDefault("prettyPrint")
+  valid_580072 = validateParameter(valid_580072, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579047 != nil:
-    section.add "prettyPrint", valid_579047
-  var valid_579048 = query.getOrDefault("oauth_token")
-  valid_579048 = validateParameter(valid_579048, JString, required = false,
+  if valid_580072 != nil:
+    section.add "prettyPrint", valid_580072
+  var valid_580073 = query.getOrDefault("oauth_token")
+  valid_580073 = validateParameter(valid_580073, JString, required = false,
                                  default = nil)
-  if valid_579048 != nil:
-    section.add "oauth_token", valid_579048
-  var valid_579049 = query.getOrDefault("$.xgafv")
-  valid_579049 = validateParameter(valid_579049, JString, required = false,
+  if valid_580073 != nil:
+    section.add "oauth_token", valid_580073
+  var valid_580074 = query.getOrDefault("$.xgafv")
+  valid_580074 = validateParameter(valid_580074, JString, required = false,
                                  default = newJString("1"))
-  if valid_579049 != nil:
-    section.add "$.xgafv", valid_579049
-  var valid_579050 = query.getOrDefault("responseValueRenderOption")
-  valid_579050 = validateParameter(valid_579050, JString, required = false,
+  if valid_580074 != nil:
+    section.add "$.xgafv", valid_580074
+  var valid_580075 = query.getOrDefault("responseValueRenderOption")
+  valid_580075 = validateParameter(valid_580075, JString, required = false,
                                  default = newJString("FORMATTED_VALUE"))
-  if valid_579050 != nil:
-    section.add "responseValueRenderOption", valid_579050
-  var valid_579051 = query.getOrDefault("responseDateTimeRenderOption")
-  valid_579051 = validateParameter(valid_579051, JString, required = false,
+  if valid_580075 != nil:
+    section.add "responseValueRenderOption", valid_580075
+  var valid_580076 = query.getOrDefault("responseDateTimeRenderOption")
+  valid_580076 = validateParameter(valid_580076, JString, required = false,
                                  default = newJString("SERIAL_NUMBER"))
-  if valid_579051 != nil:
-    section.add "responseDateTimeRenderOption", valid_579051
-  var valid_579052 = query.getOrDefault("alt")
-  valid_579052 = validateParameter(valid_579052, JString, required = false,
+  if valid_580076 != nil:
+    section.add "responseDateTimeRenderOption", valid_580076
+  var valid_580077 = query.getOrDefault("alt")
+  valid_580077 = validateParameter(valid_580077, JString, required = false,
                                  default = newJString("json"))
-  if valid_579052 != nil:
-    section.add "alt", valid_579052
-  var valid_579053 = query.getOrDefault("uploadType")
-  valid_579053 = validateParameter(valid_579053, JString, required = false,
+  if valid_580077 != nil:
+    section.add "alt", valid_580077
+  var valid_580078 = query.getOrDefault("uploadType")
+  valid_580078 = validateParameter(valid_580078, JString, required = false,
                                  default = nil)
-  if valid_579053 != nil:
-    section.add "uploadType", valid_579053
-  var valid_579054 = query.getOrDefault("includeValuesInResponse")
-  valid_579054 = validateParameter(valid_579054, JBool, required = false, default = nil)
-  if valid_579054 != nil:
-    section.add "includeValuesInResponse", valid_579054
-  var valid_579055 = query.getOrDefault("quotaUser")
-  valid_579055 = validateParameter(valid_579055, JString, required = false,
+  if valid_580078 != nil:
+    section.add "uploadType", valid_580078
+  var valid_580079 = query.getOrDefault("includeValuesInResponse")
+  valid_580079 = validateParameter(valid_580079, JBool, required = false, default = nil)
+  if valid_580079 != nil:
+    section.add "includeValuesInResponse", valid_580079
+  var valid_580080 = query.getOrDefault("quotaUser")
+  valid_580080 = validateParameter(valid_580080, JString, required = false,
                                  default = nil)
-  if valid_579055 != nil:
-    section.add "quotaUser", valid_579055
-  var valid_579056 = query.getOrDefault("callback")
-  valid_579056 = validateParameter(valid_579056, JString, required = false,
+  if valid_580080 != nil:
+    section.add "quotaUser", valid_580080
+  var valid_580081 = query.getOrDefault("callback")
+  valid_580081 = validateParameter(valid_580081, JString, required = false,
                                  default = nil)
-  if valid_579056 != nil:
-    section.add "callback", valid_579056
-  var valid_579057 = query.getOrDefault("valueInputOption")
-  valid_579057 = validateParameter(valid_579057, JString, required = false, default = newJString(
+  if valid_580081 != nil:
+    section.add "callback", valid_580081
+  var valid_580082 = query.getOrDefault("valueInputOption")
+  valid_580082 = validateParameter(valid_580082, JString, required = false, default = newJString(
       "INPUT_VALUE_OPTION_UNSPECIFIED"))
-  if valid_579057 != nil:
-    section.add "valueInputOption", valid_579057
-  var valid_579058 = query.getOrDefault("fields")
-  valid_579058 = validateParameter(valid_579058, JString, required = false,
+  if valid_580082 != nil:
+    section.add "valueInputOption", valid_580082
+  var valid_580083 = query.getOrDefault("fields")
+  valid_580083 = validateParameter(valid_580083, JString, required = false,
                                  default = nil)
-  if valid_579058 != nil:
-    section.add "fields", valid_579058
-  var valid_579059 = query.getOrDefault("access_token")
-  valid_579059 = validateParameter(valid_579059, JString, required = false,
+  if valid_580083 != nil:
+    section.add "fields", valid_580083
+  var valid_580084 = query.getOrDefault("access_token")
+  valid_580084 = validateParameter(valid_580084, JString, required = false,
                                  default = nil)
-  if valid_579059 != nil:
-    section.add "access_token", valid_579059
-  var valid_579060 = query.getOrDefault("upload_protocol")
-  valid_579060 = validateParameter(valid_579060, JString, required = false,
+  if valid_580084 != nil:
+    section.add "access_token", valid_580084
+  var valid_580085 = query.getOrDefault("upload_protocol")
+  valid_580085 = validateParameter(valid_580085, JString, required = false,
                                  default = nil)
-  if valid_579060 != nil:
-    section.add "upload_protocol", valid_579060
+  if valid_580085 != nil:
+    section.add "upload_protocol", valid_580085
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1912,7 +1952,7 @@ proc validate_SheetsSpreadsheetsValuesAppend_579041(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579062: Call_SheetsSpreadsheetsValuesAppend_579040; path: JsonNode;
+proc call*(call_580087: Call_SheetsSpreadsheetsValuesAppend_580065; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Appends values to a spreadsheet. The input range is used to search for
   ## existing data and find a "table" within that range. Values will be
@@ -1929,16 +1969,16 @@ proc call*(call_579062: Call_SheetsSpreadsheetsValuesAppend_579040; path: JsonNo
   ## row-wise), it does not influence what cell the data starts being written
   ## to.
   ## 
-  let valid = call_579062.validator(path, query, header, formData, body)
-  let scheme = call_579062.pickScheme
+  let valid = call_580087.validator(path, query, header, formData, body)
+  let scheme = call_580087.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579062.url(scheme.get, call_579062.host, call_579062.base,
-                         call_579062.route, valid.getOrDefault("path"),
+  let url = call_580087.url(scheme.get, call_580087.host, call_580087.base,
+                         call_580087.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579062, url, valid)
+  result = hook(call_580087, url, valid)
 
-proc call*(call_579063: Call_SheetsSpreadsheetsValuesAppend_579040;
+proc call*(call_580088: Call_SheetsSpreadsheetsValuesAppend_580065;
           spreadsheetId: string; range: string; key: string = "";
           insertDataOption: string = "OVERWRITE"; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1";
@@ -2008,42 +2048,42 @@ proc call*(call_579063: Call_SheetsSpreadsheetsValuesAppend_579040;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579064 = newJObject()
-  var query_579065 = newJObject()
-  var body_579066 = newJObject()
-  add(query_579065, "key", newJString(key))
-  add(query_579065, "insertDataOption", newJString(insertDataOption))
-  add(query_579065, "prettyPrint", newJBool(prettyPrint))
-  add(query_579065, "oauth_token", newJString(oauthToken))
-  add(query_579065, "$.xgafv", newJString(Xgafv))
-  add(query_579065, "responseValueRenderOption",
+  var path_580089 = newJObject()
+  var query_580090 = newJObject()
+  var body_580091 = newJObject()
+  add(query_580090, "key", newJString(key))
+  add(query_580090, "insertDataOption", newJString(insertDataOption))
+  add(query_580090, "prettyPrint", newJBool(prettyPrint))
+  add(query_580090, "oauth_token", newJString(oauthToken))
+  add(query_580090, "$.xgafv", newJString(Xgafv))
+  add(query_580090, "responseValueRenderOption",
       newJString(responseValueRenderOption))
-  add(query_579065, "responseDateTimeRenderOption",
+  add(query_580090, "responseDateTimeRenderOption",
       newJString(responseDateTimeRenderOption))
-  add(query_579065, "alt", newJString(alt))
-  add(query_579065, "uploadType", newJString(uploadType))
-  add(query_579065, "includeValuesInResponse", newJBool(includeValuesInResponse))
-  add(query_579065, "quotaUser", newJString(quotaUser))
+  add(query_580090, "alt", newJString(alt))
+  add(query_580090, "uploadType", newJString(uploadType))
+  add(query_580090, "includeValuesInResponse", newJBool(includeValuesInResponse))
+  add(query_580090, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579066 = body
-  add(query_579065, "callback", newJString(callback))
-  add(path_579064, "spreadsheetId", newJString(spreadsheetId))
-  add(path_579064, "range", newJString(range))
-  add(query_579065, "valueInputOption", newJString(valueInputOption))
-  add(query_579065, "fields", newJString(fields))
-  add(query_579065, "access_token", newJString(accessToken))
-  add(query_579065, "upload_protocol", newJString(uploadProtocol))
-  result = call_579063.call(path_579064, query_579065, nil, nil, body_579066)
+    body_580091 = body
+  add(query_580090, "callback", newJString(callback))
+  add(path_580089, "spreadsheetId", newJString(spreadsheetId))
+  add(path_580089, "range", newJString(range))
+  add(query_580090, "valueInputOption", newJString(valueInputOption))
+  add(query_580090, "fields", newJString(fields))
+  add(query_580090, "access_token", newJString(accessToken))
+  add(query_580090, "upload_protocol", newJString(uploadProtocol))
+  result = call_580088.call(path_580089, query_580090, nil, nil, body_580091)
 
-var sheetsSpreadsheetsValuesAppend* = Call_SheetsSpreadsheetsValuesAppend_579040(
+var sheetsSpreadsheetsValuesAppend* = Call_SheetsSpreadsheetsValuesAppend_580065(
     name: "sheetsSpreadsheetsValuesAppend", meth: HttpMethod.HttpPost,
     host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}/values/{range}:append",
-    validator: validate_SheetsSpreadsheetsValuesAppend_579041, base: "/",
-    url: url_SheetsSpreadsheetsValuesAppend_579042, schemes: {Scheme.Https})
+    validator: validate_SheetsSpreadsheetsValuesAppend_580066, base: "/",
+    url: url_SheetsSpreadsheetsValuesAppend_580067, schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsValuesClear_579067 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsValuesClear_579069(protocol: Scheme; host: string;
+  Call_SheetsSpreadsheetsValuesClear_580092 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsValuesClear_580094(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2060,9 +2100,14 @@ proc url_SheetsSpreadsheetsValuesClear_579069(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsValuesClear_579068(path: JsonNode; query: JsonNode;
+proc validate_SheetsSpreadsheetsValuesClear_580093(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Clears values from a spreadsheet.
   ## The caller must specify the spreadsheet ID and range.
@@ -2079,16 +2124,16 @@ proc validate_SheetsSpreadsheetsValuesClear_579068(path: JsonNode; query: JsonNo
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `spreadsheetId` field"
-  var valid_579070 = path.getOrDefault("spreadsheetId")
-  valid_579070 = validateParameter(valid_579070, JString, required = true,
+  var valid_580095 = path.getOrDefault("spreadsheetId")
+  valid_580095 = validateParameter(valid_580095, JString, required = true,
                                  default = nil)
-  if valid_579070 != nil:
-    section.add "spreadsheetId", valid_579070
-  var valid_579071 = path.getOrDefault("range")
-  valid_579071 = validateParameter(valid_579071, JString, required = true,
+  if valid_580095 != nil:
+    section.add "spreadsheetId", valid_580095
+  var valid_580096 = path.getOrDefault("range")
+  valid_580096 = validateParameter(valid_580096, JString, required = true,
                                  default = nil)
-  if valid_579071 != nil:
-    section.add "range", valid_579071
+  if valid_580096 != nil:
+    section.add "range", valid_580096
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2114,61 +2159,61 @@ proc validate_SheetsSpreadsheetsValuesClear_579068(path: JsonNode; query: JsonNo
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579072 = query.getOrDefault("key")
-  valid_579072 = validateParameter(valid_579072, JString, required = false,
+  var valid_580097 = query.getOrDefault("key")
+  valid_580097 = validateParameter(valid_580097, JString, required = false,
                                  default = nil)
-  if valid_579072 != nil:
-    section.add "key", valid_579072
-  var valid_579073 = query.getOrDefault("prettyPrint")
-  valid_579073 = validateParameter(valid_579073, JBool, required = false,
+  if valid_580097 != nil:
+    section.add "key", valid_580097
+  var valid_580098 = query.getOrDefault("prettyPrint")
+  valid_580098 = validateParameter(valid_580098, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579073 != nil:
-    section.add "prettyPrint", valid_579073
-  var valid_579074 = query.getOrDefault("oauth_token")
-  valid_579074 = validateParameter(valid_579074, JString, required = false,
+  if valid_580098 != nil:
+    section.add "prettyPrint", valid_580098
+  var valid_580099 = query.getOrDefault("oauth_token")
+  valid_580099 = validateParameter(valid_580099, JString, required = false,
                                  default = nil)
-  if valid_579074 != nil:
-    section.add "oauth_token", valid_579074
-  var valid_579075 = query.getOrDefault("$.xgafv")
-  valid_579075 = validateParameter(valid_579075, JString, required = false,
+  if valid_580099 != nil:
+    section.add "oauth_token", valid_580099
+  var valid_580100 = query.getOrDefault("$.xgafv")
+  valid_580100 = validateParameter(valid_580100, JString, required = false,
                                  default = newJString("1"))
-  if valid_579075 != nil:
-    section.add "$.xgafv", valid_579075
-  var valid_579076 = query.getOrDefault("alt")
-  valid_579076 = validateParameter(valid_579076, JString, required = false,
+  if valid_580100 != nil:
+    section.add "$.xgafv", valid_580100
+  var valid_580101 = query.getOrDefault("alt")
+  valid_580101 = validateParameter(valid_580101, JString, required = false,
                                  default = newJString("json"))
-  if valid_579076 != nil:
-    section.add "alt", valid_579076
-  var valid_579077 = query.getOrDefault("uploadType")
-  valid_579077 = validateParameter(valid_579077, JString, required = false,
+  if valid_580101 != nil:
+    section.add "alt", valid_580101
+  var valid_580102 = query.getOrDefault("uploadType")
+  valid_580102 = validateParameter(valid_580102, JString, required = false,
                                  default = nil)
-  if valid_579077 != nil:
-    section.add "uploadType", valid_579077
-  var valid_579078 = query.getOrDefault("quotaUser")
-  valid_579078 = validateParameter(valid_579078, JString, required = false,
+  if valid_580102 != nil:
+    section.add "uploadType", valid_580102
+  var valid_580103 = query.getOrDefault("quotaUser")
+  valid_580103 = validateParameter(valid_580103, JString, required = false,
                                  default = nil)
-  if valid_579078 != nil:
-    section.add "quotaUser", valid_579078
-  var valid_579079 = query.getOrDefault("callback")
-  valid_579079 = validateParameter(valid_579079, JString, required = false,
+  if valid_580103 != nil:
+    section.add "quotaUser", valid_580103
+  var valid_580104 = query.getOrDefault("callback")
+  valid_580104 = validateParameter(valid_580104, JString, required = false,
                                  default = nil)
-  if valid_579079 != nil:
-    section.add "callback", valid_579079
-  var valid_579080 = query.getOrDefault("fields")
-  valid_579080 = validateParameter(valid_579080, JString, required = false,
+  if valid_580104 != nil:
+    section.add "callback", valid_580104
+  var valid_580105 = query.getOrDefault("fields")
+  valid_580105 = validateParameter(valid_580105, JString, required = false,
                                  default = nil)
-  if valid_579080 != nil:
-    section.add "fields", valid_579080
-  var valid_579081 = query.getOrDefault("access_token")
-  valid_579081 = validateParameter(valid_579081, JString, required = false,
+  if valid_580105 != nil:
+    section.add "fields", valid_580105
+  var valid_580106 = query.getOrDefault("access_token")
+  valid_580106 = validateParameter(valid_580106, JString, required = false,
                                  default = nil)
-  if valid_579081 != nil:
-    section.add "access_token", valid_579081
-  var valid_579082 = query.getOrDefault("upload_protocol")
-  valid_579082 = validateParameter(valid_579082, JString, required = false,
+  if valid_580106 != nil:
+    section.add "access_token", valid_580106
+  var valid_580107 = query.getOrDefault("upload_protocol")
+  valid_580107 = validateParameter(valid_580107, JString, required = false,
                                  default = nil)
-  if valid_579082 != nil:
-    section.add "upload_protocol", valid_579082
+  if valid_580107 != nil:
+    section.add "upload_protocol", valid_580107
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2180,23 +2225,23 @@ proc validate_SheetsSpreadsheetsValuesClear_579068(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_579084: Call_SheetsSpreadsheetsValuesClear_579067; path: JsonNode;
+proc call*(call_580109: Call_SheetsSpreadsheetsValuesClear_580092; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Clears values from a spreadsheet.
   ## The caller must specify the spreadsheet ID and range.
   ## Only values are cleared -- all other properties of the cell (such as
   ## formatting, data validation, etc..) are kept.
   ## 
-  let valid = call_579084.validator(path, query, header, formData, body)
-  let scheme = call_579084.pickScheme
+  let valid = call_580109.validator(path, query, header, formData, body)
+  let scheme = call_580109.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579084.url(scheme.get, call_579084.host, call_579084.base,
-                         call_579084.route, valid.getOrDefault("path"),
+  let url = call_580109.url(scheme.get, call_580109.host, call_580109.base,
+                         call_580109.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579084, url, valid)
+  result = hook(call_580109, url, valid)
 
-proc call*(call_579085: Call_SheetsSpreadsheetsValuesClear_579067;
+proc call*(call_580110: Call_SheetsSpreadsheetsValuesClear_580092;
           spreadsheetId: string; range: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; Xgafv: string = "1";
           alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
@@ -2234,35 +2279,35 @@ proc call*(call_579085: Call_SheetsSpreadsheetsValuesClear_579067;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579086 = newJObject()
-  var query_579087 = newJObject()
-  var body_579088 = newJObject()
-  add(query_579087, "key", newJString(key))
-  add(query_579087, "prettyPrint", newJBool(prettyPrint))
-  add(query_579087, "oauth_token", newJString(oauthToken))
-  add(query_579087, "$.xgafv", newJString(Xgafv))
-  add(query_579087, "alt", newJString(alt))
-  add(query_579087, "uploadType", newJString(uploadType))
-  add(query_579087, "quotaUser", newJString(quotaUser))
+  var path_580111 = newJObject()
+  var query_580112 = newJObject()
+  var body_580113 = newJObject()
+  add(query_580112, "key", newJString(key))
+  add(query_580112, "prettyPrint", newJBool(prettyPrint))
+  add(query_580112, "oauth_token", newJString(oauthToken))
+  add(query_580112, "$.xgafv", newJString(Xgafv))
+  add(query_580112, "alt", newJString(alt))
+  add(query_580112, "uploadType", newJString(uploadType))
+  add(query_580112, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579088 = body
-  add(query_579087, "callback", newJString(callback))
-  add(path_579086, "spreadsheetId", newJString(spreadsheetId))
-  add(path_579086, "range", newJString(range))
-  add(query_579087, "fields", newJString(fields))
-  add(query_579087, "access_token", newJString(accessToken))
-  add(query_579087, "upload_protocol", newJString(uploadProtocol))
-  result = call_579085.call(path_579086, query_579087, nil, nil, body_579088)
+    body_580113 = body
+  add(query_580112, "callback", newJString(callback))
+  add(path_580111, "spreadsheetId", newJString(spreadsheetId))
+  add(path_580111, "range", newJString(range))
+  add(query_580112, "fields", newJString(fields))
+  add(query_580112, "access_token", newJString(accessToken))
+  add(query_580112, "upload_protocol", newJString(uploadProtocol))
+  result = call_580110.call(path_580111, query_580112, nil, nil, body_580113)
 
-var sheetsSpreadsheetsValuesClear* = Call_SheetsSpreadsheetsValuesClear_579067(
+var sheetsSpreadsheetsValuesClear* = Call_SheetsSpreadsheetsValuesClear_580092(
     name: "sheetsSpreadsheetsValuesClear", meth: HttpMethod.HttpPost,
     host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}/values/{range}:clear",
-    validator: validate_SheetsSpreadsheetsValuesClear_579068, base: "/",
-    url: url_SheetsSpreadsheetsValuesClear_579069, schemes: {Scheme.Https})
+    validator: validate_SheetsSpreadsheetsValuesClear_580093, base: "/",
+    url: url_SheetsSpreadsheetsValuesClear_580094, schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsValuesBatchClear_579089 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsValuesBatchClear_579091(protocol: Scheme; host: string;
+  Call_SheetsSpreadsheetsValuesBatchClear_580114 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsValuesBatchClear_580116(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2276,9 +2321,14 @@ proc url_SheetsSpreadsheetsValuesBatchClear_579091(protocol: Scheme; host: strin
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsValuesBatchClear_579090(path: JsonNode;
+proc validate_SheetsSpreadsheetsValuesBatchClear_580115(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Clears one or more ranges of values from a spreadsheet.
   ## The caller must specify the spreadsheet ID and one or more ranges.
@@ -2293,11 +2343,11 @@ proc validate_SheetsSpreadsheetsValuesBatchClear_579090(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `spreadsheetId` field"
-  var valid_579092 = path.getOrDefault("spreadsheetId")
-  valid_579092 = validateParameter(valid_579092, JString, required = true,
+  var valid_580117 = path.getOrDefault("spreadsheetId")
+  valid_580117 = validateParameter(valid_580117, JString, required = true,
                                  default = nil)
-  if valid_579092 != nil:
-    section.add "spreadsheetId", valid_579092
+  if valid_580117 != nil:
+    section.add "spreadsheetId", valid_580117
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2323,61 +2373,61 @@ proc validate_SheetsSpreadsheetsValuesBatchClear_579090(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579093 = query.getOrDefault("key")
-  valid_579093 = validateParameter(valid_579093, JString, required = false,
+  var valid_580118 = query.getOrDefault("key")
+  valid_580118 = validateParameter(valid_580118, JString, required = false,
                                  default = nil)
-  if valid_579093 != nil:
-    section.add "key", valid_579093
-  var valid_579094 = query.getOrDefault("prettyPrint")
-  valid_579094 = validateParameter(valid_579094, JBool, required = false,
+  if valid_580118 != nil:
+    section.add "key", valid_580118
+  var valid_580119 = query.getOrDefault("prettyPrint")
+  valid_580119 = validateParameter(valid_580119, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579094 != nil:
-    section.add "prettyPrint", valid_579094
-  var valid_579095 = query.getOrDefault("oauth_token")
-  valid_579095 = validateParameter(valid_579095, JString, required = false,
+  if valid_580119 != nil:
+    section.add "prettyPrint", valid_580119
+  var valid_580120 = query.getOrDefault("oauth_token")
+  valid_580120 = validateParameter(valid_580120, JString, required = false,
                                  default = nil)
-  if valid_579095 != nil:
-    section.add "oauth_token", valid_579095
-  var valid_579096 = query.getOrDefault("$.xgafv")
-  valid_579096 = validateParameter(valid_579096, JString, required = false,
+  if valid_580120 != nil:
+    section.add "oauth_token", valid_580120
+  var valid_580121 = query.getOrDefault("$.xgafv")
+  valid_580121 = validateParameter(valid_580121, JString, required = false,
                                  default = newJString("1"))
-  if valid_579096 != nil:
-    section.add "$.xgafv", valid_579096
-  var valid_579097 = query.getOrDefault("alt")
-  valid_579097 = validateParameter(valid_579097, JString, required = false,
+  if valid_580121 != nil:
+    section.add "$.xgafv", valid_580121
+  var valid_580122 = query.getOrDefault("alt")
+  valid_580122 = validateParameter(valid_580122, JString, required = false,
                                  default = newJString("json"))
-  if valid_579097 != nil:
-    section.add "alt", valid_579097
-  var valid_579098 = query.getOrDefault("uploadType")
-  valid_579098 = validateParameter(valid_579098, JString, required = false,
+  if valid_580122 != nil:
+    section.add "alt", valid_580122
+  var valid_580123 = query.getOrDefault("uploadType")
+  valid_580123 = validateParameter(valid_580123, JString, required = false,
                                  default = nil)
-  if valid_579098 != nil:
-    section.add "uploadType", valid_579098
-  var valid_579099 = query.getOrDefault("quotaUser")
-  valid_579099 = validateParameter(valid_579099, JString, required = false,
+  if valid_580123 != nil:
+    section.add "uploadType", valid_580123
+  var valid_580124 = query.getOrDefault("quotaUser")
+  valid_580124 = validateParameter(valid_580124, JString, required = false,
                                  default = nil)
-  if valid_579099 != nil:
-    section.add "quotaUser", valid_579099
-  var valid_579100 = query.getOrDefault("callback")
-  valid_579100 = validateParameter(valid_579100, JString, required = false,
+  if valid_580124 != nil:
+    section.add "quotaUser", valid_580124
+  var valid_580125 = query.getOrDefault("callback")
+  valid_580125 = validateParameter(valid_580125, JString, required = false,
                                  default = nil)
-  if valid_579100 != nil:
-    section.add "callback", valid_579100
-  var valid_579101 = query.getOrDefault("fields")
-  valid_579101 = validateParameter(valid_579101, JString, required = false,
+  if valid_580125 != nil:
+    section.add "callback", valid_580125
+  var valid_580126 = query.getOrDefault("fields")
+  valid_580126 = validateParameter(valid_580126, JString, required = false,
                                  default = nil)
-  if valid_579101 != nil:
-    section.add "fields", valid_579101
-  var valid_579102 = query.getOrDefault("access_token")
-  valid_579102 = validateParameter(valid_579102, JString, required = false,
+  if valid_580126 != nil:
+    section.add "fields", valid_580126
+  var valid_580127 = query.getOrDefault("access_token")
+  valid_580127 = validateParameter(valid_580127, JString, required = false,
                                  default = nil)
-  if valid_579102 != nil:
-    section.add "access_token", valid_579102
-  var valid_579103 = query.getOrDefault("upload_protocol")
-  valid_579103 = validateParameter(valid_579103, JString, required = false,
+  if valid_580127 != nil:
+    section.add "access_token", valid_580127
+  var valid_580128 = query.getOrDefault("upload_protocol")
+  valid_580128 = validateParameter(valid_580128, JString, required = false,
                                  default = nil)
-  if valid_579103 != nil:
-    section.add "upload_protocol", valid_579103
+  if valid_580128 != nil:
+    section.add "upload_protocol", valid_580128
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2389,7 +2439,7 @@ proc validate_SheetsSpreadsheetsValuesBatchClear_579090(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579105: Call_SheetsSpreadsheetsValuesBatchClear_579089;
+proc call*(call_580130: Call_SheetsSpreadsheetsValuesBatchClear_580114;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Clears one or more ranges of values from a spreadsheet.
@@ -2397,16 +2447,16 @@ proc call*(call_579105: Call_SheetsSpreadsheetsValuesBatchClear_579089;
   ## Only values are cleared -- all other properties of the cell (such as
   ## formatting, data validation, etc..) are kept.
   ## 
-  let valid = call_579105.validator(path, query, header, formData, body)
-  let scheme = call_579105.pickScheme
+  let valid = call_580130.validator(path, query, header, formData, body)
+  let scheme = call_580130.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579105.url(scheme.get, call_579105.host, call_579105.base,
-                         call_579105.route, valid.getOrDefault("path"),
+  let url = call_580130.url(scheme.get, call_580130.host, call_580130.base,
+                         call_580130.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579105, url, valid)
+  result = hook(call_580130, url, valid)
 
-proc call*(call_579106: Call_SheetsSpreadsheetsValuesBatchClear_579089;
+proc call*(call_580131: Call_SheetsSpreadsheetsValuesBatchClear_580114;
           spreadsheetId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -2442,34 +2492,34 @@ proc call*(call_579106: Call_SheetsSpreadsheetsValuesBatchClear_579089;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579107 = newJObject()
-  var query_579108 = newJObject()
-  var body_579109 = newJObject()
-  add(query_579108, "key", newJString(key))
-  add(query_579108, "prettyPrint", newJBool(prettyPrint))
-  add(query_579108, "oauth_token", newJString(oauthToken))
-  add(query_579108, "$.xgafv", newJString(Xgafv))
-  add(query_579108, "alt", newJString(alt))
-  add(query_579108, "uploadType", newJString(uploadType))
-  add(query_579108, "quotaUser", newJString(quotaUser))
+  var path_580132 = newJObject()
+  var query_580133 = newJObject()
+  var body_580134 = newJObject()
+  add(query_580133, "key", newJString(key))
+  add(query_580133, "prettyPrint", newJBool(prettyPrint))
+  add(query_580133, "oauth_token", newJString(oauthToken))
+  add(query_580133, "$.xgafv", newJString(Xgafv))
+  add(query_580133, "alt", newJString(alt))
+  add(query_580133, "uploadType", newJString(uploadType))
+  add(query_580133, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579109 = body
-  add(query_579108, "callback", newJString(callback))
-  add(path_579107, "spreadsheetId", newJString(spreadsheetId))
-  add(query_579108, "fields", newJString(fields))
-  add(query_579108, "access_token", newJString(accessToken))
-  add(query_579108, "upload_protocol", newJString(uploadProtocol))
-  result = call_579106.call(path_579107, query_579108, nil, nil, body_579109)
+    body_580134 = body
+  add(query_580133, "callback", newJString(callback))
+  add(path_580132, "spreadsheetId", newJString(spreadsheetId))
+  add(query_580133, "fields", newJString(fields))
+  add(query_580133, "access_token", newJString(accessToken))
+  add(query_580133, "upload_protocol", newJString(uploadProtocol))
+  result = call_580131.call(path_580132, query_580133, nil, nil, body_580134)
 
-var sheetsSpreadsheetsValuesBatchClear* = Call_SheetsSpreadsheetsValuesBatchClear_579089(
+var sheetsSpreadsheetsValuesBatchClear* = Call_SheetsSpreadsheetsValuesBatchClear_580114(
     name: "sheetsSpreadsheetsValuesBatchClear", meth: HttpMethod.HttpPost,
     host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}/values:batchClear",
-    validator: validate_SheetsSpreadsheetsValuesBatchClear_579090, base: "/",
-    url: url_SheetsSpreadsheetsValuesBatchClear_579091, schemes: {Scheme.Https})
+    validator: validate_SheetsSpreadsheetsValuesBatchClear_580115, base: "/",
+    url: url_SheetsSpreadsheetsValuesBatchClear_580116, schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsValuesBatchClearByDataFilter_579110 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsValuesBatchClearByDataFilter_579112(protocol: Scheme;
+  Call_SheetsSpreadsheetsValuesBatchClearByDataFilter_580135 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsValuesBatchClearByDataFilter_580137(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2483,9 +2533,14 @@ proc url_SheetsSpreadsheetsValuesBatchClearByDataFilter_579112(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsValuesBatchClearByDataFilter_579111(
+proc validate_SheetsSpreadsheetsValuesBatchClearByDataFilter_580136(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Clears one or more ranges of values from a spreadsheet.
@@ -2502,11 +2557,11 @@ proc validate_SheetsSpreadsheetsValuesBatchClearByDataFilter_579111(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `spreadsheetId` field"
-  var valid_579113 = path.getOrDefault("spreadsheetId")
-  valid_579113 = validateParameter(valid_579113, JString, required = true,
+  var valid_580138 = path.getOrDefault("spreadsheetId")
+  valid_580138 = validateParameter(valid_580138, JString, required = true,
                                  default = nil)
-  if valid_579113 != nil:
-    section.add "spreadsheetId", valid_579113
+  if valid_580138 != nil:
+    section.add "spreadsheetId", valid_580138
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2532,61 +2587,61 @@ proc validate_SheetsSpreadsheetsValuesBatchClearByDataFilter_579111(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579114 = query.getOrDefault("key")
-  valid_579114 = validateParameter(valid_579114, JString, required = false,
+  var valid_580139 = query.getOrDefault("key")
+  valid_580139 = validateParameter(valid_580139, JString, required = false,
                                  default = nil)
-  if valid_579114 != nil:
-    section.add "key", valid_579114
-  var valid_579115 = query.getOrDefault("prettyPrint")
-  valid_579115 = validateParameter(valid_579115, JBool, required = false,
+  if valid_580139 != nil:
+    section.add "key", valid_580139
+  var valid_580140 = query.getOrDefault("prettyPrint")
+  valid_580140 = validateParameter(valid_580140, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579115 != nil:
-    section.add "prettyPrint", valid_579115
-  var valid_579116 = query.getOrDefault("oauth_token")
-  valid_579116 = validateParameter(valid_579116, JString, required = false,
+  if valid_580140 != nil:
+    section.add "prettyPrint", valid_580140
+  var valid_580141 = query.getOrDefault("oauth_token")
+  valid_580141 = validateParameter(valid_580141, JString, required = false,
                                  default = nil)
-  if valid_579116 != nil:
-    section.add "oauth_token", valid_579116
-  var valid_579117 = query.getOrDefault("$.xgafv")
-  valid_579117 = validateParameter(valid_579117, JString, required = false,
+  if valid_580141 != nil:
+    section.add "oauth_token", valid_580141
+  var valid_580142 = query.getOrDefault("$.xgafv")
+  valid_580142 = validateParameter(valid_580142, JString, required = false,
                                  default = newJString("1"))
-  if valid_579117 != nil:
-    section.add "$.xgafv", valid_579117
-  var valid_579118 = query.getOrDefault("alt")
-  valid_579118 = validateParameter(valid_579118, JString, required = false,
+  if valid_580142 != nil:
+    section.add "$.xgafv", valid_580142
+  var valid_580143 = query.getOrDefault("alt")
+  valid_580143 = validateParameter(valid_580143, JString, required = false,
                                  default = newJString("json"))
-  if valid_579118 != nil:
-    section.add "alt", valid_579118
-  var valid_579119 = query.getOrDefault("uploadType")
-  valid_579119 = validateParameter(valid_579119, JString, required = false,
+  if valid_580143 != nil:
+    section.add "alt", valid_580143
+  var valid_580144 = query.getOrDefault("uploadType")
+  valid_580144 = validateParameter(valid_580144, JString, required = false,
                                  default = nil)
-  if valid_579119 != nil:
-    section.add "uploadType", valid_579119
-  var valid_579120 = query.getOrDefault("quotaUser")
-  valid_579120 = validateParameter(valid_579120, JString, required = false,
+  if valid_580144 != nil:
+    section.add "uploadType", valid_580144
+  var valid_580145 = query.getOrDefault("quotaUser")
+  valid_580145 = validateParameter(valid_580145, JString, required = false,
                                  default = nil)
-  if valid_579120 != nil:
-    section.add "quotaUser", valid_579120
-  var valid_579121 = query.getOrDefault("callback")
-  valid_579121 = validateParameter(valid_579121, JString, required = false,
+  if valid_580145 != nil:
+    section.add "quotaUser", valid_580145
+  var valid_580146 = query.getOrDefault("callback")
+  valid_580146 = validateParameter(valid_580146, JString, required = false,
                                  default = nil)
-  if valid_579121 != nil:
-    section.add "callback", valid_579121
-  var valid_579122 = query.getOrDefault("fields")
-  valid_579122 = validateParameter(valid_579122, JString, required = false,
+  if valid_580146 != nil:
+    section.add "callback", valid_580146
+  var valid_580147 = query.getOrDefault("fields")
+  valid_580147 = validateParameter(valid_580147, JString, required = false,
                                  default = nil)
-  if valid_579122 != nil:
-    section.add "fields", valid_579122
-  var valid_579123 = query.getOrDefault("access_token")
-  valid_579123 = validateParameter(valid_579123, JString, required = false,
+  if valid_580147 != nil:
+    section.add "fields", valid_580147
+  var valid_580148 = query.getOrDefault("access_token")
+  valid_580148 = validateParameter(valid_580148, JString, required = false,
                                  default = nil)
-  if valid_579123 != nil:
-    section.add "access_token", valid_579123
-  var valid_579124 = query.getOrDefault("upload_protocol")
-  valid_579124 = validateParameter(valid_579124, JString, required = false,
+  if valid_580148 != nil:
+    section.add "access_token", valid_580148
+  var valid_580149 = query.getOrDefault("upload_protocol")
+  valid_580149 = validateParameter(valid_580149, JString, required = false,
                                  default = nil)
-  if valid_579124 != nil:
-    section.add "upload_protocol", valid_579124
+  if valid_580149 != nil:
+    section.add "upload_protocol", valid_580149
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2598,7 +2653,7 @@ proc validate_SheetsSpreadsheetsValuesBatchClearByDataFilter_579111(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579126: Call_SheetsSpreadsheetsValuesBatchClearByDataFilter_579110;
+proc call*(call_580151: Call_SheetsSpreadsheetsValuesBatchClearByDataFilter_580135;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Clears one or more ranges of values from a spreadsheet.
@@ -2607,16 +2662,16 @@ proc call*(call_579126: Call_SheetsSpreadsheetsValuesBatchClearByDataFilter_5791
   ## filters will be cleared.  Only values are cleared -- all other properties
   ## of the cell (such as formatting, data validation, etc..) are kept.
   ## 
-  let valid = call_579126.validator(path, query, header, formData, body)
-  let scheme = call_579126.pickScheme
+  let valid = call_580151.validator(path, query, header, formData, body)
+  let scheme = call_580151.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579126.url(scheme.get, call_579126.host, call_579126.base,
-                         call_579126.route, valid.getOrDefault("path"),
+  let url = call_580151.url(scheme.get, call_580151.host, call_580151.base,
+                         call_580151.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579126, url, valid)
+  result = hook(call_580151, url, valid)
 
-proc call*(call_579127: Call_SheetsSpreadsheetsValuesBatchClearByDataFilter_579110;
+proc call*(call_580152: Call_SheetsSpreadsheetsValuesBatchClearByDataFilter_580135;
           spreadsheetId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -2653,35 +2708,35 @@ proc call*(call_579127: Call_SheetsSpreadsheetsValuesBatchClearByDataFilter_5791
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579128 = newJObject()
-  var query_579129 = newJObject()
-  var body_579130 = newJObject()
-  add(query_579129, "key", newJString(key))
-  add(query_579129, "prettyPrint", newJBool(prettyPrint))
-  add(query_579129, "oauth_token", newJString(oauthToken))
-  add(query_579129, "$.xgafv", newJString(Xgafv))
-  add(query_579129, "alt", newJString(alt))
-  add(query_579129, "uploadType", newJString(uploadType))
-  add(query_579129, "quotaUser", newJString(quotaUser))
+  var path_580153 = newJObject()
+  var query_580154 = newJObject()
+  var body_580155 = newJObject()
+  add(query_580154, "key", newJString(key))
+  add(query_580154, "prettyPrint", newJBool(prettyPrint))
+  add(query_580154, "oauth_token", newJString(oauthToken))
+  add(query_580154, "$.xgafv", newJString(Xgafv))
+  add(query_580154, "alt", newJString(alt))
+  add(query_580154, "uploadType", newJString(uploadType))
+  add(query_580154, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579130 = body
-  add(query_579129, "callback", newJString(callback))
-  add(path_579128, "spreadsheetId", newJString(spreadsheetId))
-  add(query_579129, "fields", newJString(fields))
-  add(query_579129, "access_token", newJString(accessToken))
-  add(query_579129, "upload_protocol", newJString(uploadProtocol))
-  result = call_579127.call(path_579128, query_579129, nil, nil, body_579130)
+    body_580155 = body
+  add(query_580154, "callback", newJString(callback))
+  add(path_580153, "spreadsheetId", newJString(spreadsheetId))
+  add(query_580154, "fields", newJString(fields))
+  add(query_580154, "access_token", newJString(accessToken))
+  add(query_580154, "upload_protocol", newJString(uploadProtocol))
+  result = call_580152.call(path_580153, query_580154, nil, nil, body_580155)
 
-var sheetsSpreadsheetsValuesBatchClearByDataFilter* = Call_SheetsSpreadsheetsValuesBatchClearByDataFilter_579110(
+var sheetsSpreadsheetsValuesBatchClearByDataFilter* = Call_SheetsSpreadsheetsValuesBatchClearByDataFilter_580135(
     name: "sheetsSpreadsheetsValuesBatchClearByDataFilter",
     meth: HttpMethod.HttpPost, host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}/values:batchClearByDataFilter",
-    validator: validate_SheetsSpreadsheetsValuesBatchClearByDataFilter_579111,
-    base: "/", url: url_SheetsSpreadsheetsValuesBatchClearByDataFilter_579112,
+    validator: validate_SheetsSpreadsheetsValuesBatchClearByDataFilter_580136,
+    base: "/", url: url_SheetsSpreadsheetsValuesBatchClearByDataFilter_580137,
     schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsValuesBatchGet_579131 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsValuesBatchGet_579133(protocol: Scheme; host: string;
+  Call_SheetsSpreadsheetsValuesBatchGet_580156 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsValuesBatchGet_580158(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2695,9 +2750,14 @@ proc url_SheetsSpreadsheetsValuesBatchGet_579133(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsValuesBatchGet_579132(path: JsonNode;
+proc validate_SheetsSpreadsheetsValuesBatchGet_580157(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns one or more ranges of values from a spreadsheet.
   ## The caller must specify the spreadsheet ID and one or more ranges.
@@ -2710,11 +2770,11 @@ proc validate_SheetsSpreadsheetsValuesBatchGet_579132(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `spreadsheetId` field"
-  var valid_579134 = path.getOrDefault("spreadsheetId")
-  valid_579134 = validateParameter(valid_579134, JString, required = true,
+  var valid_580159 = path.getOrDefault("spreadsheetId")
+  valid_580159 = validateParameter(valid_580159, JString, required = true,
                                  default = nil)
-  if valid_579134 != nil:
-    section.add "spreadsheetId", valid_579134
+  if valid_580159 != nil:
+    section.add "spreadsheetId", valid_580159
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2758,81 +2818,81 @@ proc validate_SheetsSpreadsheetsValuesBatchGet_579132(path: JsonNode;
   ##                    : How values should be represented in the output.
   ## The default render option is ValueRenderOption.FORMATTED_VALUE.
   section = newJObject()
-  var valid_579135 = query.getOrDefault("key")
-  valid_579135 = validateParameter(valid_579135, JString, required = false,
+  var valid_580160 = query.getOrDefault("key")
+  valid_580160 = validateParameter(valid_580160, JString, required = false,
                                  default = nil)
-  if valid_579135 != nil:
-    section.add "key", valid_579135
-  var valid_579136 = query.getOrDefault("ranges")
-  valid_579136 = validateParameter(valid_579136, JArray, required = false,
+  if valid_580160 != nil:
+    section.add "key", valid_580160
+  var valid_580161 = query.getOrDefault("ranges")
+  valid_580161 = validateParameter(valid_580161, JArray, required = false,
                                  default = nil)
-  if valid_579136 != nil:
-    section.add "ranges", valid_579136
-  var valid_579137 = query.getOrDefault("prettyPrint")
-  valid_579137 = validateParameter(valid_579137, JBool, required = false,
+  if valid_580161 != nil:
+    section.add "ranges", valid_580161
+  var valid_580162 = query.getOrDefault("prettyPrint")
+  valid_580162 = validateParameter(valid_580162, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579137 != nil:
-    section.add "prettyPrint", valid_579137
-  var valid_579138 = query.getOrDefault("oauth_token")
-  valid_579138 = validateParameter(valid_579138, JString, required = false,
+  if valid_580162 != nil:
+    section.add "prettyPrint", valid_580162
+  var valid_580163 = query.getOrDefault("oauth_token")
+  valid_580163 = validateParameter(valid_580163, JString, required = false,
                                  default = nil)
-  if valid_579138 != nil:
-    section.add "oauth_token", valid_579138
-  var valid_579139 = query.getOrDefault("majorDimension")
-  valid_579139 = validateParameter(valid_579139, JString, required = false,
+  if valid_580163 != nil:
+    section.add "oauth_token", valid_580163
+  var valid_580164 = query.getOrDefault("majorDimension")
+  valid_580164 = validateParameter(valid_580164, JString, required = false,
                                  default = newJString("DIMENSION_UNSPECIFIED"))
-  if valid_579139 != nil:
-    section.add "majorDimension", valid_579139
-  var valid_579140 = query.getOrDefault("$.xgafv")
-  valid_579140 = validateParameter(valid_579140, JString, required = false,
+  if valid_580164 != nil:
+    section.add "majorDimension", valid_580164
+  var valid_580165 = query.getOrDefault("$.xgafv")
+  valid_580165 = validateParameter(valid_580165, JString, required = false,
                                  default = newJString("1"))
-  if valid_579140 != nil:
-    section.add "$.xgafv", valid_579140
-  var valid_579141 = query.getOrDefault("alt")
-  valid_579141 = validateParameter(valid_579141, JString, required = false,
+  if valid_580165 != nil:
+    section.add "$.xgafv", valid_580165
+  var valid_580166 = query.getOrDefault("alt")
+  valid_580166 = validateParameter(valid_580166, JString, required = false,
                                  default = newJString("json"))
-  if valid_579141 != nil:
-    section.add "alt", valid_579141
-  var valid_579142 = query.getOrDefault("uploadType")
-  valid_579142 = validateParameter(valid_579142, JString, required = false,
+  if valid_580166 != nil:
+    section.add "alt", valid_580166
+  var valid_580167 = query.getOrDefault("uploadType")
+  valid_580167 = validateParameter(valid_580167, JString, required = false,
                                  default = nil)
-  if valid_579142 != nil:
-    section.add "uploadType", valid_579142
-  var valid_579143 = query.getOrDefault("quotaUser")
-  valid_579143 = validateParameter(valid_579143, JString, required = false,
+  if valid_580167 != nil:
+    section.add "uploadType", valid_580167
+  var valid_580168 = query.getOrDefault("quotaUser")
+  valid_580168 = validateParameter(valid_580168, JString, required = false,
                                  default = nil)
-  if valid_579143 != nil:
-    section.add "quotaUser", valid_579143
-  var valid_579144 = query.getOrDefault("dateTimeRenderOption")
-  valid_579144 = validateParameter(valid_579144, JString, required = false,
+  if valid_580168 != nil:
+    section.add "quotaUser", valid_580168
+  var valid_580169 = query.getOrDefault("dateTimeRenderOption")
+  valid_580169 = validateParameter(valid_580169, JString, required = false,
                                  default = newJString("SERIAL_NUMBER"))
-  if valid_579144 != nil:
-    section.add "dateTimeRenderOption", valid_579144
-  var valid_579145 = query.getOrDefault("callback")
-  valid_579145 = validateParameter(valid_579145, JString, required = false,
+  if valid_580169 != nil:
+    section.add "dateTimeRenderOption", valid_580169
+  var valid_580170 = query.getOrDefault("callback")
+  valid_580170 = validateParameter(valid_580170, JString, required = false,
                                  default = nil)
-  if valid_579145 != nil:
-    section.add "callback", valid_579145
-  var valid_579146 = query.getOrDefault("fields")
-  valid_579146 = validateParameter(valid_579146, JString, required = false,
+  if valid_580170 != nil:
+    section.add "callback", valid_580170
+  var valid_580171 = query.getOrDefault("fields")
+  valid_580171 = validateParameter(valid_580171, JString, required = false,
                                  default = nil)
-  if valid_579146 != nil:
-    section.add "fields", valid_579146
-  var valid_579147 = query.getOrDefault("access_token")
-  valid_579147 = validateParameter(valid_579147, JString, required = false,
+  if valid_580171 != nil:
+    section.add "fields", valid_580171
+  var valid_580172 = query.getOrDefault("access_token")
+  valid_580172 = validateParameter(valid_580172, JString, required = false,
                                  default = nil)
-  if valid_579147 != nil:
-    section.add "access_token", valid_579147
-  var valid_579148 = query.getOrDefault("upload_protocol")
-  valid_579148 = validateParameter(valid_579148, JString, required = false,
+  if valid_580172 != nil:
+    section.add "access_token", valid_580172
+  var valid_580173 = query.getOrDefault("upload_protocol")
+  valid_580173 = validateParameter(valid_580173, JString, required = false,
                                  default = nil)
-  if valid_579148 != nil:
-    section.add "upload_protocol", valid_579148
-  var valid_579149 = query.getOrDefault("valueRenderOption")
-  valid_579149 = validateParameter(valid_579149, JString, required = false,
+  if valid_580173 != nil:
+    section.add "upload_protocol", valid_580173
+  var valid_580174 = query.getOrDefault("valueRenderOption")
+  valid_580174 = validateParameter(valid_580174, JString, required = false,
                                  default = newJString("FORMATTED_VALUE"))
-  if valid_579149 != nil:
-    section.add "valueRenderOption", valid_579149
+  if valid_580174 != nil:
+    section.add "valueRenderOption", valid_580174
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2841,22 +2901,22 @@ proc validate_SheetsSpreadsheetsValuesBatchGet_579132(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579150: Call_SheetsSpreadsheetsValuesBatchGet_579131;
+proc call*(call_580175: Call_SheetsSpreadsheetsValuesBatchGet_580156;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns one or more ranges of values from a spreadsheet.
   ## The caller must specify the spreadsheet ID and one or more ranges.
   ## 
-  let valid = call_579150.validator(path, query, header, formData, body)
-  let scheme = call_579150.pickScheme
+  let valid = call_580175.validator(path, query, header, formData, body)
+  let scheme = call_580175.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579150.url(scheme.get, call_579150.host, call_579150.base,
-                         call_579150.route, valid.getOrDefault("path"),
+  let url = call_580175.url(scheme.get, call_580175.host, call_580175.base,
+                         call_580175.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579150, url, valid)
+  result = hook(call_580175, url, valid)
 
-proc call*(call_579151: Call_SheetsSpreadsheetsValuesBatchGet_579131;
+proc call*(call_580176: Call_SheetsSpreadsheetsValuesBatchGet_580156;
           spreadsheetId: string; key: string = ""; ranges: JsonNode = nil;
           prettyPrint: bool = true; oauthToken: string = "";
           majorDimension: string = "DIMENSION_UNSPECIFIED"; Xgafv: string = "1";
@@ -2909,36 +2969,36 @@ proc call*(call_579151: Call_SheetsSpreadsheetsValuesBatchGet_579131;
   ##   valueRenderOption: string
   ##                    : How values should be represented in the output.
   ## The default render option is ValueRenderOption.FORMATTED_VALUE.
-  var path_579152 = newJObject()
-  var query_579153 = newJObject()
-  add(query_579153, "key", newJString(key))
+  var path_580177 = newJObject()
+  var query_580178 = newJObject()
+  add(query_580178, "key", newJString(key))
   if ranges != nil:
-    query_579153.add "ranges", ranges
-  add(query_579153, "prettyPrint", newJBool(prettyPrint))
-  add(query_579153, "oauth_token", newJString(oauthToken))
-  add(query_579153, "majorDimension", newJString(majorDimension))
-  add(query_579153, "$.xgafv", newJString(Xgafv))
-  add(query_579153, "alt", newJString(alt))
-  add(query_579153, "uploadType", newJString(uploadType))
-  add(query_579153, "quotaUser", newJString(quotaUser))
-  add(query_579153, "dateTimeRenderOption", newJString(dateTimeRenderOption))
-  add(query_579153, "callback", newJString(callback))
-  add(path_579152, "spreadsheetId", newJString(spreadsheetId))
-  add(query_579153, "fields", newJString(fields))
-  add(query_579153, "access_token", newJString(accessToken))
-  add(query_579153, "upload_protocol", newJString(uploadProtocol))
-  add(query_579153, "valueRenderOption", newJString(valueRenderOption))
-  result = call_579151.call(path_579152, query_579153, nil, nil, nil)
+    query_580178.add "ranges", ranges
+  add(query_580178, "prettyPrint", newJBool(prettyPrint))
+  add(query_580178, "oauth_token", newJString(oauthToken))
+  add(query_580178, "majorDimension", newJString(majorDimension))
+  add(query_580178, "$.xgafv", newJString(Xgafv))
+  add(query_580178, "alt", newJString(alt))
+  add(query_580178, "uploadType", newJString(uploadType))
+  add(query_580178, "quotaUser", newJString(quotaUser))
+  add(query_580178, "dateTimeRenderOption", newJString(dateTimeRenderOption))
+  add(query_580178, "callback", newJString(callback))
+  add(path_580177, "spreadsheetId", newJString(spreadsheetId))
+  add(query_580178, "fields", newJString(fields))
+  add(query_580178, "access_token", newJString(accessToken))
+  add(query_580178, "upload_protocol", newJString(uploadProtocol))
+  add(query_580178, "valueRenderOption", newJString(valueRenderOption))
+  result = call_580176.call(path_580177, query_580178, nil, nil, nil)
 
-var sheetsSpreadsheetsValuesBatchGet* = Call_SheetsSpreadsheetsValuesBatchGet_579131(
+var sheetsSpreadsheetsValuesBatchGet* = Call_SheetsSpreadsheetsValuesBatchGet_580156(
     name: "sheetsSpreadsheetsValuesBatchGet", meth: HttpMethod.HttpGet,
     host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}/values:batchGet",
-    validator: validate_SheetsSpreadsheetsValuesBatchGet_579132, base: "/",
-    url: url_SheetsSpreadsheetsValuesBatchGet_579133, schemes: {Scheme.Https})
+    validator: validate_SheetsSpreadsheetsValuesBatchGet_580157, base: "/",
+    url: url_SheetsSpreadsheetsValuesBatchGet_580158, schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsValuesBatchGetByDataFilter_579154 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsValuesBatchGetByDataFilter_579156(protocol: Scheme;
+  Call_SheetsSpreadsheetsValuesBatchGetByDataFilter_580179 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsValuesBatchGetByDataFilter_580181(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2952,9 +3012,14 @@ proc url_SheetsSpreadsheetsValuesBatchGetByDataFilter_579156(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsValuesBatchGetByDataFilter_579155(path: JsonNode;
+proc validate_SheetsSpreadsheetsValuesBatchGetByDataFilter_580180(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns one or more ranges of values that match the specified data filters.
   ## The caller must specify the spreadsheet ID and one or more
@@ -2969,11 +3034,11 @@ proc validate_SheetsSpreadsheetsValuesBatchGetByDataFilter_579155(path: JsonNode
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `spreadsheetId` field"
-  var valid_579157 = path.getOrDefault("spreadsheetId")
-  valid_579157 = validateParameter(valid_579157, JString, required = true,
+  var valid_580182 = path.getOrDefault("spreadsheetId")
+  valid_580182 = validateParameter(valid_580182, JString, required = true,
                                  default = nil)
-  if valid_579157 != nil:
-    section.add "spreadsheetId", valid_579157
+  if valid_580182 != nil:
+    section.add "spreadsheetId", valid_580182
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2999,61 +3064,61 @@ proc validate_SheetsSpreadsheetsValuesBatchGetByDataFilter_579155(path: JsonNode
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579158 = query.getOrDefault("key")
-  valid_579158 = validateParameter(valid_579158, JString, required = false,
+  var valid_580183 = query.getOrDefault("key")
+  valid_580183 = validateParameter(valid_580183, JString, required = false,
                                  default = nil)
-  if valid_579158 != nil:
-    section.add "key", valid_579158
-  var valid_579159 = query.getOrDefault("prettyPrint")
-  valid_579159 = validateParameter(valid_579159, JBool, required = false,
+  if valid_580183 != nil:
+    section.add "key", valid_580183
+  var valid_580184 = query.getOrDefault("prettyPrint")
+  valid_580184 = validateParameter(valid_580184, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579159 != nil:
-    section.add "prettyPrint", valid_579159
-  var valid_579160 = query.getOrDefault("oauth_token")
-  valid_579160 = validateParameter(valid_579160, JString, required = false,
+  if valid_580184 != nil:
+    section.add "prettyPrint", valid_580184
+  var valid_580185 = query.getOrDefault("oauth_token")
+  valid_580185 = validateParameter(valid_580185, JString, required = false,
                                  default = nil)
-  if valid_579160 != nil:
-    section.add "oauth_token", valid_579160
-  var valid_579161 = query.getOrDefault("$.xgafv")
-  valid_579161 = validateParameter(valid_579161, JString, required = false,
+  if valid_580185 != nil:
+    section.add "oauth_token", valid_580185
+  var valid_580186 = query.getOrDefault("$.xgafv")
+  valid_580186 = validateParameter(valid_580186, JString, required = false,
                                  default = newJString("1"))
-  if valid_579161 != nil:
-    section.add "$.xgafv", valid_579161
-  var valid_579162 = query.getOrDefault("alt")
-  valid_579162 = validateParameter(valid_579162, JString, required = false,
+  if valid_580186 != nil:
+    section.add "$.xgafv", valid_580186
+  var valid_580187 = query.getOrDefault("alt")
+  valid_580187 = validateParameter(valid_580187, JString, required = false,
                                  default = newJString("json"))
-  if valid_579162 != nil:
-    section.add "alt", valid_579162
-  var valid_579163 = query.getOrDefault("uploadType")
-  valid_579163 = validateParameter(valid_579163, JString, required = false,
+  if valid_580187 != nil:
+    section.add "alt", valid_580187
+  var valid_580188 = query.getOrDefault("uploadType")
+  valid_580188 = validateParameter(valid_580188, JString, required = false,
                                  default = nil)
-  if valid_579163 != nil:
-    section.add "uploadType", valid_579163
-  var valid_579164 = query.getOrDefault("quotaUser")
-  valid_579164 = validateParameter(valid_579164, JString, required = false,
+  if valid_580188 != nil:
+    section.add "uploadType", valid_580188
+  var valid_580189 = query.getOrDefault("quotaUser")
+  valid_580189 = validateParameter(valid_580189, JString, required = false,
                                  default = nil)
-  if valid_579164 != nil:
-    section.add "quotaUser", valid_579164
-  var valid_579165 = query.getOrDefault("callback")
-  valid_579165 = validateParameter(valid_579165, JString, required = false,
+  if valid_580189 != nil:
+    section.add "quotaUser", valid_580189
+  var valid_580190 = query.getOrDefault("callback")
+  valid_580190 = validateParameter(valid_580190, JString, required = false,
                                  default = nil)
-  if valid_579165 != nil:
-    section.add "callback", valid_579165
-  var valid_579166 = query.getOrDefault("fields")
-  valid_579166 = validateParameter(valid_579166, JString, required = false,
+  if valid_580190 != nil:
+    section.add "callback", valid_580190
+  var valid_580191 = query.getOrDefault("fields")
+  valid_580191 = validateParameter(valid_580191, JString, required = false,
                                  default = nil)
-  if valid_579166 != nil:
-    section.add "fields", valid_579166
-  var valid_579167 = query.getOrDefault("access_token")
-  valid_579167 = validateParameter(valid_579167, JString, required = false,
+  if valid_580191 != nil:
+    section.add "fields", valid_580191
+  var valid_580192 = query.getOrDefault("access_token")
+  valid_580192 = validateParameter(valid_580192, JString, required = false,
                                  default = nil)
-  if valid_579167 != nil:
-    section.add "access_token", valid_579167
-  var valid_579168 = query.getOrDefault("upload_protocol")
-  valid_579168 = validateParameter(valid_579168, JString, required = false,
+  if valid_580192 != nil:
+    section.add "access_token", valid_580192
+  var valid_580193 = query.getOrDefault("upload_protocol")
+  valid_580193 = validateParameter(valid_580193, JString, required = false,
                                  default = nil)
-  if valid_579168 != nil:
-    section.add "upload_protocol", valid_579168
+  if valid_580193 != nil:
+    section.add "upload_protocol", valid_580193
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3065,7 +3130,7 @@ proc validate_SheetsSpreadsheetsValuesBatchGetByDataFilter_579155(path: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_579170: Call_SheetsSpreadsheetsValuesBatchGetByDataFilter_579154;
+proc call*(call_580195: Call_SheetsSpreadsheetsValuesBatchGetByDataFilter_580179;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns one or more ranges of values that match the specified data filters.
@@ -3073,16 +3138,16 @@ proc call*(call_579170: Call_SheetsSpreadsheetsValuesBatchGetByDataFilter_579154
   ## DataFilters.  Ranges that match any of the data filters in
   ## the request will be returned.
   ## 
-  let valid = call_579170.validator(path, query, header, formData, body)
-  let scheme = call_579170.pickScheme
+  let valid = call_580195.validator(path, query, header, formData, body)
+  let scheme = call_580195.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579170.url(scheme.get, call_579170.host, call_579170.base,
-                         call_579170.route, valid.getOrDefault("path"),
+  let url = call_580195.url(scheme.get, call_580195.host, call_580195.base,
+                         call_580195.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579170, url, valid)
+  result = hook(call_580195, url, valid)
 
-proc call*(call_579171: Call_SheetsSpreadsheetsValuesBatchGetByDataFilter_579154;
+proc call*(call_580196: Call_SheetsSpreadsheetsValuesBatchGetByDataFilter_580179;
           spreadsheetId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -3118,35 +3183,35 @@ proc call*(call_579171: Call_SheetsSpreadsheetsValuesBatchGetByDataFilter_579154
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579172 = newJObject()
-  var query_579173 = newJObject()
-  var body_579174 = newJObject()
-  add(query_579173, "key", newJString(key))
-  add(query_579173, "prettyPrint", newJBool(prettyPrint))
-  add(query_579173, "oauth_token", newJString(oauthToken))
-  add(query_579173, "$.xgafv", newJString(Xgafv))
-  add(query_579173, "alt", newJString(alt))
-  add(query_579173, "uploadType", newJString(uploadType))
-  add(query_579173, "quotaUser", newJString(quotaUser))
+  var path_580197 = newJObject()
+  var query_580198 = newJObject()
+  var body_580199 = newJObject()
+  add(query_580198, "key", newJString(key))
+  add(query_580198, "prettyPrint", newJBool(prettyPrint))
+  add(query_580198, "oauth_token", newJString(oauthToken))
+  add(query_580198, "$.xgafv", newJString(Xgafv))
+  add(query_580198, "alt", newJString(alt))
+  add(query_580198, "uploadType", newJString(uploadType))
+  add(query_580198, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579174 = body
-  add(query_579173, "callback", newJString(callback))
-  add(path_579172, "spreadsheetId", newJString(spreadsheetId))
-  add(query_579173, "fields", newJString(fields))
-  add(query_579173, "access_token", newJString(accessToken))
-  add(query_579173, "upload_protocol", newJString(uploadProtocol))
-  result = call_579171.call(path_579172, query_579173, nil, nil, body_579174)
+    body_580199 = body
+  add(query_580198, "callback", newJString(callback))
+  add(path_580197, "spreadsheetId", newJString(spreadsheetId))
+  add(query_580198, "fields", newJString(fields))
+  add(query_580198, "access_token", newJString(accessToken))
+  add(query_580198, "upload_protocol", newJString(uploadProtocol))
+  result = call_580196.call(path_580197, query_580198, nil, nil, body_580199)
 
-var sheetsSpreadsheetsValuesBatchGetByDataFilter* = Call_SheetsSpreadsheetsValuesBatchGetByDataFilter_579154(
+var sheetsSpreadsheetsValuesBatchGetByDataFilter* = Call_SheetsSpreadsheetsValuesBatchGetByDataFilter_580179(
     name: "sheetsSpreadsheetsValuesBatchGetByDataFilter",
     meth: HttpMethod.HttpPost, host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}/values:batchGetByDataFilter",
-    validator: validate_SheetsSpreadsheetsValuesBatchGetByDataFilter_579155,
-    base: "/", url: url_SheetsSpreadsheetsValuesBatchGetByDataFilter_579156,
+    validator: validate_SheetsSpreadsheetsValuesBatchGetByDataFilter_580180,
+    base: "/", url: url_SheetsSpreadsheetsValuesBatchGetByDataFilter_580181,
     schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsValuesBatchUpdate_579175 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsValuesBatchUpdate_579177(protocol: Scheme; host: string;
+  Call_SheetsSpreadsheetsValuesBatchUpdate_580200 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsValuesBatchUpdate_580202(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3160,9 +3225,14 @@ proc url_SheetsSpreadsheetsValuesBatchUpdate_579177(protocol: Scheme; host: stri
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsValuesBatchUpdate_579176(path: JsonNode;
+proc validate_SheetsSpreadsheetsValuesBatchUpdate_580201(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Sets values in one or more ranges of a spreadsheet.
   ## The caller must specify the spreadsheet ID,
@@ -3177,11 +3247,11 @@ proc validate_SheetsSpreadsheetsValuesBatchUpdate_579176(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `spreadsheetId` field"
-  var valid_579178 = path.getOrDefault("spreadsheetId")
-  valid_579178 = validateParameter(valid_579178, JString, required = true,
+  var valid_580203 = path.getOrDefault("spreadsheetId")
+  valid_580203 = validateParameter(valid_580203, JString, required = true,
                                  default = nil)
-  if valid_579178 != nil:
-    section.add "spreadsheetId", valid_579178
+  if valid_580203 != nil:
+    section.add "spreadsheetId", valid_580203
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3207,61 +3277,61 @@ proc validate_SheetsSpreadsheetsValuesBatchUpdate_579176(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579179 = query.getOrDefault("key")
-  valid_579179 = validateParameter(valid_579179, JString, required = false,
+  var valid_580204 = query.getOrDefault("key")
+  valid_580204 = validateParameter(valid_580204, JString, required = false,
                                  default = nil)
-  if valid_579179 != nil:
-    section.add "key", valid_579179
-  var valid_579180 = query.getOrDefault("prettyPrint")
-  valid_579180 = validateParameter(valid_579180, JBool, required = false,
+  if valid_580204 != nil:
+    section.add "key", valid_580204
+  var valid_580205 = query.getOrDefault("prettyPrint")
+  valid_580205 = validateParameter(valid_580205, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579180 != nil:
-    section.add "prettyPrint", valid_579180
-  var valid_579181 = query.getOrDefault("oauth_token")
-  valid_579181 = validateParameter(valid_579181, JString, required = false,
+  if valid_580205 != nil:
+    section.add "prettyPrint", valid_580205
+  var valid_580206 = query.getOrDefault("oauth_token")
+  valid_580206 = validateParameter(valid_580206, JString, required = false,
                                  default = nil)
-  if valid_579181 != nil:
-    section.add "oauth_token", valid_579181
-  var valid_579182 = query.getOrDefault("$.xgafv")
-  valid_579182 = validateParameter(valid_579182, JString, required = false,
+  if valid_580206 != nil:
+    section.add "oauth_token", valid_580206
+  var valid_580207 = query.getOrDefault("$.xgafv")
+  valid_580207 = validateParameter(valid_580207, JString, required = false,
                                  default = newJString("1"))
-  if valid_579182 != nil:
-    section.add "$.xgafv", valid_579182
-  var valid_579183 = query.getOrDefault("alt")
-  valid_579183 = validateParameter(valid_579183, JString, required = false,
+  if valid_580207 != nil:
+    section.add "$.xgafv", valid_580207
+  var valid_580208 = query.getOrDefault("alt")
+  valid_580208 = validateParameter(valid_580208, JString, required = false,
                                  default = newJString("json"))
-  if valid_579183 != nil:
-    section.add "alt", valid_579183
-  var valid_579184 = query.getOrDefault("uploadType")
-  valid_579184 = validateParameter(valid_579184, JString, required = false,
+  if valid_580208 != nil:
+    section.add "alt", valid_580208
+  var valid_580209 = query.getOrDefault("uploadType")
+  valid_580209 = validateParameter(valid_580209, JString, required = false,
                                  default = nil)
-  if valid_579184 != nil:
-    section.add "uploadType", valid_579184
-  var valid_579185 = query.getOrDefault("quotaUser")
-  valid_579185 = validateParameter(valid_579185, JString, required = false,
+  if valid_580209 != nil:
+    section.add "uploadType", valid_580209
+  var valid_580210 = query.getOrDefault("quotaUser")
+  valid_580210 = validateParameter(valid_580210, JString, required = false,
                                  default = nil)
-  if valid_579185 != nil:
-    section.add "quotaUser", valid_579185
-  var valid_579186 = query.getOrDefault("callback")
-  valid_579186 = validateParameter(valid_579186, JString, required = false,
+  if valid_580210 != nil:
+    section.add "quotaUser", valid_580210
+  var valid_580211 = query.getOrDefault("callback")
+  valid_580211 = validateParameter(valid_580211, JString, required = false,
                                  default = nil)
-  if valid_579186 != nil:
-    section.add "callback", valid_579186
-  var valid_579187 = query.getOrDefault("fields")
-  valid_579187 = validateParameter(valid_579187, JString, required = false,
+  if valid_580211 != nil:
+    section.add "callback", valid_580211
+  var valid_580212 = query.getOrDefault("fields")
+  valid_580212 = validateParameter(valid_580212, JString, required = false,
                                  default = nil)
-  if valid_579187 != nil:
-    section.add "fields", valid_579187
-  var valid_579188 = query.getOrDefault("access_token")
-  valid_579188 = validateParameter(valid_579188, JString, required = false,
+  if valid_580212 != nil:
+    section.add "fields", valid_580212
+  var valid_580213 = query.getOrDefault("access_token")
+  valid_580213 = validateParameter(valid_580213, JString, required = false,
                                  default = nil)
-  if valid_579188 != nil:
-    section.add "access_token", valid_579188
-  var valid_579189 = query.getOrDefault("upload_protocol")
-  valid_579189 = validateParameter(valid_579189, JString, required = false,
+  if valid_580213 != nil:
+    section.add "access_token", valid_580213
+  var valid_580214 = query.getOrDefault("upload_protocol")
+  valid_580214 = validateParameter(valid_580214, JString, required = false,
                                  default = nil)
-  if valid_579189 != nil:
-    section.add "upload_protocol", valid_579189
+  if valid_580214 != nil:
+    section.add "upload_protocol", valid_580214
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3273,7 +3343,7 @@ proc validate_SheetsSpreadsheetsValuesBatchUpdate_579176(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579191: Call_SheetsSpreadsheetsValuesBatchUpdate_579175;
+proc call*(call_580216: Call_SheetsSpreadsheetsValuesBatchUpdate_580200;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets values in one or more ranges of a spreadsheet.
@@ -3281,16 +3351,16 @@ proc call*(call_579191: Call_SheetsSpreadsheetsValuesBatchUpdate_579175;
   ## a valueInputOption, and one or more
   ## ValueRanges.
   ## 
-  let valid = call_579191.validator(path, query, header, formData, body)
-  let scheme = call_579191.pickScheme
+  let valid = call_580216.validator(path, query, header, formData, body)
+  let scheme = call_580216.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579191.url(scheme.get, call_579191.host, call_579191.base,
-                         call_579191.route, valid.getOrDefault("path"),
+  let url = call_580216.url(scheme.get, call_580216.host, call_580216.base,
+                         call_580216.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579191, url, valid)
+  result = hook(call_580216, url, valid)
 
-proc call*(call_579192: Call_SheetsSpreadsheetsValuesBatchUpdate_579175;
+proc call*(call_580217: Call_SheetsSpreadsheetsValuesBatchUpdate_580200;
           spreadsheetId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -3326,34 +3396,34 @@ proc call*(call_579192: Call_SheetsSpreadsheetsValuesBatchUpdate_579175;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579193 = newJObject()
-  var query_579194 = newJObject()
-  var body_579195 = newJObject()
-  add(query_579194, "key", newJString(key))
-  add(query_579194, "prettyPrint", newJBool(prettyPrint))
-  add(query_579194, "oauth_token", newJString(oauthToken))
-  add(query_579194, "$.xgafv", newJString(Xgafv))
-  add(query_579194, "alt", newJString(alt))
-  add(query_579194, "uploadType", newJString(uploadType))
-  add(query_579194, "quotaUser", newJString(quotaUser))
+  var path_580218 = newJObject()
+  var query_580219 = newJObject()
+  var body_580220 = newJObject()
+  add(query_580219, "key", newJString(key))
+  add(query_580219, "prettyPrint", newJBool(prettyPrint))
+  add(query_580219, "oauth_token", newJString(oauthToken))
+  add(query_580219, "$.xgafv", newJString(Xgafv))
+  add(query_580219, "alt", newJString(alt))
+  add(query_580219, "uploadType", newJString(uploadType))
+  add(query_580219, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579195 = body
-  add(query_579194, "callback", newJString(callback))
-  add(path_579193, "spreadsheetId", newJString(spreadsheetId))
-  add(query_579194, "fields", newJString(fields))
-  add(query_579194, "access_token", newJString(accessToken))
-  add(query_579194, "upload_protocol", newJString(uploadProtocol))
-  result = call_579192.call(path_579193, query_579194, nil, nil, body_579195)
+    body_580220 = body
+  add(query_580219, "callback", newJString(callback))
+  add(path_580218, "spreadsheetId", newJString(spreadsheetId))
+  add(query_580219, "fields", newJString(fields))
+  add(query_580219, "access_token", newJString(accessToken))
+  add(query_580219, "upload_protocol", newJString(uploadProtocol))
+  result = call_580217.call(path_580218, query_580219, nil, nil, body_580220)
 
-var sheetsSpreadsheetsValuesBatchUpdate* = Call_SheetsSpreadsheetsValuesBatchUpdate_579175(
+var sheetsSpreadsheetsValuesBatchUpdate* = Call_SheetsSpreadsheetsValuesBatchUpdate_580200(
     name: "sheetsSpreadsheetsValuesBatchUpdate", meth: HttpMethod.HttpPost,
     host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}/values:batchUpdate",
-    validator: validate_SheetsSpreadsheetsValuesBatchUpdate_579176, base: "/",
-    url: url_SheetsSpreadsheetsValuesBatchUpdate_579177, schemes: {Scheme.Https})
+    validator: validate_SheetsSpreadsheetsValuesBatchUpdate_580201, base: "/",
+    url: url_SheetsSpreadsheetsValuesBatchUpdate_580202, schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_579196 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_579198(protocol: Scheme;
+  Call_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_580221 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_580223(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3367,9 +3437,14 @@ proc url_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_579198(protocol: Scheme
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_579197(
+proc validate_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_580222(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Sets values in one or more ranges of a spreadsheet.
@@ -3385,11 +3460,11 @@ proc validate_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_579197(
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `spreadsheetId` field"
-  var valid_579199 = path.getOrDefault("spreadsheetId")
-  valid_579199 = validateParameter(valid_579199, JString, required = true,
+  var valid_580224 = path.getOrDefault("spreadsheetId")
+  valid_580224 = validateParameter(valid_580224, JString, required = true,
                                  default = nil)
-  if valid_579199 != nil:
-    section.add "spreadsheetId", valid_579199
+  if valid_580224 != nil:
+    section.add "spreadsheetId", valid_580224
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3415,61 +3490,61 @@ proc validate_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_579197(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579200 = query.getOrDefault("key")
-  valid_579200 = validateParameter(valid_579200, JString, required = false,
+  var valid_580225 = query.getOrDefault("key")
+  valid_580225 = validateParameter(valid_580225, JString, required = false,
                                  default = nil)
-  if valid_579200 != nil:
-    section.add "key", valid_579200
-  var valid_579201 = query.getOrDefault("prettyPrint")
-  valid_579201 = validateParameter(valid_579201, JBool, required = false,
+  if valid_580225 != nil:
+    section.add "key", valid_580225
+  var valid_580226 = query.getOrDefault("prettyPrint")
+  valid_580226 = validateParameter(valid_580226, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579201 != nil:
-    section.add "prettyPrint", valid_579201
-  var valid_579202 = query.getOrDefault("oauth_token")
-  valid_579202 = validateParameter(valid_579202, JString, required = false,
+  if valid_580226 != nil:
+    section.add "prettyPrint", valid_580226
+  var valid_580227 = query.getOrDefault("oauth_token")
+  valid_580227 = validateParameter(valid_580227, JString, required = false,
                                  default = nil)
-  if valid_579202 != nil:
-    section.add "oauth_token", valid_579202
-  var valid_579203 = query.getOrDefault("$.xgafv")
-  valid_579203 = validateParameter(valid_579203, JString, required = false,
+  if valid_580227 != nil:
+    section.add "oauth_token", valid_580227
+  var valid_580228 = query.getOrDefault("$.xgafv")
+  valid_580228 = validateParameter(valid_580228, JString, required = false,
                                  default = newJString("1"))
-  if valid_579203 != nil:
-    section.add "$.xgafv", valid_579203
-  var valid_579204 = query.getOrDefault("alt")
-  valid_579204 = validateParameter(valid_579204, JString, required = false,
+  if valid_580228 != nil:
+    section.add "$.xgafv", valid_580228
+  var valid_580229 = query.getOrDefault("alt")
+  valid_580229 = validateParameter(valid_580229, JString, required = false,
                                  default = newJString("json"))
-  if valid_579204 != nil:
-    section.add "alt", valid_579204
-  var valid_579205 = query.getOrDefault("uploadType")
-  valid_579205 = validateParameter(valid_579205, JString, required = false,
+  if valid_580229 != nil:
+    section.add "alt", valid_580229
+  var valid_580230 = query.getOrDefault("uploadType")
+  valid_580230 = validateParameter(valid_580230, JString, required = false,
                                  default = nil)
-  if valid_579205 != nil:
-    section.add "uploadType", valid_579205
-  var valid_579206 = query.getOrDefault("quotaUser")
-  valid_579206 = validateParameter(valid_579206, JString, required = false,
+  if valid_580230 != nil:
+    section.add "uploadType", valid_580230
+  var valid_580231 = query.getOrDefault("quotaUser")
+  valid_580231 = validateParameter(valid_580231, JString, required = false,
                                  default = nil)
-  if valid_579206 != nil:
-    section.add "quotaUser", valid_579206
-  var valid_579207 = query.getOrDefault("callback")
-  valid_579207 = validateParameter(valid_579207, JString, required = false,
+  if valid_580231 != nil:
+    section.add "quotaUser", valid_580231
+  var valid_580232 = query.getOrDefault("callback")
+  valid_580232 = validateParameter(valid_580232, JString, required = false,
                                  default = nil)
-  if valid_579207 != nil:
-    section.add "callback", valid_579207
-  var valid_579208 = query.getOrDefault("fields")
-  valid_579208 = validateParameter(valid_579208, JString, required = false,
+  if valid_580232 != nil:
+    section.add "callback", valid_580232
+  var valid_580233 = query.getOrDefault("fields")
+  valid_580233 = validateParameter(valid_580233, JString, required = false,
                                  default = nil)
-  if valid_579208 != nil:
-    section.add "fields", valid_579208
-  var valid_579209 = query.getOrDefault("access_token")
-  valid_579209 = validateParameter(valid_579209, JString, required = false,
+  if valid_580233 != nil:
+    section.add "fields", valid_580233
+  var valid_580234 = query.getOrDefault("access_token")
+  valid_580234 = validateParameter(valid_580234, JString, required = false,
                                  default = nil)
-  if valid_579209 != nil:
-    section.add "access_token", valid_579209
-  var valid_579210 = query.getOrDefault("upload_protocol")
-  valid_579210 = validateParameter(valid_579210, JString, required = false,
+  if valid_580234 != nil:
+    section.add "access_token", valid_580234
+  var valid_580235 = query.getOrDefault("upload_protocol")
+  valid_580235 = validateParameter(valid_580235, JString, required = false,
                                  default = nil)
-  if valid_579210 != nil:
-    section.add "upload_protocol", valid_579210
+  if valid_580235 != nil:
+    section.add "upload_protocol", valid_580235
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3481,7 +3556,7 @@ proc validate_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_579197(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579212: Call_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_579196;
+proc call*(call_580237: Call_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_580221;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets values in one or more ranges of a spreadsheet.
@@ -3489,16 +3564,16 @@ proc call*(call_579212: Call_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_579
   ## a valueInputOption, and one or more
   ## DataFilterValueRanges.
   ## 
-  let valid = call_579212.validator(path, query, header, formData, body)
-  let scheme = call_579212.pickScheme
+  let valid = call_580237.validator(path, query, header, formData, body)
+  let scheme = call_580237.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579212.url(scheme.get, call_579212.host, call_579212.base,
-                         call_579212.route, valid.getOrDefault("path"),
+  let url = call_580237.url(scheme.get, call_580237.host, call_580237.base,
+                         call_580237.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579212, url, valid)
+  result = hook(call_580237, url, valid)
 
-proc call*(call_579213: Call_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_579196;
+proc call*(call_580238: Call_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_580221;
           spreadsheetId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -3534,35 +3609,35 @@ proc call*(call_579213: Call_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_579
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579214 = newJObject()
-  var query_579215 = newJObject()
-  var body_579216 = newJObject()
-  add(query_579215, "key", newJString(key))
-  add(query_579215, "prettyPrint", newJBool(prettyPrint))
-  add(query_579215, "oauth_token", newJString(oauthToken))
-  add(query_579215, "$.xgafv", newJString(Xgafv))
-  add(query_579215, "alt", newJString(alt))
-  add(query_579215, "uploadType", newJString(uploadType))
-  add(query_579215, "quotaUser", newJString(quotaUser))
+  var path_580239 = newJObject()
+  var query_580240 = newJObject()
+  var body_580241 = newJObject()
+  add(query_580240, "key", newJString(key))
+  add(query_580240, "prettyPrint", newJBool(prettyPrint))
+  add(query_580240, "oauth_token", newJString(oauthToken))
+  add(query_580240, "$.xgafv", newJString(Xgafv))
+  add(query_580240, "alt", newJString(alt))
+  add(query_580240, "uploadType", newJString(uploadType))
+  add(query_580240, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579216 = body
-  add(query_579215, "callback", newJString(callback))
-  add(path_579214, "spreadsheetId", newJString(spreadsheetId))
-  add(query_579215, "fields", newJString(fields))
-  add(query_579215, "access_token", newJString(accessToken))
-  add(query_579215, "upload_protocol", newJString(uploadProtocol))
-  result = call_579213.call(path_579214, query_579215, nil, nil, body_579216)
+    body_580241 = body
+  add(query_580240, "callback", newJString(callback))
+  add(path_580239, "spreadsheetId", newJString(spreadsheetId))
+  add(query_580240, "fields", newJString(fields))
+  add(query_580240, "access_token", newJString(accessToken))
+  add(query_580240, "upload_protocol", newJString(uploadProtocol))
+  result = call_580238.call(path_580239, query_580240, nil, nil, body_580241)
 
-var sheetsSpreadsheetsValuesBatchUpdateByDataFilter* = Call_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_579196(
+var sheetsSpreadsheetsValuesBatchUpdateByDataFilter* = Call_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_580221(
     name: "sheetsSpreadsheetsValuesBatchUpdateByDataFilter",
     meth: HttpMethod.HttpPost, host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}/values:batchUpdateByDataFilter",
-    validator: validate_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_579197,
-    base: "/", url: url_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_579198,
+    validator: validate_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_580222,
+    base: "/", url: url_SheetsSpreadsheetsValuesBatchUpdateByDataFilter_580223,
     schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsBatchUpdate_579217 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsBatchUpdate_579219(protocol: Scheme; host: string;
+  Call_SheetsSpreadsheetsBatchUpdate_580242 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsBatchUpdate_580244(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3576,9 +3651,14 @@ proc url_SheetsSpreadsheetsBatchUpdate_579219(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsBatchUpdate_579218(path: JsonNode; query: JsonNode;
+proc validate_SheetsSpreadsheetsBatchUpdate_580243(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Applies one or more updates to the spreadsheet.
   ## 
@@ -3608,11 +3688,11 @@ proc validate_SheetsSpreadsheetsBatchUpdate_579218(path: JsonNode; query: JsonNo
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `spreadsheetId` field"
-  var valid_579220 = path.getOrDefault("spreadsheetId")
-  valid_579220 = validateParameter(valid_579220, JString, required = true,
+  var valid_580245 = path.getOrDefault("spreadsheetId")
+  valid_580245 = validateParameter(valid_580245, JString, required = true,
                                  default = nil)
-  if valid_579220 != nil:
-    section.add "spreadsheetId", valid_579220
+  if valid_580245 != nil:
+    section.add "spreadsheetId", valid_580245
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3638,61 +3718,61 @@ proc validate_SheetsSpreadsheetsBatchUpdate_579218(path: JsonNode; query: JsonNo
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579221 = query.getOrDefault("key")
-  valid_579221 = validateParameter(valid_579221, JString, required = false,
+  var valid_580246 = query.getOrDefault("key")
+  valid_580246 = validateParameter(valid_580246, JString, required = false,
                                  default = nil)
-  if valid_579221 != nil:
-    section.add "key", valid_579221
-  var valid_579222 = query.getOrDefault("prettyPrint")
-  valid_579222 = validateParameter(valid_579222, JBool, required = false,
+  if valid_580246 != nil:
+    section.add "key", valid_580246
+  var valid_580247 = query.getOrDefault("prettyPrint")
+  valid_580247 = validateParameter(valid_580247, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579222 != nil:
-    section.add "prettyPrint", valid_579222
-  var valid_579223 = query.getOrDefault("oauth_token")
-  valid_579223 = validateParameter(valid_579223, JString, required = false,
+  if valid_580247 != nil:
+    section.add "prettyPrint", valid_580247
+  var valid_580248 = query.getOrDefault("oauth_token")
+  valid_580248 = validateParameter(valid_580248, JString, required = false,
                                  default = nil)
-  if valid_579223 != nil:
-    section.add "oauth_token", valid_579223
-  var valid_579224 = query.getOrDefault("$.xgafv")
-  valid_579224 = validateParameter(valid_579224, JString, required = false,
+  if valid_580248 != nil:
+    section.add "oauth_token", valid_580248
+  var valid_580249 = query.getOrDefault("$.xgafv")
+  valid_580249 = validateParameter(valid_580249, JString, required = false,
                                  default = newJString("1"))
-  if valid_579224 != nil:
-    section.add "$.xgafv", valid_579224
-  var valid_579225 = query.getOrDefault("alt")
-  valid_579225 = validateParameter(valid_579225, JString, required = false,
+  if valid_580249 != nil:
+    section.add "$.xgafv", valid_580249
+  var valid_580250 = query.getOrDefault("alt")
+  valid_580250 = validateParameter(valid_580250, JString, required = false,
                                  default = newJString("json"))
-  if valid_579225 != nil:
-    section.add "alt", valid_579225
-  var valid_579226 = query.getOrDefault("uploadType")
-  valid_579226 = validateParameter(valid_579226, JString, required = false,
+  if valid_580250 != nil:
+    section.add "alt", valid_580250
+  var valid_580251 = query.getOrDefault("uploadType")
+  valid_580251 = validateParameter(valid_580251, JString, required = false,
                                  default = nil)
-  if valid_579226 != nil:
-    section.add "uploadType", valid_579226
-  var valid_579227 = query.getOrDefault("quotaUser")
-  valid_579227 = validateParameter(valid_579227, JString, required = false,
+  if valid_580251 != nil:
+    section.add "uploadType", valid_580251
+  var valid_580252 = query.getOrDefault("quotaUser")
+  valid_580252 = validateParameter(valid_580252, JString, required = false,
                                  default = nil)
-  if valid_579227 != nil:
-    section.add "quotaUser", valid_579227
-  var valid_579228 = query.getOrDefault("callback")
-  valid_579228 = validateParameter(valid_579228, JString, required = false,
+  if valid_580252 != nil:
+    section.add "quotaUser", valid_580252
+  var valid_580253 = query.getOrDefault("callback")
+  valid_580253 = validateParameter(valid_580253, JString, required = false,
                                  default = nil)
-  if valid_579228 != nil:
-    section.add "callback", valid_579228
-  var valid_579229 = query.getOrDefault("fields")
-  valid_579229 = validateParameter(valid_579229, JString, required = false,
+  if valid_580253 != nil:
+    section.add "callback", valid_580253
+  var valid_580254 = query.getOrDefault("fields")
+  valid_580254 = validateParameter(valid_580254, JString, required = false,
                                  default = nil)
-  if valid_579229 != nil:
-    section.add "fields", valid_579229
-  var valid_579230 = query.getOrDefault("access_token")
-  valid_579230 = validateParameter(valid_579230, JString, required = false,
+  if valid_580254 != nil:
+    section.add "fields", valid_580254
+  var valid_580255 = query.getOrDefault("access_token")
+  valid_580255 = validateParameter(valid_580255, JString, required = false,
                                  default = nil)
-  if valid_579230 != nil:
-    section.add "access_token", valid_579230
-  var valid_579231 = query.getOrDefault("upload_protocol")
-  valid_579231 = validateParameter(valid_579231, JString, required = false,
+  if valid_580255 != nil:
+    section.add "access_token", valid_580255
+  var valid_580256 = query.getOrDefault("upload_protocol")
+  valid_580256 = validateParameter(valid_580256, JString, required = false,
                                  default = nil)
-  if valid_579231 != nil:
-    section.add "upload_protocol", valid_579231
+  if valid_580256 != nil:
+    section.add "upload_protocol", valid_580256
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3704,7 +3784,7 @@ proc validate_SheetsSpreadsheetsBatchUpdate_579218(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_579233: Call_SheetsSpreadsheetsBatchUpdate_579217; path: JsonNode;
+proc call*(call_580258: Call_SheetsSpreadsheetsBatchUpdate_580242; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Applies one or more updates to the spreadsheet.
   ## 
@@ -3726,16 +3806,16 @@ proc call*(call_579233: Call_SheetsSpreadsheetsBatchUpdate_579217; path: JsonNod
   ## collaborator changes. If there are no collaborators, the spreadsheet
   ## should reflect your changes.
   ## 
-  let valid = call_579233.validator(path, query, header, formData, body)
-  let scheme = call_579233.pickScheme
+  let valid = call_580258.validator(path, query, header, formData, body)
+  let scheme = call_580258.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579233.url(scheme.get, call_579233.host, call_579233.base,
-                         call_579233.route, valid.getOrDefault("path"),
+  let url = call_580258.url(scheme.get, call_580258.host, call_580258.base,
+                         call_580258.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579233, url, valid)
+  result = hook(call_580258, url, valid)
 
-proc call*(call_579234: Call_SheetsSpreadsheetsBatchUpdate_579217;
+proc call*(call_580259: Call_SheetsSpreadsheetsBatchUpdate_580242;
           spreadsheetId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -3786,34 +3866,34 @@ proc call*(call_579234: Call_SheetsSpreadsheetsBatchUpdate_579217;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579235 = newJObject()
-  var query_579236 = newJObject()
-  var body_579237 = newJObject()
-  add(query_579236, "key", newJString(key))
-  add(query_579236, "prettyPrint", newJBool(prettyPrint))
-  add(query_579236, "oauth_token", newJString(oauthToken))
-  add(query_579236, "$.xgafv", newJString(Xgafv))
-  add(query_579236, "alt", newJString(alt))
-  add(query_579236, "uploadType", newJString(uploadType))
-  add(query_579236, "quotaUser", newJString(quotaUser))
+  var path_580260 = newJObject()
+  var query_580261 = newJObject()
+  var body_580262 = newJObject()
+  add(query_580261, "key", newJString(key))
+  add(query_580261, "prettyPrint", newJBool(prettyPrint))
+  add(query_580261, "oauth_token", newJString(oauthToken))
+  add(query_580261, "$.xgafv", newJString(Xgafv))
+  add(query_580261, "alt", newJString(alt))
+  add(query_580261, "uploadType", newJString(uploadType))
+  add(query_580261, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579237 = body
-  add(query_579236, "callback", newJString(callback))
-  add(path_579235, "spreadsheetId", newJString(spreadsheetId))
-  add(query_579236, "fields", newJString(fields))
-  add(query_579236, "access_token", newJString(accessToken))
-  add(query_579236, "upload_protocol", newJString(uploadProtocol))
-  result = call_579234.call(path_579235, query_579236, nil, nil, body_579237)
+    body_580262 = body
+  add(query_580261, "callback", newJString(callback))
+  add(path_580260, "spreadsheetId", newJString(spreadsheetId))
+  add(query_580261, "fields", newJString(fields))
+  add(query_580261, "access_token", newJString(accessToken))
+  add(query_580261, "upload_protocol", newJString(uploadProtocol))
+  result = call_580259.call(path_580260, query_580261, nil, nil, body_580262)
 
-var sheetsSpreadsheetsBatchUpdate* = Call_SheetsSpreadsheetsBatchUpdate_579217(
+var sheetsSpreadsheetsBatchUpdate* = Call_SheetsSpreadsheetsBatchUpdate_580242(
     name: "sheetsSpreadsheetsBatchUpdate", meth: HttpMethod.HttpPost,
     host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}:batchUpdate",
-    validator: validate_SheetsSpreadsheetsBatchUpdate_579218, base: "/",
-    url: url_SheetsSpreadsheetsBatchUpdate_579219, schemes: {Scheme.Https})
+    validator: validate_SheetsSpreadsheetsBatchUpdate_580243, base: "/",
+    url: url_SheetsSpreadsheetsBatchUpdate_580244, schemes: {Scheme.Https})
 type
-  Call_SheetsSpreadsheetsGetByDataFilter_579238 = ref object of OpenApiRestCall_578348
-proc url_SheetsSpreadsheetsGetByDataFilter_579240(protocol: Scheme; host: string;
+  Call_SheetsSpreadsheetsGetByDataFilter_580263 = ref object of OpenApiRestCall_579373
+proc url_SheetsSpreadsheetsGetByDataFilter_580265(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3827,9 +3907,14 @@ proc url_SheetsSpreadsheetsGetByDataFilter_579240(protocol: Scheme; host: string
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_SheetsSpreadsheetsGetByDataFilter_579239(path: JsonNode;
+proc validate_SheetsSpreadsheetsGetByDataFilter_580264(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the spreadsheet at the given ID.
   ## The caller must specify the spreadsheet ID.
@@ -3862,11 +3947,11 @@ proc validate_SheetsSpreadsheetsGetByDataFilter_579239(path: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `spreadsheetId` field"
-  var valid_579241 = path.getOrDefault("spreadsheetId")
-  valid_579241 = validateParameter(valid_579241, JString, required = true,
+  var valid_580266 = path.getOrDefault("spreadsheetId")
+  valid_580266 = validateParameter(valid_580266, JString, required = true,
                                  default = nil)
-  if valid_579241 != nil:
-    section.add "spreadsheetId", valid_579241
+  if valid_580266 != nil:
+    section.add "spreadsheetId", valid_580266
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3892,61 +3977,61 @@ proc validate_SheetsSpreadsheetsGetByDataFilter_579239(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579242 = query.getOrDefault("key")
-  valid_579242 = validateParameter(valid_579242, JString, required = false,
+  var valid_580267 = query.getOrDefault("key")
+  valid_580267 = validateParameter(valid_580267, JString, required = false,
                                  default = nil)
-  if valid_579242 != nil:
-    section.add "key", valid_579242
-  var valid_579243 = query.getOrDefault("prettyPrint")
-  valid_579243 = validateParameter(valid_579243, JBool, required = false,
+  if valid_580267 != nil:
+    section.add "key", valid_580267
+  var valid_580268 = query.getOrDefault("prettyPrint")
+  valid_580268 = validateParameter(valid_580268, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579243 != nil:
-    section.add "prettyPrint", valid_579243
-  var valid_579244 = query.getOrDefault("oauth_token")
-  valid_579244 = validateParameter(valid_579244, JString, required = false,
+  if valid_580268 != nil:
+    section.add "prettyPrint", valid_580268
+  var valid_580269 = query.getOrDefault("oauth_token")
+  valid_580269 = validateParameter(valid_580269, JString, required = false,
                                  default = nil)
-  if valid_579244 != nil:
-    section.add "oauth_token", valid_579244
-  var valid_579245 = query.getOrDefault("$.xgafv")
-  valid_579245 = validateParameter(valid_579245, JString, required = false,
+  if valid_580269 != nil:
+    section.add "oauth_token", valid_580269
+  var valid_580270 = query.getOrDefault("$.xgafv")
+  valid_580270 = validateParameter(valid_580270, JString, required = false,
                                  default = newJString("1"))
-  if valid_579245 != nil:
-    section.add "$.xgafv", valid_579245
-  var valid_579246 = query.getOrDefault("alt")
-  valid_579246 = validateParameter(valid_579246, JString, required = false,
+  if valid_580270 != nil:
+    section.add "$.xgafv", valid_580270
+  var valid_580271 = query.getOrDefault("alt")
+  valid_580271 = validateParameter(valid_580271, JString, required = false,
                                  default = newJString("json"))
-  if valid_579246 != nil:
-    section.add "alt", valid_579246
-  var valid_579247 = query.getOrDefault("uploadType")
-  valid_579247 = validateParameter(valid_579247, JString, required = false,
+  if valid_580271 != nil:
+    section.add "alt", valid_580271
+  var valid_580272 = query.getOrDefault("uploadType")
+  valid_580272 = validateParameter(valid_580272, JString, required = false,
                                  default = nil)
-  if valid_579247 != nil:
-    section.add "uploadType", valid_579247
-  var valid_579248 = query.getOrDefault("quotaUser")
-  valid_579248 = validateParameter(valid_579248, JString, required = false,
+  if valid_580272 != nil:
+    section.add "uploadType", valid_580272
+  var valid_580273 = query.getOrDefault("quotaUser")
+  valid_580273 = validateParameter(valid_580273, JString, required = false,
                                  default = nil)
-  if valid_579248 != nil:
-    section.add "quotaUser", valid_579248
-  var valid_579249 = query.getOrDefault("callback")
-  valid_579249 = validateParameter(valid_579249, JString, required = false,
+  if valid_580273 != nil:
+    section.add "quotaUser", valid_580273
+  var valid_580274 = query.getOrDefault("callback")
+  valid_580274 = validateParameter(valid_580274, JString, required = false,
                                  default = nil)
-  if valid_579249 != nil:
-    section.add "callback", valid_579249
-  var valid_579250 = query.getOrDefault("fields")
-  valid_579250 = validateParameter(valid_579250, JString, required = false,
+  if valid_580274 != nil:
+    section.add "callback", valid_580274
+  var valid_580275 = query.getOrDefault("fields")
+  valid_580275 = validateParameter(valid_580275, JString, required = false,
                                  default = nil)
-  if valid_579250 != nil:
-    section.add "fields", valid_579250
-  var valid_579251 = query.getOrDefault("access_token")
-  valid_579251 = validateParameter(valid_579251, JString, required = false,
+  if valid_580275 != nil:
+    section.add "fields", valid_580275
+  var valid_580276 = query.getOrDefault("access_token")
+  valid_580276 = validateParameter(valid_580276, JString, required = false,
                                  default = nil)
-  if valid_579251 != nil:
-    section.add "access_token", valid_579251
-  var valid_579252 = query.getOrDefault("upload_protocol")
-  valid_579252 = validateParameter(valid_579252, JString, required = false,
+  if valid_580276 != nil:
+    section.add "access_token", valid_580276
+  var valid_580277 = query.getOrDefault("upload_protocol")
+  valid_580277 = validateParameter(valid_580277, JString, required = false,
                                  default = nil)
-  if valid_579252 != nil:
-    section.add "upload_protocol", valid_579252
+  if valid_580277 != nil:
+    section.add "upload_protocol", valid_580277
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3958,7 +4043,7 @@ proc validate_SheetsSpreadsheetsGetByDataFilter_579239(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579254: Call_SheetsSpreadsheetsGetByDataFilter_579238;
+proc call*(call_580279: Call_SheetsSpreadsheetsGetByDataFilter_580263;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns the spreadsheet at the given ID.
@@ -3984,16 +4069,16 @@ proc call*(call_579254: Call_SheetsSpreadsheetsGetByDataFilter_579238;
   ## For large spreadsheets, it is recommended to retrieve only the specific
   ## fields of the spreadsheet that you want.
   ## 
-  let valid = call_579254.validator(path, query, header, formData, body)
-  let scheme = call_579254.pickScheme
+  let valid = call_580279.validator(path, query, header, formData, body)
+  let scheme = call_580279.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579254.url(scheme.get, call_579254.host, call_579254.base,
-                         call_579254.route, valid.getOrDefault("path"),
+  let url = call_580279.url(scheme.get, call_580279.host, call_580279.base,
+                         call_580279.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579254, url, valid)
+  result = hook(call_580279, url, valid)
 
-proc call*(call_579255: Call_SheetsSpreadsheetsGetByDataFilter_579238;
+proc call*(call_580280: Call_SheetsSpreadsheetsGetByDataFilter_580263;
           spreadsheetId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -4047,31 +4132,31 @@ proc call*(call_579255: Call_SheetsSpreadsheetsGetByDataFilter_579238;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579256 = newJObject()
-  var query_579257 = newJObject()
-  var body_579258 = newJObject()
-  add(query_579257, "key", newJString(key))
-  add(query_579257, "prettyPrint", newJBool(prettyPrint))
-  add(query_579257, "oauth_token", newJString(oauthToken))
-  add(query_579257, "$.xgafv", newJString(Xgafv))
-  add(query_579257, "alt", newJString(alt))
-  add(query_579257, "uploadType", newJString(uploadType))
-  add(query_579257, "quotaUser", newJString(quotaUser))
+  var path_580281 = newJObject()
+  var query_580282 = newJObject()
+  var body_580283 = newJObject()
+  add(query_580282, "key", newJString(key))
+  add(query_580282, "prettyPrint", newJBool(prettyPrint))
+  add(query_580282, "oauth_token", newJString(oauthToken))
+  add(query_580282, "$.xgafv", newJString(Xgafv))
+  add(query_580282, "alt", newJString(alt))
+  add(query_580282, "uploadType", newJString(uploadType))
+  add(query_580282, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579258 = body
-  add(query_579257, "callback", newJString(callback))
-  add(path_579256, "spreadsheetId", newJString(spreadsheetId))
-  add(query_579257, "fields", newJString(fields))
-  add(query_579257, "access_token", newJString(accessToken))
-  add(query_579257, "upload_protocol", newJString(uploadProtocol))
-  result = call_579255.call(path_579256, query_579257, nil, nil, body_579258)
+    body_580283 = body
+  add(query_580282, "callback", newJString(callback))
+  add(path_580281, "spreadsheetId", newJString(spreadsheetId))
+  add(query_580282, "fields", newJString(fields))
+  add(query_580282, "access_token", newJString(accessToken))
+  add(query_580282, "upload_protocol", newJString(uploadProtocol))
+  result = call_580280.call(path_580281, query_580282, nil, nil, body_580283)
 
-var sheetsSpreadsheetsGetByDataFilter* = Call_SheetsSpreadsheetsGetByDataFilter_579238(
+var sheetsSpreadsheetsGetByDataFilter* = Call_SheetsSpreadsheetsGetByDataFilter_580263(
     name: "sheetsSpreadsheetsGetByDataFilter", meth: HttpMethod.HttpPost,
     host: "sheets.googleapis.com",
     route: "/v4/spreadsheets/{spreadsheetId}:getByDataFilter",
-    validator: validate_SheetsSpreadsheetsGetByDataFilter_579239, base: "/",
-    url: url_SheetsSpreadsheetsGetByDataFilter_579240, schemes: {Scheme.Https})
+    validator: validate_SheetsSpreadsheetsGetByDataFilter_580264, base: "/",
+    url: url_SheetsSpreadsheetsGetByDataFilter_580265, schemes: {Scheme.Https})
 export
   rest
 

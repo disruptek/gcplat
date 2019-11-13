@@ -1,7 +1,7 @@
 
 import
-  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
-  asyncdispatch, jwt
+  json, options, hashes, uri, strutils, rest, os, uri, strutils, times, httpcore,
+  httpclient, asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Policy Troubleshooter
@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_578339 = ref object of OpenApiRestCall
+  OpenApiRestCall_579364 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579364](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579364): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -112,15 +112,20 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_PolicytroubleshooterIamTroubleshoot_578610 = ref object of OpenApiRestCall_578339
-proc url_PolicytroubleshooterIamTroubleshoot_578612(protocol: Scheme; host: string;
+  Call_PolicytroubleshooterIamTroubleshoot_579635 = ref object of OpenApiRestCall_579364
+proc url_PolicytroubleshooterIamTroubleshoot_579637(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
-  result.path = base & route
+  if base ==
+      "/" and
+      route.startsWith "/":
+    result.path = route
+  else:
+    result.path = base & route
 
-proc validate_PolicytroubleshooterIamTroubleshoot_578611(path: JsonNode;
+proc validate_PolicytroubleshooterIamTroubleshoot_579636(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Perform a check on whether a member is granted a permission
   ## on a resource and how that grant/deny is determined accordinga
@@ -154,61 +159,61 @@ proc validate_PolicytroubleshooterIamTroubleshoot_578611(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578724 = query.getOrDefault("key")
-  valid_578724 = validateParameter(valid_578724, JString, required = false,
+  var valid_579749 = query.getOrDefault("key")
+  valid_579749 = validateParameter(valid_579749, JString, required = false,
                                  default = nil)
-  if valid_578724 != nil:
-    section.add "key", valid_578724
-  var valid_578738 = query.getOrDefault("prettyPrint")
-  valid_578738 = validateParameter(valid_578738, JBool, required = false,
+  if valid_579749 != nil:
+    section.add "key", valid_579749
+  var valid_579763 = query.getOrDefault("prettyPrint")
+  valid_579763 = validateParameter(valid_579763, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578738 != nil:
-    section.add "prettyPrint", valid_578738
-  var valid_578739 = query.getOrDefault("oauth_token")
-  valid_578739 = validateParameter(valid_578739, JString, required = false,
+  if valid_579763 != nil:
+    section.add "prettyPrint", valid_579763
+  var valid_579764 = query.getOrDefault("oauth_token")
+  valid_579764 = validateParameter(valid_579764, JString, required = false,
                                  default = nil)
-  if valid_578739 != nil:
-    section.add "oauth_token", valid_578739
-  var valid_578740 = query.getOrDefault("$.xgafv")
-  valid_578740 = validateParameter(valid_578740, JString, required = false,
+  if valid_579764 != nil:
+    section.add "oauth_token", valid_579764
+  var valid_579765 = query.getOrDefault("$.xgafv")
+  valid_579765 = validateParameter(valid_579765, JString, required = false,
                                  default = newJString("1"))
-  if valid_578740 != nil:
-    section.add "$.xgafv", valid_578740
-  var valid_578741 = query.getOrDefault("alt")
-  valid_578741 = validateParameter(valid_578741, JString, required = false,
+  if valid_579765 != nil:
+    section.add "$.xgafv", valid_579765
+  var valid_579766 = query.getOrDefault("alt")
+  valid_579766 = validateParameter(valid_579766, JString, required = false,
                                  default = newJString("json"))
-  if valid_578741 != nil:
-    section.add "alt", valid_578741
-  var valid_578742 = query.getOrDefault("uploadType")
-  valid_578742 = validateParameter(valid_578742, JString, required = false,
+  if valid_579766 != nil:
+    section.add "alt", valid_579766
+  var valid_579767 = query.getOrDefault("uploadType")
+  valid_579767 = validateParameter(valid_579767, JString, required = false,
                                  default = nil)
-  if valid_578742 != nil:
-    section.add "uploadType", valid_578742
-  var valid_578743 = query.getOrDefault("quotaUser")
-  valid_578743 = validateParameter(valid_578743, JString, required = false,
+  if valid_579767 != nil:
+    section.add "uploadType", valid_579767
+  var valid_579768 = query.getOrDefault("quotaUser")
+  valid_579768 = validateParameter(valid_579768, JString, required = false,
                                  default = nil)
-  if valid_578743 != nil:
-    section.add "quotaUser", valid_578743
-  var valid_578744 = query.getOrDefault("callback")
-  valid_578744 = validateParameter(valid_578744, JString, required = false,
+  if valid_579768 != nil:
+    section.add "quotaUser", valid_579768
+  var valid_579769 = query.getOrDefault("callback")
+  valid_579769 = validateParameter(valid_579769, JString, required = false,
                                  default = nil)
-  if valid_578744 != nil:
-    section.add "callback", valid_578744
-  var valid_578745 = query.getOrDefault("fields")
-  valid_578745 = validateParameter(valid_578745, JString, required = false,
+  if valid_579769 != nil:
+    section.add "callback", valid_579769
+  var valid_579770 = query.getOrDefault("fields")
+  valid_579770 = validateParameter(valid_579770, JString, required = false,
                                  default = nil)
-  if valid_578745 != nil:
-    section.add "fields", valid_578745
-  var valid_578746 = query.getOrDefault("access_token")
-  valid_578746 = validateParameter(valid_578746, JString, required = false,
+  if valid_579770 != nil:
+    section.add "fields", valid_579770
+  var valid_579771 = query.getOrDefault("access_token")
+  valid_579771 = validateParameter(valid_579771, JString, required = false,
                                  default = nil)
-  if valid_578746 != nil:
-    section.add "access_token", valid_578746
-  var valid_578747 = query.getOrDefault("upload_protocol")
-  valid_578747 = validateParameter(valid_578747, JString, required = false,
+  if valid_579771 != nil:
+    section.add "access_token", valid_579771
+  var valid_579772 = query.getOrDefault("upload_protocol")
+  valid_579772 = validateParameter(valid_579772, JString, required = false,
                                  default = nil)
-  if valid_578747 != nil:
-    section.add "upload_protocol", valid_578747
+  if valid_579772 != nil:
+    section.add "upload_protocol", valid_579772
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -220,23 +225,23 @@ proc validate_PolicytroubleshooterIamTroubleshoot_578611(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578771: Call_PolicytroubleshooterIamTroubleshoot_578610;
+proc call*(call_579796: Call_PolicytroubleshooterIamTroubleshoot_579635;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Perform a check on whether a member is granted a permission
   ## on a resource and how that grant/deny is determined accordinga
   ## to the resource's effective IAM policy interpretation.
   ## 
-  let valid = call_578771.validator(path, query, header, formData, body)
-  let scheme = call_578771.pickScheme
+  let valid = call_579796.validator(path, query, header, formData, body)
+  let scheme = call_579796.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578771.url(scheme.get, call_578771.host, call_578771.base,
-                         call_578771.route, valid.getOrDefault("path"),
+  let url = call_579796.url(scheme.get, call_579796.host, call_579796.base,
+                         call_579796.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578771, url, valid)
+  result = hook(call_579796, url, valid)
 
-proc call*(call_578842: Call_PolicytroubleshooterIamTroubleshoot_578610;
+proc call*(call_579867: Call_PolicytroubleshooterIamTroubleshoot_579635;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           Xgafv: string = "1"; alt: string = "json"; uploadType: string = "";
           quotaUser: string = ""; body: JsonNode = nil; callback: string = "";
@@ -268,29 +273,29 @@ proc call*(call_578842: Call_PolicytroubleshooterIamTroubleshoot_578610;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var query_578843 = newJObject()
-  var body_578845 = newJObject()
-  add(query_578843, "key", newJString(key))
-  add(query_578843, "prettyPrint", newJBool(prettyPrint))
-  add(query_578843, "oauth_token", newJString(oauthToken))
-  add(query_578843, "$.xgafv", newJString(Xgafv))
-  add(query_578843, "alt", newJString(alt))
-  add(query_578843, "uploadType", newJString(uploadType))
-  add(query_578843, "quotaUser", newJString(quotaUser))
+  var query_579868 = newJObject()
+  var body_579870 = newJObject()
+  add(query_579868, "key", newJString(key))
+  add(query_579868, "prettyPrint", newJBool(prettyPrint))
+  add(query_579868, "oauth_token", newJString(oauthToken))
+  add(query_579868, "$.xgafv", newJString(Xgafv))
+  add(query_579868, "alt", newJString(alt))
+  add(query_579868, "uploadType", newJString(uploadType))
+  add(query_579868, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_578845 = body
-  add(query_578843, "callback", newJString(callback))
-  add(query_578843, "fields", newJString(fields))
-  add(query_578843, "access_token", newJString(accessToken))
-  add(query_578843, "upload_protocol", newJString(uploadProtocol))
-  result = call_578842.call(nil, query_578843, nil, nil, body_578845)
+    body_579870 = body
+  add(query_579868, "callback", newJString(callback))
+  add(query_579868, "fields", newJString(fields))
+  add(query_579868, "access_token", newJString(accessToken))
+  add(query_579868, "upload_protocol", newJString(uploadProtocol))
+  result = call_579867.call(nil, query_579868, nil, nil, body_579870)
 
-var policytroubleshooterIamTroubleshoot* = Call_PolicytroubleshooterIamTroubleshoot_578610(
+var policytroubleshooterIamTroubleshoot* = Call_PolicytroubleshooterIamTroubleshoot_579635(
     name: "policytroubleshooterIamTroubleshoot", meth: HttpMethod.HttpPost,
     host: "policytroubleshooter.googleapis.com",
     route: "/v1beta/iam:troubleshoot",
-    validator: validate_PolicytroubleshooterIamTroubleshoot_578611, base: "/",
-    url: url_PolicytroubleshooterIamTroubleshoot_578612, schemes: {Scheme.Https})
+    validator: validate_PolicytroubleshooterIamTroubleshoot_579636, base: "/",
+    url: url_PolicytroubleshooterIamTroubleshoot_579637, schemes: {Scheme.Https})
 export
   rest
 

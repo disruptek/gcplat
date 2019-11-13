@@ -1,7 +1,7 @@
 
 import
-  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
-  asyncdispatch, jwt
+  json, options, hashes, uri, strutils, rest, os, uri, strutils, times, httpcore,
+  httpclient, asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Cloud Storage
@@ -29,15 +29,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_578355 = ref object of OpenApiRestCall
+  OpenApiRestCall_579380 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_578355](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579380](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_578355): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579380): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -112,15 +112,20 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_StorageBucketsInsert_578901 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketsInsert_578903(protocol: Scheme; host: string; base: string;
+  Call_StorageBucketsInsert_579926 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketsInsert_579928(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
-  result.path = base & route
+  if base ==
+      "/" and
+      route.startsWith "/":
+    result.path = route
+  else:
+    result.path = base & route
 
-proc validate_StorageBucketsInsert_578902(path: JsonNode; query: JsonNode;
+proc validate_StorageBucketsInsert_579927(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new bucket.
   ## 
@@ -156,72 +161,72 @@ proc validate_StorageBucketsInsert_578902(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578904 = query.getOrDefault("key")
-  valid_578904 = validateParameter(valid_578904, JString, required = false,
+  var valid_579929 = query.getOrDefault("key")
+  valid_579929 = validateParameter(valid_579929, JString, required = false,
                                  default = nil)
-  if valid_578904 != nil:
-    section.add "key", valid_578904
-  var valid_578905 = query.getOrDefault("prettyPrint")
-  valid_578905 = validateParameter(valid_578905, JBool, required = false,
+  if valid_579929 != nil:
+    section.add "key", valid_579929
+  var valid_579930 = query.getOrDefault("prettyPrint")
+  valid_579930 = validateParameter(valid_579930, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578905 != nil:
-    section.add "prettyPrint", valid_578905
-  var valid_578906 = query.getOrDefault("oauth_token")
-  valid_578906 = validateParameter(valid_578906, JString, required = false,
+  if valid_579930 != nil:
+    section.add "prettyPrint", valid_579930
+  var valid_579931 = query.getOrDefault("oauth_token")
+  valid_579931 = validateParameter(valid_579931, JString, required = false,
                                  default = nil)
-  if valid_578906 != nil:
-    section.add "oauth_token", valid_578906
-  var valid_578907 = query.getOrDefault("userProject")
-  valid_578907 = validateParameter(valid_578907, JString, required = false,
+  if valid_579931 != nil:
+    section.add "oauth_token", valid_579931
+  var valid_579932 = query.getOrDefault("userProject")
+  valid_579932 = validateParameter(valid_579932, JString, required = false,
                                  default = nil)
-  if valid_578907 != nil:
-    section.add "userProject", valid_578907
-  var valid_578908 = query.getOrDefault("predefinedAcl")
-  valid_578908 = validateParameter(valid_578908, JString, required = false,
+  if valid_579932 != nil:
+    section.add "userProject", valid_579932
+  var valid_579933 = query.getOrDefault("predefinedAcl")
+  valid_579933 = validateParameter(valid_579933, JString, required = false,
                                  default = newJString("authenticatedRead"))
-  if valid_578908 != nil:
-    section.add "predefinedAcl", valid_578908
-  var valid_578909 = query.getOrDefault("alt")
-  valid_578909 = validateParameter(valid_578909, JString, required = false,
+  if valid_579933 != nil:
+    section.add "predefinedAcl", valid_579933
+  var valid_579934 = query.getOrDefault("alt")
+  valid_579934 = validateParameter(valid_579934, JString, required = false,
                                  default = newJString("json"))
-  if valid_578909 != nil:
-    section.add "alt", valid_578909
-  var valid_578910 = query.getOrDefault("userIp")
-  valid_578910 = validateParameter(valid_578910, JString, required = false,
+  if valid_579934 != nil:
+    section.add "alt", valid_579934
+  var valid_579935 = query.getOrDefault("userIp")
+  valid_579935 = validateParameter(valid_579935, JString, required = false,
                                  default = nil)
-  if valid_578910 != nil:
-    section.add "userIp", valid_578910
-  var valid_578911 = query.getOrDefault("quotaUser")
-  valid_578911 = validateParameter(valid_578911, JString, required = false,
+  if valid_579935 != nil:
+    section.add "userIp", valid_579935
+  var valid_579936 = query.getOrDefault("quotaUser")
+  valid_579936 = validateParameter(valid_579936, JString, required = false,
                                  default = nil)
-  if valid_578911 != nil:
-    section.add "quotaUser", valid_578911
+  if valid_579936 != nil:
+    section.add "quotaUser", valid_579936
   assert query != nil, "query argument is necessary due to required `project` field"
-  var valid_578912 = query.getOrDefault("project")
-  valid_578912 = validateParameter(valid_578912, JString, required = true,
+  var valid_579937 = query.getOrDefault("project")
+  valid_579937 = validateParameter(valid_579937, JString, required = true,
                                  default = nil)
-  if valid_578912 != nil:
-    section.add "project", valid_578912
-  var valid_578913 = query.getOrDefault("predefinedDefaultObjectAcl")
-  valid_578913 = validateParameter(valid_578913, JString, required = false,
+  if valid_579937 != nil:
+    section.add "project", valid_579937
+  var valid_579938 = query.getOrDefault("predefinedDefaultObjectAcl")
+  valid_579938 = validateParameter(valid_579938, JString, required = false,
                                  default = newJString("authenticatedRead"))
-  if valid_578913 != nil:
-    section.add "predefinedDefaultObjectAcl", valid_578913
-  var valid_578914 = query.getOrDefault("provisionalUserProject")
-  valid_578914 = validateParameter(valid_578914, JString, required = false,
+  if valid_579938 != nil:
+    section.add "predefinedDefaultObjectAcl", valid_579938
+  var valid_579939 = query.getOrDefault("provisionalUserProject")
+  valid_579939 = validateParameter(valid_579939, JString, required = false,
                                  default = nil)
-  if valid_578914 != nil:
-    section.add "provisionalUserProject", valid_578914
-  var valid_578915 = query.getOrDefault("projection")
-  valid_578915 = validateParameter(valid_578915, JString, required = false,
+  if valid_579939 != nil:
+    section.add "provisionalUserProject", valid_579939
+  var valid_579940 = query.getOrDefault("projection")
+  valid_579940 = validateParameter(valid_579940, JString, required = false,
                                  default = newJString("full"))
-  if valid_578915 != nil:
-    section.add "projection", valid_578915
-  var valid_578916 = query.getOrDefault("fields")
-  valid_578916 = validateParameter(valid_578916, JString, required = false,
+  if valid_579940 != nil:
+    section.add "projection", valid_579940
+  var valid_579941 = query.getOrDefault("fields")
+  valid_579941 = validateParameter(valid_579941, JString, required = false,
                                  default = nil)
-  if valid_578916 != nil:
-    section.add "fields", valid_578916
+  if valid_579941 != nil:
+    section.add "fields", valid_579941
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -233,20 +238,20 @@ proc validate_StorageBucketsInsert_578902(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578918: Call_StorageBucketsInsert_578901; path: JsonNode;
+proc call*(call_579943: Call_StorageBucketsInsert_579926; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new bucket.
   ## 
-  let valid = call_578918.validator(path, query, header, formData, body)
-  let scheme = call_578918.pickScheme
+  let valid = call_579943.validator(path, query, header, formData, body)
+  let scheme = call_579943.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578918.url(scheme.get, call_578918.host, call_578918.base,
-                         call_578918.route, valid.getOrDefault("path"),
+  let url = call_579943.url(scheme.get, call_579943.host, call_579943.base,
+                         call_579943.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578918, url, valid)
+  result = hook(call_579943, url, valid)
 
-proc call*(call_578919: Call_StorageBucketsInsert_578901; project: string;
+proc call*(call_579944: Call_StorageBucketsInsert_579926; project: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           userProject: string = ""; predefinedAcl: string = "authenticatedRead";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -283,41 +288,46 @@ proc call*(call_578919: Call_StorageBucketsInsert_578901; project: string;
   ##             : Set of properties to return. Defaults to noAcl, unless the bucket resource specifies acl or defaultObjectAcl properties, when it defaults to full.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var query_578920 = newJObject()
-  var body_578921 = newJObject()
-  add(query_578920, "key", newJString(key))
-  add(query_578920, "prettyPrint", newJBool(prettyPrint))
-  add(query_578920, "oauth_token", newJString(oauthToken))
-  add(query_578920, "userProject", newJString(userProject))
-  add(query_578920, "predefinedAcl", newJString(predefinedAcl))
-  add(query_578920, "alt", newJString(alt))
-  add(query_578920, "userIp", newJString(userIp))
-  add(query_578920, "quotaUser", newJString(quotaUser))
-  add(query_578920, "project", newJString(project))
+  var query_579945 = newJObject()
+  var body_579946 = newJObject()
+  add(query_579945, "key", newJString(key))
+  add(query_579945, "prettyPrint", newJBool(prettyPrint))
+  add(query_579945, "oauth_token", newJString(oauthToken))
+  add(query_579945, "userProject", newJString(userProject))
+  add(query_579945, "predefinedAcl", newJString(predefinedAcl))
+  add(query_579945, "alt", newJString(alt))
+  add(query_579945, "userIp", newJString(userIp))
+  add(query_579945, "quotaUser", newJString(quotaUser))
+  add(query_579945, "project", newJString(project))
   if body != nil:
-    body_578921 = body
-  add(query_578920, "predefinedDefaultObjectAcl",
+    body_579946 = body
+  add(query_579945, "predefinedDefaultObjectAcl",
       newJString(predefinedDefaultObjectAcl))
-  add(query_578920, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_578920, "projection", newJString(projection))
-  add(query_578920, "fields", newJString(fields))
-  result = call_578919.call(nil, query_578920, nil, nil, body_578921)
+  add(query_579945, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_579945, "projection", newJString(projection))
+  add(query_579945, "fields", newJString(fields))
+  result = call_579944.call(nil, query_579945, nil, nil, body_579946)
 
-var storageBucketsInsert* = Call_StorageBucketsInsert_578901(
+var storageBucketsInsert* = Call_StorageBucketsInsert_579926(
     name: "storageBucketsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/b",
-    validator: validate_StorageBucketsInsert_578902, base: "/storage/v1",
-    url: url_StorageBucketsInsert_578903, schemes: {Scheme.Https})
+    validator: validate_StorageBucketsInsert_579927, base: "/storage/v1",
+    url: url_StorageBucketsInsert_579928, schemes: {Scheme.Https})
 type
-  Call_StorageBucketsList_578625 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketsList_578627(protocol: Scheme; host: string; base: string;
+  Call_StorageBucketsList_579650 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketsList_579652(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
-  result.path = base & route
+  if base ==
+      "/" and
+      route.startsWith "/":
+    result.path = route
+  else:
+    result.path = base & route
 
-proc validate_StorageBucketsList_578626(path: JsonNode; query: JsonNode;
+proc validate_StorageBucketsList_579651(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Retrieves a list of buckets for a given project.
@@ -356,77 +366,77 @@ proc validate_StorageBucketsList_578626(path: JsonNode; query: JsonNode;
   ##   maxResults: JInt
   ##             : Maximum number of buckets to return in a single response. The service will use this parameter or 1,000 items, whichever is smaller.
   section = newJObject()
-  var valid_578739 = query.getOrDefault("key")
-  valid_578739 = validateParameter(valid_578739, JString, required = false,
+  var valid_579764 = query.getOrDefault("key")
+  valid_579764 = validateParameter(valid_579764, JString, required = false,
                                  default = nil)
-  if valid_578739 != nil:
-    section.add "key", valid_578739
-  var valid_578753 = query.getOrDefault("prettyPrint")
-  valid_578753 = validateParameter(valid_578753, JBool, required = false,
+  if valid_579764 != nil:
+    section.add "key", valid_579764
+  var valid_579778 = query.getOrDefault("prettyPrint")
+  valid_579778 = validateParameter(valid_579778, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578753 != nil:
-    section.add "prettyPrint", valid_578753
-  var valid_578754 = query.getOrDefault("oauth_token")
-  valid_578754 = validateParameter(valid_578754, JString, required = false,
+  if valid_579778 != nil:
+    section.add "prettyPrint", valid_579778
+  var valid_579779 = query.getOrDefault("oauth_token")
+  valid_579779 = validateParameter(valid_579779, JString, required = false,
                                  default = nil)
-  if valid_578754 != nil:
-    section.add "oauth_token", valid_578754
-  var valid_578755 = query.getOrDefault("prefix")
-  valid_578755 = validateParameter(valid_578755, JString, required = false,
+  if valid_579779 != nil:
+    section.add "oauth_token", valid_579779
+  var valid_579780 = query.getOrDefault("prefix")
+  valid_579780 = validateParameter(valid_579780, JString, required = false,
                                  default = nil)
-  if valid_578755 != nil:
-    section.add "prefix", valid_578755
-  var valid_578756 = query.getOrDefault("userProject")
-  valid_578756 = validateParameter(valid_578756, JString, required = false,
+  if valid_579780 != nil:
+    section.add "prefix", valid_579780
+  var valid_579781 = query.getOrDefault("userProject")
+  valid_579781 = validateParameter(valid_579781, JString, required = false,
                                  default = nil)
-  if valid_578756 != nil:
-    section.add "userProject", valid_578756
-  var valid_578757 = query.getOrDefault("alt")
-  valid_578757 = validateParameter(valid_578757, JString, required = false,
+  if valid_579781 != nil:
+    section.add "userProject", valid_579781
+  var valid_579782 = query.getOrDefault("alt")
+  valid_579782 = validateParameter(valid_579782, JString, required = false,
                                  default = newJString("json"))
-  if valid_578757 != nil:
-    section.add "alt", valid_578757
-  var valid_578758 = query.getOrDefault("userIp")
-  valid_578758 = validateParameter(valid_578758, JString, required = false,
+  if valid_579782 != nil:
+    section.add "alt", valid_579782
+  var valid_579783 = query.getOrDefault("userIp")
+  valid_579783 = validateParameter(valid_579783, JString, required = false,
                                  default = nil)
-  if valid_578758 != nil:
-    section.add "userIp", valid_578758
-  var valid_578759 = query.getOrDefault("quotaUser")
-  valid_578759 = validateParameter(valid_578759, JString, required = false,
+  if valid_579783 != nil:
+    section.add "userIp", valid_579783
+  var valid_579784 = query.getOrDefault("quotaUser")
+  valid_579784 = validateParameter(valid_579784, JString, required = false,
                                  default = nil)
-  if valid_578759 != nil:
-    section.add "quotaUser", valid_578759
+  if valid_579784 != nil:
+    section.add "quotaUser", valid_579784
   assert query != nil, "query argument is necessary due to required `project` field"
-  var valid_578760 = query.getOrDefault("project")
-  valid_578760 = validateParameter(valid_578760, JString, required = true,
+  var valid_579785 = query.getOrDefault("project")
+  valid_579785 = validateParameter(valid_579785, JString, required = true,
                                  default = nil)
-  if valid_578760 != nil:
-    section.add "project", valid_578760
-  var valid_578761 = query.getOrDefault("pageToken")
-  valid_578761 = validateParameter(valid_578761, JString, required = false,
+  if valid_579785 != nil:
+    section.add "project", valid_579785
+  var valid_579786 = query.getOrDefault("pageToken")
+  valid_579786 = validateParameter(valid_579786, JString, required = false,
                                  default = nil)
-  if valid_578761 != nil:
-    section.add "pageToken", valid_578761
-  var valid_578762 = query.getOrDefault("provisionalUserProject")
-  valid_578762 = validateParameter(valid_578762, JString, required = false,
+  if valid_579786 != nil:
+    section.add "pageToken", valid_579786
+  var valid_579787 = query.getOrDefault("provisionalUserProject")
+  valid_579787 = validateParameter(valid_579787, JString, required = false,
                                  default = nil)
-  if valid_578762 != nil:
-    section.add "provisionalUserProject", valid_578762
-  var valid_578763 = query.getOrDefault("projection")
-  valid_578763 = validateParameter(valid_578763, JString, required = false,
+  if valid_579787 != nil:
+    section.add "provisionalUserProject", valid_579787
+  var valid_579788 = query.getOrDefault("projection")
+  valid_579788 = validateParameter(valid_579788, JString, required = false,
                                  default = newJString("full"))
-  if valid_578763 != nil:
-    section.add "projection", valid_578763
-  var valid_578764 = query.getOrDefault("fields")
-  valid_578764 = validateParameter(valid_578764, JString, required = false,
+  if valid_579788 != nil:
+    section.add "projection", valid_579788
+  var valid_579789 = query.getOrDefault("fields")
+  valid_579789 = validateParameter(valid_579789, JString, required = false,
                                  default = nil)
-  if valid_578764 != nil:
-    section.add "fields", valid_578764
-  var valid_578766 = query.getOrDefault("maxResults")
-  valid_578766 = validateParameter(valid_578766, JInt, required = false,
+  if valid_579789 != nil:
+    section.add "fields", valid_579789
+  var valid_579791 = query.getOrDefault("maxResults")
+  valid_579791 = validateParameter(valid_579791, JInt, required = false,
                                  default = newJInt(1000))
-  if valid_578766 != nil:
-    section.add "maxResults", valid_578766
+  if valid_579791 != nil:
+    section.add "maxResults", valid_579791
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -435,20 +445,20 @@ proc validate_StorageBucketsList_578626(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578789: Call_StorageBucketsList_578625; path: JsonNode;
+proc call*(call_579814: Call_StorageBucketsList_579650; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of buckets for a given project.
   ## 
-  let valid = call_578789.validator(path, query, header, formData, body)
-  let scheme = call_578789.pickScheme
+  let valid = call_579814.validator(path, query, header, formData, body)
+  let scheme = call_579814.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578789.url(scheme.get, call_578789.host, call_578789.base,
-                         call_578789.route, valid.getOrDefault("path"),
+  let url = call_579814.url(scheme.get, call_579814.host, call_579814.base,
+                         call_579814.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578789, url, valid)
+  result = hook(call_579814, url, valid)
 
-proc call*(call_578860: Call_StorageBucketsList_578625; project: string;
+proc call*(call_579885: Call_StorageBucketsList_579650; project: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           prefix: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; pageToken: string = "";
@@ -484,30 +494,30 @@ proc call*(call_578860: Call_StorageBucketsList_578625; project: string;
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: int
   ##             : Maximum number of buckets to return in a single response. The service will use this parameter or 1,000 items, whichever is smaller.
-  var query_578861 = newJObject()
-  add(query_578861, "key", newJString(key))
-  add(query_578861, "prettyPrint", newJBool(prettyPrint))
-  add(query_578861, "oauth_token", newJString(oauthToken))
-  add(query_578861, "prefix", newJString(prefix))
-  add(query_578861, "userProject", newJString(userProject))
-  add(query_578861, "alt", newJString(alt))
-  add(query_578861, "userIp", newJString(userIp))
-  add(query_578861, "quotaUser", newJString(quotaUser))
-  add(query_578861, "project", newJString(project))
-  add(query_578861, "pageToken", newJString(pageToken))
-  add(query_578861, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_578861, "projection", newJString(projection))
-  add(query_578861, "fields", newJString(fields))
-  add(query_578861, "maxResults", newJInt(maxResults))
-  result = call_578860.call(nil, query_578861, nil, nil, nil)
+  var query_579886 = newJObject()
+  add(query_579886, "key", newJString(key))
+  add(query_579886, "prettyPrint", newJBool(prettyPrint))
+  add(query_579886, "oauth_token", newJString(oauthToken))
+  add(query_579886, "prefix", newJString(prefix))
+  add(query_579886, "userProject", newJString(userProject))
+  add(query_579886, "alt", newJString(alt))
+  add(query_579886, "userIp", newJString(userIp))
+  add(query_579886, "quotaUser", newJString(quotaUser))
+  add(query_579886, "project", newJString(project))
+  add(query_579886, "pageToken", newJString(pageToken))
+  add(query_579886, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_579886, "projection", newJString(projection))
+  add(query_579886, "fields", newJString(fields))
+  add(query_579886, "maxResults", newJInt(maxResults))
+  result = call_579885.call(nil, query_579886, nil, nil, nil)
 
-var storageBucketsList* = Call_StorageBucketsList_578625(
+var storageBucketsList* = Call_StorageBucketsList_579650(
     name: "storageBucketsList", meth: HttpMethod.HttpGet,
-    host: "www.googleapis.com", route: "/b", validator: validate_StorageBucketsList_578626,
-    base: "/storage/v1", url: url_StorageBucketsList_578627, schemes: {Scheme.Https})
+    host: "www.googleapis.com", route: "/b", validator: validate_StorageBucketsList_579651,
+    base: "/storage/v1", url: url_StorageBucketsList_579652, schemes: {Scheme.Https})
 type
-  Call_StorageBucketsUpdate_578956 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketsUpdate_578958(protocol: Scheme; host: string; base: string;
+  Call_StorageBucketsUpdate_579981 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketsUpdate_579983(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -520,9 +530,14 @@ proc url_StorageBucketsUpdate_578958(protocol: Scheme; host: string; base: strin
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageBucketsUpdate_578957(path: JsonNode; query: JsonNode;
+proc validate_StorageBucketsUpdate_579982(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a bucket. Changes to the bucket will be readable immediately after writing, but configuration changes may take time to propagate.
   ## 
@@ -533,11 +548,11 @@ proc validate_StorageBucketsUpdate_578957(path: JsonNode; query: JsonNode;
   ##         : Name of a bucket.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_578959 = path.getOrDefault("bucket")
-  valid_578959 = validateParameter(valid_578959, JString, required = true,
+  var valid_579984 = path.getOrDefault("bucket")
+  valid_579984 = validateParameter(valid_579984, JString, required = true,
                                  default = nil)
-  if valid_578959 != nil:
-    section.add "bucket", valid_578959
+  if valid_579984 != nil:
+    section.add "bucket", valid_579984
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -569,76 +584,76 @@ proc validate_StorageBucketsUpdate_578957(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578960 = query.getOrDefault("key")
-  valid_578960 = validateParameter(valid_578960, JString, required = false,
+  var valid_579985 = query.getOrDefault("key")
+  valid_579985 = validateParameter(valid_579985, JString, required = false,
                                  default = nil)
-  if valid_578960 != nil:
-    section.add "key", valid_578960
-  var valid_578961 = query.getOrDefault("prettyPrint")
-  valid_578961 = validateParameter(valid_578961, JBool, required = false,
+  if valid_579985 != nil:
+    section.add "key", valid_579985
+  var valid_579986 = query.getOrDefault("prettyPrint")
+  valid_579986 = validateParameter(valid_579986, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578961 != nil:
-    section.add "prettyPrint", valid_578961
-  var valid_578962 = query.getOrDefault("oauth_token")
-  valid_578962 = validateParameter(valid_578962, JString, required = false,
+  if valid_579986 != nil:
+    section.add "prettyPrint", valid_579986
+  var valid_579987 = query.getOrDefault("oauth_token")
+  valid_579987 = validateParameter(valid_579987, JString, required = false,
                                  default = nil)
-  if valid_578962 != nil:
-    section.add "oauth_token", valid_578962
-  var valid_578963 = query.getOrDefault("userProject")
-  valid_578963 = validateParameter(valid_578963, JString, required = false,
+  if valid_579987 != nil:
+    section.add "oauth_token", valid_579987
+  var valid_579988 = query.getOrDefault("userProject")
+  valid_579988 = validateParameter(valid_579988, JString, required = false,
                                  default = nil)
-  if valid_578963 != nil:
-    section.add "userProject", valid_578963
-  var valid_578964 = query.getOrDefault("predefinedAcl")
-  valid_578964 = validateParameter(valid_578964, JString, required = false,
+  if valid_579988 != nil:
+    section.add "userProject", valid_579988
+  var valid_579989 = query.getOrDefault("predefinedAcl")
+  valid_579989 = validateParameter(valid_579989, JString, required = false,
                                  default = newJString("authenticatedRead"))
-  if valid_578964 != nil:
-    section.add "predefinedAcl", valid_578964
-  var valid_578965 = query.getOrDefault("alt")
-  valid_578965 = validateParameter(valid_578965, JString, required = false,
+  if valid_579989 != nil:
+    section.add "predefinedAcl", valid_579989
+  var valid_579990 = query.getOrDefault("alt")
+  valid_579990 = validateParameter(valid_579990, JString, required = false,
                                  default = newJString("json"))
-  if valid_578965 != nil:
-    section.add "alt", valid_578965
-  var valid_578966 = query.getOrDefault("userIp")
-  valid_578966 = validateParameter(valid_578966, JString, required = false,
+  if valid_579990 != nil:
+    section.add "alt", valid_579990
+  var valid_579991 = query.getOrDefault("userIp")
+  valid_579991 = validateParameter(valid_579991, JString, required = false,
                                  default = nil)
-  if valid_578966 != nil:
-    section.add "userIp", valid_578966
-  var valid_578967 = query.getOrDefault("quotaUser")
-  valid_578967 = validateParameter(valid_578967, JString, required = false,
+  if valid_579991 != nil:
+    section.add "userIp", valid_579991
+  var valid_579992 = query.getOrDefault("quotaUser")
+  valid_579992 = validateParameter(valid_579992, JString, required = false,
                                  default = nil)
-  if valid_578967 != nil:
-    section.add "quotaUser", valid_578967
-  var valid_578968 = query.getOrDefault("ifMetagenerationMatch")
-  valid_578968 = validateParameter(valid_578968, JString, required = false,
+  if valid_579992 != nil:
+    section.add "quotaUser", valid_579992
+  var valid_579993 = query.getOrDefault("ifMetagenerationMatch")
+  valid_579993 = validateParameter(valid_579993, JString, required = false,
                                  default = nil)
-  if valid_578968 != nil:
-    section.add "ifMetagenerationMatch", valid_578968
-  var valid_578969 = query.getOrDefault("predefinedDefaultObjectAcl")
-  valid_578969 = validateParameter(valid_578969, JString, required = false,
+  if valid_579993 != nil:
+    section.add "ifMetagenerationMatch", valid_579993
+  var valid_579994 = query.getOrDefault("predefinedDefaultObjectAcl")
+  valid_579994 = validateParameter(valid_579994, JString, required = false,
                                  default = newJString("authenticatedRead"))
-  if valid_578969 != nil:
-    section.add "predefinedDefaultObjectAcl", valid_578969
-  var valid_578970 = query.getOrDefault("provisionalUserProject")
-  valid_578970 = validateParameter(valid_578970, JString, required = false,
+  if valid_579994 != nil:
+    section.add "predefinedDefaultObjectAcl", valid_579994
+  var valid_579995 = query.getOrDefault("provisionalUserProject")
+  valid_579995 = validateParameter(valid_579995, JString, required = false,
                                  default = nil)
-  if valid_578970 != nil:
-    section.add "provisionalUserProject", valid_578970
-  var valid_578971 = query.getOrDefault("ifMetagenerationNotMatch")
-  valid_578971 = validateParameter(valid_578971, JString, required = false,
+  if valid_579995 != nil:
+    section.add "provisionalUserProject", valid_579995
+  var valid_579996 = query.getOrDefault("ifMetagenerationNotMatch")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_578971 != nil:
-    section.add "ifMetagenerationNotMatch", valid_578971
-  var valid_578972 = query.getOrDefault("projection")
-  valid_578972 = validateParameter(valid_578972, JString, required = false,
+  if valid_579996 != nil:
+    section.add "ifMetagenerationNotMatch", valid_579996
+  var valid_579997 = query.getOrDefault("projection")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = newJString("full"))
-  if valid_578972 != nil:
-    section.add "projection", valid_578972
-  var valid_578973 = query.getOrDefault("fields")
-  valid_578973 = validateParameter(valid_578973, JString, required = false,
+  if valid_579997 != nil:
+    section.add "projection", valid_579997
+  var valid_579998 = query.getOrDefault("fields")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = nil)
-  if valid_578973 != nil:
-    section.add "fields", valid_578973
+  if valid_579998 != nil:
+    section.add "fields", valid_579998
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -650,20 +665,20 @@ proc validate_StorageBucketsUpdate_578957(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578975: Call_StorageBucketsUpdate_578956; path: JsonNode;
+proc call*(call_580000: Call_StorageBucketsUpdate_579981; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates a bucket. Changes to the bucket will be readable immediately after writing, but configuration changes may take time to propagate.
   ## 
-  let valid = call_578975.validator(path, query, header, formData, body)
-  let scheme = call_578975.pickScheme
+  let valid = call_580000.validator(path, query, header, formData, body)
+  let scheme = call_580000.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578975.url(scheme.get, call_578975.host, call_578975.base,
-                         call_578975.route, valid.getOrDefault("path"),
+  let url = call_580000.url(scheme.get, call_580000.host, call_580000.base,
+                         call_580000.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578975, url, valid)
+  result = hook(call_580000, url, valid)
 
-proc call*(call_578976: Call_StorageBucketsUpdate_578956; bucket: string;
+proc call*(call_580001: Call_StorageBucketsUpdate_579981; bucket: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           userProject: string = ""; predefinedAcl: string = "authenticatedRead";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -705,38 +720,38 @@ proc call*(call_578976: Call_StorageBucketsUpdate_578956; bucket: string;
   ##             : Set of properties to return. Defaults to full.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_578977 = newJObject()
-  var query_578978 = newJObject()
-  var body_578979 = newJObject()
-  add(query_578978, "key", newJString(key))
-  add(query_578978, "prettyPrint", newJBool(prettyPrint))
-  add(query_578978, "oauth_token", newJString(oauthToken))
-  add(query_578978, "userProject", newJString(userProject))
-  add(query_578978, "predefinedAcl", newJString(predefinedAcl))
-  add(query_578978, "alt", newJString(alt))
-  add(query_578978, "userIp", newJString(userIp))
-  add(query_578978, "quotaUser", newJString(quotaUser))
-  add(query_578978, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
-  add(path_578977, "bucket", newJString(bucket))
+  var path_580002 = newJObject()
+  var query_580003 = newJObject()
+  var body_580004 = newJObject()
+  add(query_580003, "key", newJString(key))
+  add(query_580003, "prettyPrint", newJBool(prettyPrint))
+  add(query_580003, "oauth_token", newJString(oauthToken))
+  add(query_580003, "userProject", newJString(userProject))
+  add(query_580003, "predefinedAcl", newJString(predefinedAcl))
+  add(query_580003, "alt", newJString(alt))
+  add(query_580003, "userIp", newJString(userIp))
+  add(query_580003, "quotaUser", newJString(quotaUser))
+  add(query_580003, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
+  add(path_580002, "bucket", newJString(bucket))
   if body != nil:
-    body_578979 = body
-  add(query_578978, "predefinedDefaultObjectAcl",
+    body_580004 = body
+  add(query_580003, "predefinedDefaultObjectAcl",
       newJString(predefinedDefaultObjectAcl))
-  add(query_578978, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_578978, "ifMetagenerationNotMatch",
+  add(query_580003, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580003, "ifMetagenerationNotMatch",
       newJString(ifMetagenerationNotMatch))
-  add(query_578978, "projection", newJString(projection))
-  add(query_578978, "fields", newJString(fields))
-  result = call_578976.call(path_578977, query_578978, nil, nil, body_578979)
+  add(query_580003, "projection", newJString(projection))
+  add(query_580003, "fields", newJString(fields))
+  result = call_580001.call(path_580002, query_580003, nil, nil, body_580004)
 
-var storageBucketsUpdate* = Call_StorageBucketsUpdate_578956(
+var storageBucketsUpdate* = Call_StorageBucketsUpdate_579981(
     name: "storageBucketsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/b/{bucket}",
-    validator: validate_StorageBucketsUpdate_578957, base: "/storage/v1",
-    url: url_StorageBucketsUpdate_578958, schemes: {Scheme.Https})
+    validator: validate_StorageBucketsUpdate_579982, base: "/storage/v1",
+    url: url_StorageBucketsUpdate_579983, schemes: {Scheme.Https})
 type
-  Call_StorageBucketsGet_578922 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketsGet_578924(protocol: Scheme; host: string; base: string;
+  Call_StorageBucketsGet_579947 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketsGet_579949(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -749,9 +764,14 @@ proc url_StorageBucketsGet_578924(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageBucketsGet_578923(path: JsonNode; query: JsonNode;
+proc validate_StorageBucketsGet_579948(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Returns metadata for the specified bucket.
@@ -763,11 +783,11 @@ proc validate_StorageBucketsGet_578923(path: JsonNode; query: JsonNode;
   ##         : Name of a bucket.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_578939 = path.getOrDefault("bucket")
-  valid_578939 = validateParameter(valid_578939, JString, required = true,
+  var valid_579964 = path.getOrDefault("bucket")
+  valid_579964 = validateParameter(valid_579964, JString, required = true,
                                  default = nil)
-  if valid_578939 != nil:
-    section.add "bucket", valid_578939
+  if valid_579964 != nil:
+    section.add "bucket", valid_579964
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -795,66 +815,66 @@ proc validate_StorageBucketsGet_578923(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578940 = query.getOrDefault("key")
-  valid_578940 = validateParameter(valid_578940, JString, required = false,
+  var valid_579965 = query.getOrDefault("key")
+  valid_579965 = validateParameter(valid_579965, JString, required = false,
                                  default = nil)
-  if valid_578940 != nil:
-    section.add "key", valid_578940
-  var valid_578941 = query.getOrDefault("prettyPrint")
-  valid_578941 = validateParameter(valid_578941, JBool, required = false,
+  if valid_579965 != nil:
+    section.add "key", valid_579965
+  var valid_579966 = query.getOrDefault("prettyPrint")
+  valid_579966 = validateParameter(valid_579966, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578941 != nil:
-    section.add "prettyPrint", valid_578941
-  var valid_578942 = query.getOrDefault("oauth_token")
-  valid_578942 = validateParameter(valid_578942, JString, required = false,
+  if valid_579966 != nil:
+    section.add "prettyPrint", valid_579966
+  var valid_579967 = query.getOrDefault("oauth_token")
+  valid_579967 = validateParameter(valid_579967, JString, required = false,
                                  default = nil)
-  if valid_578942 != nil:
-    section.add "oauth_token", valid_578942
-  var valid_578943 = query.getOrDefault("userProject")
-  valid_578943 = validateParameter(valid_578943, JString, required = false,
+  if valid_579967 != nil:
+    section.add "oauth_token", valid_579967
+  var valid_579968 = query.getOrDefault("userProject")
+  valid_579968 = validateParameter(valid_579968, JString, required = false,
                                  default = nil)
-  if valid_578943 != nil:
-    section.add "userProject", valid_578943
-  var valid_578944 = query.getOrDefault("alt")
-  valid_578944 = validateParameter(valid_578944, JString, required = false,
+  if valid_579968 != nil:
+    section.add "userProject", valid_579968
+  var valid_579969 = query.getOrDefault("alt")
+  valid_579969 = validateParameter(valid_579969, JString, required = false,
                                  default = newJString("json"))
-  if valid_578944 != nil:
-    section.add "alt", valid_578944
-  var valid_578945 = query.getOrDefault("userIp")
-  valid_578945 = validateParameter(valid_578945, JString, required = false,
+  if valid_579969 != nil:
+    section.add "alt", valid_579969
+  var valid_579970 = query.getOrDefault("userIp")
+  valid_579970 = validateParameter(valid_579970, JString, required = false,
                                  default = nil)
-  if valid_578945 != nil:
-    section.add "userIp", valid_578945
-  var valid_578946 = query.getOrDefault("quotaUser")
-  valid_578946 = validateParameter(valid_578946, JString, required = false,
+  if valid_579970 != nil:
+    section.add "userIp", valid_579970
+  var valid_579971 = query.getOrDefault("quotaUser")
+  valid_579971 = validateParameter(valid_579971, JString, required = false,
                                  default = nil)
-  if valid_578946 != nil:
-    section.add "quotaUser", valid_578946
-  var valid_578947 = query.getOrDefault("ifMetagenerationMatch")
-  valid_578947 = validateParameter(valid_578947, JString, required = false,
+  if valid_579971 != nil:
+    section.add "quotaUser", valid_579971
+  var valid_579972 = query.getOrDefault("ifMetagenerationMatch")
+  valid_579972 = validateParameter(valid_579972, JString, required = false,
                                  default = nil)
-  if valid_578947 != nil:
-    section.add "ifMetagenerationMatch", valid_578947
-  var valid_578948 = query.getOrDefault("provisionalUserProject")
-  valid_578948 = validateParameter(valid_578948, JString, required = false,
+  if valid_579972 != nil:
+    section.add "ifMetagenerationMatch", valid_579972
+  var valid_579973 = query.getOrDefault("provisionalUserProject")
+  valid_579973 = validateParameter(valid_579973, JString, required = false,
                                  default = nil)
-  if valid_578948 != nil:
-    section.add "provisionalUserProject", valid_578948
-  var valid_578949 = query.getOrDefault("ifMetagenerationNotMatch")
-  valid_578949 = validateParameter(valid_578949, JString, required = false,
+  if valid_579973 != nil:
+    section.add "provisionalUserProject", valid_579973
+  var valid_579974 = query.getOrDefault("ifMetagenerationNotMatch")
+  valid_579974 = validateParameter(valid_579974, JString, required = false,
                                  default = nil)
-  if valid_578949 != nil:
-    section.add "ifMetagenerationNotMatch", valid_578949
-  var valid_578950 = query.getOrDefault("projection")
-  valid_578950 = validateParameter(valid_578950, JString, required = false,
+  if valid_579974 != nil:
+    section.add "ifMetagenerationNotMatch", valid_579974
+  var valid_579975 = query.getOrDefault("projection")
+  valid_579975 = validateParameter(valid_579975, JString, required = false,
                                  default = newJString("full"))
-  if valid_578950 != nil:
-    section.add "projection", valid_578950
-  var valid_578951 = query.getOrDefault("fields")
-  valid_578951 = validateParameter(valid_578951, JString, required = false,
+  if valid_579975 != nil:
+    section.add "projection", valid_579975
+  var valid_579976 = query.getOrDefault("fields")
+  valid_579976 = validateParameter(valid_579976, JString, required = false,
                                  default = nil)
-  if valid_578951 != nil:
-    section.add "fields", valid_578951
+  if valid_579976 != nil:
+    section.add "fields", valid_579976
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -863,20 +883,20 @@ proc validate_StorageBucketsGet_578923(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578952: Call_StorageBucketsGet_578922; path: JsonNode;
+proc call*(call_579977: Call_StorageBucketsGet_579947; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns metadata for the specified bucket.
   ## 
-  let valid = call_578952.validator(path, query, header, formData, body)
-  let scheme = call_578952.pickScheme
+  let valid = call_579977.validator(path, query, header, formData, body)
+  let scheme = call_579977.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578952.url(scheme.get, call_578952.host, call_578952.base,
-                         call_578952.route, valid.getOrDefault("path"),
+  let url = call_579977.url(scheme.get, call_579977.host, call_579977.base,
+                         call_579977.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578952, url, valid)
+  result = hook(call_579977, url, valid)
 
-proc call*(call_578953: Call_StorageBucketsGet_578922; bucket: string;
+proc call*(call_579978: Call_StorageBucketsGet_579947; bucket: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           userProject: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; ifMetagenerationMatch: string = "";
@@ -911,31 +931,31 @@ proc call*(call_578953: Call_StorageBucketsGet_578922; bucket: string;
   ##             : Set of properties to return. Defaults to noAcl.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_578954 = newJObject()
-  var query_578955 = newJObject()
-  add(query_578955, "key", newJString(key))
-  add(query_578955, "prettyPrint", newJBool(prettyPrint))
-  add(query_578955, "oauth_token", newJString(oauthToken))
-  add(query_578955, "userProject", newJString(userProject))
-  add(query_578955, "alt", newJString(alt))
-  add(query_578955, "userIp", newJString(userIp))
-  add(query_578955, "quotaUser", newJString(quotaUser))
-  add(query_578955, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
-  add(path_578954, "bucket", newJString(bucket))
-  add(query_578955, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_578955, "ifMetagenerationNotMatch",
+  var path_579979 = newJObject()
+  var query_579980 = newJObject()
+  add(query_579980, "key", newJString(key))
+  add(query_579980, "prettyPrint", newJBool(prettyPrint))
+  add(query_579980, "oauth_token", newJString(oauthToken))
+  add(query_579980, "userProject", newJString(userProject))
+  add(query_579980, "alt", newJString(alt))
+  add(query_579980, "userIp", newJString(userIp))
+  add(query_579980, "quotaUser", newJString(quotaUser))
+  add(query_579980, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
+  add(path_579979, "bucket", newJString(bucket))
+  add(query_579980, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_579980, "ifMetagenerationNotMatch",
       newJString(ifMetagenerationNotMatch))
-  add(query_578955, "projection", newJString(projection))
-  add(query_578955, "fields", newJString(fields))
-  result = call_578953.call(path_578954, query_578955, nil, nil, nil)
+  add(query_579980, "projection", newJString(projection))
+  add(query_579980, "fields", newJString(fields))
+  result = call_579978.call(path_579979, query_579980, nil, nil, nil)
 
-var storageBucketsGet* = Call_StorageBucketsGet_578922(name: "storageBucketsGet",
+var storageBucketsGet* = Call_StorageBucketsGet_579947(name: "storageBucketsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com", route: "/b/{bucket}",
-    validator: validate_StorageBucketsGet_578923, base: "/storage/v1",
-    url: url_StorageBucketsGet_578924, schemes: {Scheme.Https})
+    validator: validate_StorageBucketsGet_579948, base: "/storage/v1",
+    url: url_StorageBucketsGet_579949, schemes: {Scheme.Https})
 type
-  Call_StorageBucketsPatch_578999 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketsPatch_579001(protocol: Scheme; host: string; base: string;
+  Call_StorageBucketsPatch_580024 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketsPatch_580026(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -948,9 +968,14 @@ proc url_StorageBucketsPatch_579001(protocol: Scheme; host: string; base: string
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageBucketsPatch_579000(path: JsonNode; query: JsonNode;
+proc validate_StorageBucketsPatch_580025(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Patches a bucket. Changes to the bucket will be readable immediately after writing, but configuration changes may take time to propagate.
@@ -962,11 +987,11 @@ proc validate_StorageBucketsPatch_579000(path: JsonNode; query: JsonNode;
   ##         : Name of a bucket.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579002 = path.getOrDefault("bucket")
-  valid_579002 = validateParameter(valid_579002, JString, required = true,
+  var valid_580027 = path.getOrDefault("bucket")
+  valid_580027 = validateParameter(valid_580027, JString, required = true,
                                  default = nil)
-  if valid_579002 != nil:
-    section.add "bucket", valid_579002
+  if valid_580027 != nil:
+    section.add "bucket", valid_580027
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -998,76 +1023,76 @@ proc validate_StorageBucketsPatch_579000(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579003 = query.getOrDefault("key")
-  valid_579003 = validateParameter(valid_579003, JString, required = false,
+  var valid_580028 = query.getOrDefault("key")
+  valid_580028 = validateParameter(valid_580028, JString, required = false,
                                  default = nil)
-  if valid_579003 != nil:
-    section.add "key", valid_579003
-  var valid_579004 = query.getOrDefault("prettyPrint")
-  valid_579004 = validateParameter(valid_579004, JBool, required = false,
+  if valid_580028 != nil:
+    section.add "key", valid_580028
+  var valid_580029 = query.getOrDefault("prettyPrint")
+  valid_580029 = validateParameter(valid_580029, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579004 != nil:
-    section.add "prettyPrint", valid_579004
-  var valid_579005 = query.getOrDefault("oauth_token")
-  valid_579005 = validateParameter(valid_579005, JString, required = false,
+  if valid_580029 != nil:
+    section.add "prettyPrint", valid_580029
+  var valid_580030 = query.getOrDefault("oauth_token")
+  valid_580030 = validateParameter(valid_580030, JString, required = false,
                                  default = nil)
-  if valid_579005 != nil:
-    section.add "oauth_token", valid_579005
-  var valid_579006 = query.getOrDefault("userProject")
-  valid_579006 = validateParameter(valid_579006, JString, required = false,
+  if valid_580030 != nil:
+    section.add "oauth_token", valid_580030
+  var valid_580031 = query.getOrDefault("userProject")
+  valid_580031 = validateParameter(valid_580031, JString, required = false,
                                  default = nil)
-  if valid_579006 != nil:
-    section.add "userProject", valid_579006
-  var valid_579007 = query.getOrDefault("predefinedAcl")
-  valid_579007 = validateParameter(valid_579007, JString, required = false,
+  if valid_580031 != nil:
+    section.add "userProject", valid_580031
+  var valid_580032 = query.getOrDefault("predefinedAcl")
+  valid_580032 = validateParameter(valid_580032, JString, required = false,
                                  default = newJString("authenticatedRead"))
-  if valid_579007 != nil:
-    section.add "predefinedAcl", valid_579007
-  var valid_579008 = query.getOrDefault("alt")
-  valid_579008 = validateParameter(valid_579008, JString, required = false,
+  if valid_580032 != nil:
+    section.add "predefinedAcl", valid_580032
+  var valid_580033 = query.getOrDefault("alt")
+  valid_580033 = validateParameter(valid_580033, JString, required = false,
                                  default = newJString("json"))
-  if valid_579008 != nil:
-    section.add "alt", valid_579008
-  var valid_579009 = query.getOrDefault("userIp")
-  valid_579009 = validateParameter(valid_579009, JString, required = false,
+  if valid_580033 != nil:
+    section.add "alt", valid_580033
+  var valid_580034 = query.getOrDefault("userIp")
+  valid_580034 = validateParameter(valid_580034, JString, required = false,
                                  default = nil)
-  if valid_579009 != nil:
-    section.add "userIp", valid_579009
-  var valid_579010 = query.getOrDefault("quotaUser")
-  valid_579010 = validateParameter(valid_579010, JString, required = false,
+  if valid_580034 != nil:
+    section.add "userIp", valid_580034
+  var valid_580035 = query.getOrDefault("quotaUser")
+  valid_580035 = validateParameter(valid_580035, JString, required = false,
                                  default = nil)
-  if valid_579010 != nil:
-    section.add "quotaUser", valid_579010
-  var valid_579011 = query.getOrDefault("ifMetagenerationMatch")
-  valid_579011 = validateParameter(valid_579011, JString, required = false,
+  if valid_580035 != nil:
+    section.add "quotaUser", valid_580035
+  var valid_580036 = query.getOrDefault("ifMetagenerationMatch")
+  valid_580036 = validateParameter(valid_580036, JString, required = false,
                                  default = nil)
-  if valid_579011 != nil:
-    section.add "ifMetagenerationMatch", valid_579011
-  var valid_579012 = query.getOrDefault("predefinedDefaultObjectAcl")
-  valid_579012 = validateParameter(valid_579012, JString, required = false,
+  if valid_580036 != nil:
+    section.add "ifMetagenerationMatch", valid_580036
+  var valid_580037 = query.getOrDefault("predefinedDefaultObjectAcl")
+  valid_580037 = validateParameter(valid_580037, JString, required = false,
                                  default = newJString("authenticatedRead"))
-  if valid_579012 != nil:
-    section.add "predefinedDefaultObjectAcl", valid_579012
-  var valid_579013 = query.getOrDefault("provisionalUserProject")
-  valid_579013 = validateParameter(valid_579013, JString, required = false,
+  if valid_580037 != nil:
+    section.add "predefinedDefaultObjectAcl", valid_580037
+  var valid_580038 = query.getOrDefault("provisionalUserProject")
+  valid_580038 = validateParameter(valid_580038, JString, required = false,
                                  default = nil)
-  if valid_579013 != nil:
-    section.add "provisionalUserProject", valid_579013
-  var valid_579014 = query.getOrDefault("ifMetagenerationNotMatch")
-  valid_579014 = validateParameter(valid_579014, JString, required = false,
+  if valid_580038 != nil:
+    section.add "provisionalUserProject", valid_580038
+  var valid_580039 = query.getOrDefault("ifMetagenerationNotMatch")
+  valid_580039 = validateParameter(valid_580039, JString, required = false,
                                  default = nil)
-  if valid_579014 != nil:
-    section.add "ifMetagenerationNotMatch", valid_579014
-  var valid_579015 = query.getOrDefault("projection")
-  valid_579015 = validateParameter(valid_579015, JString, required = false,
+  if valid_580039 != nil:
+    section.add "ifMetagenerationNotMatch", valid_580039
+  var valid_580040 = query.getOrDefault("projection")
+  valid_580040 = validateParameter(valid_580040, JString, required = false,
                                  default = newJString("full"))
-  if valid_579015 != nil:
-    section.add "projection", valid_579015
-  var valid_579016 = query.getOrDefault("fields")
-  valid_579016 = validateParameter(valid_579016, JString, required = false,
+  if valid_580040 != nil:
+    section.add "projection", valid_580040
+  var valid_580041 = query.getOrDefault("fields")
+  valid_580041 = validateParameter(valid_580041, JString, required = false,
                                  default = nil)
-  if valid_579016 != nil:
-    section.add "fields", valid_579016
+  if valid_580041 != nil:
+    section.add "fields", valid_580041
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1079,20 +1104,20 @@ proc validate_StorageBucketsPatch_579000(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579018: Call_StorageBucketsPatch_578999; path: JsonNode;
+proc call*(call_580043: Call_StorageBucketsPatch_580024; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Patches a bucket. Changes to the bucket will be readable immediately after writing, but configuration changes may take time to propagate.
   ## 
-  let valid = call_579018.validator(path, query, header, formData, body)
-  let scheme = call_579018.pickScheme
+  let valid = call_580043.validator(path, query, header, formData, body)
+  let scheme = call_580043.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579018.url(scheme.get, call_579018.host, call_579018.base,
-                         call_579018.route, valid.getOrDefault("path"),
+  let url = call_580043.url(scheme.get, call_580043.host, call_580043.base,
+                         call_580043.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579018, url, valid)
+  result = hook(call_580043, url, valid)
 
-proc call*(call_579019: Call_StorageBucketsPatch_578999; bucket: string;
+proc call*(call_580044: Call_StorageBucketsPatch_580024; bucket: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           userProject: string = ""; predefinedAcl: string = "authenticatedRead";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -1134,38 +1159,38 @@ proc call*(call_579019: Call_StorageBucketsPatch_578999; bucket: string;
   ##             : Set of properties to return. Defaults to full.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579020 = newJObject()
-  var query_579021 = newJObject()
-  var body_579022 = newJObject()
-  add(query_579021, "key", newJString(key))
-  add(query_579021, "prettyPrint", newJBool(prettyPrint))
-  add(query_579021, "oauth_token", newJString(oauthToken))
-  add(query_579021, "userProject", newJString(userProject))
-  add(query_579021, "predefinedAcl", newJString(predefinedAcl))
-  add(query_579021, "alt", newJString(alt))
-  add(query_579021, "userIp", newJString(userIp))
-  add(query_579021, "quotaUser", newJString(quotaUser))
-  add(query_579021, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
-  add(path_579020, "bucket", newJString(bucket))
+  var path_580045 = newJObject()
+  var query_580046 = newJObject()
+  var body_580047 = newJObject()
+  add(query_580046, "key", newJString(key))
+  add(query_580046, "prettyPrint", newJBool(prettyPrint))
+  add(query_580046, "oauth_token", newJString(oauthToken))
+  add(query_580046, "userProject", newJString(userProject))
+  add(query_580046, "predefinedAcl", newJString(predefinedAcl))
+  add(query_580046, "alt", newJString(alt))
+  add(query_580046, "userIp", newJString(userIp))
+  add(query_580046, "quotaUser", newJString(quotaUser))
+  add(query_580046, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
+  add(path_580045, "bucket", newJString(bucket))
   if body != nil:
-    body_579022 = body
-  add(query_579021, "predefinedDefaultObjectAcl",
+    body_580047 = body
+  add(query_580046, "predefinedDefaultObjectAcl",
       newJString(predefinedDefaultObjectAcl))
-  add(query_579021, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579021, "ifMetagenerationNotMatch",
+  add(query_580046, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580046, "ifMetagenerationNotMatch",
       newJString(ifMetagenerationNotMatch))
-  add(query_579021, "projection", newJString(projection))
-  add(query_579021, "fields", newJString(fields))
-  result = call_579019.call(path_579020, query_579021, nil, nil, body_579022)
+  add(query_580046, "projection", newJString(projection))
+  add(query_580046, "fields", newJString(fields))
+  result = call_580044.call(path_580045, query_580046, nil, nil, body_580047)
 
-var storageBucketsPatch* = Call_StorageBucketsPatch_578999(
+var storageBucketsPatch* = Call_StorageBucketsPatch_580024(
     name: "storageBucketsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/b/{bucket}",
-    validator: validate_StorageBucketsPatch_579000, base: "/storage/v1",
-    url: url_StorageBucketsPatch_579001, schemes: {Scheme.Https})
+    validator: validate_StorageBucketsPatch_580025, base: "/storage/v1",
+    url: url_StorageBucketsPatch_580026, schemes: {Scheme.Https})
 type
-  Call_StorageBucketsDelete_578980 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketsDelete_578982(protocol: Scheme; host: string; base: string;
+  Call_StorageBucketsDelete_580005 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketsDelete_580007(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1178,9 +1203,14 @@ proc url_StorageBucketsDelete_578982(protocol: Scheme; host: string; base: strin
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageBucketsDelete_578981(path: JsonNode; query: JsonNode;
+proc validate_StorageBucketsDelete_580006(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Permanently deletes an empty bucket.
   ## 
@@ -1191,11 +1221,11 @@ proc validate_StorageBucketsDelete_578981(path: JsonNode; query: JsonNode;
   ##         : Name of a bucket.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_578983 = path.getOrDefault("bucket")
-  valid_578983 = validateParameter(valid_578983, JString, required = true,
+  var valid_580008 = path.getOrDefault("bucket")
+  valid_580008 = validateParameter(valid_580008, JString, required = true,
                                  default = nil)
-  if valid_578983 != nil:
-    section.add "bucket", valid_578983
+  if valid_580008 != nil:
+    section.add "bucket", valid_580008
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1221,61 +1251,61 @@ proc validate_StorageBucketsDelete_578981(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_578984 = query.getOrDefault("key")
-  valid_578984 = validateParameter(valid_578984, JString, required = false,
+  var valid_580009 = query.getOrDefault("key")
+  valid_580009 = validateParameter(valid_580009, JString, required = false,
                                  default = nil)
-  if valid_578984 != nil:
-    section.add "key", valid_578984
-  var valid_578985 = query.getOrDefault("prettyPrint")
-  valid_578985 = validateParameter(valid_578985, JBool, required = false,
+  if valid_580009 != nil:
+    section.add "key", valid_580009
+  var valid_580010 = query.getOrDefault("prettyPrint")
+  valid_580010 = validateParameter(valid_580010, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578985 != nil:
-    section.add "prettyPrint", valid_578985
-  var valid_578986 = query.getOrDefault("oauth_token")
-  valid_578986 = validateParameter(valid_578986, JString, required = false,
+  if valid_580010 != nil:
+    section.add "prettyPrint", valid_580010
+  var valid_580011 = query.getOrDefault("oauth_token")
+  valid_580011 = validateParameter(valid_580011, JString, required = false,
                                  default = nil)
-  if valid_578986 != nil:
-    section.add "oauth_token", valid_578986
-  var valid_578987 = query.getOrDefault("userProject")
-  valid_578987 = validateParameter(valid_578987, JString, required = false,
+  if valid_580011 != nil:
+    section.add "oauth_token", valid_580011
+  var valid_580012 = query.getOrDefault("userProject")
+  valid_580012 = validateParameter(valid_580012, JString, required = false,
                                  default = nil)
-  if valid_578987 != nil:
-    section.add "userProject", valid_578987
-  var valid_578988 = query.getOrDefault("alt")
-  valid_578988 = validateParameter(valid_578988, JString, required = false,
+  if valid_580012 != nil:
+    section.add "userProject", valid_580012
+  var valid_580013 = query.getOrDefault("alt")
+  valid_580013 = validateParameter(valid_580013, JString, required = false,
                                  default = newJString("json"))
-  if valid_578988 != nil:
-    section.add "alt", valid_578988
-  var valid_578989 = query.getOrDefault("userIp")
-  valid_578989 = validateParameter(valid_578989, JString, required = false,
+  if valid_580013 != nil:
+    section.add "alt", valid_580013
+  var valid_580014 = query.getOrDefault("userIp")
+  valid_580014 = validateParameter(valid_580014, JString, required = false,
                                  default = nil)
-  if valid_578989 != nil:
-    section.add "userIp", valid_578989
-  var valid_578990 = query.getOrDefault("quotaUser")
-  valid_578990 = validateParameter(valid_578990, JString, required = false,
+  if valid_580014 != nil:
+    section.add "userIp", valid_580014
+  var valid_580015 = query.getOrDefault("quotaUser")
+  valid_580015 = validateParameter(valid_580015, JString, required = false,
                                  default = nil)
-  if valid_578990 != nil:
-    section.add "quotaUser", valid_578990
-  var valid_578991 = query.getOrDefault("ifMetagenerationMatch")
-  valid_578991 = validateParameter(valid_578991, JString, required = false,
+  if valid_580015 != nil:
+    section.add "quotaUser", valid_580015
+  var valid_580016 = query.getOrDefault("ifMetagenerationMatch")
+  valid_580016 = validateParameter(valid_580016, JString, required = false,
                                  default = nil)
-  if valid_578991 != nil:
-    section.add "ifMetagenerationMatch", valid_578991
-  var valid_578992 = query.getOrDefault("provisionalUserProject")
-  valid_578992 = validateParameter(valid_578992, JString, required = false,
+  if valid_580016 != nil:
+    section.add "ifMetagenerationMatch", valid_580016
+  var valid_580017 = query.getOrDefault("provisionalUserProject")
+  valid_580017 = validateParameter(valid_580017, JString, required = false,
                                  default = nil)
-  if valid_578992 != nil:
-    section.add "provisionalUserProject", valid_578992
-  var valid_578993 = query.getOrDefault("ifMetagenerationNotMatch")
-  valid_578993 = validateParameter(valid_578993, JString, required = false,
+  if valid_580017 != nil:
+    section.add "provisionalUserProject", valid_580017
+  var valid_580018 = query.getOrDefault("ifMetagenerationNotMatch")
+  valid_580018 = validateParameter(valid_580018, JString, required = false,
                                  default = nil)
-  if valid_578993 != nil:
-    section.add "ifMetagenerationNotMatch", valid_578993
-  var valid_578994 = query.getOrDefault("fields")
-  valid_578994 = validateParameter(valid_578994, JString, required = false,
+  if valid_580018 != nil:
+    section.add "ifMetagenerationNotMatch", valid_580018
+  var valid_580019 = query.getOrDefault("fields")
+  valid_580019 = validateParameter(valid_580019, JString, required = false,
                                  default = nil)
-  if valid_578994 != nil:
-    section.add "fields", valid_578994
+  if valid_580019 != nil:
+    section.add "fields", valid_580019
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1284,20 +1314,20 @@ proc validate_StorageBucketsDelete_578981(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_578995: Call_StorageBucketsDelete_578980; path: JsonNode;
+proc call*(call_580020: Call_StorageBucketsDelete_580005; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Permanently deletes an empty bucket.
   ## 
-  let valid = call_578995.validator(path, query, header, formData, body)
-  let scheme = call_578995.pickScheme
+  let valid = call_580020.validator(path, query, header, formData, body)
+  let scheme = call_580020.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578995.url(scheme.get, call_578995.host, call_578995.base,
-                         call_578995.route, valid.getOrDefault("path"),
+  let url = call_580020.url(scheme.get, call_580020.host, call_580020.base,
+                         call_580020.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578995, url, valid)
+  result = hook(call_580020, url, valid)
 
-proc call*(call_578996: Call_StorageBucketsDelete_578980; bucket: string;
+proc call*(call_580021: Call_StorageBucketsDelete_580005; bucket: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           userProject: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; ifMetagenerationMatch: string = "";
@@ -1329,31 +1359,31 @@ proc call*(call_578996: Call_StorageBucketsDelete_578980; bucket: string;
   ##                           : If set, only deletes the bucket if its metageneration does not match this value.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_578997 = newJObject()
-  var query_578998 = newJObject()
-  add(query_578998, "key", newJString(key))
-  add(query_578998, "prettyPrint", newJBool(prettyPrint))
-  add(query_578998, "oauth_token", newJString(oauthToken))
-  add(query_578998, "userProject", newJString(userProject))
-  add(query_578998, "alt", newJString(alt))
-  add(query_578998, "userIp", newJString(userIp))
-  add(query_578998, "quotaUser", newJString(quotaUser))
-  add(query_578998, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
-  add(path_578997, "bucket", newJString(bucket))
-  add(query_578998, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_578998, "ifMetagenerationNotMatch",
+  var path_580022 = newJObject()
+  var query_580023 = newJObject()
+  add(query_580023, "key", newJString(key))
+  add(query_580023, "prettyPrint", newJBool(prettyPrint))
+  add(query_580023, "oauth_token", newJString(oauthToken))
+  add(query_580023, "userProject", newJString(userProject))
+  add(query_580023, "alt", newJString(alt))
+  add(query_580023, "userIp", newJString(userIp))
+  add(query_580023, "quotaUser", newJString(quotaUser))
+  add(query_580023, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
+  add(path_580022, "bucket", newJString(bucket))
+  add(query_580023, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580023, "ifMetagenerationNotMatch",
       newJString(ifMetagenerationNotMatch))
-  add(query_578998, "fields", newJString(fields))
-  result = call_578996.call(path_578997, query_578998, nil, nil, nil)
+  add(query_580023, "fields", newJString(fields))
+  result = call_580021.call(path_580022, query_580023, nil, nil, nil)
 
-var storageBucketsDelete* = Call_StorageBucketsDelete_578980(
+var storageBucketsDelete* = Call_StorageBucketsDelete_580005(
     name: "storageBucketsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/b/{bucket}",
-    validator: validate_StorageBucketsDelete_578981, base: "/storage/v1",
-    url: url_StorageBucketsDelete_578982, schemes: {Scheme.Https})
+    validator: validate_StorageBucketsDelete_580006, base: "/storage/v1",
+    url: url_StorageBucketsDelete_580007, schemes: {Scheme.Https})
 type
-  Call_StorageBucketAccessControlsInsert_579040 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketAccessControlsInsert_579042(protocol: Scheme; host: string;
+  Call_StorageBucketAccessControlsInsert_580065 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketAccessControlsInsert_580067(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1367,9 +1397,14 @@ proc url_StorageBucketAccessControlsInsert_579042(protocol: Scheme; host: string
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageBucketAccessControlsInsert_579041(path: JsonNode;
+proc validate_StorageBucketAccessControlsInsert_580066(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new ACL entry on the specified bucket.
   ## 
@@ -1380,11 +1415,11 @@ proc validate_StorageBucketAccessControlsInsert_579041(path: JsonNode;
   ##         : Name of a bucket.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579043 = path.getOrDefault("bucket")
-  valid_579043 = validateParameter(valid_579043, JString, required = true,
+  var valid_580068 = path.getOrDefault("bucket")
+  valid_580068 = validateParameter(valid_580068, JString, required = true,
                                  default = nil)
-  if valid_579043 != nil:
-    section.add "bucket", valid_579043
+  if valid_580068 != nil:
+    section.add "bucket", valid_580068
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1406,51 +1441,51 @@ proc validate_StorageBucketAccessControlsInsert_579041(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579044 = query.getOrDefault("key")
-  valid_579044 = validateParameter(valid_579044, JString, required = false,
+  var valid_580069 = query.getOrDefault("key")
+  valid_580069 = validateParameter(valid_580069, JString, required = false,
                                  default = nil)
-  if valid_579044 != nil:
-    section.add "key", valid_579044
-  var valid_579045 = query.getOrDefault("prettyPrint")
-  valid_579045 = validateParameter(valid_579045, JBool, required = false,
+  if valid_580069 != nil:
+    section.add "key", valid_580069
+  var valid_580070 = query.getOrDefault("prettyPrint")
+  valid_580070 = validateParameter(valid_580070, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579045 != nil:
-    section.add "prettyPrint", valid_579045
-  var valid_579046 = query.getOrDefault("oauth_token")
-  valid_579046 = validateParameter(valid_579046, JString, required = false,
+  if valid_580070 != nil:
+    section.add "prettyPrint", valid_580070
+  var valid_580071 = query.getOrDefault("oauth_token")
+  valid_580071 = validateParameter(valid_580071, JString, required = false,
                                  default = nil)
-  if valid_579046 != nil:
-    section.add "oauth_token", valid_579046
-  var valid_579047 = query.getOrDefault("userProject")
-  valid_579047 = validateParameter(valid_579047, JString, required = false,
+  if valid_580071 != nil:
+    section.add "oauth_token", valid_580071
+  var valid_580072 = query.getOrDefault("userProject")
+  valid_580072 = validateParameter(valid_580072, JString, required = false,
                                  default = nil)
-  if valid_579047 != nil:
-    section.add "userProject", valid_579047
-  var valid_579048 = query.getOrDefault("alt")
-  valid_579048 = validateParameter(valid_579048, JString, required = false,
+  if valid_580072 != nil:
+    section.add "userProject", valid_580072
+  var valid_580073 = query.getOrDefault("alt")
+  valid_580073 = validateParameter(valid_580073, JString, required = false,
                                  default = newJString("json"))
-  if valid_579048 != nil:
-    section.add "alt", valid_579048
-  var valid_579049 = query.getOrDefault("userIp")
-  valid_579049 = validateParameter(valid_579049, JString, required = false,
+  if valid_580073 != nil:
+    section.add "alt", valid_580073
+  var valid_580074 = query.getOrDefault("userIp")
+  valid_580074 = validateParameter(valid_580074, JString, required = false,
                                  default = nil)
-  if valid_579049 != nil:
-    section.add "userIp", valid_579049
-  var valid_579050 = query.getOrDefault("quotaUser")
-  valid_579050 = validateParameter(valid_579050, JString, required = false,
+  if valid_580074 != nil:
+    section.add "userIp", valid_580074
+  var valid_580075 = query.getOrDefault("quotaUser")
+  valid_580075 = validateParameter(valid_580075, JString, required = false,
                                  default = nil)
-  if valid_579050 != nil:
-    section.add "quotaUser", valid_579050
-  var valid_579051 = query.getOrDefault("provisionalUserProject")
-  valid_579051 = validateParameter(valid_579051, JString, required = false,
+  if valid_580075 != nil:
+    section.add "quotaUser", valid_580075
+  var valid_580076 = query.getOrDefault("provisionalUserProject")
+  valid_580076 = validateParameter(valid_580076, JString, required = false,
                                  default = nil)
-  if valid_579051 != nil:
-    section.add "provisionalUserProject", valid_579051
-  var valid_579052 = query.getOrDefault("fields")
-  valid_579052 = validateParameter(valid_579052, JString, required = false,
+  if valid_580076 != nil:
+    section.add "provisionalUserProject", valid_580076
+  var valid_580077 = query.getOrDefault("fields")
+  valid_580077 = validateParameter(valid_580077, JString, required = false,
                                  default = nil)
-  if valid_579052 != nil:
-    section.add "fields", valid_579052
+  if valid_580077 != nil:
+    section.add "fields", valid_580077
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1462,21 +1497,21 @@ proc validate_StorageBucketAccessControlsInsert_579041(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579054: Call_StorageBucketAccessControlsInsert_579040;
+proc call*(call_580079: Call_StorageBucketAccessControlsInsert_580065;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a new ACL entry on the specified bucket.
   ## 
-  let valid = call_579054.validator(path, query, header, formData, body)
-  let scheme = call_579054.pickScheme
+  let valid = call_580079.validator(path, query, header, formData, body)
+  let scheme = call_580079.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579054.url(scheme.get, call_579054.host, call_579054.base,
-                         call_579054.route, valid.getOrDefault("path"),
+  let url = call_580079.url(scheme.get, call_580079.host, call_580079.base,
+                         call_580079.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579054, url, valid)
+  result = hook(call_580079, url, valid)
 
-proc call*(call_579055: Call_StorageBucketAccessControlsInsert_579040;
+proc call*(call_580080: Call_StorageBucketAccessControlsInsert_580065;
           bucket: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -1504,32 +1539,32 @@ proc call*(call_579055: Call_StorageBucketAccessControlsInsert_579040;
   ##                         : The project to be billed for this request if the target bucket is requester-pays bucket.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579056 = newJObject()
-  var query_579057 = newJObject()
-  var body_579058 = newJObject()
-  add(query_579057, "key", newJString(key))
-  add(query_579057, "prettyPrint", newJBool(prettyPrint))
-  add(query_579057, "oauth_token", newJString(oauthToken))
-  add(query_579057, "userProject", newJString(userProject))
-  add(query_579057, "alt", newJString(alt))
-  add(query_579057, "userIp", newJString(userIp))
-  add(query_579057, "quotaUser", newJString(quotaUser))
-  add(path_579056, "bucket", newJString(bucket))
+  var path_580081 = newJObject()
+  var query_580082 = newJObject()
+  var body_580083 = newJObject()
+  add(query_580082, "key", newJString(key))
+  add(query_580082, "prettyPrint", newJBool(prettyPrint))
+  add(query_580082, "oauth_token", newJString(oauthToken))
+  add(query_580082, "userProject", newJString(userProject))
+  add(query_580082, "alt", newJString(alt))
+  add(query_580082, "userIp", newJString(userIp))
+  add(query_580082, "quotaUser", newJString(quotaUser))
+  add(path_580081, "bucket", newJString(bucket))
   if body != nil:
-    body_579058 = body
-  add(query_579057, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579057, "fields", newJString(fields))
-  result = call_579055.call(path_579056, query_579057, nil, nil, body_579058)
+    body_580083 = body
+  add(query_580082, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580082, "fields", newJString(fields))
+  result = call_580080.call(path_580081, query_580082, nil, nil, body_580083)
 
-var storageBucketAccessControlsInsert* = Call_StorageBucketAccessControlsInsert_579040(
+var storageBucketAccessControlsInsert* = Call_StorageBucketAccessControlsInsert_580065(
     name: "storageBucketAccessControlsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/b/{bucket}/acl",
-    validator: validate_StorageBucketAccessControlsInsert_579041,
-    base: "/storage/v1", url: url_StorageBucketAccessControlsInsert_579042,
+    validator: validate_StorageBucketAccessControlsInsert_580066,
+    base: "/storage/v1", url: url_StorageBucketAccessControlsInsert_580067,
     schemes: {Scheme.Https})
 type
-  Call_StorageBucketAccessControlsList_579023 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketAccessControlsList_579025(protocol: Scheme; host: string;
+  Call_StorageBucketAccessControlsList_580048 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketAccessControlsList_580050(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1543,9 +1578,14 @@ proc url_StorageBucketAccessControlsList_579025(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageBucketAccessControlsList_579024(path: JsonNode;
+proc validate_StorageBucketAccessControlsList_580049(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves ACL entries on the specified bucket.
   ## 
@@ -1556,11 +1596,11 @@ proc validate_StorageBucketAccessControlsList_579024(path: JsonNode;
   ##         : Name of a bucket.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579026 = path.getOrDefault("bucket")
-  valid_579026 = validateParameter(valid_579026, JString, required = true,
+  var valid_580051 = path.getOrDefault("bucket")
+  valid_580051 = validateParameter(valid_580051, JString, required = true,
                                  default = nil)
-  if valid_579026 != nil:
-    section.add "bucket", valid_579026
+  if valid_580051 != nil:
+    section.add "bucket", valid_580051
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1582,51 +1622,51 @@ proc validate_StorageBucketAccessControlsList_579024(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579027 = query.getOrDefault("key")
-  valid_579027 = validateParameter(valid_579027, JString, required = false,
+  var valid_580052 = query.getOrDefault("key")
+  valid_580052 = validateParameter(valid_580052, JString, required = false,
                                  default = nil)
-  if valid_579027 != nil:
-    section.add "key", valid_579027
-  var valid_579028 = query.getOrDefault("prettyPrint")
-  valid_579028 = validateParameter(valid_579028, JBool, required = false,
+  if valid_580052 != nil:
+    section.add "key", valid_580052
+  var valid_580053 = query.getOrDefault("prettyPrint")
+  valid_580053 = validateParameter(valid_580053, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579028 != nil:
-    section.add "prettyPrint", valid_579028
-  var valid_579029 = query.getOrDefault("oauth_token")
-  valid_579029 = validateParameter(valid_579029, JString, required = false,
+  if valid_580053 != nil:
+    section.add "prettyPrint", valid_580053
+  var valid_580054 = query.getOrDefault("oauth_token")
+  valid_580054 = validateParameter(valid_580054, JString, required = false,
                                  default = nil)
-  if valid_579029 != nil:
-    section.add "oauth_token", valid_579029
-  var valid_579030 = query.getOrDefault("userProject")
-  valid_579030 = validateParameter(valid_579030, JString, required = false,
+  if valid_580054 != nil:
+    section.add "oauth_token", valid_580054
+  var valid_580055 = query.getOrDefault("userProject")
+  valid_580055 = validateParameter(valid_580055, JString, required = false,
                                  default = nil)
-  if valid_579030 != nil:
-    section.add "userProject", valid_579030
-  var valid_579031 = query.getOrDefault("alt")
-  valid_579031 = validateParameter(valid_579031, JString, required = false,
+  if valid_580055 != nil:
+    section.add "userProject", valid_580055
+  var valid_580056 = query.getOrDefault("alt")
+  valid_580056 = validateParameter(valid_580056, JString, required = false,
                                  default = newJString("json"))
-  if valid_579031 != nil:
-    section.add "alt", valid_579031
-  var valid_579032 = query.getOrDefault("userIp")
-  valid_579032 = validateParameter(valid_579032, JString, required = false,
+  if valid_580056 != nil:
+    section.add "alt", valid_580056
+  var valid_580057 = query.getOrDefault("userIp")
+  valid_580057 = validateParameter(valid_580057, JString, required = false,
                                  default = nil)
-  if valid_579032 != nil:
-    section.add "userIp", valid_579032
-  var valid_579033 = query.getOrDefault("quotaUser")
-  valid_579033 = validateParameter(valid_579033, JString, required = false,
+  if valid_580057 != nil:
+    section.add "userIp", valid_580057
+  var valid_580058 = query.getOrDefault("quotaUser")
+  valid_580058 = validateParameter(valid_580058, JString, required = false,
                                  default = nil)
-  if valid_579033 != nil:
-    section.add "quotaUser", valid_579033
-  var valid_579034 = query.getOrDefault("provisionalUserProject")
-  valid_579034 = validateParameter(valid_579034, JString, required = false,
+  if valid_580058 != nil:
+    section.add "quotaUser", valid_580058
+  var valid_580059 = query.getOrDefault("provisionalUserProject")
+  valid_580059 = validateParameter(valid_580059, JString, required = false,
                                  default = nil)
-  if valid_579034 != nil:
-    section.add "provisionalUserProject", valid_579034
-  var valid_579035 = query.getOrDefault("fields")
-  valid_579035 = validateParameter(valid_579035, JString, required = false,
+  if valid_580059 != nil:
+    section.add "provisionalUserProject", valid_580059
+  var valid_580060 = query.getOrDefault("fields")
+  valid_580060 = validateParameter(valid_580060, JString, required = false,
                                  default = nil)
-  if valid_579035 != nil:
-    section.add "fields", valid_579035
+  if valid_580060 != nil:
+    section.add "fields", valid_580060
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1635,21 +1675,21 @@ proc validate_StorageBucketAccessControlsList_579024(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579036: Call_StorageBucketAccessControlsList_579023;
+proc call*(call_580061: Call_StorageBucketAccessControlsList_580048;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves ACL entries on the specified bucket.
   ## 
-  let valid = call_579036.validator(path, query, header, formData, body)
-  let scheme = call_579036.pickScheme
+  let valid = call_580061.validator(path, query, header, formData, body)
+  let scheme = call_580061.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579036.url(scheme.get, call_579036.host, call_579036.base,
-                         call_579036.route, valid.getOrDefault("path"),
+  let url = call_580061.url(scheme.get, call_580061.host, call_580061.base,
+                         call_580061.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579036, url, valid)
+  result = hook(call_580061, url, valid)
 
-proc call*(call_579037: Call_StorageBucketAccessControlsList_579023;
+proc call*(call_580062: Call_StorageBucketAccessControlsList_580048;
           bucket: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = "";
@@ -1676,29 +1716,29 @@ proc call*(call_579037: Call_StorageBucketAccessControlsList_579023;
   ##                         : The project to be billed for this request if the target bucket is requester-pays bucket.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579038 = newJObject()
-  var query_579039 = newJObject()
-  add(query_579039, "key", newJString(key))
-  add(query_579039, "prettyPrint", newJBool(prettyPrint))
-  add(query_579039, "oauth_token", newJString(oauthToken))
-  add(query_579039, "userProject", newJString(userProject))
-  add(query_579039, "alt", newJString(alt))
-  add(query_579039, "userIp", newJString(userIp))
-  add(query_579039, "quotaUser", newJString(quotaUser))
-  add(path_579038, "bucket", newJString(bucket))
-  add(query_579039, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579039, "fields", newJString(fields))
-  result = call_579037.call(path_579038, query_579039, nil, nil, nil)
+  var path_580063 = newJObject()
+  var query_580064 = newJObject()
+  add(query_580064, "key", newJString(key))
+  add(query_580064, "prettyPrint", newJBool(prettyPrint))
+  add(query_580064, "oauth_token", newJString(oauthToken))
+  add(query_580064, "userProject", newJString(userProject))
+  add(query_580064, "alt", newJString(alt))
+  add(query_580064, "userIp", newJString(userIp))
+  add(query_580064, "quotaUser", newJString(quotaUser))
+  add(path_580063, "bucket", newJString(bucket))
+  add(query_580064, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580064, "fields", newJString(fields))
+  result = call_580062.call(path_580063, query_580064, nil, nil, nil)
 
-var storageBucketAccessControlsList* = Call_StorageBucketAccessControlsList_579023(
+var storageBucketAccessControlsList* = Call_StorageBucketAccessControlsList_580048(
     name: "storageBucketAccessControlsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/b/{bucket}/acl",
-    validator: validate_StorageBucketAccessControlsList_579024,
-    base: "/storage/v1", url: url_StorageBucketAccessControlsList_579025,
+    validator: validate_StorageBucketAccessControlsList_580049,
+    base: "/storage/v1", url: url_StorageBucketAccessControlsList_580050,
     schemes: {Scheme.Https})
 type
-  Call_StorageBucketAccessControlsUpdate_579077 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketAccessControlsUpdate_579079(protocol: Scheme; host: string;
+  Call_StorageBucketAccessControlsUpdate_580102 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketAccessControlsUpdate_580104(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1714,9 +1754,14 @@ proc url_StorageBucketAccessControlsUpdate_579079(protocol: Scheme; host: string
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageBucketAccessControlsUpdate_579078(path: JsonNode;
+proc validate_StorageBucketAccessControlsUpdate_580103(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an ACL entry on the specified bucket.
   ## 
@@ -1729,16 +1774,16 @@ proc validate_StorageBucketAccessControlsUpdate_579078(path: JsonNode;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579080 = path.getOrDefault("bucket")
-  valid_579080 = validateParameter(valid_579080, JString, required = true,
+  var valid_580105 = path.getOrDefault("bucket")
+  valid_580105 = validateParameter(valid_580105, JString, required = true,
                                  default = nil)
-  if valid_579080 != nil:
-    section.add "bucket", valid_579080
-  var valid_579081 = path.getOrDefault("entity")
-  valid_579081 = validateParameter(valid_579081, JString, required = true,
+  if valid_580105 != nil:
+    section.add "bucket", valid_580105
+  var valid_580106 = path.getOrDefault("entity")
+  valid_580106 = validateParameter(valid_580106, JString, required = true,
                                  default = nil)
-  if valid_579081 != nil:
-    section.add "entity", valid_579081
+  if valid_580106 != nil:
+    section.add "entity", valid_580106
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1760,51 +1805,51 @@ proc validate_StorageBucketAccessControlsUpdate_579078(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579082 = query.getOrDefault("key")
-  valid_579082 = validateParameter(valid_579082, JString, required = false,
+  var valid_580107 = query.getOrDefault("key")
+  valid_580107 = validateParameter(valid_580107, JString, required = false,
                                  default = nil)
-  if valid_579082 != nil:
-    section.add "key", valid_579082
-  var valid_579083 = query.getOrDefault("prettyPrint")
-  valid_579083 = validateParameter(valid_579083, JBool, required = false,
+  if valid_580107 != nil:
+    section.add "key", valid_580107
+  var valid_580108 = query.getOrDefault("prettyPrint")
+  valid_580108 = validateParameter(valid_580108, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579083 != nil:
-    section.add "prettyPrint", valid_579083
-  var valid_579084 = query.getOrDefault("oauth_token")
-  valid_579084 = validateParameter(valid_579084, JString, required = false,
+  if valid_580108 != nil:
+    section.add "prettyPrint", valid_580108
+  var valid_580109 = query.getOrDefault("oauth_token")
+  valid_580109 = validateParameter(valid_580109, JString, required = false,
                                  default = nil)
-  if valid_579084 != nil:
-    section.add "oauth_token", valid_579084
-  var valid_579085 = query.getOrDefault("userProject")
-  valid_579085 = validateParameter(valid_579085, JString, required = false,
+  if valid_580109 != nil:
+    section.add "oauth_token", valid_580109
+  var valid_580110 = query.getOrDefault("userProject")
+  valid_580110 = validateParameter(valid_580110, JString, required = false,
                                  default = nil)
-  if valid_579085 != nil:
-    section.add "userProject", valid_579085
-  var valid_579086 = query.getOrDefault("alt")
-  valid_579086 = validateParameter(valid_579086, JString, required = false,
+  if valid_580110 != nil:
+    section.add "userProject", valid_580110
+  var valid_580111 = query.getOrDefault("alt")
+  valid_580111 = validateParameter(valid_580111, JString, required = false,
                                  default = newJString("json"))
-  if valid_579086 != nil:
-    section.add "alt", valid_579086
-  var valid_579087 = query.getOrDefault("userIp")
-  valid_579087 = validateParameter(valid_579087, JString, required = false,
+  if valid_580111 != nil:
+    section.add "alt", valid_580111
+  var valid_580112 = query.getOrDefault("userIp")
+  valid_580112 = validateParameter(valid_580112, JString, required = false,
                                  default = nil)
-  if valid_579087 != nil:
-    section.add "userIp", valid_579087
-  var valid_579088 = query.getOrDefault("quotaUser")
-  valid_579088 = validateParameter(valid_579088, JString, required = false,
+  if valid_580112 != nil:
+    section.add "userIp", valid_580112
+  var valid_580113 = query.getOrDefault("quotaUser")
+  valid_580113 = validateParameter(valid_580113, JString, required = false,
                                  default = nil)
-  if valid_579088 != nil:
-    section.add "quotaUser", valid_579088
-  var valid_579089 = query.getOrDefault("provisionalUserProject")
-  valid_579089 = validateParameter(valid_579089, JString, required = false,
+  if valid_580113 != nil:
+    section.add "quotaUser", valid_580113
+  var valid_580114 = query.getOrDefault("provisionalUserProject")
+  valid_580114 = validateParameter(valid_580114, JString, required = false,
                                  default = nil)
-  if valid_579089 != nil:
-    section.add "provisionalUserProject", valid_579089
-  var valid_579090 = query.getOrDefault("fields")
-  valid_579090 = validateParameter(valid_579090, JString, required = false,
+  if valid_580114 != nil:
+    section.add "provisionalUserProject", valid_580114
+  var valid_580115 = query.getOrDefault("fields")
+  valid_580115 = validateParameter(valid_580115, JString, required = false,
                                  default = nil)
-  if valid_579090 != nil:
-    section.add "fields", valid_579090
+  if valid_580115 != nil:
+    section.add "fields", valid_580115
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1816,21 +1861,21 @@ proc validate_StorageBucketAccessControlsUpdate_579078(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579092: Call_StorageBucketAccessControlsUpdate_579077;
+proc call*(call_580117: Call_StorageBucketAccessControlsUpdate_580102;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates an ACL entry on the specified bucket.
   ## 
-  let valid = call_579092.validator(path, query, header, formData, body)
-  let scheme = call_579092.pickScheme
+  let valid = call_580117.validator(path, query, header, formData, body)
+  let scheme = call_580117.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579092.url(scheme.get, call_579092.host, call_579092.base,
-                         call_579092.route, valid.getOrDefault("path"),
+  let url = call_580117.url(scheme.get, call_580117.host, call_580117.base,
+                         call_580117.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579092, url, valid)
+  result = hook(call_580117, url, valid)
 
-proc call*(call_579093: Call_StorageBucketAccessControlsUpdate_579077;
+proc call*(call_580118: Call_StorageBucketAccessControlsUpdate_580102;
           bucket: string; entity: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -1860,33 +1905,33 @@ proc call*(call_579093: Call_StorageBucketAccessControlsUpdate_579077;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579094 = newJObject()
-  var query_579095 = newJObject()
-  var body_579096 = newJObject()
-  add(query_579095, "key", newJString(key))
-  add(query_579095, "prettyPrint", newJBool(prettyPrint))
-  add(query_579095, "oauth_token", newJString(oauthToken))
-  add(query_579095, "userProject", newJString(userProject))
-  add(query_579095, "alt", newJString(alt))
-  add(query_579095, "userIp", newJString(userIp))
-  add(query_579095, "quotaUser", newJString(quotaUser))
-  add(path_579094, "bucket", newJString(bucket))
+  var path_580119 = newJObject()
+  var query_580120 = newJObject()
+  var body_580121 = newJObject()
+  add(query_580120, "key", newJString(key))
+  add(query_580120, "prettyPrint", newJBool(prettyPrint))
+  add(query_580120, "oauth_token", newJString(oauthToken))
+  add(query_580120, "userProject", newJString(userProject))
+  add(query_580120, "alt", newJString(alt))
+  add(query_580120, "userIp", newJString(userIp))
+  add(query_580120, "quotaUser", newJString(quotaUser))
+  add(path_580119, "bucket", newJString(bucket))
   if body != nil:
-    body_579096 = body
-  add(query_579095, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579094, "entity", newJString(entity))
-  add(query_579095, "fields", newJString(fields))
-  result = call_579093.call(path_579094, query_579095, nil, nil, body_579096)
+    body_580121 = body
+  add(query_580120, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580119, "entity", newJString(entity))
+  add(query_580120, "fields", newJString(fields))
+  result = call_580118.call(path_580119, query_580120, nil, nil, body_580121)
 
-var storageBucketAccessControlsUpdate* = Call_StorageBucketAccessControlsUpdate_579077(
+var storageBucketAccessControlsUpdate* = Call_StorageBucketAccessControlsUpdate_580102(
     name: "storageBucketAccessControlsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/b/{bucket}/acl/{entity}",
-    validator: validate_StorageBucketAccessControlsUpdate_579078,
-    base: "/storage/v1", url: url_StorageBucketAccessControlsUpdate_579079,
+    validator: validate_StorageBucketAccessControlsUpdate_580103,
+    base: "/storage/v1", url: url_StorageBucketAccessControlsUpdate_580104,
     schemes: {Scheme.Https})
 type
-  Call_StorageBucketAccessControlsGet_579059 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketAccessControlsGet_579061(protocol: Scheme; host: string;
+  Call_StorageBucketAccessControlsGet_580084 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketAccessControlsGet_580086(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -1902,9 +1947,14 @@ proc url_StorageBucketAccessControlsGet_579061(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageBucketAccessControlsGet_579060(path: JsonNode;
+proc validate_StorageBucketAccessControlsGet_580085(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the ACL entry for the specified entity on the specified bucket.
   ## 
@@ -1917,16 +1967,16 @@ proc validate_StorageBucketAccessControlsGet_579060(path: JsonNode;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579062 = path.getOrDefault("bucket")
-  valid_579062 = validateParameter(valid_579062, JString, required = true,
+  var valid_580087 = path.getOrDefault("bucket")
+  valid_580087 = validateParameter(valid_580087, JString, required = true,
                                  default = nil)
-  if valid_579062 != nil:
-    section.add "bucket", valid_579062
-  var valid_579063 = path.getOrDefault("entity")
-  valid_579063 = validateParameter(valid_579063, JString, required = true,
+  if valid_580087 != nil:
+    section.add "bucket", valid_580087
+  var valid_580088 = path.getOrDefault("entity")
+  valid_580088 = validateParameter(valid_580088, JString, required = true,
                                  default = nil)
-  if valid_579063 != nil:
-    section.add "entity", valid_579063
+  if valid_580088 != nil:
+    section.add "entity", valid_580088
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1948,51 +1998,51 @@ proc validate_StorageBucketAccessControlsGet_579060(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579064 = query.getOrDefault("key")
-  valid_579064 = validateParameter(valid_579064, JString, required = false,
+  var valid_580089 = query.getOrDefault("key")
+  valid_580089 = validateParameter(valid_580089, JString, required = false,
                                  default = nil)
-  if valid_579064 != nil:
-    section.add "key", valid_579064
-  var valid_579065 = query.getOrDefault("prettyPrint")
-  valid_579065 = validateParameter(valid_579065, JBool, required = false,
+  if valid_580089 != nil:
+    section.add "key", valid_580089
+  var valid_580090 = query.getOrDefault("prettyPrint")
+  valid_580090 = validateParameter(valid_580090, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579065 != nil:
-    section.add "prettyPrint", valid_579065
-  var valid_579066 = query.getOrDefault("oauth_token")
-  valid_579066 = validateParameter(valid_579066, JString, required = false,
+  if valid_580090 != nil:
+    section.add "prettyPrint", valid_580090
+  var valid_580091 = query.getOrDefault("oauth_token")
+  valid_580091 = validateParameter(valid_580091, JString, required = false,
                                  default = nil)
-  if valid_579066 != nil:
-    section.add "oauth_token", valid_579066
-  var valid_579067 = query.getOrDefault("userProject")
-  valid_579067 = validateParameter(valid_579067, JString, required = false,
+  if valid_580091 != nil:
+    section.add "oauth_token", valid_580091
+  var valid_580092 = query.getOrDefault("userProject")
+  valid_580092 = validateParameter(valid_580092, JString, required = false,
                                  default = nil)
-  if valid_579067 != nil:
-    section.add "userProject", valid_579067
-  var valid_579068 = query.getOrDefault("alt")
-  valid_579068 = validateParameter(valid_579068, JString, required = false,
+  if valid_580092 != nil:
+    section.add "userProject", valid_580092
+  var valid_580093 = query.getOrDefault("alt")
+  valid_580093 = validateParameter(valid_580093, JString, required = false,
                                  default = newJString("json"))
-  if valid_579068 != nil:
-    section.add "alt", valid_579068
-  var valid_579069 = query.getOrDefault("userIp")
-  valid_579069 = validateParameter(valid_579069, JString, required = false,
+  if valid_580093 != nil:
+    section.add "alt", valid_580093
+  var valid_580094 = query.getOrDefault("userIp")
+  valid_580094 = validateParameter(valid_580094, JString, required = false,
                                  default = nil)
-  if valid_579069 != nil:
-    section.add "userIp", valid_579069
-  var valid_579070 = query.getOrDefault("quotaUser")
-  valid_579070 = validateParameter(valid_579070, JString, required = false,
+  if valid_580094 != nil:
+    section.add "userIp", valid_580094
+  var valid_580095 = query.getOrDefault("quotaUser")
+  valid_580095 = validateParameter(valid_580095, JString, required = false,
                                  default = nil)
-  if valid_579070 != nil:
-    section.add "quotaUser", valid_579070
-  var valid_579071 = query.getOrDefault("provisionalUserProject")
-  valid_579071 = validateParameter(valid_579071, JString, required = false,
+  if valid_580095 != nil:
+    section.add "quotaUser", valid_580095
+  var valid_580096 = query.getOrDefault("provisionalUserProject")
+  valid_580096 = validateParameter(valid_580096, JString, required = false,
                                  default = nil)
-  if valid_579071 != nil:
-    section.add "provisionalUserProject", valid_579071
-  var valid_579072 = query.getOrDefault("fields")
-  valid_579072 = validateParameter(valid_579072, JString, required = false,
+  if valid_580096 != nil:
+    section.add "provisionalUserProject", valid_580096
+  var valid_580097 = query.getOrDefault("fields")
+  valid_580097 = validateParameter(valid_580097, JString, required = false,
                                  default = nil)
-  if valid_579072 != nil:
-    section.add "fields", valid_579072
+  if valid_580097 != nil:
+    section.add "fields", valid_580097
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2001,20 +2051,20 @@ proc validate_StorageBucketAccessControlsGet_579060(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579073: Call_StorageBucketAccessControlsGet_579059; path: JsonNode;
+proc call*(call_580098: Call_StorageBucketAccessControlsGet_580084; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns the ACL entry for the specified entity on the specified bucket.
   ## 
-  let valid = call_579073.validator(path, query, header, formData, body)
-  let scheme = call_579073.pickScheme
+  let valid = call_580098.validator(path, query, header, formData, body)
+  let scheme = call_580098.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579073.url(scheme.get, call_579073.host, call_579073.base,
-                         call_579073.route, valid.getOrDefault("path"),
+  let url = call_580098.url(scheme.get, call_580098.host, call_580098.base,
+                         call_580098.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579073, url, valid)
+  result = hook(call_580098, url, valid)
 
-proc call*(call_579074: Call_StorageBucketAccessControlsGet_579059; bucket: string;
+proc call*(call_580099: Call_StorageBucketAccessControlsGet_580084; bucket: string;
           entity: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = "";
@@ -2043,30 +2093,30 @@ proc call*(call_579074: Call_StorageBucketAccessControlsGet_579059; bucket: stri
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579075 = newJObject()
-  var query_579076 = newJObject()
-  add(query_579076, "key", newJString(key))
-  add(query_579076, "prettyPrint", newJBool(prettyPrint))
-  add(query_579076, "oauth_token", newJString(oauthToken))
-  add(query_579076, "userProject", newJString(userProject))
-  add(query_579076, "alt", newJString(alt))
-  add(query_579076, "userIp", newJString(userIp))
-  add(query_579076, "quotaUser", newJString(quotaUser))
-  add(path_579075, "bucket", newJString(bucket))
-  add(query_579076, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579075, "entity", newJString(entity))
-  add(query_579076, "fields", newJString(fields))
-  result = call_579074.call(path_579075, query_579076, nil, nil, nil)
+  var path_580100 = newJObject()
+  var query_580101 = newJObject()
+  add(query_580101, "key", newJString(key))
+  add(query_580101, "prettyPrint", newJBool(prettyPrint))
+  add(query_580101, "oauth_token", newJString(oauthToken))
+  add(query_580101, "userProject", newJString(userProject))
+  add(query_580101, "alt", newJString(alt))
+  add(query_580101, "userIp", newJString(userIp))
+  add(query_580101, "quotaUser", newJString(quotaUser))
+  add(path_580100, "bucket", newJString(bucket))
+  add(query_580101, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580100, "entity", newJString(entity))
+  add(query_580101, "fields", newJString(fields))
+  result = call_580099.call(path_580100, query_580101, nil, nil, nil)
 
-var storageBucketAccessControlsGet* = Call_StorageBucketAccessControlsGet_579059(
+var storageBucketAccessControlsGet* = Call_StorageBucketAccessControlsGet_580084(
     name: "storageBucketAccessControlsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/b/{bucket}/acl/{entity}",
-    validator: validate_StorageBucketAccessControlsGet_579060,
-    base: "/storage/v1", url: url_StorageBucketAccessControlsGet_579061,
+    validator: validate_StorageBucketAccessControlsGet_580085,
+    base: "/storage/v1", url: url_StorageBucketAccessControlsGet_580086,
     schemes: {Scheme.Https})
 type
-  Call_StorageBucketAccessControlsPatch_579115 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketAccessControlsPatch_579117(protocol: Scheme; host: string;
+  Call_StorageBucketAccessControlsPatch_580140 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketAccessControlsPatch_580142(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2082,9 +2132,14 @@ proc url_StorageBucketAccessControlsPatch_579117(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageBucketAccessControlsPatch_579116(path: JsonNode;
+proc validate_StorageBucketAccessControlsPatch_580141(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Patches an ACL entry on the specified bucket.
   ## 
@@ -2097,16 +2152,16 @@ proc validate_StorageBucketAccessControlsPatch_579116(path: JsonNode;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579118 = path.getOrDefault("bucket")
-  valid_579118 = validateParameter(valid_579118, JString, required = true,
+  var valid_580143 = path.getOrDefault("bucket")
+  valid_580143 = validateParameter(valid_580143, JString, required = true,
                                  default = nil)
-  if valid_579118 != nil:
-    section.add "bucket", valid_579118
-  var valid_579119 = path.getOrDefault("entity")
-  valid_579119 = validateParameter(valid_579119, JString, required = true,
+  if valid_580143 != nil:
+    section.add "bucket", valid_580143
+  var valid_580144 = path.getOrDefault("entity")
+  valid_580144 = validateParameter(valid_580144, JString, required = true,
                                  default = nil)
-  if valid_579119 != nil:
-    section.add "entity", valid_579119
+  if valid_580144 != nil:
+    section.add "entity", valid_580144
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2128,51 +2183,51 @@ proc validate_StorageBucketAccessControlsPatch_579116(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579120 = query.getOrDefault("key")
-  valid_579120 = validateParameter(valid_579120, JString, required = false,
+  var valid_580145 = query.getOrDefault("key")
+  valid_580145 = validateParameter(valid_580145, JString, required = false,
                                  default = nil)
-  if valid_579120 != nil:
-    section.add "key", valid_579120
-  var valid_579121 = query.getOrDefault("prettyPrint")
-  valid_579121 = validateParameter(valid_579121, JBool, required = false,
+  if valid_580145 != nil:
+    section.add "key", valid_580145
+  var valid_580146 = query.getOrDefault("prettyPrint")
+  valid_580146 = validateParameter(valid_580146, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579121 != nil:
-    section.add "prettyPrint", valid_579121
-  var valid_579122 = query.getOrDefault("oauth_token")
-  valid_579122 = validateParameter(valid_579122, JString, required = false,
+  if valid_580146 != nil:
+    section.add "prettyPrint", valid_580146
+  var valid_580147 = query.getOrDefault("oauth_token")
+  valid_580147 = validateParameter(valid_580147, JString, required = false,
                                  default = nil)
-  if valid_579122 != nil:
-    section.add "oauth_token", valid_579122
-  var valid_579123 = query.getOrDefault("userProject")
-  valid_579123 = validateParameter(valid_579123, JString, required = false,
+  if valid_580147 != nil:
+    section.add "oauth_token", valid_580147
+  var valid_580148 = query.getOrDefault("userProject")
+  valid_580148 = validateParameter(valid_580148, JString, required = false,
                                  default = nil)
-  if valid_579123 != nil:
-    section.add "userProject", valid_579123
-  var valid_579124 = query.getOrDefault("alt")
-  valid_579124 = validateParameter(valid_579124, JString, required = false,
+  if valid_580148 != nil:
+    section.add "userProject", valid_580148
+  var valid_580149 = query.getOrDefault("alt")
+  valid_580149 = validateParameter(valid_580149, JString, required = false,
                                  default = newJString("json"))
-  if valid_579124 != nil:
-    section.add "alt", valid_579124
-  var valid_579125 = query.getOrDefault("userIp")
-  valid_579125 = validateParameter(valid_579125, JString, required = false,
+  if valid_580149 != nil:
+    section.add "alt", valid_580149
+  var valid_580150 = query.getOrDefault("userIp")
+  valid_580150 = validateParameter(valid_580150, JString, required = false,
                                  default = nil)
-  if valid_579125 != nil:
-    section.add "userIp", valid_579125
-  var valid_579126 = query.getOrDefault("quotaUser")
-  valid_579126 = validateParameter(valid_579126, JString, required = false,
+  if valid_580150 != nil:
+    section.add "userIp", valid_580150
+  var valid_580151 = query.getOrDefault("quotaUser")
+  valid_580151 = validateParameter(valid_580151, JString, required = false,
                                  default = nil)
-  if valid_579126 != nil:
-    section.add "quotaUser", valid_579126
-  var valid_579127 = query.getOrDefault("provisionalUserProject")
-  valid_579127 = validateParameter(valid_579127, JString, required = false,
+  if valid_580151 != nil:
+    section.add "quotaUser", valid_580151
+  var valid_580152 = query.getOrDefault("provisionalUserProject")
+  valid_580152 = validateParameter(valid_580152, JString, required = false,
                                  default = nil)
-  if valid_579127 != nil:
-    section.add "provisionalUserProject", valid_579127
-  var valid_579128 = query.getOrDefault("fields")
-  valid_579128 = validateParameter(valid_579128, JString, required = false,
+  if valid_580152 != nil:
+    section.add "provisionalUserProject", valid_580152
+  var valid_580153 = query.getOrDefault("fields")
+  valid_580153 = validateParameter(valid_580153, JString, required = false,
                                  default = nil)
-  if valid_579128 != nil:
-    section.add "fields", valid_579128
+  if valid_580153 != nil:
+    section.add "fields", valid_580153
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2184,21 +2239,21 @@ proc validate_StorageBucketAccessControlsPatch_579116(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579130: Call_StorageBucketAccessControlsPatch_579115;
+proc call*(call_580155: Call_StorageBucketAccessControlsPatch_580140;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Patches an ACL entry on the specified bucket.
   ## 
-  let valid = call_579130.validator(path, query, header, formData, body)
-  let scheme = call_579130.pickScheme
+  let valid = call_580155.validator(path, query, header, formData, body)
+  let scheme = call_580155.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579130.url(scheme.get, call_579130.host, call_579130.base,
-                         call_579130.route, valid.getOrDefault("path"),
+  let url = call_580155.url(scheme.get, call_580155.host, call_580155.base,
+                         call_580155.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579130, url, valid)
+  result = hook(call_580155, url, valid)
 
-proc call*(call_579131: Call_StorageBucketAccessControlsPatch_579115;
+proc call*(call_580156: Call_StorageBucketAccessControlsPatch_580140;
           bucket: string; entity: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -2228,33 +2283,33 @@ proc call*(call_579131: Call_StorageBucketAccessControlsPatch_579115;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579132 = newJObject()
-  var query_579133 = newJObject()
-  var body_579134 = newJObject()
-  add(query_579133, "key", newJString(key))
-  add(query_579133, "prettyPrint", newJBool(prettyPrint))
-  add(query_579133, "oauth_token", newJString(oauthToken))
-  add(query_579133, "userProject", newJString(userProject))
-  add(query_579133, "alt", newJString(alt))
-  add(query_579133, "userIp", newJString(userIp))
-  add(query_579133, "quotaUser", newJString(quotaUser))
-  add(path_579132, "bucket", newJString(bucket))
+  var path_580157 = newJObject()
+  var query_580158 = newJObject()
+  var body_580159 = newJObject()
+  add(query_580158, "key", newJString(key))
+  add(query_580158, "prettyPrint", newJBool(prettyPrint))
+  add(query_580158, "oauth_token", newJString(oauthToken))
+  add(query_580158, "userProject", newJString(userProject))
+  add(query_580158, "alt", newJString(alt))
+  add(query_580158, "userIp", newJString(userIp))
+  add(query_580158, "quotaUser", newJString(quotaUser))
+  add(path_580157, "bucket", newJString(bucket))
   if body != nil:
-    body_579134 = body
-  add(query_579133, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579132, "entity", newJString(entity))
-  add(query_579133, "fields", newJString(fields))
-  result = call_579131.call(path_579132, query_579133, nil, nil, body_579134)
+    body_580159 = body
+  add(query_580158, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580157, "entity", newJString(entity))
+  add(query_580158, "fields", newJString(fields))
+  result = call_580156.call(path_580157, query_580158, nil, nil, body_580159)
 
-var storageBucketAccessControlsPatch* = Call_StorageBucketAccessControlsPatch_579115(
+var storageBucketAccessControlsPatch* = Call_StorageBucketAccessControlsPatch_580140(
     name: "storageBucketAccessControlsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/b/{bucket}/acl/{entity}",
-    validator: validate_StorageBucketAccessControlsPatch_579116,
-    base: "/storage/v1", url: url_StorageBucketAccessControlsPatch_579117,
+    validator: validate_StorageBucketAccessControlsPatch_580141,
+    base: "/storage/v1", url: url_StorageBucketAccessControlsPatch_580142,
     schemes: {Scheme.Https})
 type
-  Call_StorageBucketAccessControlsDelete_579097 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketAccessControlsDelete_579099(protocol: Scheme; host: string;
+  Call_StorageBucketAccessControlsDelete_580122 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketAccessControlsDelete_580124(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2270,9 +2325,14 @@ proc url_StorageBucketAccessControlsDelete_579099(protocol: Scheme; host: string
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageBucketAccessControlsDelete_579098(path: JsonNode;
+proc validate_StorageBucketAccessControlsDelete_580123(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Permanently deletes the ACL entry for the specified entity on the specified bucket.
   ## 
@@ -2285,16 +2345,16 @@ proc validate_StorageBucketAccessControlsDelete_579098(path: JsonNode;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579100 = path.getOrDefault("bucket")
-  valid_579100 = validateParameter(valid_579100, JString, required = true,
+  var valid_580125 = path.getOrDefault("bucket")
+  valid_580125 = validateParameter(valid_580125, JString, required = true,
                                  default = nil)
-  if valid_579100 != nil:
-    section.add "bucket", valid_579100
-  var valid_579101 = path.getOrDefault("entity")
-  valid_579101 = validateParameter(valid_579101, JString, required = true,
+  if valid_580125 != nil:
+    section.add "bucket", valid_580125
+  var valid_580126 = path.getOrDefault("entity")
+  valid_580126 = validateParameter(valid_580126, JString, required = true,
                                  default = nil)
-  if valid_579101 != nil:
-    section.add "entity", valid_579101
+  if valid_580126 != nil:
+    section.add "entity", valid_580126
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2316,51 +2376,51 @@ proc validate_StorageBucketAccessControlsDelete_579098(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579102 = query.getOrDefault("key")
-  valid_579102 = validateParameter(valid_579102, JString, required = false,
+  var valid_580127 = query.getOrDefault("key")
+  valid_580127 = validateParameter(valid_580127, JString, required = false,
                                  default = nil)
-  if valid_579102 != nil:
-    section.add "key", valid_579102
-  var valid_579103 = query.getOrDefault("prettyPrint")
-  valid_579103 = validateParameter(valid_579103, JBool, required = false,
+  if valid_580127 != nil:
+    section.add "key", valid_580127
+  var valid_580128 = query.getOrDefault("prettyPrint")
+  valid_580128 = validateParameter(valid_580128, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579103 != nil:
-    section.add "prettyPrint", valid_579103
-  var valid_579104 = query.getOrDefault("oauth_token")
-  valid_579104 = validateParameter(valid_579104, JString, required = false,
+  if valid_580128 != nil:
+    section.add "prettyPrint", valid_580128
+  var valid_580129 = query.getOrDefault("oauth_token")
+  valid_580129 = validateParameter(valid_580129, JString, required = false,
                                  default = nil)
-  if valid_579104 != nil:
-    section.add "oauth_token", valid_579104
-  var valid_579105 = query.getOrDefault("userProject")
-  valid_579105 = validateParameter(valid_579105, JString, required = false,
+  if valid_580129 != nil:
+    section.add "oauth_token", valid_580129
+  var valid_580130 = query.getOrDefault("userProject")
+  valid_580130 = validateParameter(valid_580130, JString, required = false,
                                  default = nil)
-  if valid_579105 != nil:
-    section.add "userProject", valid_579105
-  var valid_579106 = query.getOrDefault("alt")
-  valid_579106 = validateParameter(valid_579106, JString, required = false,
+  if valid_580130 != nil:
+    section.add "userProject", valid_580130
+  var valid_580131 = query.getOrDefault("alt")
+  valid_580131 = validateParameter(valid_580131, JString, required = false,
                                  default = newJString("json"))
-  if valid_579106 != nil:
-    section.add "alt", valid_579106
-  var valid_579107 = query.getOrDefault("userIp")
-  valid_579107 = validateParameter(valid_579107, JString, required = false,
+  if valid_580131 != nil:
+    section.add "alt", valid_580131
+  var valid_580132 = query.getOrDefault("userIp")
+  valid_580132 = validateParameter(valid_580132, JString, required = false,
                                  default = nil)
-  if valid_579107 != nil:
-    section.add "userIp", valid_579107
-  var valid_579108 = query.getOrDefault("quotaUser")
-  valid_579108 = validateParameter(valid_579108, JString, required = false,
+  if valid_580132 != nil:
+    section.add "userIp", valid_580132
+  var valid_580133 = query.getOrDefault("quotaUser")
+  valid_580133 = validateParameter(valid_580133, JString, required = false,
                                  default = nil)
-  if valid_579108 != nil:
-    section.add "quotaUser", valid_579108
-  var valid_579109 = query.getOrDefault("provisionalUserProject")
-  valid_579109 = validateParameter(valid_579109, JString, required = false,
+  if valid_580133 != nil:
+    section.add "quotaUser", valid_580133
+  var valid_580134 = query.getOrDefault("provisionalUserProject")
+  valid_580134 = validateParameter(valid_580134, JString, required = false,
                                  default = nil)
-  if valid_579109 != nil:
-    section.add "provisionalUserProject", valid_579109
-  var valid_579110 = query.getOrDefault("fields")
-  valid_579110 = validateParameter(valid_579110, JString, required = false,
+  if valid_580134 != nil:
+    section.add "provisionalUserProject", valid_580134
+  var valid_580135 = query.getOrDefault("fields")
+  valid_580135 = validateParameter(valid_580135, JString, required = false,
                                  default = nil)
-  if valid_579110 != nil:
-    section.add "fields", valid_579110
+  if valid_580135 != nil:
+    section.add "fields", valid_580135
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2369,21 +2429,21 @@ proc validate_StorageBucketAccessControlsDelete_579098(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579111: Call_StorageBucketAccessControlsDelete_579097;
+proc call*(call_580136: Call_StorageBucketAccessControlsDelete_580122;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Permanently deletes the ACL entry for the specified entity on the specified bucket.
   ## 
-  let valid = call_579111.validator(path, query, header, formData, body)
-  let scheme = call_579111.pickScheme
+  let valid = call_580136.validator(path, query, header, formData, body)
+  let scheme = call_580136.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579111.url(scheme.get, call_579111.host, call_579111.base,
-                         call_579111.route, valid.getOrDefault("path"),
+  let url = call_580136.url(scheme.get, call_580136.host, call_580136.base,
+                         call_580136.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579111, url, valid)
+  result = hook(call_580136, url, valid)
 
-proc call*(call_579112: Call_StorageBucketAccessControlsDelete_579097;
+proc call*(call_580137: Call_StorageBucketAccessControlsDelete_580122;
           bucket: string; entity: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = "";
@@ -2412,30 +2472,30 @@ proc call*(call_579112: Call_StorageBucketAccessControlsDelete_579097;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579113 = newJObject()
-  var query_579114 = newJObject()
-  add(query_579114, "key", newJString(key))
-  add(query_579114, "prettyPrint", newJBool(prettyPrint))
-  add(query_579114, "oauth_token", newJString(oauthToken))
-  add(query_579114, "userProject", newJString(userProject))
-  add(query_579114, "alt", newJString(alt))
-  add(query_579114, "userIp", newJString(userIp))
-  add(query_579114, "quotaUser", newJString(quotaUser))
-  add(path_579113, "bucket", newJString(bucket))
-  add(query_579114, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579113, "entity", newJString(entity))
-  add(query_579114, "fields", newJString(fields))
-  result = call_579112.call(path_579113, query_579114, nil, nil, nil)
+  var path_580138 = newJObject()
+  var query_580139 = newJObject()
+  add(query_580139, "key", newJString(key))
+  add(query_580139, "prettyPrint", newJBool(prettyPrint))
+  add(query_580139, "oauth_token", newJString(oauthToken))
+  add(query_580139, "userProject", newJString(userProject))
+  add(query_580139, "alt", newJString(alt))
+  add(query_580139, "userIp", newJString(userIp))
+  add(query_580139, "quotaUser", newJString(quotaUser))
+  add(path_580138, "bucket", newJString(bucket))
+  add(query_580139, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580138, "entity", newJString(entity))
+  add(query_580139, "fields", newJString(fields))
+  result = call_580137.call(path_580138, query_580139, nil, nil, nil)
 
-var storageBucketAccessControlsDelete* = Call_StorageBucketAccessControlsDelete_579097(
+var storageBucketAccessControlsDelete* = Call_StorageBucketAccessControlsDelete_580122(
     name: "storageBucketAccessControlsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/b/{bucket}/acl/{entity}",
-    validator: validate_StorageBucketAccessControlsDelete_579098,
-    base: "/storage/v1", url: url_StorageBucketAccessControlsDelete_579099,
+    validator: validate_StorageBucketAccessControlsDelete_580123,
+    base: "/storage/v1", url: url_StorageBucketAccessControlsDelete_580124,
     schemes: {Scheme.Https})
 type
-  Call_StorageDefaultObjectAccessControlsInsert_579154 = ref object of OpenApiRestCall_578355
-proc url_StorageDefaultObjectAccessControlsInsert_579156(protocol: Scheme;
+  Call_StorageDefaultObjectAccessControlsInsert_580179 = ref object of OpenApiRestCall_579380
+proc url_StorageDefaultObjectAccessControlsInsert_580181(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2449,9 +2509,14 @@ proc url_StorageDefaultObjectAccessControlsInsert_579156(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageDefaultObjectAccessControlsInsert_579155(path: JsonNode;
+proc validate_StorageDefaultObjectAccessControlsInsert_580180(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new default object ACL entry on the specified bucket.
   ## 
@@ -2462,11 +2527,11 @@ proc validate_StorageDefaultObjectAccessControlsInsert_579155(path: JsonNode;
   ##         : Name of a bucket.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579157 = path.getOrDefault("bucket")
-  valid_579157 = validateParameter(valid_579157, JString, required = true,
+  var valid_580182 = path.getOrDefault("bucket")
+  valid_580182 = validateParameter(valid_580182, JString, required = true,
                                  default = nil)
-  if valid_579157 != nil:
-    section.add "bucket", valid_579157
+  if valid_580182 != nil:
+    section.add "bucket", valid_580182
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2488,51 +2553,51 @@ proc validate_StorageDefaultObjectAccessControlsInsert_579155(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579158 = query.getOrDefault("key")
-  valid_579158 = validateParameter(valid_579158, JString, required = false,
+  var valid_580183 = query.getOrDefault("key")
+  valid_580183 = validateParameter(valid_580183, JString, required = false,
                                  default = nil)
-  if valid_579158 != nil:
-    section.add "key", valid_579158
-  var valid_579159 = query.getOrDefault("prettyPrint")
-  valid_579159 = validateParameter(valid_579159, JBool, required = false,
+  if valid_580183 != nil:
+    section.add "key", valid_580183
+  var valid_580184 = query.getOrDefault("prettyPrint")
+  valid_580184 = validateParameter(valid_580184, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579159 != nil:
-    section.add "prettyPrint", valid_579159
-  var valid_579160 = query.getOrDefault("oauth_token")
-  valid_579160 = validateParameter(valid_579160, JString, required = false,
+  if valid_580184 != nil:
+    section.add "prettyPrint", valid_580184
+  var valid_580185 = query.getOrDefault("oauth_token")
+  valid_580185 = validateParameter(valid_580185, JString, required = false,
                                  default = nil)
-  if valid_579160 != nil:
-    section.add "oauth_token", valid_579160
-  var valid_579161 = query.getOrDefault("userProject")
-  valid_579161 = validateParameter(valid_579161, JString, required = false,
+  if valid_580185 != nil:
+    section.add "oauth_token", valid_580185
+  var valid_580186 = query.getOrDefault("userProject")
+  valid_580186 = validateParameter(valid_580186, JString, required = false,
                                  default = nil)
-  if valid_579161 != nil:
-    section.add "userProject", valid_579161
-  var valid_579162 = query.getOrDefault("alt")
-  valid_579162 = validateParameter(valid_579162, JString, required = false,
+  if valid_580186 != nil:
+    section.add "userProject", valid_580186
+  var valid_580187 = query.getOrDefault("alt")
+  valid_580187 = validateParameter(valid_580187, JString, required = false,
                                  default = newJString("json"))
-  if valid_579162 != nil:
-    section.add "alt", valid_579162
-  var valid_579163 = query.getOrDefault("userIp")
-  valid_579163 = validateParameter(valid_579163, JString, required = false,
+  if valid_580187 != nil:
+    section.add "alt", valid_580187
+  var valid_580188 = query.getOrDefault("userIp")
+  valid_580188 = validateParameter(valid_580188, JString, required = false,
                                  default = nil)
-  if valid_579163 != nil:
-    section.add "userIp", valid_579163
-  var valid_579164 = query.getOrDefault("quotaUser")
-  valid_579164 = validateParameter(valid_579164, JString, required = false,
+  if valid_580188 != nil:
+    section.add "userIp", valid_580188
+  var valid_580189 = query.getOrDefault("quotaUser")
+  valid_580189 = validateParameter(valid_580189, JString, required = false,
                                  default = nil)
-  if valid_579164 != nil:
-    section.add "quotaUser", valid_579164
-  var valid_579165 = query.getOrDefault("provisionalUserProject")
-  valid_579165 = validateParameter(valid_579165, JString, required = false,
+  if valid_580189 != nil:
+    section.add "quotaUser", valid_580189
+  var valid_580190 = query.getOrDefault("provisionalUserProject")
+  valid_580190 = validateParameter(valid_580190, JString, required = false,
                                  default = nil)
-  if valid_579165 != nil:
-    section.add "provisionalUserProject", valid_579165
-  var valid_579166 = query.getOrDefault("fields")
-  valid_579166 = validateParameter(valid_579166, JString, required = false,
+  if valid_580190 != nil:
+    section.add "provisionalUserProject", valid_580190
+  var valid_580191 = query.getOrDefault("fields")
+  valid_580191 = validateParameter(valid_580191, JString, required = false,
                                  default = nil)
-  if valid_579166 != nil:
-    section.add "fields", valid_579166
+  if valid_580191 != nil:
+    section.add "fields", valid_580191
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2544,21 +2609,21 @@ proc validate_StorageDefaultObjectAccessControlsInsert_579155(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579168: Call_StorageDefaultObjectAccessControlsInsert_579154;
+proc call*(call_580193: Call_StorageDefaultObjectAccessControlsInsert_580179;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a new default object ACL entry on the specified bucket.
   ## 
-  let valid = call_579168.validator(path, query, header, formData, body)
-  let scheme = call_579168.pickScheme
+  let valid = call_580193.validator(path, query, header, formData, body)
+  let scheme = call_580193.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579168.url(scheme.get, call_579168.host, call_579168.base,
-                         call_579168.route, valid.getOrDefault("path"),
+  let url = call_580193.url(scheme.get, call_580193.host, call_580193.base,
+                         call_580193.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579168, url, valid)
+  result = hook(call_580193, url, valid)
 
-proc call*(call_579169: Call_StorageDefaultObjectAccessControlsInsert_579154;
+proc call*(call_580194: Call_StorageDefaultObjectAccessControlsInsert_580179;
           bucket: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -2586,32 +2651,32 @@ proc call*(call_579169: Call_StorageDefaultObjectAccessControlsInsert_579154;
   ##                         : The project to be billed for this request if the target bucket is requester-pays bucket.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579170 = newJObject()
-  var query_579171 = newJObject()
-  var body_579172 = newJObject()
-  add(query_579171, "key", newJString(key))
-  add(query_579171, "prettyPrint", newJBool(prettyPrint))
-  add(query_579171, "oauth_token", newJString(oauthToken))
-  add(query_579171, "userProject", newJString(userProject))
-  add(query_579171, "alt", newJString(alt))
-  add(query_579171, "userIp", newJString(userIp))
-  add(query_579171, "quotaUser", newJString(quotaUser))
-  add(path_579170, "bucket", newJString(bucket))
+  var path_580195 = newJObject()
+  var query_580196 = newJObject()
+  var body_580197 = newJObject()
+  add(query_580196, "key", newJString(key))
+  add(query_580196, "prettyPrint", newJBool(prettyPrint))
+  add(query_580196, "oauth_token", newJString(oauthToken))
+  add(query_580196, "userProject", newJString(userProject))
+  add(query_580196, "alt", newJString(alt))
+  add(query_580196, "userIp", newJString(userIp))
+  add(query_580196, "quotaUser", newJString(quotaUser))
+  add(path_580195, "bucket", newJString(bucket))
   if body != nil:
-    body_579172 = body
-  add(query_579171, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579171, "fields", newJString(fields))
-  result = call_579169.call(path_579170, query_579171, nil, nil, body_579172)
+    body_580197 = body
+  add(query_580196, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580196, "fields", newJString(fields))
+  result = call_580194.call(path_580195, query_580196, nil, nil, body_580197)
 
-var storageDefaultObjectAccessControlsInsert* = Call_StorageDefaultObjectAccessControlsInsert_579154(
+var storageDefaultObjectAccessControlsInsert* = Call_StorageDefaultObjectAccessControlsInsert_580179(
     name: "storageDefaultObjectAccessControlsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/b/{bucket}/defaultObjectAcl",
-    validator: validate_StorageDefaultObjectAccessControlsInsert_579155,
-    base: "/storage/v1", url: url_StorageDefaultObjectAccessControlsInsert_579156,
+    validator: validate_StorageDefaultObjectAccessControlsInsert_580180,
+    base: "/storage/v1", url: url_StorageDefaultObjectAccessControlsInsert_580181,
     schemes: {Scheme.Https})
 type
-  Call_StorageDefaultObjectAccessControlsList_579135 = ref object of OpenApiRestCall_578355
-proc url_StorageDefaultObjectAccessControlsList_579137(protocol: Scheme;
+  Call_StorageDefaultObjectAccessControlsList_580160 = ref object of OpenApiRestCall_579380
+proc url_StorageDefaultObjectAccessControlsList_580162(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2625,9 +2690,14 @@ proc url_StorageDefaultObjectAccessControlsList_579137(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageDefaultObjectAccessControlsList_579136(path: JsonNode;
+proc validate_StorageDefaultObjectAccessControlsList_580161(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves default object ACL entries on the specified bucket.
   ## 
@@ -2638,11 +2708,11 @@ proc validate_StorageDefaultObjectAccessControlsList_579136(path: JsonNode;
   ##         : Name of a bucket.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579138 = path.getOrDefault("bucket")
-  valid_579138 = validateParameter(valid_579138, JString, required = true,
+  var valid_580163 = path.getOrDefault("bucket")
+  valid_580163 = validateParameter(valid_580163, JString, required = true,
                                  default = nil)
-  if valid_579138 != nil:
-    section.add "bucket", valid_579138
+  if valid_580163 != nil:
+    section.add "bucket", valid_580163
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2668,61 +2738,61 @@ proc validate_StorageDefaultObjectAccessControlsList_579136(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579139 = query.getOrDefault("key")
-  valid_579139 = validateParameter(valid_579139, JString, required = false,
+  var valid_580164 = query.getOrDefault("key")
+  valid_580164 = validateParameter(valid_580164, JString, required = false,
                                  default = nil)
-  if valid_579139 != nil:
-    section.add "key", valid_579139
-  var valid_579140 = query.getOrDefault("prettyPrint")
-  valid_579140 = validateParameter(valid_579140, JBool, required = false,
+  if valid_580164 != nil:
+    section.add "key", valid_580164
+  var valid_580165 = query.getOrDefault("prettyPrint")
+  valid_580165 = validateParameter(valid_580165, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579140 != nil:
-    section.add "prettyPrint", valid_579140
-  var valid_579141 = query.getOrDefault("oauth_token")
-  valid_579141 = validateParameter(valid_579141, JString, required = false,
+  if valid_580165 != nil:
+    section.add "prettyPrint", valid_580165
+  var valid_580166 = query.getOrDefault("oauth_token")
+  valid_580166 = validateParameter(valid_580166, JString, required = false,
                                  default = nil)
-  if valid_579141 != nil:
-    section.add "oauth_token", valid_579141
-  var valid_579142 = query.getOrDefault("userProject")
-  valid_579142 = validateParameter(valid_579142, JString, required = false,
+  if valid_580166 != nil:
+    section.add "oauth_token", valid_580166
+  var valid_580167 = query.getOrDefault("userProject")
+  valid_580167 = validateParameter(valid_580167, JString, required = false,
                                  default = nil)
-  if valid_579142 != nil:
-    section.add "userProject", valid_579142
-  var valid_579143 = query.getOrDefault("alt")
-  valid_579143 = validateParameter(valid_579143, JString, required = false,
+  if valid_580167 != nil:
+    section.add "userProject", valid_580167
+  var valid_580168 = query.getOrDefault("alt")
+  valid_580168 = validateParameter(valid_580168, JString, required = false,
                                  default = newJString("json"))
-  if valid_579143 != nil:
-    section.add "alt", valid_579143
-  var valid_579144 = query.getOrDefault("userIp")
-  valid_579144 = validateParameter(valid_579144, JString, required = false,
+  if valid_580168 != nil:
+    section.add "alt", valid_580168
+  var valid_580169 = query.getOrDefault("userIp")
+  valid_580169 = validateParameter(valid_580169, JString, required = false,
                                  default = nil)
-  if valid_579144 != nil:
-    section.add "userIp", valid_579144
-  var valid_579145 = query.getOrDefault("quotaUser")
-  valid_579145 = validateParameter(valid_579145, JString, required = false,
+  if valid_580169 != nil:
+    section.add "userIp", valid_580169
+  var valid_580170 = query.getOrDefault("quotaUser")
+  valid_580170 = validateParameter(valid_580170, JString, required = false,
                                  default = nil)
-  if valid_579145 != nil:
-    section.add "quotaUser", valid_579145
-  var valid_579146 = query.getOrDefault("ifMetagenerationMatch")
-  valid_579146 = validateParameter(valid_579146, JString, required = false,
+  if valid_580170 != nil:
+    section.add "quotaUser", valid_580170
+  var valid_580171 = query.getOrDefault("ifMetagenerationMatch")
+  valid_580171 = validateParameter(valid_580171, JString, required = false,
                                  default = nil)
-  if valid_579146 != nil:
-    section.add "ifMetagenerationMatch", valid_579146
-  var valid_579147 = query.getOrDefault("provisionalUserProject")
-  valid_579147 = validateParameter(valid_579147, JString, required = false,
+  if valid_580171 != nil:
+    section.add "ifMetagenerationMatch", valid_580171
+  var valid_580172 = query.getOrDefault("provisionalUserProject")
+  valid_580172 = validateParameter(valid_580172, JString, required = false,
                                  default = nil)
-  if valid_579147 != nil:
-    section.add "provisionalUserProject", valid_579147
-  var valid_579148 = query.getOrDefault("ifMetagenerationNotMatch")
-  valid_579148 = validateParameter(valid_579148, JString, required = false,
+  if valid_580172 != nil:
+    section.add "provisionalUserProject", valid_580172
+  var valid_580173 = query.getOrDefault("ifMetagenerationNotMatch")
+  valid_580173 = validateParameter(valid_580173, JString, required = false,
                                  default = nil)
-  if valid_579148 != nil:
-    section.add "ifMetagenerationNotMatch", valid_579148
-  var valid_579149 = query.getOrDefault("fields")
-  valid_579149 = validateParameter(valid_579149, JString, required = false,
+  if valid_580173 != nil:
+    section.add "ifMetagenerationNotMatch", valid_580173
+  var valid_580174 = query.getOrDefault("fields")
+  valid_580174 = validateParameter(valid_580174, JString, required = false,
                                  default = nil)
-  if valid_579149 != nil:
-    section.add "fields", valid_579149
+  if valid_580174 != nil:
+    section.add "fields", valid_580174
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2731,21 +2801,21 @@ proc validate_StorageDefaultObjectAccessControlsList_579136(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579150: Call_StorageDefaultObjectAccessControlsList_579135;
+proc call*(call_580175: Call_StorageDefaultObjectAccessControlsList_580160;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves default object ACL entries on the specified bucket.
   ## 
-  let valid = call_579150.validator(path, query, header, formData, body)
-  let scheme = call_579150.pickScheme
+  let valid = call_580175.validator(path, query, header, formData, body)
+  let scheme = call_580175.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579150.url(scheme.get, call_579150.host, call_579150.base,
-                         call_579150.route, valid.getOrDefault("path"),
+  let url = call_580175.url(scheme.get, call_580175.host, call_580175.base,
+                         call_580175.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579150, url, valid)
+  result = hook(call_580175, url, valid)
 
-proc call*(call_579151: Call_StorageDefaultObjectAccessControlsList_579135;
+proc call*(call_580176: Call_StorageDefaultObjectAccessControlsList_580160;
           bucket: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = "";
@@ -2777,32 +2847,32 @@ proc call*(call_579151: Call_StorageDefaultObjectAccessControlsList_579135;
   ##                           : If present, only return default ACL listing if the bucket's current metageneration does not match the given value.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579152 = newJObject()
-  var query_579153 = newJObject()
-  add(query_579153, "key", newJString(key))
-  add(query_579153, "prettyPrint", newJBool(prettyPrint))
-  add(query_579153, "oauth_token", newJString(oauthToken))
-  add(query_579153, "userProject", newJString(userProject))
-  add(query_579153, "alt", newJString(alt))
-  add(query_579153, "userIp", newJString(userIp))
-  add(query_579153, "quotaUser", newJString(quotaUser))
-  add(query_579153, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
-  add(path_579152, "bucket", newJString(bucket))
-  add(query_579153, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579153, "ifMetagenerationNotMatch",
+  var path_580177 = newJObject()
+  var query_580178 = newJObject()
+  add(query_580178, "key", newJString(key))
+  add(query_580178, "prettyPrint", newJBool(prettyPrint))
+  add(query_580178, "oauth_token", newJString(oauthToken))
+  add(query_580178, "userProject", newJString(userProject))
+  add(query_580178, "alt", newJString(alt))
+  add(query_580178, "userIp", newJString(userIp))
+  add(query_580178, "quotaUser", newJString(quotaUser))
+  add(query_580178, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
+  add(path_580177, "bucket", newJString(bucket))
+  add(query_580178, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580178, "ifMetagenerationNotMatch",
       newJString(ifMetagenerationNotMatch))
-  add(query_579153, "fields", newJString(fields))
-  result = call_579151.call(path_579152, query_579153, nil, nil, nil)
+  add(query_580178, "fields", newJString(fields))
+  result = call_580176.call(path_580177, query_580178, nil, nil, nil)
 
-var storageDefaultObjectAccessControlsList* = Call_StorageDefaultObjectAccessControlsList_579135(
+var storageDefaultObjectAccessControlsList* = Call_StorageDefaultObjectAccessControlsList_580160(
     name: "storageDefaultObjectAccessControlsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/b/{bucket}/defaultObjectAcl",
-    validator: validate_StorageDefaultObjectAccessControlsList_579136,
-    base: "/storage/v1", url: url_StorageDefaultObjectAccessControlsList_579137,
+    validator: validate_StorageDefaultObjectAccessControlsList_580161,
+    base: "/storage/v1", url: url_StorageDefaultObjectAccessControlsList_580162,
     schemes: {Scheme.Https})
 type
-  Call_StorageDefaultObjectAccessControlsUpdate_579191 = ref object of OpenApiRestCall_578355
-proc url_StorageDefaultObjectAccessControlsUpdate_579193(protocol: Scheme;
+  Call_StorageDefaultObjectAccessControlsUpdate_580216 = ref object of OpenApiRestCall_579380
+proc url_StorageDefaultObjectAccessControlsUpdate_580218(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -2818,9 +2888,14 @@ proc url_StorageDefaultObjectAccessControlsUpdate_579193(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageDefaultObjectAccessControlsUpdate_579192(path: JsonNode;
+proc validate_StorageDefaultObjectAccessControlsUpdate_580217(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates a default object ACL entry on the specified bucket.
   ## 
@@ -2833,16 +2908,16 @@ proc validate_StorageDefaultObjectAccessControlsUpdate_579192(path: JsonNode;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579194 = path.getOrDefault("bucket")
-  valid_579194 = validateParameter(valid_579194, JString, required = true,
+  var valid_580219 = path.getOrDefault("bucket")
+  valid_580219 = validateParameter(valid_580219, JString, required = true,
                                  default = nil)
-  if valid_579194 != nil:
-    section.add "bucket", valid_579194
-  var valid_579195 = path.getOrDefault("entity")
-  valid_579195 = validateParameter(valid_579195, JString, required = true,
+  if valid_580219 != nil:
+    section.add "bucket", valid_580219
+  var valid_580220 = path.getOrDefault("entity")
+  valid_580220 = validateParameter(valid_580220, JString, required = true,
                                  default = nil)
-  if valid_579195 != nil:
-    section.add "entity", valid_579195
+  if valid_580220 != nil:
+    section.add "entity", valid_580220
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2864,51 +2939,51 @@ proc validate_StorageDefaultObjectAccessControlsUpdate_579192(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579196 = query.getOrDefault("key")
-  valid_579196 = validateParameter(valid_579196, JString, required = false,
+  var valid_580221 = query.getOrDefault("key")
+  valid_580221 = validateParameter(valid_580221, JString, required = false,
                                  default = nil)
-  if valid_579196 != nil:
-    section.add "key", valid_579196
-  var valid_579197 = query.getOrDefault("prettyPrint")
-  valid_579197 = validateParameter(valid_579197, JBool, required = false,
+  if valid_580221 != nil:
+    section.add "key", valid_580221
+  var valid_580222 = query.getOrDefault("prettyPrint")
+  valid_580222 = validateParameter(valid_580222, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579197 != nil:
-    section.add "prettyPrint", valid_579197
-  var valid_579198 = query.getOrDefault("oauth_token")
-  valid_579198 = validateParameter(valid_579198, JString, required = false,
+  if valid_580222 != nil:
+    section.add "prettyPrint", valid_580222
+  var valid_580223 = query.getOrDefault("oauth_token")
+  valid_580223 = validateParameter(valid_580223, JString, required = false,
                                  default = nil)
-  if valid_579198 != nil:
-    section.add "oauth_token", valid_579198
-  var valid_579199 = query.getOrDefault("userProject")
-  valid_579199 = validateParameter(valid_579199, JString, required = false,
+  if valid_580223 != nil:
+    section.add "oauth_token", valid_580223
+  var valid_580224 = query.getOrDefault("userProject")
+  valid_580224 = validateParameter(valid_580224, JString, required = false,
                                  default = nil)
-  if valid_579199 != nil:
-    section.add "userProject", valid_579199
-  var valid_579200 = query.getOrDefault("alt")
-  valid_579200 = validateParameter(valid_579200, JString, required = false,
+  if valid_580224 != nil:
+    section.add "userProject", valid_580224
+  var valid_580225 = query.getOrDefault("alt")
+  valid_580225 = validateParameter(valid_580225, JString, required = false,
                                  default = newJString("json"))
-  if valid_579200 != nil:
-    section.add "alt", valid_579200
-  var valid_579201 = query.getOrDefault("userIp")
-  valid_579201 = validateParameter(valid_579201, JString, required = false,
+  if valid_580225 != nil:
+    section.add "alt", valid_580225
+  var valid_580226 = query.getOrDefault("userIp")
+  valid_580226 = validateParameter(valid_580226, JString, required = false,
                                  default = nil)
-  if valid_579201 != nil:
-    section.add "userIp", valid_579201
-  var valid_579202 = query.getOrDefault("quotaUser")
-  valid_579202 = validateParameter(valid_579202, JString, required = false,
+  if valid_580226 != nil:
+    section.add "userIp", valid_580226
+  var valid_580227 = query.getOrDefault("quotaUser")
+  valid_580227 = validateParameter(valid_580227, JString, required = false,
                                  default = nil)
-  if valid_579202 != nil:
-    section.add "quotaUser", valid_579202
-  var valid_579203 = query.getOrDefault("provisionalUserProject")
-  valid_579203 = validateParameter(valid_579203, JString, required = false,
+  if valid_580227 != nil:
+    section.add "quotaUser", valid_580227
+  var valid_580228 = query.getOrDefault("provisionalUserProject")
+  valid_580228 = validateParameter(valid_580228, JString, required = false,
                                  default = nil)
-  if valid_579203 != nil:
-    section.add "provisionalUserProject", valid_579203
-  var valid_579204 = query.getOrDefault("fields")
-  valid_579204 = validateParameter(valid_579204, JString, required = false,
+  if valid_580228 != nil:
+    section.add "provisionalUserProject", valid_580228
+  var valid_580229 = query.getOrDefault("fields")
+  valid_580229 = validateParameter(valid_580229, JString, required = false,
                                  default = nil)
-  if valid_579204 != nil:
-    section.add "fields", valid_579204
+  if valid_580229 != nil:
+    section.add "fields", valid_580229
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2920,21 +2995,21 @@ proc validate_StorageDefaultObjectAccessControlsUpdate_579192(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579206: Call_StorageDefaultObjectAccessControlsUpdate_579191;
+proc call*(call_580231: Call_StorageDefaultObjectAccessControlsUpdate_580216;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates a default object ACL entry on the specified bucket.
   ## 
-  let valid = call_579206.validator(path, query, header, formData, body)
-  let scheme = call_579206.pickScheme
+  let valid = call_580231.validator(path, query, header, formData, body)
+  let scheme = call_580231.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579206.url(scheme.get, call_579206.host, call_579206.base,
-                         call_579206.route, valid.getOrDefault("path"),
+  let url = call_580231.url(scheme.get, call_580231.host, call_580231.base,
+                         call_580231.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579206, url, valid)
+  result = hook(call_580231, url, valid)
 
-proc call*(call_579207: Call_StorageDefaultObjectAccessControlsUpdate_579191;
+proc call*(call_580232: Call_StorageDefaultObjectAccessControlsUpdate_580216;
           bucket: string; entity: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -2964,33 +3039,33 @@ proc call*(call_579207: Call_StorageDefaultObjectAccessControlsUpdate_579191;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579208 = newJObject()
-  var query_579209 = newJObject()
-  var body_579210 = newJObject()
-  add(query_579209, "key", newJString(key))
-  add(query_579209, "prettyPrint", newJBool(prettyPrint))
-  add(query_579209, "oauth_token", newJString(oauthToken))
-  add(query_579209, "userProject", newJString(userProject))
-  add(query_579209, "alt", newJString(alt))
-  add(query_579209, "userIp", newJString(userIp))
-  add(query_579209, "quotaUser", newJString(quotaUser))
-  add(path_579208, "bucket", newJString(bucket))
+  var path_580233 = newJObject()
+  var query_580234 = newJObject()
+  var body_580235 = newJObject()
+  add(query_580234, "key", newJString(key))
+  add(query_580234, "prettyPrint", newJBool(prettyPrint))
+  add(query_580234, "oauth_token", newJString(oauthToken))
+  add(query_580234, "userProject", newJString(userProject))
+  add(query_580234, "alt", newJString(alt))
+  add(query_580234, "userIp", newJString(userIp))
+  add(query_580234, "quotaUser", newJString(quotaUser))
+  add(path_580233, "bucket", newJString(bucket))
   if body != nil:
-    body_579210 = body
-  add(query_579209, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579208, "entity", newJString(entity))
-  add(query_579209, "fields", newJString(fields))
-  result = call_579207.call(path_579208, query_579209, nil, nil, body_579210)
+    body_580235 = body
+  add(query_580234, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580233, "entity", newJString(entity))
+  add(query_580234, "fields", newJString(fields))
+  result = call_580232.call(path_580233, query_580234, nil, nil, body_580235)
 
-var storageDefaultObjectAccessControlsUpdate* = Call_StorageDefaultObjectAccessControlsUpdate_579191(
+var storageDefaultObjectAccessControlsUpdate* = Call_StorageDefaultObjectAccessControlsUpdate_580216(
     name: "storageDefaultObjectAccessControlsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/b/{bucket}/defaultObjectAcl/{entity}",
-    validator: validate_StorageDefaultObjectAccessControlsUpdate_579192,
-    base: "/storage/v1", url: url_StorageDefaultObjectAccessControlsUpdate_579193,
+    validator: validate_StorageDefaultObjectAccessControlsUpdate_580217,
+    base: "/storage/v1", url: url_StorageDefaultObjectAccessControlsUpdate_580218,
     schemes: {Scheme.Https})
 type
-  Call_StorageDefaultObjectAccessControlsGet_579173 = ref object of OpenApiRestCall_578355
-proc url_StorageDefaultObjectAccessControlsGet_579175(protocol: Scheme;
+  Call_StorageDefaultObjectAccessControlsGet_580198 = ref object of OpenApiRestCall_579380
+proc url_StorageDefaultObjectAccessControlsGet_580200(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3006,9 +3081,14 @@ proc url_StorageDefaultObjectAccessControlsGet_579175(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageDefaultObjectAccessControlsGet_579174(path: JsonNode;
+proc validate_StorageDefaultObjectAccessControlsGet_580199(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the default object ACL entry for the specified entity on the specified bucket.
   ## 
@@ -3021,16 +3101,16 @@ proc validate_StorageDefaultObjectAccessControlsGet_579174(path: JsonNode;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579176 = path.getOrDefault("bucket")
-  valid_579176 = validateParameter(valid_579176, JString, required = true,
+  var valid_580201 = path.getOrDefault("bucket")
+  valid_580201 = validateParameter(valid_580201, JString, required = true,
                                  default = nil)
-  if valid_579176 != nil:
-    section.add "bucket", valid_579176
-  var valid_579177 = path.getOrDefault("entity")
-  valid_579177 = validateParameter(valid_579177, JString, required = true,
+  if valid_580201 != nil:
+    section.add "bucket", valid_580201
+  var valid_580202 = path.getOrDefault("entity")
+  valid_580202 = validateParameter(valid_580202, JString, required = true,
                                  default = nil)
-  if valid_579177 != nil:
-    section.add "entity", valid_579177
+  if valid_580202 != nil:
+    section.add "entity", valid_580202
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3052,51 +3132,51 @@ proc validate_StorageDefaultObjectAccessControlsGet_579174(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579178 = query.getOrDefault("key")
-  valid_579178 = validateParameter(valid_579178, JString, required = false,
+  var valid_580203 = query.getOrDefault("key")
+  valid_580203 = validateParameter(valid_580203, JString, required = false,
                                  default = nil)
-  if valid_579178 != nil:
-    section.add "key", valid_579178
-  var valid_579179 = query.getOrDefault("prettyPrint")
-  valid_579179 = validateParameter(valid_579179, JBool, required = false,
+  if valid_580203 != nil:
+    section.add "key", valid_580203
+  var valid_580204 = query.getOrDefault("prettyPrint")
+  valid_580204 = validateParameter(valid_580204, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579179 != nil:
-    section.add "prettyPrint", valid_579179
-  var valid_579180 = query.getOrDefault("oauth_token")
-  valid_579180 = validateParameter(valid_579180, JString, required = false,
+  if valid_580204 != nil:
+    section.add "prettyPrint", valid_580204
+  var valid_580205 = query.getOrDefault("oauth_token")
+  valid_580205 = validateParameter(valid_580205, JString, required = false,
                                  default = nil)
-  if valid_579180 != nil:
-    section.add "oauth_token", valid_579180
-  var valid_579181 = query.getOrDefault("userProject")
-  valid_579181 = validateParameter(valid_579181, JString, required = false,
+  if valid_580205 != nil:
+    section.add "oauth_token", valid_580205
+  var valid_580206 = query.getOrDefault("userProject")
+  valid_580206 = validateParameter(valid_580206, JString, required = false,
                                  default = nil)
-  if valid_579181 != nil:
-    section.add "userProject", valid_579181
-  var valid_579182 = query.getOrDefault("alt")
-  valid_579182 = validateParameter(valid_579182, JString, required = false,
+  if valid_580206 != nil:
+    section.add "userProject", valid_580206
+  var valid_580207 = query.getOrDefault("alt")
+  valid_580207 = validateParameter(valid_580207, JString, required = false,
                                  default = newJString("json"))
-  if valid_579182 != nil:
-    section.add "alt", valid_579182
-  var valid_579183 = query.getOrDefault("userIp")
-  valid_579183 = validateParameter(valid_579183, JString, required = false,
+  if valid_580207 != nil:
+    section.add "alt", valid_580207
+  var valid_580208 = query.getOrDefault("userIp")
+  valid_580208 = validateParameter(valid_580208, JString, required = false,
                                  default = nil)
-  if valid_579183 != nil:
-    section.add "userIp", valid_579183
-  var valid_579184 = query.getOrDefault("quotaUser")
-  valid_579184 = validateParameter(valid_579184, JString, required = false,
+  if valid_580208 != nil:
+    section.add "userIp", valid_580208
+  var valid_580209 = query.getOrDefault("quotaUser")
+  valid_580209 = validateParameter(valid_580209, JString, required = false,
                                  default = nil)
-  if valid_579184 != nil:
-    section.add "quotaUser", valid_579184
-  var valid_579185 = query.getOrDefault("provisionalUserProject")
-  valid_579185 = validateParameter(valid_579185, JString, required = false,
+  if valid_580209 != nil:
+    section.add "quotaUser", valid_580209
+  var valid_580210 = query.getOrDefault("provisionalUserProject")
+  valid_580210 = validateParameter(valid_580210, JString, required = false,
                                  default = nil)
-  if valid_579185 != nil:
-    section.add "provisionalUserProject", valid_579185
-  var valid_579186 = query.getOrDefault("fields")
-  valid_579186 = validateParameter(valid_579186, JString, required = false,
+  if valid_580210 != nil:
+    section.add "provisionalUserProject", valid_580210
+  var valid_580211 = query.getOrDefault("fields")
+  valid_580211 = validateParameter(valid_580211, JString, required = false,
                                  default = nil)
-  if valid_579186 != nil:
-    section.add "fields", valid_579186
+  if valid_580211 != nil:
+    section.add "fields", valid_580211
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3105,21 +3185,21 @@ proc validate_StorageDefaultObjectAccessControlsGet_579174(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579187: Call_StorageDefaultObjectAccessControlsGet_579173;
+proc call*(call_580212: Call_StorageDefaultObjectAccessControlsGet_580198;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns the default object ACL entry for the specified entity on the specified bucket.
   ## 
-  let valid = call_579187.validator(path, query, header, formData, body)
-  let scheme = call_579187.pickScheme
+  let valid = call_580212.validator(path, query, header, formData, body)
+  let scheme = call_580212.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579187.url(scheme.get, call_579187.host, call_579187.base,
-                         call_579187.route, valid.getOrDefault("path"),
+  let url = call_580212.url(scheme.get, call_580212.host, call_580212.base,
+                         call_580212.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579187, url, valid)
+  result = hook(call_580212, url, valid)
 
-proc call*(call_579188: Call_StorageDefaultObjectAccessControlsGet_579173;
+proc call*(call_580213: Call_StorageDefaultObjectAccessControlsGet_580198;
           bucket: string; entity: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = "";
@@ -3148,30 +3228,30 @@ proc call*(call_579188: Call_StorageDefaultObjectAccessControlsGet_579173;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579189 = newJObject()
-  var query_579190 = newJObject()
-  add(query_579190, "key", newJString(key))
-  add(query_579190, "prettyPrint", newJBool(prettyPrint))
-  add(query_579190, "oauth_token", newJString(oauthToken))
-  add(query_579190, "userProject", newJString(userProject))
-  add(query_579190, "alt", newJString(alt))
-  add(query_579190, "userIp", newJString(userIp))
-  add(query_579190, "quotaUser", newJString(quotaUser))
-  add(path_579189, "bucket", newJString(bucket))
-  add(query_579190, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579189, "entity", newJString(entity))
-  add(query_579190, "fields", newJString(fields))
-  result = call_579188.call(path_579189, query_579190, nil, nil, nil)
+  var path_580214 = newJObject()
+  var query_580215 = newJObject()
+  add(query_580215, "key", newJString(key))
+  add(query_580215, "prettyPrint", newJBool(prettyPrint))
+  add(query_580215, "oauth_token", newJString(oauthToken))
+  add(query_580215, "userProject", newJString(userProject))
+  add(query_580215, "alt", newJString(alt))
+  add(query_580215, "userIp", newJString(userIp))
+  add(query_580215, "quotaUser", newJString(quotaUser))
+  add(path_580214, "bucket", newJString(bucket))
+  add(query_580215, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580214, "entity", newJString(entity))
+  add(query_580215, "fields", newJString(fields))
+  result = call_580213.call(path_580214, query_580215, nil, nil, nil)
 
-var storageDefaultObjectAccessControlsGet* = Call_StorageDefaultObjectAccessControlsGet_579173(
+var storageDefaultObjectAccessControlsGet* = Call_StorageDefaultObjectAccessControlsGet_580198(
     name: "storageDefaultObjectAccessControlsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/b/{bucket}/defaultObjectAcl/{entity}",
-    validator: validate_StorageDefaultObjectAccessControlsGet_579174,
-    base: "/storage/v1", url: url_StorageDefaultObjectAccessControlsGet_579175,
+    validator: validate_StorageDefaultObjectAccessControlsGet_580199,
+    base: "/storage/v1", url: url_StorageDefaultObjectAccessControlsGet_580200,
     schemes: {Scheme.Https})
 type
-  Call_StorageDefaultObjectAccessControlsPatch_579229 = ref object of OpenApiRestCall_578355
-proc url_StorageDefaultObjectAccessControlsPatch_579231(protocol: Scheme;
+  Call_StorageDefaultObjectAccessControlsPatch_580254 = ref object of OpenApiRestCall_579380
+proc url_StorageDefaultObjectAccessControlsPatch_580256(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3187,9 +3267,14 @@ proc url_StorageDefaultObjectAccessControlsPatch_579231(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageDefaultObjectAccessControlsPatch_579230(path: JsonNode;
+proc validate_StorageDefaultObjectAccessControlsPatch_580255(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Patches a default object ACL entry on the specified bucket.
   ## 
@@ -3202,16 +3287,16 @@ proc validate_StorageDefaultObjectAccessControlsPatch_579230(path: JsonNode;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579232 = path.getOrDefault("bucket")
-  valid_579232 = validateParameter(valid_579232, JString, required = true,
+  var valid_580257 = path.getOrDefault("bucket")
+  valid_580257 = validateParameter(valid_580257, JString, required = true,
                                  default = nil)
-  if valid_579232 != nil:
-    section.add "bucket", valid_579232
-  var valid_579233 = path.getOrDefault("entity")
-  valid_579233 = validateParameter(valid_579233, JString, required = true,
+  if valid_580257 != nil:
+    section.add "bucket", valid_580257
+  var valid_580258 = path.getOrDefault("entity")
+  valid_580258 = validateParameter(valid_580258, JString, required = true,
                                  default = nil)
-  if valid_579233 != nil:
-    section.add "entity", valid_579233
+  if valid_580258 != nil:
+    section.add "entity", valid_580258
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3233,51 +3318,51 @@ proc validate_StorageDefaultObjectAccessControlsPatch_579230(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579234 = query.getOrDefault("key")
-  valid_579234 = validateParameter(valid_579234, JString, required = false,
+  var valid_580259 = query.getOrDefault("key")
+  valid_580259 = validateParameter(valid_580259, JString, required = false,
                                  default = nil)
-  if valid_579234 != nil:
-    section.add "key", valid_579234
-  var valid_579235 = query.getOrDefault("prettyPrint")
-  valid_579235 = validateParameter(valid_579235, JBool, required = false,
+  if valid_580259 != nil:
+    section.add "key", valid_580259
+  var valid_580260 = query.getOrDefault("prettyPrint")
+  valid_580260 = validateParameter(valid_580260, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579235 != nil:
-    section.add "prettyPrint", valid_579235
-  var valid_579236 = query.getOrDefault("oauth_token")
-  valid_579236 = validateParameter(valid_579236, JString, required = false,
+  if valid_580260 != nil:
+    section.add "prettyPrint", valid_580260
+  var valid_580261 = query.getOrDefault("oauth_token")
+  valid_580261 = validateParameter(valid_580261, JString, required = false,
                                  default = nil)
-  if valid_579236 != nil:
-    section.add "oauth_token", valid_579236
-  var valid_579237 = query.getOrDefault("userProject")
-  valid_579237 = validateParameter(valid_579237, JString, required = false,
+  if valid_580261 != nil:
+    section.add "oauth_token", valid_580261
+  var valid_580262 = query.getOrDefault("userProject")
+  valid_580262 = validateParameter(valid_580262, JString, required = false,
                                  default = nil)
-  if valid_579237 != nil:
-    section.add "userProject", valid_579237
-  var valid_579238 = query.getOrDefault("alt")
-  valid_579238 = validateParameter(valid_579238, JString, required = false,
+  if valid_580262 != nil:
+    section.add "userProject", valid_580262
+  var valid_580263 = query.getOrDefault("alt")
+  valid_580263 = validateParameter(valid_580263, JString, required = false,
                                  default = newJString("json"))
-  if valid_579238 != nil:
-    section.add "alt", valid_579238
-  var valid_579239 = query.getOrDefault("userIp")
-  valid_579239 = validateParameter(valid_579239, JString, required = false,
+  if valid_580263 != nil:
+    section.add "alt", valid_580263
+  var valid_580264 = query.getOrDefault("userIp")
+  valid_580264 = validateParameter(valid_580264, JString, required = false,
                                  default = nil)
-  if valid_579239 != nil:
-    section.add "userIp", valid_579239
-  var valid_579240 = query.getOrDefault("quotaUser")
-  valid_579240 = validateParameter(valid_579240, JString, required = false,
+  if valid_580264 != nil:
+    section.add "userIp", valid_580264
+  var valid_580265 = query.getOrDefault("quotaUser")
+  valid_580265 = validateParameter(valid_580265, JString, required = false,
                                  default = nil)
-  if valid_579240 != nil:
-    section.add "quotaUser", valid_579240
-  var valid_579241 = query.getOrDefault("provisionalUserProject")
-  valid_579241 = validateParameter(valid_579241, JString, required = false,
+  if valid_580265 != nil:
+    section.add "quotaUser", valid_580265
+  var valid_580266 = query.getOrDefault("provisionalUserProject")
+  valid_580266 = validateParameter(valid_580266, JString, required = false,
                                  default = nil)
-  if valid_579241 != nil:
-    section.add "provisionalUserProject", valid_579241
-  var valid_579242 = query.getOrDefault("fields")
-  valid_579242 = validateParameter(valid_579242, JString, required = false,
+  if valid_580266 != nil:
+    section.add "provisionalUserProject", valid_580266
+  var valid_580267 = query.getOrDefault("fields")
+  valid_580267 = validateParameter(valid_580267, JString, required = false,
                                  default = nil)
-  if valid_579242 != nil:
-    section.add "fields", valid_579242
+  if valid_580267 != nil:
+    section.add "fields", valid_580267
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3289,21 +3374,21 @@ proc validate_StorageDefaultObjectAccessControlsPatch_579230(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579244: Call_StorageDefaultObjectAccessControlsPatch_579229;
+proc call*(call_580269: Call_StorageDefaultObjectAccessControlsPatch_580254;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Patches a default object ACL entry on the specified bucket.
   ## 
-  let valid = call_579244.validator(path, query, header, formData, body)
-  let scheme = call_579244.pickScheme
+  let valid = call_580269.validator(path, query, header, formData, body)
+  let scheme = call_580269.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579244.url(scheme.get, call_579244.host, call_579244.base,
-                         call_579244.route, valid.getOrDefault("path"),
+  let url = call_580269.url(scheme.get, call_580269.host, call_580269.base,
+                         call_580269.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579244, url, valid)
+  result = hook(call_580269, url, valid)
 
-proc call*(call_579245: Call_StorageDefaultObjectAccessControlsPatch_579229;
+proc call*(call_580270: Call_StorageDefaultObjectAccessControlsPatch_580254;
           bucket: string; entity: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -3333,33 +3418,33 @@ proc call*(call_579245: Call_StorageDefaultObjectAccessControlsPatch_579229;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579246 = newJObject()
-  var query_579247 = newJObject()
-  var body_579248 = newJObject()
-  add(query_579247, "key", newJString(key))
-  add(query_579247, "prettyPrint", newJBool(prettyPrint))
-  add(query_579247, "oauth_token", newJString(oauthToken))
-  add(query_579247, "userProject", newJString(userProject))
-  add(query_579247, "alt", newJString(alt))
-  add(query_579247, "userIp", newJString(userIp))
-  add(query_579247, "quotaUser", newJString(quotaUser))
-  add(path_579246, "bucket", newJString(bucket))
+  var path_580271 = newJObject()
+  var query_580272 = newJObject()
+  var body_580273 = newJObject()
+  add(query_580272, "key", newJString(key))
+  add(query_580272, "prettyPrint", newJBool(prettyPrint))
+  add(query_580272, "oauth_token", newJString(oauthToken))
+  add(query_580272, "userProject", newJString(userProject))
+  add(query_580272, "alt", newJString(alt))
+  add(query_580272, "userIp", newJString(userIp))
+  add(query_580272, "quotaUser", newJString(quotaUser))
+  add(path_580271, "bucket", newJString(bucket))
   if body != nil:
-    body_579248 = body
-  add(query_579247, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579246, "entity", newJString(entity))
-  add(query_579247, "fields", newJString(fields))
-  result = call_579245.call(path_579246, query_579247, nil, nil, body_579248)
+    body_580273 = body
+  add(query_580272, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580271, "entity", newJString(entity))
+  add(query_580272, "fields", newJString(fields))
+  result = call_580270.call(path_580271, query_580272, nil, nil, body_580273)
 
-var storageDefaultObjectAccessControlsPatch* = Call_StorageDefaultObjectAccessControlsPatch_579229(
+var storageDefaultObjectAccessControlsPatch* = Call_StorageDefaultObjectAccessControlsPatch_580254(
     name: "storageDefaultObjectAccessControlsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/b/{bucket}/defaultObjectAcl/{entity}",
-    validator: validate_StorageDefaultObjectAccessControlsPatch_579230,
-    base: "/storage/v1", url: url_StorageDefaultObjectAccessControlsPatch_579231,
+    validator: validate_StorageDefaultObjectAccessControlsPatch_580255,
+    base: "/storage/v1", url: url_StorageDefaultObjectAccessControlsPatch_580256,
     schemes: {Scheme.Https})
 type
-  Call_StorageDefaultObjectAccessControlsDelete_579211 = ref object of OpenApiRestCall_578355
-proc url_StorageDefaultObjectAccessControlsDelete_579213(protocol: Scheme;
+  Call_StorageDefaultObjectAccessControlsDelete_580236 = ref object of OpenApiRestCall_579380
+proc url_StorageDefaultObjectAccessControlsDelete_580238(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3375,9 +3460,14 @@ proc url_StorageDefaultObjectAccessControlsDelete_579213(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageDefaultObjectAccessControlsDelete_579212(path: JsonNode;
+proc validate_StorageDefaultObjectAccessControlsDelete_580237(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Permanently deletes the default object ACL entry for the specified entity on the specified bucket.
   ## 
@@ -3390,16 +3480,16 @@ proc validate_StorageDefaultObjectAccessControlsDelete_579212(path: JsonNode;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579214 = path.getOrDefault("bucket")
-  valid_579214 = validateParameter(valid_579214, JString, required = true,
+  var valid_580239 = path.getOrDefault("bucket")
+  valid_580239 = validateParameter(valid_580239, JString, required = true,
                                  default = nil)
-  if valid_579214 != nil:
-    section.add "bucket", valid_579214
-  var valid_579215 = path.getOrDefault("entity")
-  valid_579215 = validateParameter(valid_579215, JString, required = true,
+  if valid_580239 != nil:
+    section.add "bucket", valid_580239
+  var valid_580240 = path.getOrDefault("entity")
+  valid_580240 = validateParameter(valid_580240, JString, required = true,
                                  default = nil)
-  if valid_579215 != nil:
-    section.add "entity", valid_579215
+  if valid_580240 != nil:
+    section.add "entity", valid_580240
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3421,51 +3511,51 @@ proc validate_StorageDefaultObjectAccessControlsDelete_579212(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579216 = query.getOrDefault("key")
-  valid_579216 = validateParameter(valid_579216, JString, required = false,
+  var valid_580241 = query.getOrDefault("key")
+  valid_580241 = validateParameter(valid_580241, JString, required = false,
                                  default = nil)
-  if valid_579216 != nil:
-    section.add "key", valid_579216
-  var valid_579217 = query.getOrDefault("prettyPrint")
-  valid_579217 = validateParameter(valid_579217, JBool, required = false,
+  if valid_580241 != nil:
+    section.add "key", valid_580241
+  var valid_580242 = query.getOrDefault("prettyPrint")
+  valid_580242 = validateParameter(valid_580242, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579217 != nil:
-    section.add "prettyPrint", valid_579217
-  var valid_579218 = query.getOrDefault("oauth_token")
-  valid_579218 = validateParameter(valid_579218, JString, required = false,
+  if valid_580242 != nil:
+    section.add "prettyPrint", valid_580242
+  var valid_580243 = query.getOrDefault("oauth_token")
+  valid_580243 = validateParameter(valid_580243, JString, required = false,
                                  default = nil)
-  if valid_579218 != nil:
-    section.add "oauth_token", valid_579218
-  var valid_579219 = query.getOrDefault("userProject")
-  valid_579219 = validateParameter(valid_579219, JString, required = false,
+  if valid_580243 != nil:
+    section.add "oauth_token", valid_580243
+  var valid_580244 = query.getOrDefault("userProject")
+  valid_580244 = validateParameter(valid_580244, JString, required = false,
                                  default = nil)
-  if valid_579219 != nil:
-    section.add "userProject", valid_579219
-  var valid_579220 = query.getOrDefault("alt")
-  valid_579220 = validateParameter(valid_579220, JString, required = false,
+  if valid_580244 != nil:
+    section.add "userProject", valid_580244
+  var valid_580245 = query.getOrDefault("alt")
+  valid_580245 = validateParameter(valid_580245, JString, required = false,
                                  default = newJString("json"))
-  if valid_579220 != nil:
-    section.add "alt", valid_579220
-  var valid_579221 = query.getOrDefault("userIp")
-  valid_579221 = validateParameter(valid_579221, JString, required = false,
+  if valid_580245 != nil:
+    section.add "alt", valid_580245
+  var valid_580246 = query.getOrDefault("userIp")
+  valid_580246 = validateParameter(valid_580246, JString, required = false,
                                  default = nil)
-  if valid_579221 != nil:
-    section.add "userIp", valid_579221
-  var valid_579222 = query.getOrDefault("quotaUser")
-  valid_579222 = validateParameter(valid_579222, JString, required = false,
+  if valid_580246 != nil:
+    section.add "userIp", valid_580246
+  var valid_580247 = query.getOrDefault("quotaUser")
+  valid_580247 = validateParameter(valid_580247, JString, required = false,
                                  default = nil)
-  if valid_579222 != nil:
-    section.add "quotaUser", valid_579222
-  var valid_579223 = query.getOrDefault("provisionalUserProject")
-  valid_579223 = validateParameter(valid_579223, JString, required = false,
+  if valid_580247 != nil:
+    section.add "quotaUser", valid_580247
+  var valid_580248 = query.getOrDefault("provisionalUserProject")
+  valid_580248 = validateParameter(valid_580248, JString, required = false,
                                  default = nil)
-  if valid_579223 != nil:
-    section.add "provisionalUserProject", valid_579223
-  var valid_579224 = query.getOrDefault("fields")
-  valid_579224 = validateParameter(valid_579224, JString, required = false,
+  if valid_580248 != nil:
+    section.add "provisionalUserProject", valid_580248
+  var valid_580249 = query.getOrDefault("fields")
+  valid_580249 = validateParameter(valid_580249, JString, required = false,
                                  default = nil)
-  if valid_579224 != nil:
-    section.add "fields", valid_579224
+  if valid_580249 != nil:
+    section.add "fields", valid_580249
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3474,21 +3564,21 @@ proc validate_StorageDefaultObjectAccessControlsDelete_579212(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579225: Call_StorageDefaultObjectAccessControlsDelete_579211;
+proc call*(call_580250: Call_StorageDefaultObjectAccessControlsDelete_580236;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Permanently deletes the default object ACL entry for the specified entity on the specified bucket.
   ## 
-  let valid = call_579225.validator(path, query, header, formData, body)
-  let scheme = call_579225.pickScheme
+  let valid = call_580250.validator(path, query, header, formData, body)
+  let scheme = call_580250.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579225.url(scheme.get, call_579225.host, call_579225.base,
-                         call_579225.route, valid.getOrDefault("path"),
+  let url = call_580250.url(scheme.get, call_580250.host, call_580250.base,
+                         call_580250.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579225, url, valid)
+  result = hook(call_580250, url, valid)
 
-proc call*(call_579226: Call_StorageDefaultObjectAccessControlsDelete_579211;
+proc call*(call_580251: Call_StorageDefaultObjectAccessControlsDelete_580236;
           bucket: string; entity: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = "";
@@ -3517,30 +3607,30 @@ proc call*(call_579226: Call_StorageDefaultObjectAccessControlsDelete_579211;
   ##         : The entity holding the permission. Can be user-userId, user-emailAddress, group-groupId, group-emailAddress, allUsers, or allAuthenticatedUsers.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579227 = newJObject()
-  var query_579228 = newJObject()
-  add(query_579228, "key", newJString(key))
-  add(query_579228, "prettyPrint", newJBool(prettyPrint))
-  add(query_579228, "oauth_token", newJString(oauthToken))
-  add(query_579228, "userProject", newJString(userProject))
-  add(query_579228, "alt", newJString(alt))
-  add(query_579228, "userIp", newJString(userIp))
-  add(query_579228, "quotaUser", newJString(quotaUser))
-  add(path_579227, "bucket", newJString(bucket))
-  add(query_579228, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579227, "entity", newJString(entity))
-  add(query_579228, "fields", newJString(fields))
-  result = call_579226.call(path_579227, query_579228, nil, nil, nil)
+  var path_580252 = newJObject()
+  var query_580253 = newJObject()
+  add(query_580253, "key", newJString(key))
+  add(query_580253, "prettyPrint", newJBool(prettyPrint))
+  add(query_580253, "oauth_token", newJString(oauthToken))
+  add(query_580253, "userProject", newJString(userProject))
+  add(query_580253, "alt", newJString(alt))
+  add(query_580253, "userIp", newJString(userIp))
+  add(query_580253, "quotaUser", newJString(quotaUser))
+  add(path_580252, "bucket", newJString(bucket))
+  add(query_580253, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580252, "entity", newJString(entity))
+  add(query_580253, "fields", newJString(fields))
+  result = call_580251.call(path_580252, query_580253, nil, nil, nil)
 
-var storageDefaultObjectAccessControlsDelete* = Call_StorageDefaultObjectAccessControlsDelete_579211(
+var storageDefaultObjectAccessControlsDelete* = Call_StorageDefaultObjectAccessControlsDelete_580236(
     name: "storageDefaultObjectAccessControlsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/b/{bucket}/defaultObjectAcl/{entity}",
-    validator: validate_StorageDefaultObjectAccessControlsDelete_579212,
-    base: "/storage/v1", url: url_StorageDefaultObjectAccessControlsDelete_579213,
+    validator: validate_StorageDefaultObjectAccessControlsDelete_580237,
+    base: "/storage/v1", url: url_StorageDefaultObjectAccessControlsDelete_580238,
     schemes: {Scheme.Https})
 type
-  Call_StorageBucketsSetIamPolicy_579267 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketsSetIamPolicy_579269(protocol: Scheme; host: string;
+  Call_StorageBucketsSetIamPolicy_580292 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketsSetIamPolicy_580294(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3554,9 +3644,14 @@ proc url_StorageBucketsSetIamPolicy_579269(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageBucketsSetIamPolicy_579268(path: JsonNode; query: JsonNode;
+proc validate_StorageBucketsSetIamPolicy_580293(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an IAM policy for the specified bucket.
   ## 
@@ -3567,11 +3662,11 @@ proc validate_StorageBucketsSetIamPolicy_579268(path: JsonNode; query: JsonNode;
   ##         : Name of a bucket.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579270 = path.getOrDefault("bucket")
-  valid_579270 = validateParameter(valid_579270, JString, required = true,
+  var valid_580295 = path.getOrDefault("bucket")
+  valid_580295 = validateParameter(valid_580295, JString, required = true,
                                  default = nil)
-  if valid_579270 != nil:
-    section.add "bucket", valid_579270
+  if valid_580295 != nil:
+    section.add "bucket", valid_580295
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3593,51 +3688,51 @@ proc validate_StorageBucketsSetIamPolicy_579268(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579271 = query.getOrDefault("key")
-  valid_579271 = validateParameter(valid_579271, JString, required = false,
+  var valid_580296 = query.getOrDefault("key")
+  valid_580296 = validateParameter(valid_580296, JString, required = false,
                                  default = nil)
-  if valid_579271 != nil:
-    section.add "key", valid_579271
-  var valid_579272 = query.getOrDefault("prettyPrint")
-  valid_579272 = validateParameter(valid_579272, JBool, required = false,
+  if valid_580296 != nil:
+    section.add "key", valid_580296
+  var valid_580297 = query.getOrDefault("prettyPrint")
+  valid_580297 = validateParameter(valid_580297, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579272 != nil:
-    section.add "prettyPrint", valid_579272
-  var valid_579273 = query.getOrDefault("oauth_token")
-  valid_579273 = validateParameter(valid_579273, JString, required = false,
+  if valid_580297 != nil:
+    section.add "prettyPrint", valid_580297
+  var valid_580298 = query.getOrDefault("oauth_token")
+  valid_580298 = validateParameter(valid_580298, JString, required = false,
                                  default = nil)
-  if valid_579273 != nil:
-    section.add "oauth_token", valid_579273
-  var valid_579274 = query.getOrDefault("userProject")
-  valid_579274 = validateParameter(valid_579274, JString, required = false,
+  if valid_580298 != nil:
+    section.add "oauth_token", valid_580298
+  var valid_580299 = query.getOrDefault("userProject")
+  valid_580299 = validateParameter(valid_580299, JString, required = false,
                                  default = nil)
-  if valid_579274 != nil:
-    section.add "userProject", valid_579274
-  var valid_579275 = query.getOrDefault("alt")
-  valid_579275 = validateParameter(valid_579275, JString, required = false,
+  if valid_580299 != nil:
+    section.add "userProject", valid_580299
+  var valid_580300 = query.getOrDefault("alt")
+  valid_580300 = validateParameter(valid_580300, JString, required = false,
                                  default = newJString("json"))
-  if valid_579275 != nil:
-    section.add "alt", valid_579275
-  var valid_579276 = query.getOrDefault("userIp")
-  valid_579276 = validateParameter(valid_579276, JString, required = false,
+  if valid_580300 != nil:
+    section.add "alt", valid_580300
+  var valid_580301 = query.getOrDefault("userIp")
+  valid_580301 = validateParameter(valid_580301, JString, required = false,
                                  default = nil)
-  if valid_579276 != nil:
-    section.add "userIp", valid_579276
-  var valid_579277 = query.getOrDefault("quotaUser")
-  valid_579277 = validateParameter(valid_579277, JString, required = false,
+  if valid_580301 != nil:
+    section.add "userIp", valid_580301
+  var valid_580302 = query.getOrDefault("quotaUser")
+  valid_580302 = validateParameter(valid_580302, JString, required = false,
                                  default = nil)
-  if valid_579277 != nil:
-    section.add "quotaUser", valid_579277
-  var valid_579278 = query.getOrDefault("provisionalUserProject")
-  valid_579278 = validateParameter(valid_579278, JString, required = false,
+  if valid_580302 != nil:
+    section.add "quotaUser", valid_580302
+  var valid_580303 = query.getOrDefault("provisionalUserProject")
+  valid_580303 = validateParameter(valid_580303, JString, required = false,
                                  default = nil)
-  if valid_579278 != nil:
-    section.add "provisionalUserProject", valid_579278
-  var valid_579279 = query.getOrDefault("fields")
-  valid_579279 = validateParameter(valid_579279, JString, required = false,
+  if valid_580303 != nil:
+    section.add "provisionalUserProject", valid_580303
+  var valid_580304 = query.getOrDefault("fields")
+  valid_580304 = validateParameter(valid_580304, JString, required = false,
                                  default = nil)
-  if valid_579279 != nil:
-    section.add "fields", valid_579279
+  if valid_580304 != nil:
+    section.add "fields", valid_580304
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3649,20 +3744,20 @@ proc validate_StorageBucketsSetIamPolicy_579268(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579281: Call_StorageBucketsSetIamPolicy_579267; path: JsonNode;
+proc call*(call_580306: Call_StorageBucketsSetIamPolicy_580292; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an IAM policy for the specified bucket.
   ## 
-  let valid = call_579281.validator(path, query, header, formData, body)
-  let scheme = call_579281.pickScheme
+  let valid = call_580306.validator(path, query, header, formData, body)
+  let scheme = call_580306.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579281.url(scheme.get, call_579281.host, call_579281.base,
-                         call_579281.route, valid.getOrDefault("path"),
+  let url = call_580306.url(scheme.get, call_580306.host, call_580306.base,
+                         call_580306.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579281, url, valid)
+  result = hook(call_580306, url, valid)
 
-proc call*(call_579282: Call_StorageBucketsSetIamPolicy_579267; bucket: string;
+proc call*(call_580307: Call_StorageBucketsSetIamPolicy_580292; bucket: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           userProject: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; body: JsonNode = nil;
@@ -3690,31 +3785,31 @@ proc call*(call_579282: Call_StorageBucketsSetIamPolicy_579267; bucket: string;
   ##                         : The project to be billed for this request if the target bucket is requester-pays bucket.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579283 = newJObject()
-  var query_579284 = newJObject()
-  var body_579285 = newJObject()
-  add(query_579284, "key", newJString(key))
-  add(query_579284, "prettyPrint", newJBool(prettyPrint))
-  add(query_579284, "oauth_token", newJString(oauthToken))
-  add(query_579284, "userProject", newJString(userProject))
-  add(query_579284, "alt", newJString(alt))
-  add(query_579284, "userIp", newJString(userIp))
-  add(query_579284, "quotaUser", newJString(quotaUser))
-  add(path_579283, "bucket", newJString(bucket))
+  var path_580308 = newJObject()
+  var query_580309 = newJObject()
+  var body_580310 = newJObject()
+  add(query_580309, "key", newJString(key))
+  add(query_580309, "prettyPrint", newJBool(prettyPrint))
+  add(query_580309, "oauth_token", newJString(oauthToken))
+  add(query_580309, "userProject", newJString(userProject))
+  add(query_580309, "alt", newJString(alt))
+  add(query_580309, "userIp", newJString(userIp))
+  add(query_580309, "quotaUser", newJString(quotaUser))
+  add(path_580308, "bucket", newJString(bucket))
   if body != nil:
-    body_579285 = body
-  add(query_579284, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579284, "fields", newJString(fields))
-  result = call_579282.call(path_579283, query_579284, nil, nil, body_579285)
+    body_580310 = body
+  add(query_580309, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580309, "fields", newJString(fields))
+  result = call_580307.call(path_580308, query_580309, nil, nil, body_580310)
 
-var storageBucketsSetIamPolicy* = Call_StorageBucketsSetIamPolicy_579267(
+var storageBucketsSetIamPolicy* = Call_StorageBucketsSetIamPolicy_580292(
     name: "storageBucketsSetIamPolicy", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/b/{bucket}/iam",
-    validator: validate_StorageBucketsSetIamPolicy_579268, base: "/storage/v1",
-    url: url_StorageBucketsSetIamPolicy_579269, schemes: {Scheme.Https})
+    validator: validate_StorageBucketsSetIamPolicy_580293, base: "/storage/v1",
+    url: url_StorageBucketsSetIamPolicy_580294, schemes: {Scheme.Https})
 type
-  Call_StorageBucketsGetIamPolicy_579249 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketsGetIamPolicy_579251(protocol: Scheme; host: string;
+  Call_StorageBucketsGetIamPolicy_580274 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketsGetIamPolicy_580276(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3728,9 +3823,14 @@ proc url_StorageBucketsGetIamPolicy_579251(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageBucketsGetIamPolicy_579250(path: JsonNode; query: JsonNode;
+proc validate_StorageBucketsGetIamPolicy_580275(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns an IAM policy for the specified bucket.
   ## 
@@ -3741,11 +3841,11 @@ proc validate_StorageBucketsGetIamPolicy_579250(path: JsonNode; query: JsonNode;
   ##         : Name of a bucket.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579252 = path.getOrDefault("bucket")
-  valid_579252 = validateParameter(valid_579252, JString, required = true,
+  var valid_580277 = path.getOrDefault("bucket")
+  valid_580277 = validateParameter(valid_580277, JString, required = true,
                                  default = nil)
-  if valid_579252 != nil:
-    section.add "bucket", valid_579252
+  if valid_580277 != nil:
+    section.add "bucket", valid_580277
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3769,55 +3869,55 @@ proc validate_StorageBucketsGetIamPolicy_579250(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579253 = query.getOrDefault("key")
-  valid_579253 = validateParameter(valid_579253, JString, required = false,
+  var valid_580278 = query.getOrDefault("key")
+  valid_580278 = validateParameter(valid_580278, JString, required = false,
                                  default = nil)
-  if valid_579253 != nil:
-    section.add "key", valid_579253
-  var valid_579254 = query.getOrDefault("prettyPrint")
-  valid_579254 = validateParameter(valid_579254, JBool, required = false,
+  if valid_580278 != nil:
+    section.add "key", valid_580278
+  var valid_580279 = query.getOrDefault("prettyPrint")
+  valid_580279 = validateParameter(valid_580279, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579254 != nil:
-    section.add "prettyPrint", valid_579254
-  var valid_579255 = query.getOrDefault("oauth_token")
-  valid_579255 = validateParameter(valid_579255, JString, required = false,
+  if valid_580279 != nil:
+    section.add "prettyPrint", valid_580279
+  var valid_580280 = query.getOrDefault("oauth_token")
+  valid_580280 = validateParameter(valid_580280, JString, required = false,
                                  default = nil)
-  if valid_579255 != nil:
-    section.add "oauth_token", valid_579255
-  var valid_579256 = query.getOrDefault("userProject")
-  valid_579256 = validateParameter(valid_579256, JString, required = false,
+  if valid_580280 != nil:
+    section.add "oauth_token", valid_580280
+  var valid_580281 = query.getOrDefault("userProject")
+  valid_580281 = validateParameter(valid_580281, JString, required = false,
                                  default = nil)
-  if valid_579256 != nil:
-    section.add "userProject", valid_579256
-  var valid_579257 = query.getOrDefault("alt")
-  valid_579257 = validateParameter(valid_579257, JString, required = false,
+  if valid_580281 != nil:
+    section.add "userProject", valid_580281
+  var valid_580282 = query.getOrDefault("alt")
+  valid_580282 = validateParameter(valid_580282, JString, required = false,
                                  default = newJString("json"))
-  if valid_579257 != nil:
-    section.add "alt", valid_579257
-  var valid_579258 = query.getOrDefault("userIp")
-  valid_579258 = validateParameter(valid_579258, JString, required = false,
+  if valid_580282 != nil:
+    section.add "alt", valid_580282
+  var valid_580283 = query.getOrDefault("userIp")
+  valid_580283 = validateParameter(valid_580283, JString, required = false,
                                  default = nil)
-  if valid_579258 != nil:
-    section.add "userIp", valid_579258
-  var valid_579259 = query.getOrDefault("quotaUser")
-  valid_579259 = validateParameter(valid_579259, JString, required = false,
+  if valid_580283 != nil:
+    section.add "userIp", valid_580283
+  var valid_580284 = query.getOrDefault("quotaUser")
+  valid_580284 = validateParameter(valid_580284, JString, required = false,
                                  default = nil)
-  if valid_579259 != nil:
-    section.add "quotaUser", valid_579259
-  var valid_579260 = query.getOrDefault("optionsRequestedPolicyVersion")
-  valid_579260 = validateParameter(valid_579260, JInt, required = false, default = nil)
-  if valid_579260 != nil:
-    section.add "optionsRequestedPolicyVersion", valid_579260
-  var valid_579261 = query.getOrDefault("provisionalUserProject")
-  valid_579261 = validateParameter(valid_579261, JString, required = false,
+  if valid_580284 != nil:
+    section.add "quotaUser", valid_580284
+  var valid_580285 = query.getOrDefault("optionsRequestedPolicyVersion")
+  valid_580285 = validateParameter(valid_580285, JInt, required = false, default = nil)
+  if valid_580285 != nil:
+    section.add "optionsRequestedPolicyVersion", valid_580285
+  var valid_580286 = query.getOrDefault("provisionalUserProject")
+  valid_580286 = validateParameter(valid_580286, JString, required = false,
                                  default = nil)
-  if valid_579261 != nil:
-    section.add "provisionalUserProject", valid_579261
-  var valid_579262 = query.getOrDefault("fields")
-  valid_579262 = validateParameter(valid_579262, JString, required = false,
+  if valid_580286 != nil:
+    section.add "provisionalUserProject", valid_580286
+  var valid_580287 = query.getOrDefault("fields")
+  valid_580287 = validateParameter(valid_580287, JString, required = false,
                                  default = nil)
-  if valid_579262 != nil:
-    section.add "fields", valid_579262
+  if valid_580287 != nil:
+    section.add "fields", valid_580287
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3826,20 +3926,20 @@ proc validate_StorageBucketsGetIamPolicy_579250(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579263: Call_StorageBucketsGetIamPolicy_579249; path: JsonNode;
+proc call*(call_580288: Call_StorageBucketsGetIamPolicy_580274; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns an IAM policy for the specified bucket.
   ## 
-  let valid = call_579263.validator(path, query, header, formData, body)
-  let scheme = call_579263.pickScheme
+  let valid = call_580288.validator(path, query, header, formData, body)
+  let scheme = call_580288.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579263.url(scheme.get, call_579263.host, call_579263.base,
-                         call_579263.route, valid.getOrDefault("path"),
+  let url = call_580288.url(scheme.get, call_580288.host, call_580288.base,
+                         call_580288.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579263, url, valid)
+  result = hook(call_580288, url, valid)
 
-proc call*(call_579264: Call_StorageBucketsGetIamPolicy_579249; bucket: string;
+proc call*(call_580289: Call_StorageBucketsGetIamPolicy_580274; bucket: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           userProject: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; optionsRequestedPolicyVersion: int = 0;
@@ -3868,30 +3968,30 @@ proc call*(call_579264: Call_StorageBucketsGetIamPolicy_579249; bucket: string;
   ##                         : The project to be billed for this request if the target bucket is requester-pays bucket.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579265 = newJObject()
-  var query_579266 = newJObject()
-  add(query_579266, "key", newJString(key))
-  add(query_579266, "prettyPrint", newJBool(prettyPrint))
-  add(query_579266, "oauth_token", newJString(oauthToken))
-  add(query_579266, "userProject", newJString(userProject))
-  add(query_579266, "alt", newJString(alt))
-  add(query_579266, "userIp", newJString(userIp))
-  add(query_579266, "quotaUser", newJString(quotaUser))
-  add(query_579266, "optionsRequestedPolicyVersion",
+  var path_580290 = newJObject()
+  var query_580291 = newJObject()
+  add(query_580291, "key", newJString(key))
+  add(query_580291, "prettyPrint", newJBool(prettyPrint))
+  add(query_580291, "oauth_token", newJString(oauthToken))
+  add(query_580291, "userProject", newJString(userProject))
+  add(query_580291, "alt", newJString(alt))
+  add(query_580291, "userIp", newJString(userIp))
+  add(query_580291, "quotaUser", newJString(quotaUser))
+  add(query_580291, "optionsRequestedPolicyVersion",
       newJInt(optionsRequestedPolicyVersion))
-  add(path_579265, "bucket", newJString(bucket))
-  add(query_579266, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579266, "fields", newJString(fields))
-  result = call_579264.call(path_579265, query_579266, nil, nil, nil)
+  add(path_580290, "bucket", newJString(bucket))
+  add(query_580291, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580291, "fields", newJString(fields))
+  result = call_580289.call(path_580290, query_580291, nil, nil, nil)
 
-var storageBucketsGetIamPolicy* = Call_StorageBucketsGetIamPolicy_579249(
+var storageBucketsGetIamPolicy* = Call_StorageBucketsGetIamPolicy_580274(
     name: "storageBucketsGetIamPolicy", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/b/{bucket}/iam",
-    validator: validate_StorageBucketsGetIamPolicy_579250, base: "/storage/v1",
-    url: url_StorageBucketsGetIamPolicy_579251, schemes: {Scheme.Https})
+    validator: validate_StorageBucketsGetIamPolicy_580275, base: "/storage/v1",
+    url: url_StorageBucketsGetIamPolicy_580276, schemes: {Scheme.Https})
 type
-  Call_StorageBucketsTestIamPermissions_579286 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketsTestIamPermissions_579288(protocol: Scheme; host: string;
+  Call_StorageBucketsTestIamPermissions_580311 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketsTestIamPermissions_580313(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3905,9 +4005,14 @@ proc url_StorageBucketsTestIamPermissions_579288(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageBucketsTestIamPermissions_579287(path: JsonNode;
+proc validate_StorageBucketsTestIamPermissions_580312(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Tests a set of permissions on the given bucket to see which, if any, are held by the caller.
   ## 
@@ -3918,11 +4023,11 @@ proc validate_StorageBucketsTestIamPermissions_579287(path: JsonNode;
   ##         : Name of a bucket.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579289 = path.getOrDefault("bucket")
-  valid_579289 = validateParameter(valid_579289, JString, required = true,
+  var valid_580314 = path.getOrDefault("bucket")
+  valid_580314 = validateParameter(valid_580314, JString, required = true,
                                  default = nil)
-  if valid_579289 != nil:
-    section.add "bucket", valid_579289
+  if valid_580314 != nil:
+    section.add "bucket", valid_580314
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3946,57 +4051,57 @@ proc validate_StorageBucketsTestIamPermissions_579287(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579290 = query.getOrDefault("key")
-  valid_579290 = validateParameter(valid_579290, JString, required = false,
+  var valid_580315 = query.getOrDefault("key")
+  valid_580315 = validateParameter(valid_580315, JString, required = false,
                                  default = nil)
-  if valid_579290 != nil:
-    section.add "key", valid_579290
-  var valid_579291 = query.getOrDefault("prettyPrint")
-  valid_579291 = validateParameter(valid_579291, JBool, required = false,
+  if valid_580315 != nil:
+    section.add "key", valid_580315
+  var valid_580316 = query.getOrDefault("prettyPrint")
+  valid_580316 = validateParameter(valid_580316, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579291 != nil:
-    section.add "prettyPrint", valid_579291
-  var valid_579292 = query.getOrDefault("oauth_token")
-  valid_579292 = validateParameter(valid_579292, JString, required = false,
+  if valid_580316 != nil:
+    section.add "prettyPrint", valid_580316
+  var valid_580317 = query.getOrDefault("oauth_token")
+  valid_580317 = validateParameter(valid_580317, JString, required = false,
                                  default = nil)
-  if valid_579292 != nil:
-    section.add "oauth_token", valid_579292
-  var valid_579293 = query.getOrDefault("userProject")
-  valid_579293 = validateParameter(valid_579293, JString, required = false,
+  if valid_580317 != nil:
+    section.add "oauth_token", valid_580317
+  var valid_580318 = query.getOrDefault("userProject")
+  valid_580318 = validateParameter(valid_580318, JString, required = false,
                                  default = nil)
-  if valid_579293 != nil:
-    section.add "userProject", valid_579293
+  if valid_580318 != nil:
+    section.add "userProject", valid_580318
   assert query != nil,
         "query argument is necessary due to required `permissions` field"
-  var valid_579294 = query.getOrDefault("permissions")
-  valid_579294 = validateParameter(valid_579294, JArray, required = true, default = nil)
-  if valid_579294 != nil:
-    section.add "permissions", valid_579294
-  var valid_579295 = query.getOrDefault("alt")
-  valid_579295 = validateParameter(valid_579295, JString, required = false,
+  var valid_580319 = query.getOrDefault("permissions")
+  valid_580319 = validateParameter(valid_580319, JArray, required = true, default = nil)
+  if valid_580319 != nil:
+    section.add "permissions", valid_580319
+  var valid_580320 = query.getOrDefault("alt")
+  valid_580320 = validateParameter(valid_580320, JString, required = false,
                                  default = newJString("json"))
-  if valid_579295 != nil:
-    section.add "alt", valid_579295
-  var valid_579296 = query.getOrDefault("userIp")
-  valid_579296 = validateParameter(valid_579296, JString, required = false,
+  if valid_580320 != nil:
+    section.add "alt", valid_580320
+  var valid_580321 = query.getOrDefault("userIp")
+  valid_580321 = validateParameter(valid_580321, JString, required = false,
                                  default = nil)
-  if valid_579296 != nil:
-    section.add "userIp", valid_579296
-  var valid_579297 = query.getOrDefault("quotaUser")
-  valid_579297 = validateParameter(valid_579297, JString, required = false,
+  if valid_580321 != nil:
+    section.add "userIp", valid_580321
+  var valid_580322 = query.getOrDefault("quotaUser")
+  valid_580322 = validateParameter(valid_580322, JString, required = false,
                                  default = nil)
-  if valid_579297 != nil:
-    section.add "quotaUser", valid_579297
-  var valid_579298 = query.getOrDefault("provisionalUserProject")
-  valid_579298 = validateParameter(valid_579298, JString, required = false,
+  if valid_580322 != nil:
+    section.add "quotaUser", valid_580322
+  var valid_580323 = query.getOrDefault("provisionalUserProject")
+  valid_580323 = validateParameter(valid_580323, JString, required = false,
                                  default = nil)
-  if valid_579298 != nil:
-    section.add "provisionalUserProject", valid_579298
-  var valid_579299 = query.getOrDefault("fields")
-  valid_579299 = validateParameter(valid_579299, JString, required = false,
+  if valid_580323 != nil:
+    section.add "provisionalUserProject", valid_580323
+  var valid_580324 = query.getOrDefault("fields")
+  valid_580324 = validateParameter(valid_580324, JString, required = false,
                                  default = nil)
-  if valid_579299 != nil:
-    section.add "fields", valid_579299
+  if valid_580324 != nil:
+    section.add "fields", valid_580324
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4005,21 +4110,21 @@ proc validate_StorageBucketsTestIamPermissions_579287(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579300: Call_StorageBucketsTestIamPermissions_579286;
+proc call*(call_580325: Call_StorageBucketsTestIamPermissions_580311;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Tests a set of permissions on the given bucket to see which, if any, are held by the caller.
   ## 
-  let valid = call_579300.validator(path, query, header, formData, body)
-  let scheme = call_579300.pickScheme
+  let valid = call_580325.validator(path, query, header, formData, body)
+  let scheme = call_580325.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579300.url(scheme.get, call_579300.host, call_579300.base,
-                         call_579300.route, valid.getOrDefault("path"),
+  let url = call_580325.url(scheme.get, call_580325.host, call_580325.base,
+                         call_580325.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579300, url, valid)
+  result = hook(call_580325, url, valid)
 
-proc call*(call_579301: Call_StorageBucketsTestIamPermissions_579286;
+proc call*(call_580326: Call_StorageBucketsTestIamPermissions_580311;
           permissions: JsonNode; bucket: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; userProject: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -4048,31 +4153,31 @@ proc call*(call_579301: Call_StorageBucketsTestIamPermissions_579286;
   ##                         : The project to be billed for this request if the target bucket is requester-pays bucket.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579302 = newJObject()
-  var query_579303 = newJObject()
-  add(query_579303, "key", newJString(key))
-  add(query_579303, "prettyPrint", newJBool(prettyPrint))
-  add(query_579303, "oauth_token", newJString(oauthToken))
-  add(query_579303, "userProject", newJString(userProject))
+  var path_580327 = newJObject()
+  var query_580328 = newJObject()
+  add(query_580328, "key", newJString(key))
+  add(query_580328, "prettyPrint", newJBool(prettyPrint))
+  add(query_580328, "oauth_token", newJString(oauthToken))
+  add(query_580328, "userProject", newJString(userProject))
   if permissions != nil:
-    query_579303.add "permissions", permissions
-  add(query_579303, "alt", newJString(alt))
-  add(query_579303, "userIp", newJString(userIp))
-  add(query_579303, "quotaUser", newJString(quotaUser))
-  add(path_579302, "bucket", newJString(bucket))
-  add(query_579303, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579303, "fields", newJString(fields))
-  result = call_579301.call(path_579302, query_579303, nil, nil, nil)
+    query_580328.add "permissions", permissions
+  add(query_580328, "alt", newJString(alt))
+  add(query_580328, "userIp", newJString(userIp))
+  add(query_580328, "quotaUser", newJString(quotaUser))
+  add(path_580327, "bucket", newJString(bucket))
+  add(query_580328, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580328, "fields", newJString(fields))
+  result = call_580326.call(path_580327, query_580328, nil, nil, nil)
 
-var storageBucketsTestIamPermissions* = Call_StorageBucketsTestIamPermissions_579286(
+var storageBucketsTestIamPermissions* = Call_StorageBucketsTestIamPermissions_580311(
     name: "storageBucketsTestIamPermissions", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/b/{bucket}/iam/testPermissions",
-    validator: validate_StorageBucketsTestIamPermissions_579287,
-    base: "/storage/v1", url: url_StorageBucketsTestIamPermissions_579288,
+    validator: validate_StorageBucketsTestIamPermissions_580312,
+    base: "/storage/v1", url: url_StorageBucketsTestIamPermissions_580313,
     schemes: {Scheme.Https})
 type
-  Call_StorageBucketsLockRetentionPolicy_579304 = ref object of OpenApiRestCall_578355
-proc url_StorageBucketsLockRetentionPolicy_579306(protocol: Scheme; host: string;
+  Call_StorageBucketsLockRetentionPolicy_580329 = ref object of OpenApiRestCall_579380
+proc url_StorageBucketsLockRetentionPolicy_580331(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4086,9 +4191,14 @@ proc url_StorageBucketsLockRetentionPolicy_579306(protocol: Scheme; host: string
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageBucketsLockRetentionPolicy_579305(path: JsonNode;
+proc validate_StorageBucketsLockRetentionPolicy_580330(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Locks retention policy on a bucket.
   ## 
@@ -4099,11 +4209,11 @@ proc validate_StorageBucketsLockRetentionPolicy_579305(path: JsonNode;
   ##         : Name of a bucket.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579307 = path.getOrDefault("bucket")
-  valid_579307 = validateParameter(valid_579307, JString, required = true,
+  var valid_580332 = path.getOrDefault("bucket")
+  valid_580332 = validateParameter(valid_580332, JString, required = true,
                                  default = nil)
-  if valid_579307 != nil:
-    section.add "bucket", valid_579307
+  if valid_580332 != nil:
+    section.add "bucket", valid_580332
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -4127,57 +4237,57 @@ proc validate_StorageBucketsLockRetentionPolicy_579305(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579308 = query.getOrDefault("key")
-  valid_579308 = validateParameter(valid_579308, JString, required = false,
+  var valid_580333 = query.getOrDefault("key")
+  valid_580333 = validateParameter(valid_580333, JString, required = false,
                                  default = nil)
-  if valid_579308 != nil:
-    section.add "key", valid_579308
-  var valid_579309 = query.getOrDefault("prettyPrint")
-  valid_579309 = validateParameter(valid_579309, JBool, required = false,
+  if valid_580333 != nil:
+    section.add "key", valid_580333
+  var valid_580334 = query.getOrDefault("prettyPrint")
+  valid_580334 = validateParameter(valid_580334, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579309 != nil:
-    section.add "prettyPrint", valid_579309
-  var valid_579310 = query.getOrDefault("oauth_token")
-  valid_579310 = validateParameter(valid_579310, JString, required = false,
+  if valid_580334 != nil:
+    section.add "prettyPrint", valid_580334
+  var valid_580335 = query.getOrDefault("oauth_token")
+  valid_580335 = validateParameter(valid_580335, JString, required = false,
                                  default = nil)
-  if valid_579310 != nil:
-    section.add "oauth_token", valid_579310
-  var valid_579311 = query.getOrDefault("userProject")
-  valid_579311 = validateParameter(valid_579311, JString, required = false,
+  if valid_580335 != nil:
+    section.add "oauth_token", valid_580335
+  var valid_580336 = query.getOrDefault("userProject")
+  valid_580336 = validateParameter(valid_580336, JString, required = false,
                                  default = nil)
-  if valid_579311 != nil:
-    section.add "userProject", valid_579311
-  var valid_579312 = query.getOrDefault("alt")
-  valid_579312 = validateParameter(valid_579312, JString, required = false,
+  if valid_580336 != nil:
+    section.add "userProject", valid_580336
+  var valid_580337 = query.getOrDefault("alt")
+  valid_580337 = validateParameter(valid_580337, JString, required = false,
                                  default = newJString("json"))
-  if valid_579312 != nil:
-    section.add "alt", valid_579312
-  var valid_579313 = query.getOrDefault("userIp")
-  valid_579313 = validateParameter(valid_579313, JString, required = false,
+  if valid_580337 != nil:
+    section.add "alt", valid_580337
+  var valid_580338 = query.getOrDefault("userIp")
+  valid_580338 = validateParameter(valid_580338, JString, required = false,
                                  default = nil)
-  if valid_579313 != nil:
-    section.add "userIp", valid_579313
-  var valid_579314 = query.getOrDefault("quotaUser")
-  valid_579314 = validateParameter(valid_579314, JString, required = false,
+  if valid_580338 != nil:
+    section.add "userIp", valid_580338
+  var valid_580339 = query.getOrDefault("quotaUser")
+  valid_580339 = validateParameter(valid_580339, JString, required = false,
                                  default = nil)
-  if valid_579314 != nil:
-    section.add "quotaUser", valid_579314
+  if valid_580339 != nil:
+    section.add "quotaUser", valid_580339
   assert query != nil, "query argument is necessary due to required `ifMetagenerationMatch` field"
-  var valid_579315 = query.getOrDefault("ifMetagenerationMatch")
-  valid_579315 = validateParameter(valid_579315, JString, required = true,
+  var valid_580340 = query.getOrDefault("ifMetagenerationMatch")
+  valid_580340 = validateParameter(valid_580340, JString, required = true,
                                  default = nil)
-  if valid_579315 != nil:
-    section.add "ifMetagenerationMatch", valid_579315
-  var valid_579316 = query.getOrDefault("provisionalUserProject")
-  valid_579316 = validateParameter(valid_579316, JString, required = false,
+  if valid_580340 != nil:
+    section.add "ifMetagenerationMatch", valid_580340
+  var valid_580341 = query.getOrDefault("provisionalUserProject")
+  valid_580341 = validateParameter(valid_580341, JString, required = false,
                                  default = nil)
-  if valid_579316 != nil:
-    section.add "provisionalUserProject", valid_579316
-  var valid_579317 = query.getOrDefault("fields")
-  valid_579317 = validateParameter(valid_579317, JString, required = false,
+  if valid_580341 != nil:
+    section.add "provisionalUserProject", valid_580341
+  var valid_580342 = query.getOrDefault("fields")
+  valid_580342 = validateParameter(valid_580342, JString, required = false,
                                  default = nil)
-  if valid_579317 != nil:
-    section.add "fields", valid_579317
+  if valid_580342 != nil:
+    section.add "fields", valid_580342
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4186,21 +4296,21 @@ proc validate_StorageBucketsLockRetentionPolicy_579305(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579318: Call_StorageBucketsLockRetentionPolicy_579304;
+proc call*(call_580343: Call_StorageBucketsLockRetentionPolicy_580329;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Locks retention policy on a bucket.
   ## 
-  let valid = call_579318.validator(path, query, header, formData, body)
-  let scheme = call_579318.pickScheme
+  let valid = call_580343.validator(path, query, header, formData, body)
+  let scheme = call_580343.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579318.url(scheme.get, call_579318.host, call_579318.base,
-                         call_579318.route, valid.getOrDefault("path"),
+  let url = call_580343.url(scheme.get, call_580343.host, call_580343.base,
+                         call_580343.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579318, url, valid)
+  result = hook(call_580343, url, valid)
 
-proc call*(call_579319: Call_StorageBucketsLockRetentionPolicy_579304;
+proc call*(call_580344: Call_StorageBucketsLockRetentionPolicy_580329;
           ifMetagenerationMatch: string; bucket: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; userProject: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -4229,30 +4339,30 @@ proc call*(call_579319: Call_StorageBucketsLockRetentionPolicy_579304;
   ##                         : The project to be billed for this request if the target bucket is requester-pays bucket.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579320 = newJObject()
-  var query_579321 = newJObject()
-  add(query_579321, "key", newJString(key))
-  add(query_579321, "prettyPrint", newJBool(prettyPrint))
-  add(query_579321, "oauth_token", newJString(oauthToken))
-  add(query_579321, "userProject", newJString(userProject))
-  add(query_579321, "alt", newJString(alt))
-  add(query_579321, "userIp", newJString(userIp))
-  add(query_579321, "quotaUser", newJString(quotaUser))
-  add(query_579321, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
-  add(path_579320, "bucket", newJString(bucket))
-  add(query_579321, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579321, "fields", newJString(fields))
-  result = call_579319.call(path_579320, query_579321, nil, nil, nil)
+  var path_580345 = newJObject()
+  var query_580346 = newJObject()
+  add(query_580346, "key", newJString(key))
+  add(query_580346, "prettyPrint", newJBool(prettyPrint))
+  add(query_580346, "oauth_token", newJString(oauthToken))
+  add(query_580346, "userProject", newJString(userProject))
+  add(query_580346, "alt", newJString(alt))
+  add(query_580346, "userIp", newJString(userIp))
+  add(query_580346, "quotaUser", newJString(quotaUser))
+  add(query_580346, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
+  add(path_580345, "bucket", newJString(bucket))
+  add(query_580346, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580346, "fields", newJString(fields))
+  result = call_580344.call(path_580345, query_580346, nil, nil, nil)
 
-var storageBucketsLockRetentionPolicy* = Call_StorageBucketsLockRetentionPolicy_579304(
+var storageBucketsLockRetentionPolicy* = Call_StorageBucketsLockRetentionPolicy_580329(
     name: "storageBucketsLockRetentionPolicy", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/b/{bucket}/lockRetentionPolicy",
-    validator: validate_StorageBucketsLockRetentionPolicy_579305,
-    base: "/storage/v1", url: url_StorageBucketsLockRetentionPolicy_579306,
+    validator: validate_StorageBucketsLockRetentionPolicy_580330,
+    base: "/storage/v1", url: url_StorageBucketsLockRetentionPolicy_580331,
     schemes: {Scheme.Https})
 type
-  Call_StorageNotificationsInsert_579339 = ref object of OpenApiRestCall_578355
-proc url_StorageNotificationsInsert_579341(protocol: Scheme; host: string;
+  Call_StorageNotificationsInsert_580364 = ref object of OpenApiRestCall_579380
+proc url_StorageNotificationsInsert_580366(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4266,9 +4376,14 @@ proc url_StorageNotificationsInsert_579341(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageNotificationsInsert_579340(path: JsonNode; query: JsonNode;
+proc validate_StorageNotificationsInsert_580365(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a notification subscription for a given bucket.
   ## 
@@ -4279,11 +4394,11 @@ proc validate_StorageNotificationsInsert_579340(path: JsonNode; query: JsonNode;
   ##         : The parent bucket of the notification.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579342 = path.getOrDefault("bucket")
-  valid_579342 = validateParameter(valid_579342, JString, required = true,
+  var valid_580367 = path.getOrDefault("bucket")
+  valid_580367 = validateParameter(valid_580367, JString, required = true,
                                  default = nil)
-  if valid_579342 != nil:
-    section.add "bucket", valid_579342
+  if valid_580367 != nil:
+    section.add "bucket", valid_580367
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -4305,51 +4420,51 @@ proc validate_StorageNotificationsInsert_579340(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579343 = query.getOrDefault("key")
-  valid_579343 = validateParameter(valid_579343, JString, required = false,
+  var valid_580368 = query.getOrDefault("key")
+  valid_580368 = validateParameter(valid_580368, JString, required = false,
                                  default = nil)
-  if valid_579343 != nil:
-    section.add "key", valid_579343
-  var valid_579344 = query.getOrDefault("prettyPrint")
-  valid_579344 = validateParameter(valid_579344, JBool, required = false,
+  if valid_580368 != nil:
+    section.add "key", valid_580368
+  var valid_580369 = query.getOrDefault("prettyPrint")
+  valid_580369 = validateParameter(valid_580369, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579344 != nil:
-    section.add "prettyPrint", valid_579344
-  var valid_579345 = query.getOrDefault("oauth_token")
-  valid_579345 = validateParameter(valid_579345, JString, required = false,
+  if valid_580369 != nil:
+    section.add "prettyPrint", valid_580369
+  var valid_580370 = query.getOrDefault("oauth_token")
+  valid_580370 = validateParameter(valid_580370, JString, required = false,
                                  default = nil)
-  if valid_579345 != nil:
-    section.add "oauth_token", valid_579345
-  var valid_579346 = query.getOrDefault("userProject")
-  valid_579346 = validateParameter(valid_579346, JString, required = false,
+  if valid_580370 != nil:
+    section.add "oauth_token", valid_580370
+  var valid_580371 = query.getOrDefault("userProject")
+  valid_580371 = validateParameter(valid_580371, JString, required = false,
                                  default = nil)
-  if valid_579346 != nil:
-    section.add "userProject", valid_579346
-  var valid_579347 = query.getOrDefault("alt")
-  valid_579347 = validateParameter(valid_579347, JString, required = false,
+  if valid_580371 != nil:
+    section.add "userProject", valid_580371
+  var valid_580372 = query.getOrDefault("alt")
+  valid_580372 = validateParameter(valid_580372, JString, required = false,
                                  default = newJString("json"))
-  if valid_579347 != nil:
-    section.add "alt", valid_579347
-  var valid_579348 = query.getOrDefault("userIp")
-  valid_579348 = validateParameter(valid_579348, JString, required = false,
+  if valid_580372 != nil:
+    section.add "alt", valid_580372
+  var valid_580373 = query.getOrDefault("userIp")
+  valid_580373 = validateParameter(valid_580373, JString, required = false,
                                  default = nil)
-  if valid_579348 != nil:
-    section.add "userIp", valid_579348
-  var valid_579349 = query.getOrDefault("quotaUser")
-  valid_579349 = validateParameter(valid_579349, JString, required = false,
+  if valid_580373 != nil:
+    section.add "userIp", valid_580373
+  var valid_580374 = query.getOrDefault("quotaUser")
+  valid_580374 = validateParameter(valid_580374, JString, required = false,
                                  default = nil)
-  if valid_579349 != nil:
-    section.add "quotaUser", valid_579349
-  var valid_579350 = query.getOrDefault("provisionalUserProject")
-  valid_579350 = validateParameter(valid_579350, JString, required = false,
+  if valid_580374 != nil:
+    section.add "quotaUser", valid_580374
+  var valid_580375 = query.getOrDefault("provisionalUserProject")
+  valid_580375 = validateParameter(valid_580375, JString, required = false,
                                  default = nil)
-  if valid_579350 != nil:
-    section.add "provisionalUserProject", valid_579350
-  var valid_579351 = query.getOrDefault("fields")
-  valid_579351 = validateParameter(valid_579351, JString, required = false,
+  if valid_580375 != nil:
+    section.add "provisionalUserProject", valid_580375
+  var valid_580376 = query.getOrDefault("fields")
+  valid_580376 = validateParameter(valid_580376, JString, required = false,
                                  default = nil)
-  if valid_579351 != nil:
-    section.add "fields", valid_579351
+  if valid_580376 != nil:
+    section.add "fields", valid_580376
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4361,20 +4476,20 @@ proc validate_StorageNotificationsInsert_579340(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579353: Call_StorageNotificationsInsert_579339; path: JsonNode;
+proc call*(call_580378: Call_StorageNotificationsInsert_580364; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a notification subscription for a given bucket.
   ## 
-  let valid = call_579353.validator(path, query, header, formData, body)
-  let scheme = call_579353.pickScheme
+  let valid = call_580378.validator(path, query, header, formData, body)
+  let scheme = call_580378.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579353.url(scheme.get, call_579353.host, call_579353.base,
-                         call_579353.route, valid.getOrDefault("path"),
+  let url = call_580378.url(scheme.get, call_580378.host, call_580378.base,
+                         call_580378.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579353, url, valid)
+  result = hook(call_580378, url, valid)
 
-proc call*(call_579354: Call_StorageNotificationsInsert_579339; bucket: string;
+proc call*(call_580379: Call_StorageNotificationsInsert_580364; bucket: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           userProject: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; body: JsonNode = nil;
@@ -4402,31 +4517,31 @@ proc call*(call_579354: Call_StorageNotificationsInsert_579339; bucket: string;
   ##                         : The project to be billed for this request if the target bucket is requester-pays bucket.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579355 = newJObject()
-  var query_579356 = newJObject()
-  var body_579357 = newJObject()
-  add(query_579356, "key", newJString(key))
-  add(query_579356, "prettyPrint", newJBool(prettyPrint))
-  add(query_579356, "oauth_token", newJString(oauthToken))
-  add(query_579356, "userProject", newJString(userProject))
-  add(query_579356, "alt", newJString(alt))
-  add(query_579356, "userIp", newJString(userIp))
-  add(query_579356, "quotaUser", newJString(quotaUser))
-  add(path_579355, "bucket", newJString(bucket))
+  var path_580380 = newJObject()
+  var query_580381 = newJObject()
+  var body_580382 = newJObject()
+  add(query_580381, "key", newJString(key))
+  add(query_580381, "prettyPrint", newJBool(prettyPrint))
+  add(query_580381, "oauth_token", newJString(oauthToken))
+  add(query_580381, "userProject", newJString(userProject))
+  add(query_580381, "alt", newJString(alt))
+  add(query_580381, "userIp", newJString(userIp))
+  add(query_580381, "quotaUser", newJString(quotaUser))
+  add(path_580380, "bucket", newJString(bucket))
   if body != nil:
-    body_579357 = body
-  add(query_579356, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579356, "fields", newJString(fields))
-  result = call_579354.call(path_579355, query_579356, nil, nil, body_579357)
+    body_580382 = body
+  add(query_580381, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580381, "fields", newJString(fields))
+  result = call_580379.call(path_580380, query_580381, nil, nil, body_580382)
 
-var storageNotificationsInsert* = Call_StorageNotificationsInsert_579339(
+var storageNotificationsInsert* = Call_StorageNotificationsInsert_580364(
     name: "storageNotificationsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/b/{bucket}/notificationConfigs",
-    validator: validate_StorageNotificationsInsert_579340, base: "/storage/v1",
-    url: url_StorageNotificationsInsert_579341, schemes: {Scheme.Https})
+    validator: validate_StorageNotificationsInsert_580365, base: "/storage/v1",
+    url: url_StorageNotificationsInsert_580366, schemes: {Scheme.Https})
 type
-  Call_StorageNotificationsList_579322 = ref object of OpenApiRestCall_578355
-proc url_StorageNotificationsList_579324(protocol: Scheme; host: string;
+  Call_StorageNotificationsList_580347 = ref object of OpenApiRestCall_579380
+proc url_StorageNotificationsList_580349(protocol: Scheme; host: string;
                                         base: string; route: string; path: JsonNode;
                                         query: JsonNode): Uri =
   result.scheme = $protocol
@@ -4441,9 +4556,14 @@ proc url_StorageNotificationsList_579324(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageNotificationsList_579323(path: JsonNode; query: JsonNode;
+proc validate_StorageNotificationsList_580348(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of notification subscriptions for a given bucket.
   ## 
@@ -4454,11 +4574,11 @@ proc validate_StorageNotificationsList_579323(path: JsonNode; query: JsonNode;
   ##         : Name of a Google Cloud Storage bucket.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579325 = path.getOrDefault("bucket")
-  valid_579325 = validateParameter(valid_579325, JString, required = true,
+  var valid_580350 = path.getOrDefault("bucket")
+  valid_580350 = validateParameter(valid_580350, JString, required = true,
                                  default = nil)
-  if valid_579325 != nil:
-    section.add "bucket", valid_579325
+  if valid_580350 != nil:
+    section.add "bucket", valid_580350
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -4480,51 +4600,51 @@ proc validate_StorageNotificationsList_579323(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579326 = query.getOrDefault("key")
-  valid_579326 = validateParameter(valid_579326, JString, required = false,
+  var valid_580351 = query.getOrDefault("key")
+  valid_580351 = validateParameter(valid_580351, JString, required = false,
                                  default = nil)
-  if valid_579326 != nil:
-    section.add "key", valid_579326
-  var valid_579327 = query.getOrDefault("prettyPrint")
-  valid_579327 = validateParameter(valid_579327, JBool, required = false,
+  if valid_580351 != nil:
+    section.add "key", valid_580351
+  var valid_580352 = query.getOrDefault("prettyPrint")
+  valid_580352 = validateParameter(valid_580352, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579327 != nil:
-    section.add "prettyPrint", valid_579327
-  var valid_579328 = query.getOrDefault("oauth_token")
-  valid_579328 = validateParameter(valid_579328, JString, required = false,
+  if valid_580352 != nil:
+    section.add "prettyPrint", valid_580352
+  var valid_580353 = query.getOrDefault("oauth_token")
+  valid_580353 = validateParameter(valid_580353, JString, required = false,
                                  default = nil)
-  if valid_579328 != nil:
-    section.add "oauth_token", valid_579328
-  var valid_579329 = query.getOrDefault("userProject")
-  valid_579329 = validateParameter(valid_579329, JString, required = false,
+  if valid_580353 != nil:
+    section.add "oauth_token", valid_580353
+  var valid_580354 = query.getOrDefault("userProject")
+  valid_580354 = validateParameter(valid_580354, JString, required = false,
                                  default = nil)
-  if valid_579329 != nil:
-    section.add "userProject", valid_579329
-  var valid_579330 = query.getOrDefault("alt")
-  valid_579330 = validateParameter(valid_579330, JString, required = false,
+  if valid_580354 != nil:
+    section.add "userProject", valid_580354
+  var valid_580355 = query.getOrDefault("alt")
+  valid_580355 = validateParameter(valid_580355, JString, required = false,
                                  default = newJString("json"))
-  if valid_579330 != nil:
-    section.add "alt", valid_579330
-  var valid_579331 = query.getOrDefault("userIp")
-  valid_579331 = validateParameter(valid_579331, JString, required = false,
+  if valid_580355 != nil:
+    section.add "alt", valid_580355
+  var valid_580356 = query.getOrDefault("userIp")
+  valid_580356 = validateParameter(valid_580356, JString, required = false,
                                  default = nil)
-  if valid_579331 != nil:
-    section.add "userIp", valid_579331
-  var valid_579332 = query.getOrDefault("quotaUser")
-  valid_579332 = validateParameter(valid_579332, JString, required = false,
+  if valid_580356 != nil:
+    section.add "userIp", valid_580356
+  var valid_580357 = query.getOrDefault("quotaUser")
+  valid_580357 = validateParameter(valid_580357, JString, required = false,
                                  default = nil)
-  if valid_579332 != nil:
-    section.add "quotaUser", valid_579332
-  var valid_579333 = query.getOrDefault("provisionalUserProject")
-  valid_579333 = validateParameter(valid_579333, JString, required = false,
+  if valid_580357 != nil:
+    section.add "quotaUser", valid_580357
+  var valid_580358 = query.getOrDefault("provisionalUserProject")
+  valid_580358 = validateParameter(valid_580358, JString, required = false,
                                  default = nil)
-  if valid_579333 != nil:
-    section.add "provisionalUserProject", valid_579333
-  var valid_579334 = query.getOrDefault("fields")
-  valid_579334 = validateParameter(valid_579334, JString, required = false,
+  if valid_580358 != nil:
+    section.add "provisionalUserProject", valid_580358
+  var valid_580359 = query.getOrDefault("fields")
+  valid_580359 = validateParameter(valid_580359, JString, required = false,
                                  default = nil)
-  if valid_579334 != nil:
-    section.add "fields", valid_579334
+  if valid_580359 != nil:
+    section.add "fields", valid_580359
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4533,20 +4653,20 @@ proc validate_StorageNotificationsList_579323(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579335: Call_StorageNotificationsList_579322; path: JsonNode;
+proc call*(call_580360: Call_StorageNotificationsList_580347; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of notification subscriptions for a given bucket.
   ## 
-  let valid = call_579335.validator(path, query, header, formData, body)
-  let scheme = call_579335.pickScheme
+  let valid = call_580360.validator(path, query, header, formData, body)
+  let scheme = call_580360.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579335.url(scheme.get, call_579335.host, call_579335.base,
-                         call_579335.route, valid.getOrDefault("path"),
+  let url = call_580360.url(scheme.get, call_580360.host, call_580360.base,
+                         call_580360.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579335, url, valid)
+  result = hook(call_580360, url, valid)
 
-proc call*(call_579336: Call_StorageNotificationsList_579322; bucket: string;
+proc call*(call_580361: Call_StorageNotificationsList_580347; bucket: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           userProject: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; provisionalUserProject: string = "";
@@ -4573,28 +4693,28 @@ proc call*(call_579336: Call_StorageNotificationsList_579322; bucket: string;
   ##                         : The project to be billed for this request if the target bucket is requester-pays bucket.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579337 = newJObject()
-  var query_579338 = newJObject()
-  add(query_579338, "key", newJString(key))
-  add(query_579338, "prettyPrint", newJBool(prettyPrint))
-  add(query_579338, "oauth_token", newJString(oauthToken))
-  add(query_579338, "userProject", newJString(userProject))
-  add(query_579338, "alt", newJString(alt))
-  add(query_579338, "userIp", newJString(userIp))
-  add(query_579338, "quotaUser", newJString(quotaUser))
-  add(path_579337, "bucket", newJString(bucket))
-  add(query_579338, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579338, "fields", newJString(fields))
-  result = call_579336.call(path_579337, query_579338, nil, nil, nil)
+  var path_580362 = newJObject()
+  var query_580363 = newJObject()
+  add(query_580363, "key", newJString(key))
+  add(query_580363, "prettyPrint", newJBool(prettyPrint))
+  add(query_580363, "oauth_token", newJString(oauthToken))
+  add(query_580363, "userProject", newJString(userProject))
+  add(query_580363, "alt", newJString(alt))
+  add(query_580363, "userIp", newJString(userIp))
+  add(query_580363, "quotaUser", newJString(quotaUser))
+  add(path_580362, "bucket", newJString(bucket))
+  add(query_580363, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580363, "fields", newJString(fields))
+  result = call_580361.call(path_580362, query_580363, nil, nil, nil)
 
-var storageNotificationsList* = Call_StorageNotificationsList_579322(
+var storageNotificationsList* = Call_StorageNotificationsList_580347(
     name: "storageNotificationsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/b/{bucket}/notificationConfigs",
-    validator: validate_StorageNotificationsList_579323, base: "/storage/v1",
-    url: url_StorageNotificationsList_579324, schemes: {Scheme.Https})
+    validator: validate_StorageNotificationsList_580348, base: "/storage/v1",
+    url: url_StorageNotificationsList_580349, schemes: {Scheme.Https})
 type
-  Call_StorageNotificationsGet_579358 = ref object of OpenApiRestCall_578355
-proc url_StorageNotificationsGet_579360(protocol: Scheme; host: string; base: string;
+  Call_StorageNotificationsGet_580383 = ref object of OpenApiRestCall_579380
+proc url_StorageNotificationsGet_580385(protocol: Scheme; host: string; base: string;
                                        route: string; path: JsonNode;
                                        query: JsonNode): Uri =
   result.scheme = $protocol
@@ -4611,9 +4731,14 @@ proc url_StorageNotificationsGet_579360(protocol: Scheme; host: string; base: st
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageNotificationsGet_579359(path: JsonNode; query: JsonNode;
+proc validate_StorageNotificationsGet_580384(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## View a notification configuration.
   ## 
@@ -4627,16 +4752,16 @@ proc validate_StorageNotificationsGet_579359(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `notification` field"
-  var valid_579361 = path.getOrDefault("notification")
-  valid_579361 = validateParameter(valid_579361, JString, required = true,
+  var valid_580386 = path.getOrDefault("notification")
+  valid_580386 = validateParameter(valid_580386, JString, required = true,
                                  default = nil)
-  if valid_579361 != nil:
-    section.add "notification", valid_579361
-  var valid_579362 = path.getOrDefault("bucket")
-  valid_579362 = validateParameter(valid_579362, JString, required = true,
+  if valid_580386 != nil:
+    section.add "notification", valid_580386
+  var valid_580387 = path.getOrDefault("bucket")
+  valid_580387 = validateParameter(valid_580387, JString, required = true,
                                  default = nil)
-  if valid_579362 != nil:
-    section.add "bucket", valid_579362
+  if valid_580387 != nil:
+    section.add "bucket", valid_580387
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -4658,51 +4783,51 @@ proc validate_StorageNotificationsGet_579359(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579363 = query.getOrDefault("key")
-  valid_579363 = validateParameter(valid_579363, JString, required = false,
+  var valid_580388 = query.getOrDefault("key")
+  valid_580388 = validateParameter(valid_580388, JString, required = false,
                                  default = nil)
-  if valid_579363 != nil:
-    section.add "key", valid_579363
-  var valid_579364 = query.getOrDefault("prettyPrint")
-  valid_579364 = validateParameter(valid_579364, JBool, required = false,
+  if valid_580388 != nil:
+    section.add "key", valid_580388
+  var valid_580389 = query.getOrDefault("prettyPrint")
+  valid_580389 = validateParameter(valid_580389, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579364 != nil:
-    section.add "prettyPrint", valid_579364
-  var valid_579365 = query.getOrDefault("oauth_token")
-  valid_579365 = validateParameter(valid_579365, JString, required = false,
+  if valid_580389 != nil:
+    section.add "prettyPrint", valid_580389
+  var valid_580390 = query.getOrDefault("oauth_token")
+  valid_580390 = validateParameter(valid_580390, JString, required = false,
                                  default = nil)
-  if valid_579365 != nil:
-    section.add "oauth_token", valid_579365
-  var valid_579366 = query.getOrDefault("userProject")
-  valid_579366 = validateParameter(valid_579366, JString, required = false,
+  if valid_580390 != nil:
+    section.add "oauth_token", valid_580390
+  var valid_580391 = query.getOrDefault("userProject")
+  valid_580391 = validateParameter(valid_580391, JString, required = false,
                                  default = nil)
-  if valid_579366 != nil:
-    section.add "userProject", valid_579366
-  var valid_579367 = query.getOrDefault("alt")
-  valid_579367 = validateParameter(valid_579367, JString, required = false,
+  if valid_580391 != nil:
+    section.add "userProject", valid_580391
+  var valid_580392 = query.getOrDefault("alt")
+  valid_580392 = validateParameter(valid_580392, JString, required = false,
                                  default = newJString("json"))
-  if valid_579367 != nil:
-    section.add "alt", valid_579367
-  var valid_579368 = query.getOrDefault("userIp")
-  valid_579368 = validateParameter(valid_579368, JString, required = false,
+  if valid_580392 != nil:
+    section.add "alt", valid_580392
+  var valid_580393 = query.getOrDefault("userIp")
+  valid_580393 = validateParameter(valid_580393, JString, required = false,
                                  default = nil)
-  if valid_579368 != nil:
-    section.add "userIp", valid_579368
-  var valid_579369 = query.getOrDefault("quotaUser")
-  valid_579369 = validateParameter(valid_579369, JString, required = false,
+  if valid_580393 != nil:
+    section.add "userIp", valid_580393
+  var valid_580394 = query.getOrDefault("quotaUser")
+  valid_580394 = validateParameter(valid_580394, JString, required = false,
                                  default = nil)
-  if valid_579369 != nil:
-    section.add "quotaUser", valid_579369
-  var valid_579370 = query.getOrDefault("provisionalUserProject")
-  valid_579370 = validateParameter(valid_579370, JString, required = false,
+  if valid_580394 != nil:
+    section.add "quotaUser", valid_580394
+  var valid_580395 = query.getOrDefault("provisionalUserProject")
+  valid_580395 = validateParameter(valid_580395, JString, required = false,
                                  default = nil)
-  if valid_579370 != nil:
-    section.add "provisionalUserProject", valid_579370
-  var valid_579371 = query.getOrDefault("fields")
-  valid_579371 = validateParameter(valid_579371, JString, required = false,
+  if valid_580395 != nil:
+    section.add "provisionalUserProject", valid_580395
+  var valid_580396 = query.getOrDefault("fields")
+  valid_580396 = validateParameter(valid_580396, JString, required = false,
                                  default = nil)
-  if valid_579371 != nil:
-    section.add "fields", valid_579371
+  if valid_580396 != nil:
+    section.add "fields", valid_580396
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4711,20 +4836,20 @@ proc validate_StorageNotificationsGet_579359(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579372: Call_StorageNotificationsGet_579358; path: JsonNode;
+proc call*(call_580397: Call_StorageNotificationsGet_580383; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## View a notification configuration.
   ## 
-  let valid = call_579372.validator(path, query, header, formData, body)
-  let scheme = call_579372.pickScheme
+  let valid = call_580397.validator(path, query, header, formData, body)
+  let scheme = call_580397.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579372.url(scheme.get, call_579372.host, call_579372.base,
-                         call_579372.route, valid.getOrDefault("path"),
+  let url = call_580397.url(scheme.get, call_580397.host, call_580397.base,
+                         call_580397.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579372, url, valid)
+  result = hook(call_580397, url, valid)
 
-proc call*(call_579373: Call_StorageNotificationsGet_579358; notification: string;
+proc call*(call_580398: Call_StorageNotificationsGet_580383; notification: string;
           bucket: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = "";
@@ -4753,30 +4878,30 @@ proc call*(call_579373: Call_StorageNotificationsGet_579358; notification: strin
   ##                         : The project to be billed for this request if the target bucket is requester-pays bucket.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579374 = newJObject()
-  var query_579375 = newJObject()
-  add(query_579375, "key", newJString(key))
-  add(query_579375, "prettyPrint", newJBool(prettyPrint))
-  add(query_579375, "oauth_token", newJString(oauthToken))
-  add(query_579375, "userProject", newJString(userProject))
-  add(path_579374, "notification", newJString(notification))
-  add(query_579375, "alt", newJString(alt))
-  add(query_579375, "userIp", newJString(userIp))
-  add(query_579375, "quotaUser", newJString(quotaUser))
-  add(path_579374, "bucket", newJString(bucket))
-  add(query_579375, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579375, "fields", newJString(fields))
-  result = call_579373.call(path_579374, query_579375, nil, nil, nil)
+  var path_580399 = newJObject()
+  var query_580400 = newJObject()
+  add(query_580400, "key", newJString(key))
+  add(query_580400, "prettyPrint", newJBool(prettyPrint))
+  add(query_580400, "oauth_token", newJString(oauthToken))
+  add(query_580400, "userProject", newJString(userProject))
+  add(path_580399, "notification", newJString(notification))
+  add(query_580400, "alt", newJString(alt))
+  add(query_580400, "userIp", newJString(userIp))
+  add(query_580400, "quotaUser", newJString(quotaUser))
+  add(path_580399, "bucket", newJString(bucket))
+  add(query_580400, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580400, "fields", newJString(fields))
+  result = call_580398.call(path_580399, query_580400, nil, nil, nil)
 
-var storageNotificationsGet* = Call_StorageNotificationsGet_579358(
+var storageNotificationsGet* = Call_StorageNotificationsGet_580383(
     name: "storageNotificationsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/b/{bucket}/notificationConfigs/{notification}",
-    validator: validate_StorageNotificationsGet_579359, base: "/storage/v1",
-    url: url_StorageNotificationsGet_579360, schemes: {Scheme.Https})
+    validator: validate_StorageNotificationsGet_580384, base: "/storage/v1",
+    url: url_StorageNotificationsGet_580385, schemes: {Scheme.Https})
 type
-  Call_StorageNotificationsDelete_579376 = ref object of OpenApiRestCall_578355
-proc url_StorageNotificationsDelete_579378(protocol: Scheme; host: string;
+  Call_StorageNotificationsDelete_580401 = ref object of OpenApiRestCall_579380
+proc url_StorageNotificationsDelete_580403(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4792,9 +4917,14 @@ proc url_StorageNotificationsDelete_579378(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageNotificationsDelete_579377(path: JsonNode; query: JsonNode;
+proc validate_StorageNotificationsDelete_580402(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Permanently deletes a notification subscription.
   ## 
@@ -4808,16 +4938,16 @@ proc validate_StorageNotificationsDelete_579377(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `notification` field"
-  var valid_579379 = path.getOrDefault("notification")
-  valid_579379 = validateParameter(valid_579379, JString, required = true,
+  var valid_580404 = path.getOrDefault("notification")
+  valid_580404 = validateParameter(valid_580404, JString, required = true,
                                  default = nil)
-  if valid_579379 != nil:
-    section.add "notification", valid_579379
-  var valid_579380 = path.getOrDefault("bucket")
-  valid_579380 = validateParameter(valid_579380, JString, required = true,
+  if valid_580404 != nil:
+    section.add "notification", valid_580404
+  var valid_580405 = path.getOrDefault("bucket")
+  valid_580405 = validateParameter(valid_580405, JString, required = true,
                                  default = nil)
-  if valid_579380 != nil:
-    section.add "bucket", valid_579380
+  if valid_580405 != nil:
+    section.add "bucket", valid_580405
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -4839,51 +4969,51 @@ proc validate_StorageNotificationsDelete_579377(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579381 = query.getOrDefault("key")
-  valid_579381 = validateParameter(valid_579381, JString, required = false,
+  var valid_580406 = query.getOrDefault("key")
+  valid_580406 = validateParameter(valid_580406, JString, required = false,
                                  default = nil)
-  if valid_579381 != nil:
-    section.add "key", valid_579381
-  var valid_579382 = query.getOrDefault("prettyPrint")
-  valid_579382 = validateParameter(valid_579382, JBool, required = false,
+  if valid_580406 != nil:
+    section.add "key", valid_580406
+  var valid_580407 = query.getOrDefault("prettyPrint")
+  valid_580407 = validateParameter(valid_580407, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579382 != nil:
-    section.add "prettyPrint", valid_579382
-  var valid_579383 = query.getOrDefault("oauth_token")
-  valid_579383 = validateParameter(valid_579383, JString, required = false,
+  if valid_580407 != nil:
+    section.add "prettyPrint", valid_580407
+  var valid_580408 = query.getOrDefault("oauth_token")
+  valid_580408 = validateParameter(valid_580408, JString, required = false,
                                  default = nil)
-  if valid_579383 != nil:
-    section.add "oauth_token", valid_579383
-  var valid_579384 = query.getOrDefault("userProject")
-  valid_579384 = validateParameter(valid_579384, JString, required = false,
+  if valid_580408 != nil:
+    section.add "oauth_token", valid_580408
+  var valid_580409 = query.getOrDefault("userProject")
+  valid_580409 = validateParameter(valid_580409, JString, required = false,
                                  default = nil)
-  if valid_579384 != nil:
-    section.add "userProject", valid_579384
-  var valid_579385 = query.getOrDefault("alt")
-  valid_579385 = validateParameter(valid_579385, JString, required = false,
+  if valid_580409 != nil:
+    section.add "userProject", valid_580409
+  var valid_580410 = query.getOrDefault("alt")
+  valid_580410 = validateParameter(valid_580410, JString, required = false,
                                  default = newJString("json"))
-  if valid_579385 != nil:
-    section.add "alt", valid_579385
-  var valid_579386 = query.getOrDefault("userIp")
-  valid_579386 = validateParameter(valid_579386, JString, required = false,
+  if valid_580410 != nil:
+    section.add "alt", valid_580410
+  var valid_580411 = query.getOrDefault("userIp")
+  valid_580411 = validateParameter(valid_580411, JString, required = false,
                                  default = nil)
-  if valid_579386 != nil:
-    section.add "userIp", valid_579386
-  var valid_579387 = query.getOrDefault("quotaUser")
-  valid_579387 = validateParameter(valid_579387, JString, required = false,
+  if valid_580411 != nil:
+    section.add "userIp", valid_580411
+  var valid_580412 = query.getOrDefault("quotaUser")
+  valid_580412 = validateParameter(valid_580412, JString, required = false,
                                  default = nil)
-  if valid_579387 != nil:
-    section.add "quotaUser", valid_579387
-  var valid_579388 = query.getOrDefault("provisionalUserProject")
-  valid_579388 = validateParameter(valid_579388, JString, required = false,
+  if valid_580412 != nil:
+    section.add "quotaUser", valid_580412
+  var valid_580413 = query.getOrDefault("provisionalUserProject")
+  valid_580413 = validateParameter(valid_580413, JString, required = false,
                                  default = nil)
-  if valid_579388 != nil:
-    section.add "provisionalUserProject", valid_579388
-  var valid_579389 = query.getOrDefault("fields")
-  valid_579389 = validateParameter(valid_579389, JString, required = false,
+  if valid_580413 != nil:
+    section.add "provisionalUserProject", valid_580413
+  var valid_580414 = query.getOrDefault("fields")
+  valid_580414 = validateParameter(valid_580414, JString, required = false,
                                  default = nil)
-  if valid_579389 != nil:
-    section.add "fields", valid_579389
+  if valid_580414 != nil:
+    section.add "fields", valid_580414
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4892,20 +5022,20 @@ proc validate_StorageNotificationsDelete_579377(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579390: Call_StorageNotificationsDelete_579376; path: JsonNode;
+proc call*(call_580415: Call_StorageNotificationsDelete_580401; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Permanently deletes a notification subscription.
   ## 
-  let valid = call_579390.validator(path, query, header, formData, body)
-  let scheme = call_579390.pickScheme
+  let valid = call_580415.validator(path, query, header, formData, body)
+  let scheme = call_580415.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579390.url(scheme.get, call_579390.host, call_579390.base,
-                         call_579390.route, valid.getOrDefault("path"),
+  let url = call_580415.url(scheme.get, call_580415.host, call_580415.base,
+                         call_580415.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579390, url, valid)
+  result = hook(call_580415, url, valid)
 
-proc call*(call_579391: Call_StorageNotificationsDelete_579376;
+proc call*(call_580416: Call_StorageNotificationsDelete_580401;
           notification: string; bucket: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; userProject: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -4934,30 +5064,30 @@ proc call*(call_579391: Call_StorageNotificationsDelete_579376;
   ##                         : The project to be billed for this request if the target bucket is requester-pays bucket.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579392 = newJObject()
-  var query_579393 = newJObject()
-  add(query_579393, "key", newJString(key))
-  add(query_579393, "prettyPrint", newJBool(prettyPrint))
-  add(query_579393, "oauth_token", newJString(oauthToken))
-  add(query_579393, "userProject", newJString(userProject))
-  add(path_579392, "notification", newJString(notification))
-  add(query_579393, "alt", newJString(alt))
-  add(query_579393, "userIp", newJString(userIp))
-  add(query_579393, "quotaUser", newJString(quotaUser))
-  add(path_579392, "bucket", newJString(bucket))
-  add(query_579393, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579393, "fields", newJString(fields))
-  result = call_579391.call(path_579392, query_579393, nil, nil, nil)
+  var path_580417 = newJObject()
+  var query_580418 = newJObject()
+  add(query_580418, "key", newJString(key))
+  add(query_580418, "prettyPrint", newJBool(prettyPrint))
+  add(query_580418, "oauth_token", newJString(oauthToken))
+  add(query_580418, "userProject", newJString(userProject))
+  add(path_580417, "notification", newJString(notification))
+  add(query_580418, "alt", newJString(alt))
+  add(query_580418, "userIp", newJString(userIp))
+  add(query_580418, "quotaUser", newJString(quotaUser))
+  add(path_580417, "bucket", newJString(bucket))
+  add(query_580418, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580418, "fields", newJString(fields))
+  result = call_580416.call(path_580417, query_580418, nil, nil, nil)
 
-var storageNotificationsDelete* = Call_StorageNotificationsDelete_579376(
+var storageNotificationsDelete* = Call_StorageNotificationsDelete_580401(
     name: "storageNotificationsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/b/{bucket}/notificationConfigs/{notification}",
-    validator: validate_StorageNotificationsDelete_579377, base: "/storage/v1",
-    url: url_StorageNotificationsDelete_579378, schemes: {Scheme.Https})
+    validator: validate_StorageNotificationsDelete_580402, base: "/storage/v1",
+    url: url_StorageNotificationsDelete_580403, schemes: {Scheme.Https})
 type
-  Call_StorageObjectsInsert_579418 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectsInsert_579420(protocol: Scheme; host: string; base: string;
+  Call_StorageObjectsInsert_580443 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectsInsert_580445(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4971,9 +5101,14 @@ proc url_StorageObjectsInsert_579420(protocol: Scheme; host: string; base: strin
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectsInsert_579419(path: JsonNode; query: JsonNode;
+proc validate_StorageObjectsInsert_580444(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Stores a new object and metadata.
   ## 
@@ -4984,11 +5119,11 @@ proc validate_StorageObjectsInsert_579419(path: JsonNode; query: JsonNode;
   ##         : Name of the bucket in which to store the new object. Overrides the provided object metadata's bucket value, if any.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579421 = path.getOrDefault("bucket")
-  valid_579421 = validateParameter(valid_579421, JString, required = true,
+  var valid_580446 = path.getOrDefault("bucket")
+  valid_580446 = validateParameter(valid_580446, JString, required = true,
                                  default = nil)
-  if valid_579421 != nil:
-    section.add "bucket", valid_579421
+  if valid_580446 != nil:
+    section.add "bucket", valid_580446
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -5028,96 +5163,96 @@ proc validate_StorageObjectsInsert_579419(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579422 = query.getOrDefault("key")
-  valid_579422 = validateParameter(valid_579422, JString, required = false,
+  var valid_580447 = query.getOrDefault("key")
+  valid_580447 = validateParameter(valid_580447, JString, required = false,
                                  default = nil)
-  if valid_579422 != nil:
-    section.add "key", valid_579422
-  var valid_579423 = query.getOrDefault("prettyPrint")
-  valid_579423 = validateParameter(valid_579423, JBool, required = false,
+  if valid_580447 != nil:
+    section.add "key", valid_580447
+  var valid_580448 = query.getOrDefault("prettyPrint")
+  valid_580448 = validateParameter(valid_580448, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579423 != nil:
-    section.add "prettyPrint", valid_579423
-  var valid_579424 = query.getOrDefault("oauth_token")
-  valid_579424 = validateParameter(valid_579424, JString, required = false,
+  if valid_580448 != nil:
+    section.add "prettyPrint", valid_580448
+  var valid_580449 = query.getOrDefault("oauth_token")
+  valid_580449 = validateParameter(valid_580449, JString, required = false,
                                  default = nil)
-  if valid_579424 != nil:
-    section.add "oauth_token", valid_579424
-  var valid_579425 = query.getOrDefault("kmsKeyName")
-  valid_579425 = validateParameter(valid_579425, JString, required = false,
+  if valid_580449 != nil:
+    section.add "oauth_token", valid_580449
+  var valid_580450 = query.getOrDefault("kmsKeyName")
+  valid_580450 = validateParameter(valid_580450, JString, required = false,
                                  default = nil)
-  if valid_579425 != nil:
-    section.add "kmsKeyName", valid_579425
-  var valid_579426 = query.getOrDefault("name")
-  valid_579426 = validateParameter(valid_579426, JString, required = false,
+  if valid_580450 != nil:
+    section.add "kmsKeyName", valid_580450
+  var valid_580451 = query.getOrDefault("name")
+  valid_580451 = validateParameter(valid_580451, JString, required = false,
                                  default = nil)
-  if valid_579426 != nil:
-    section.add "name", valid_579426
-  var valid_579427 = query.getOrDefault("userProject")
-  valid_579427 = validateParameter(valid_579427, JString, required = false,
+  if valid_580451 != nil:
+    section.add "name", valid_580451
+  var valid_580452 = query.getOrDefault("userProject")
+  valid_580452 = validateParameter(valid_580452, JString, required = false,
                                  default = nil)
-  if valid_579427 != nil:
-    section.add "userProject", valid_579427
-  var valid_579428 = query.getOrDefault("predefinedAcl")
-  valid_579428 = validateParameter(valid_579428, JString, required = false,
+  if valid_580452 != nil:
+    section.add "userProject", valid_580452
+  var valid_580453 = query.getOrDefault("predefinedAcl")
+  valid_580453 = validateParameter(valid_580453, JString, required = false,
                                  default = newJString("authenticatedRead"))
-  if valid_579428 != nil:
-    section.add "predefinedAcl", valid_579428
-  var valid_579429 = query.getOrDefault("ifGenerationMatch")
-  valid_579429 = validateParameter(valid_579429, JString, required = false,
+  if valid_580453 != nil:
+    section.add "predefinedAcl", valid_580453
+  var valid_580454 = query.getOrDefault("ifGenerationMatch")
+  valid_580454 = validateParameter(valid_580454, JString, required = false,
                                  default = nil)
-  if valid_579429 != nil:
-    section.add "ifGenerationMatch", valid_579429
-  var valid_579430 = query.getOrDefault("ifGenerationNotMatch")
-  valid_579430 = validateParameter(valid_579430, JString, required = false,
+  if valid_580454 != nil:
+    section.add "ifGenerationMatch", valid_580454
+  var valid_580455 = query.getOrDefault("ifGenerationNotMatch")
+  valid_580455 = validateParameter(valid_580455, JString, required = false,
                                  default = nil)
-  if valid_579430 != nil:
-    section.add "ifGenerationNotMatch", valid_579430
-  var valid_579431 = query.getOrDefault("alt")
-  valid_579431 = validateParameter(valid_579431, JString, required = false,
+  if valid_580455 != nil:
+    section.add "ifGenerationNotMatch", valid_580455
+  var valid_580456 = query.getOrDefault("alt")
+  valid_580456 = validateParameter(valid_580456, JString, required = false,
                                  default = newJString("json"))
-  if valid_579431 != nil:
-    section.add "alt", valid_579431
-  var valid_579432 = query.getOrDefault("userIp")
-  valid_579432 = validateParameter(valid_579432, JString, required = false,
+  if valid_580456 != nil:
+    section.add "alt", valid_580456
+  var valid_580457 = query.getOrDefault("userIp")
+  valid_580457 = validateParameter(valid_580457, JString, required = false,
                                  default = nil)
-  if valid_579432 != nil:
-    section.add "userIp", valid_579432
-  var valid_579433 = query.getOrDefault("quotaUser")
-  valid_579433 = validateParameter(valid_579433, JString, required = false,
+  if valid_580457 != nil:
+    section.add "userIp", valid_580457
+  var valid_580458 = query.getOrDefault("quotaUser")
+  valid_580458 = validateParameter(valid_580458, JString, required = false,
                                  default = nil)
-  if valid_579433 != nil:
-    section.add "quotaUser", valid_579433
-  var valid_579434 = query.getOrDefault("ifMetagenerationMatch")
-  valid_579434 = validateParameter(valid_579434, JString, required = false,
+  if valid_580458 != nil:
+    section.add "quotaUser", valid_580458
+  var valid_580459 = query.getOrDefault("ifMetagenerationMatch")
+  valid_580459 = validateParameter(valid_580459, JString, required = false,
                                  default = nil)
-  if valid_579434 != nil:
-    section.add "ifMetagenerationMatch", valid_579434
-  var valid_579435 = query.getOrDefault("contentEncoding")
-  valid_579435 = validateParameter(valid_579435, JString, required = false,
+  if valid_580459 != nil:
+    section.add "ifMetagenerationMatch", valid_580459
+  var valid_580460 = query.getOrDefault("contentEncoding")
+  valid_580460 = validateParameter(valid_580460, JString, required = false,
                                  default = nil)
-  if valid_579435 != nil:
-    section.add "contentEncoding", valid_579435
-  var valid_579436 = query.getOrDefault("provisionalUserProject")
-  valid_579436 = validateParameter(valid_579436, JString, required = false,
+  if valid_580460 != nil:
+    section.add "contentEncoding", valid_580460
+  var valid_580461 = query.getOrDefault("provisionalUserProject")
+  valid_580461 = validateParameter(valid_580461, JString, required = false,
                                  default = nil)
-  if valid_579436 != nil:
-    section.add "provisionalUserProject", valid_579436
-  var valid_579437 = query.getOrDefault("ifMetagenerationNotMatch")
-  valid_579437 = validateParameter(valid_579437, JString, required = false,
+  if valid_580461 != nil:
+    section.add "provisionalUserProject", valid_580461
+  var valid_580462 = query.getOrDefault("ifMetagenerationNotMatch")
+  valid_580462 = validateParameter(valid_580462, JString, required = false,
                                  default = nil)
-  if valid_579437 != nil:
-    section.add "ifMetagenerationNotMatch", valid_579437
-  var valid_579438 = query.getOrDefault("projection")
-  valid_579438 = validateParameter(valid_579438, JString, required = false,
+  if valid_580462 != nil:
+    section.add "ifMetagenerationNotMatch", valid_580462
+  var valid_580463 = query.getOrDefault("projection")
+  valid_580463 = validateParameter(valid_580463, JString, required = false,
                                  default = newJString("full"))
-  if valid_579438 != nil:
-    section.add "projection", valid_579438
-  var valid_579439 = query.getOrDefault("fields")
-  valid_579439 = validateParameter(valid_579439, JString, required = false,
+  if valid_580463 != nil:
+    section.add "projection", valid_580463
+  var valid_580464 = query.getOrDefault("fields")
+  valid_580464 = validateParameter(valid_580464, JString, required = false,
                                  default = nil)
-  if valid_579439 != nil:
-    section.add "fields", valid_579439
+  if valid_580464 != nil:
+    section.add "fields", valid_580464
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5129,20 +5264,20 @@ proc validate_StorageObjectsInsert_579419(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579441: Call_StorageObjectsInsert_579418; path: JsonNode;
+proc call*(call_580466: Call_StorageObjectsInsert_580443; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Stores a new object and metadata.
   ## 
-  let valid = call_579441.validator(path, query, header, formData, body)
-  let scheme = call_579441.pickScheme
+  let valid = call_580466.validator(path, query, header, formData, body)
+  let scheme = call_580466.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579441.url(scheme.get, call_579441.host, call_579441.base,
-                         call_579441.route, valid.getOrDefault("path"),
+  let url = call_580466.url(scheme.get, call_580466.host, call_580466.base,
+                         call_580466.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579441, url, valid)
+  result = hook(call_580466, url, valid)
 
-proc call*(call_579442: Call_StorageObjectsInsert_579418; bucket: string;
+proc call*(call_580467: Call_StorageObjectsInsert_580443; bucket: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           kmsKeyName: string = ""; name: string = ""; userProject: string = "";
           predefinedAcl: string = "authenticatedRead";
@@ -5193,41 +5328,41 @@ proc call*(call_579442: Call_StorageObjectsInsert_579418; bucket: string;
   ##             : Set of properties to return. Defaults to noAcl, unless the object resource specifies the acl property, when it defaults to full.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579443 = newJObject()
-  var query_579444 = newJObject()
-  var body_579445 = newJObject()
-  add(query_579444, "key", newJString(key))
-  add(query_579444, "prettyPrint", newJBool(prettyPrint))
-  add(query_579444, "oauth_token", newJString(oauthToken))
-  add(query_579444, "kmsKeyName", newJString(kmsKeyName))
-  add(query_579444, "name", newJString(name))
-  add(query_579444, "userProject", newJString(userProject))
-  add(query_579444, "predefinedAcl", newJString(predefinedAcl))
-  add(query_579444, "ifGenerationMatch", newJString(ifGenerationMatch))
-  add(query_579444, "ifGenerationNotMatch", newJString(ifGenerationNotMatch))
-  add(query_579444, "alt", newJString(alt))
-  add(query_579444, "userIp", newJString(userIp))
-  add(query_579444, "quotaUser", newJString(quotaUser))
-  add(query_579444, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
-  add(path_579443, "bucket", newJString(bucket))
+  var path_580468 = newJObject()
+  var query_580469 = newJObject()
+  var body_580470 = newJObject()
+  add(query_580469, "key", newJString(key))
+  add(query_580469, "prettyPrint", newJBool(prettyPrint))
+  add(query_580469, "oauth_token", newJString(oauthToken))
+  add(query_580469, "kmsKeyName", newJString(kmsKeyName))
+  add(query_580469, "name", newJString(name))
+  add(query_580469, "userProject", newJString(userProject))
+  add(query_580469, "predefinedAcl", newJString(predefinedAcl))
+  add(query_580469, "ifGenerationMatch", newJString(ifGenerationMatch))
+  add(query_580469, "ifGenerationNotMatch", newJString(ifGenerationNotMatch))
+  add(query_580469, "alt", newJString(alt))
+  add(query_580469, "userIp", newJString(userIp))
+  add(query_580469, "quotaUser", newJString(quotaUser))
+  add(query_580469, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
+  add(path_580468, "bucket", newJString(bucket))
   if body != nil:
-    body_579445 = body
-  add(query_579444, "contentEncoding", newJString(contentEncoding))
-  add(query_579444, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579444, "ifMetagenerationNotMatch",
+    body_580470 = body
+  add(query_580469, "contentEncoding", newJString(contentEncoding))
+  add(query_580469, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580469, "ifMetagenerationNotMatch",
       newJString(ifMetagenerationNotMatch))
-  add(query_579444, "projection", newJString(projection))
-  add(query_579444, "fields", newJString(fields))
-  result = call_579442.call(path_579443, query_579444, nil, nil, body_579445)
+  add(query_580469, "projection", newJString(projection))
+  add(query_580469, "fields", newJString(fields))
+  result = call_580467.call(path_580468, query_580469, nil, nil, body_580470)
 
-var storageObjectsInsert* = Call_StorageObjectsInsert_579418(
+var storageObjectsInsert* = Call_StorageObjectsInsert_580443(
     name: "storageObjectsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/b/{bucket}/o",
-    validator: validate_StorageObjectsInsert_579419, base: "/storage/v1",
-    url: url_StorageObjectsInsert_579420, schemes: {Scheme.Https})
+    validator: validate_StorageObjectsInsert_580444, base: "/storage/v1",
+    url: url_StorageObjectsInsert_580445, schemes: {Scheme.Https})
 type
-  Call_StorageObjectsList_579394 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectsList_579396(protocol: Scheme; host: string; base: string;
+  Call_StorageObjectsList_580419 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectsList_580421(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5241,9 +5376,14 @@ proc url_StorageObjectsList_579396(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectsList_579395(path: JsonNode; query: JsonNode;
+proc validate_StorageObjectsList_580420(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Retrieves a list of objects matching the criteria.
@@ -5255,11 +5395,11 @@ proc validate_StorageObjectsList_579395(path: JsonNode; query: JsonNode;
   ##         : Name of the bucket in which to look for objects.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579397 = path.getOrDefault("bucket")
-  valid_579397 = validateParameter(valid_579397, JString, required = true,
+  var valid_580422 = path.getOrDefault("bucket")
+  valid_580422 = validateParameter(valid_580422, JString, required = true,
                                  default = nil)
-  if valid_579397 != nil:
-    section.add "bucket", valid_579397
+  if valid_580422 != nil:
+    section.add "bucket", valid_580422
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -5295,84 +5435,84 @@ proc validate_StorageObjectsList_579395(path: JsonNode; query: JsonNode;
   ##   versions: JBool
   ##           : If true, lists all versions of an object as distinct results. The default is false. For more information, see Object Versioning.
   section = newJObject()
-  var valid_579398 = query.getOrDefault("key")
-  valid_579398 = validateParameter(valid_579398, JString, required = false,
+  var valid_580423 = query.getOrDefault("key")
+  valid_580423 = validateParameter(valid_580423, JString, required = false,
                                  default = nil)
-  if valid_579398 != nil:
-    section.add "key", valid_579398
-  var valid_579399 = query.getOrDefault("prettyPrint")
-  valid_579399 = validateParameter(valid_579399, JBool, required = false,
+  if valid_580423 != nil:
+    section.add "key", valid_580423
+  var valid_580424 = query.getOrDefault("prettyPrint")
+  valid_580424 = validateParameter(valid_580424, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579399 != nil:
-    section.add "prettyPrint", valid_579399
-  var valid_579400 = query.getOrDefault("oauth_token")
-  valid_579400 = validateParameter(valid_579400, JString, required = false,
+  if valid_580424 != nil:
+    section.add "prettyPrint", valid_580424
+  var valid_580425 = query.getOrDefault("oauth_token")
+  valid_580425 = validateParameter(valid_580425, JString, required = false,
                                  default = nil)
-  if valid_579400 != nil:
-    section.add "oauth_token", valid_579400
-  var valid_579401 = query.getOrDefault("prefix")
-  valid_579401 = validateParameter(valid_579401, JString, required = false,
+  if valid_580425 != nil:
+    section.add "oauth_token", valid_580425
+  var valid_580426 = query.getOrDefault("prefix")
+  valid_580426 = validateParameter(valid_580426, JString, required = false,
                                  default = nil)
-  if valid_579401 != nil:
-    section.add "prefix", valid_579401
-  var valid_579402 = query.getOrDefault("includeTrailingDelimiter")
-  valid_579402 = validateParameter(valid_579402, JBool, required = false, default = nil)
-  if valid_579402 != nil:
-    section.add "includeTrailingDelimiter", valid_579402
-  var valid_579403 = query.getOrDefault("userProject")
-  valid_579403 = validateParameter(valid_579403, JString, required = false,
+  if valid_580426 != nil:
+    section.add "prefix", valid_580426
+  var valid_580427 = query.getOrDefault("includeTrailingDelimiter")
+  valid_580427 = validateParameter(valid_580427, JBool, required = false, default = nil)
+  if valid_580427 != nil:
+    section.add "includeTrailingDelimiter", valid_580427
+  var valid_580428 = query.getOrDefault("userProject")
+  valid_580428 = validateParameter(valid_580428, JString, required = false,
                                  default = nil)
-  if valid_579403 != nil:
-    section.add "userProject", valid_579403
-  var valid_579404 = query.getOrDefault("alt")
-  valid_579404 = validateParameter(valid_579404, JString, required = false,
+  if valid_580428 != nil:
+    section.add "userProject", valid_580428
+  var valid_580429 = query.getOrDefault("alt")
+  valid_580429 = validateParameter(valid_580429, JString, required = false,
                                  default = newJString("json"))
-  if valid_579404 != nil:
-    section.add "alt", valid_579404
-  var valid_579405 = query.getOrDefault("userIp")
-  valid_579405 = validateParameter(valid_579405, JString, required = false,
+  if valid_580429 != nil:
+    section.add "alt", valid_580429
+  var valid_580430 = query.getOrDefault("userIp")
+  valid_580430 = validateParameter(valid_580430, JString, required = false,
                                  default = nil)
-  if valid_579405 != nil:
-    section.add "userIp", valid_579405
-  var valid_579406 = query.getOrDefault("quotaUser")
-  valid_579406 = validateParameter(valid_579406, JString, required = false,
+  if valid_580430 != nil:
+    section.add "userIp", valid_580430
+  var valid_580431 = query.getOrDefault("quotaUser")
+  valid_580431 = validateParameter(valid_580431, JString, required = false,
                                  default = nil)
-  if valid_579406 != nil:
-    section.add "quotaUser", valid_579406
-  var valid_579407 = query.getOrDefault("pageToken")
-  valid_579407 = validateParameter(valid_579407, JString, required = false,
+  if valid_580431 != nil:
+    section.add "quotaUser", valid_580431
+  var valid_580432 = query.getOrDefault("pageToken")
+  valid_580432 = validateParameter(valid_580432, JString, required = false,
                                  default = nil)
-  if valid_579407 != nil:
-    section.add "pageToken", valid_579407
-  var valid_579408 = query.getOrDefault("provisionalUserProject")
-  valid_579408 = validateParameter(valid_579408, JString, required = false,
+  if valid_580432 != nil:
+    section.add "pageToken", valid_580432
+  var valid_580433 = query.getOrDefault("provisionalUserProject")
+  valid_580433 = validateParameter(valid_580433, JString, required = false,
                                  default = nil)
-  if valid_579408 != nil:
-    section.add "provisionalUserProject", valid_579408
-  var valid_579409 = query.getOrDefault("projection")
-  valid_579409 = validateParameter(valid_579409, JString, required = false,
+  if valid_580433 != nil:
+    section.add "provisionalUserProject", valid_580433
+  var valid_580434 = query.getOrDefault("projection")
+  valid_580434 = validateParameter(valid_580434, JString, required = false,
                                  default = newJString("full"))
-  if valid_579409 != nil:
-    section.add "projection", valid_579409
-  var valid_579410 = query.getOrDefault("fields")
-  valid_579410 = validateParameter(valid_579410, JString, required = false,
+  if valid_580434 != nil:
+    section.add "projection", valid_580434
+  var valid_580435 = query.getOrDefault("fields")
+  valid_580435 = validateParameter(valid_580435, JString, required = false,
                                  default = nil)
-  if valid_579410 != nil:
-    section.add "fields", valid_579410
-  var valid_579411 = query.getOrDefault("delimiter")
-  valid_579411 = validateParameter(valid_579411, JString, required = false,
+  if valid_580435 != nil:
+    section.add "fields", valid_580435
+  var valid_580436 = query.getOrDefault("delimiter")
+  valid_580436 = validateParameter(valid_580436, JString, required = false,
                                  default = nil)
-  if valid_579411 != nil:
-    section.add "delimiter", valid_579411
-  var valid_579412 = query.getOrDefault("maxResults")
-  valid_579412 = validateParameter(valid_579412, JInt, required = false,
+  if valid_580436 != nil:
+    section.add "delimiter", valid_580436
+  var valid_580437 = query.getOrDefault("maxResults")
+  valid_580437 = validateParameter(valid_580437, JInt, required = false,
                                  default = newJInt(1000))
-  if valid_579412 != nil:
-    section.add "maxResults", valid_579412
-  var valid_579413 = query.getOrDefault("versions")
-  valid_579413 = validateParameter(valid_579413, JBool, required = false, default = nil)
-  if valid_579413 != nil:
-    section.add "versions", valid_579413
+  if valid_580437 != nil:
+    section.add "maxResults", valid_580437
+  var valid_580438 = query.getOrDefault("versions")
+  valid_580438 = validateParameter(valid_580438, JBool, required = false, default = nil)
+  if valid_580438 != nil:
+    section.add "versions", valid_580438
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5381,20 +5521,20 @@ proc validate_StorageObjectsList_579395(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579414: Call_StorageObjectsList_579394; path: JsonNode;
+proc call*(call_580439: Call_StorageObjectsList_580419; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of objects matching the criteria.
   ## 
-  let valid = call_579414.validator(path, query, header, formData, body)
-  let scheme = call_579414.pickScheme
+  let valid = call_580439.validator(path, query, header, formData, body)
+  let scheme = call_580439.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579414.url(scheme.get, call_579414.host, call_579414.base,
-                         call_579414.route, valid.getOrDefault("path"),
+  let url = call_580439.url(scheme.get, call_580439.host, call_580439.base,
+                         call_580439.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579414, url, valid)
+  result = hook(call_580439, url, valid)
 
-proc call*(call_579415: Call_StorageObjectsList_579394; bucket: string;
+proc call*(call_580440: Call_StorageObjectsList_580419; bucket: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           prefix: string = ""; includeTrailingDelimiter: bool = false;
           userProject: string = ""; alt: string = "json"; userIp: string = "";
@@ -5438,35 +5578,35 @@ proc call*(call_579415: Call_StorageObjectsList_579394; bucket: string;
   ##             : Maximum number of items plus prefixes to return in a single page of responses. As duplicate prefixes are omitted, fewer total results may be returned than requested. The service will use this parameter or 1,000 items, whichever is smaller.
   ##   versions: bool
   ##           : If true, lists all versions of an object as distinct results. The default is false. For more information, see Object Versioning.
-  var path_579416 = newJObject()
-  var query_579417 = newJObject()
-  add(query_579417, "key", newJString(key))
-  add(query_579417, "prettyPrint", newJBool(prettyPrint))
-  add(query_579417, "oauth_token", newJString(oauthToken))
-  add(query_579417, "prefix", newJString(prefix))
-  add(query_579417, "includeTrailingDelimiter", newJBool(includeTrailingDelimiter))
-  add(query_579417, "userProject", newJString(userProject))
-  add(query_579417, "alt", newJString(alt))
-  add(query_579417, "userIp", newJString(userIp))
-  add(query_579417, "quotaUser", newJString(quotaUser))
-  add(query_579417, "pageToken", newJString(pageToken))
-  add(path_579416, "bucket", newJString(bucket))
-  add(query_579417, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579417, "projection", newJString(projection))
-  add(query_579417, "fields", newJString(fields))
-  add(query_579417, "delimiter", newJString(delimiter))
-  add(query_579417, "maxResults", newJInt(maxResults))
-  add(query_579417, "versions", newJBool(versions))
-  result = call_579415.call(path_579416, query_579417, nil, nil, nil)
+  var path_580441 = newJObject()
+  var query_580442 = newJObject()
+  add(query_580442, "key", newJString(key))
+  add(query_580442, "prettyPrint", newJBool(prettyPrint))
+  add(query_580442, "oauth_token", newJString(oauthToken))
+  add(query_580442, "prefix", newJString(prefix))
+  add(query_580442, "includeTrailingDelimiter", newJBool(includeTrailingDelimiter))
+  add(query_580442, "userProject", newJString(userProject))
+  add(query_580442, "alt", newJString(alt))
+  add(query_580442, "userIp", newJString(userIp))
+  add(query_580442, "quotaUser", newJString(quotaUser))
+  add(query_580442, "pageToken", newJString(pageToken))
+  add(path_580441, "bucket", newJString(bucket))
+  add(query_580442, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580442, "projection", newJString(projection))
+  add(query_580442, "fields", newJString(fields))
+  add(query_580442, "delimiter", newJString(delimiter))
+  add(query_580442, "maxResults", newJInt(maxResults))
+  add(query_580442, "versions", newJBool(versions))
+  result = call_580440.call(path_580441, query_580442, nil, nil, nil)
 
-var storageObjectsList* = Call_StorageObjectsList_579394(
+var storageObjectsList* = Call_StorageObjectsList_580419(
     name: "storageObjectsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/b/{bucket}/o",
-    validator: validate_StorageObjectsList_579395, base: "/storage/v1",
-    url: url_StorageObjectsList_579396, schemes: {Scheme.Https})
+    validator: validate_StorageObjectsList_580420, base: "/storage/v1",
+    url: url_StorageObjectsList_580421, schemes: {Scheme.Https})
 type
-  Call_StorageObjectsWatchAll_579446 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectsWatchAll_579448(protocol: Scheme; host: string; base: string;
+  Call_StorageObjectsWatchAll_580471 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectsWatchAll_580473(protocol: Scheme; host: string; base: string;
                                       route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5480,9 +5620,14 @@ proc url_StorageObjectsWatchAll_579448(protocol: Scheme; host: string; base: str
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectsWatchAll_579447(path: JsonNode; query: JsonNode;
+proc validate_StorageObjectsWatchAll_580472(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Watch for changes on all objects in a bucket.
   ## 
@@ -5493,11 +5638,11 @@ proc validate_StorageObjectsWatchAll_579447(path: JsonNode; query: JsonNode;
   ##         : Name of the bucket in which to look for objects.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579449 = path.getOrDefault("bucket")
-  valid_579449 = validateParameter(valid_579449, JString, required = true,
+  var valid_580474 = path.getOrDefault("bucket")
+  valid_580474 = validateParameter(valid_580474, JString, required = true,
                                  default = nil)
-  if valid_579449 != nil:
-    section.add "bucket", valid_579449
+  if valid_580474 != nil:
+    section.add "bucket", valid_580474
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -5533,84 +5678,84 @@ proc validate_StorageObjectsWatchAll_579447(path: JsonNode; query: JsonNode;
   ##   versions: JBool
   ##           : If true, lists all versions of an object as distinct results. The default is false. For more information, see Object Versioning.
   section = newJObject()
-  var valid_579450 = query.getOrDefault("key")
-  valid_579450 = validateParameter(valid_579450, JString, required = false,
+  var valid_580475 = query.getOrDefault("key")
+  valid_580475 = validateParameter(valid_580475, JString, required = false,
                                  default = nil)
-  if valid_579450 != nil:
-    section.add "key", valid_579450
-  var valid_579451 = query.getOrDefault("prettyPrint")
-  valid_579451 = validateParameter(valid_579451, JBool, required = false,
+  if valid_580475 != nil:
+    section.add "key", valid_580475
+  var valid_580476 = query.getOrDefault("prettyPrint")
+  valid_580476 = validateParameter(valid_580476, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579451 != nil:
-    section.add "prettyPrint", valid_579451
-  var valid_579452 = query.getOrDefault("oauth_token")
-  valid_579452 = validateParameter(valid_579452, JString, required = false,
+  if valid_580476 != nil:
+    section.add "prettyPrint", valid_580476
+  var valid_580477 = query.getOrDefault("oauth_token")
+  valid_580477 = validateParameter(valid_580477, JString, required = false,
                                  default = nil)
-  if valid_579452 != nil:
-    section.add "oauth_token", valid_579452
-  var valid_579453 = query.getOrDefault("prefix")
-  valid_579453 = validateParameter(valid_579453, JString, required = false,
+  if valid_580477 != nil:
+    section.add "oauth_token", valid_580477
+  var valid_580478 = query.getOrDefault("prefix")
+  valid_580478 = validateParameter(valid_580478, JString, required = false,
                                  default = nil)
-  if valid_579453 != nil:
-    section.add "prefix", valid_579453
-  var valid_579454 = query.getOrDefault("includeTrailingDelimiter")
-  valid_579454 = validateParameter(valid_579454, JBool, required = false, default = nil)
-  if valid_579454 != nil:
-    section.add "includeTrailingDelimiter", valid_579454
-  var valid_579455 = query.getOrDefault("userProject")
-  valid_579455 = validateParameter(valid_579455, JString, required = false,
+  if valid_580478 != nil:
+    section.add "prefix", valid_580478
+  var valid_580479 = query.getOrDefault("includeTrailingDelimiter")
+  valid_580479 = validateParameter(valid_580479, JBool, required = false, default = nil)
+  if valid_580479 != nil:
+    section.add "includeTrailingDelimiter", valid_580479
+  var valid_580480 = query.getOrDefault("userProject")
+  valid_580480 = validateParameter(valid_580480, JString, required = false,
                                  default = nil)
-  if valid_579455 != nil:
-    section.add "userProject", valid_579455
-  var valid_579456 = query.getOrDefault("alt")
-  valid_579456 = validateParameter(valid_579456, JString, required = false,
+  if valid_580480 != nil:
+    section.add "userProject", valid_580480
+  var valid_580481 = query.getOrDefault("alt")
+  valid_580481 = validateParameter(valid_580481, JString, required = false,
                                  default = newJString("json"))
-  if valid_579456 != nil:
-    section.add "alt", valid_579456
-  var valid_579457 = query.getOrDefault("userIp")
-  valid_579457 = validateParameter(valid_579457, JString, required = false,
+  if valid_580481 != nil:
+    section.add "alt", valid_580481
+  var valid_580482 = query.getOrDefault("userIp")
+  valid_580482 = validateParameter(valid_580482, JString, required = false,
                                  default = nil)
-  if valid_579457 != nil:
-    section.add "userIp", valid_579457
-  var valid_579458 = query.getOrDefault("quotaUser")
-  valid_579458 = validateParameter(valid_579458, JString, required = false,
+  if valid_580482 != nil:
+    section.add "userIp", valid_580482
+  var valid_580483 = query.getOrDefault("quotaUser")
+  valid_580483 = validateParameter(valid_580483, JString, required = false,
                                  default = nil)
-  if valid_579458 != nil:
-    section.add "quotaUser", valid_579458
-  var valid_579459 = query.getOrDefault("pageToken")
-  valid_579459 = validateParameter(valid_579459, JString, required = false,
+  if valid_580483 != nil:
+    section.add "quotaUser", valid_580483
+  var valid_580484 = query.getOrDefault("pageToken")
+  valid_580484 = validateParameter(valid_580484, JString, required = false,
                                  default = nil)
-  if valid_579459 != nil:
-    section.add "pageToken", valid_579459
-  var valid_579460 = query.getOrDefault("provisionalUserProject")
-  valid_579460 = validateParameter(valid_579460, JString, required = false,
+  if valid_580484 != nil:
+    section.add "pageToken", valid_580484
+  var valid_580485 = query.getOrDefault("provisionalUserProject")
+  valid_580485 = validateParameter(valid_580485, JString, required = false,
                                  default = nil)
-  if valid_579460 != nil:
-    section.add "provisionalUserProject", valid_579460
-  var valid_579461 = query.getOrDefault("projection")
-  valid_579461 = validateParameter(valid_579461, JString, required = false,
+  if valid_580485 != nil:
+    section.add "provisionalUserProject", valid_580485
+  var valid_580486 = query.getOrDefault("projection")
+  valid_580486 = validateParameter(valid_580486, JString, required = false,
                                  default = newJString("full"))
-  if valid_579461 != nil:
-    section.add "projection", valid_579461
-  var valid_579462 = query.getOrDefault("fields")
-  valid_579462 = validateParameter(valid_579462, JString, required = false,
+  if valid_580486 != nil:
+    section.add "projection", valid_580486
+  var valid_580487 = query.getOrDefault("fields")
+  valid_580487 = validateParameter(valid_580487, JString, required = false,
                                  default = nil)
-  if valid_579462 != nil:
-    section.add "fields", valid_579462
-  var valid_579463 = query.getOrDefault("delimiter")
-  valid_579463 = validateParameter(valid_579463, JString, required = false,
+  if valid_580487 != nil:
+    section.add "fields", valid_580487
+  var valid_580488 = query.getOrDefault("delimiter")
+  valid_580488 = validateParameter(valid_580488, JString, required = false,
                                  default = nil)
-  if valid_579463 != nil:
-    section.add "delimiter", valid_579463
-  var valid_579464 = query.getOrDefault("maxResults")
-  valid_579464 = validateParameter(valid_579464, JInt, required = false,
+  if valid_580488 != nil:
+    section.add "delimiter", valid_580488
+  var valid_580489 = query.getOrDefault("maxResults")
+  valid_580489 = validateParameter(valid_580489, JInt, required = false,
                                  default = newJInt(1000))
-  if valid_579464 != nil:
-    section.add "maxResults", valid_579464
-  var valid_579465 = query.getOrDefault("versions")
-  valid_579465 = validateParameter(valid_579465, JBool, required = false, default = nil)
-  if valid_579465 != nil:
-    section.add "versions", valid_579465
+  if valid_580489 != nil:
+    section.add "maxResults", valid_580489
+  var valid_580490 = query.getOrDefault("versions")
+  valid_580490 = validateParameter(valid_580490, JBool, required = false, default = nil)
+  if valid_580490 != nil:
+    section.add "versions", valid_580490
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5622,20 +5767,20 @@ proc validate_StorageObjectsWatchAll_579447(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579467: Call_StorageObjectsWatchAll_579446; path: JsonNode;
+proc call*(call_580492: Call_StorageObjectsWatchAll_580471; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Watch for changes on all objects in a bucket.
   ## 
-  let valid = call_579467.validator(path, query, header, formData, body)
-  let scheme = call_579467.pickScheme
+  let valid = call_580492.validator(path, query, header, formData, body)
+  let scheme = call_580492.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579467.url(scheme.get, call_579467.host, call_579467.base,
-                         call_579467.route, valid.getOrDefault("path"),
+  let url = call_580492.url(scheme.get, call_580492.host, call_580492.base,
+                         call_580492.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579467, url, valid)
+  result = hook(call_580492, url, valid)
 
-proc call*(call_579468: Call_StorageObjectsWatchAll_579446; bucket: string;
+proc call*(call_580493: Call_StorageObjectsWatchAll_580471; bucket: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           prefix: string = ""; includeTrailingDelimiter: bool = false;
           userProject: string = ""; alt: string = "json"; userIp: string = "";
@@ -5680,38 +5825,38 @@ proc call*(call_579468: Call_StorageObjectsWatchAll_579446; bucket: string;
   ##             : Maximum number of items plus prefixes to return in a single page of responses. As duplicate prefixes are omitted, fewer total results may be returned than requested. The service will use this parameter or 1,000 items, whichever is smaller.
   ##   versions: bool
   ##           : If true, lists all versions of an object as distinct results. The default is false. For more information, see Object Versioning.
-  var path_579469 = newJObject()
-  var query_579470 = newJObject()
-  var body_579471 = newJObject()
-  add(query_579470, "key", newJString(key))
-  add(query_579470, "prettyPrint", newJBool(prettyPrint))
-  add(query_579470, "oauth_token", newJString(oauthToken))
-  add(query_579470, "prefix", newJString(prefix))
-  add(query_579470, "includeTrailingDelimiter", newJBool(includeTrailingDelimiter))
-  add(query_579470, "userProject", newJString(userProject))
-  add(query_579470, "alt", newJString(alt))
-  add(query_579470, "userIp", newJString(userIp))
-  add(query_579470, "quotaUser", newJString(quotaUser))
-  add(query_579470, "pageToken", newJString(pageToken))
-  add(path_579469, "bucket", newJString(bucket))
-  add(query_579470, "provisionalUserProject", newJString(provisionalUserProject))
+  var path_580494 = newJObject()
+  var query_580495 = newJObject()
+  var body_580496 = newJObject()
+  add(query_580495, "key", newJString(key))
+  add(query_580495, "prettyPrint", newJBool(prettyPrint))
+  add(query_580495, "oauth_token", newJString(oauthToken))
+  add(query_580495, "prefix", newJString(prefix))
+  add(query_580495, "includeTrailingDelimiter", newJBool(includeTrailingDelimiter))
+  add(query_580495, "userProject", newJString(userProject))
+  add(query_580495, "alt", newJString(alt))
+  add(query_580495, "userIp", newJString(userIp))
+  add(query_580495, "quotaUser", newJString(quotaUser))
+  add(query_580495, "pageToken", newJString(pageToken))
+  add(path_580494, "bucket", newJString(bucket))
+  add(query_580495, "provisionalUserProject", newJString(provisionalUserProject))
   if resource != nil:
-    body_579471 = resource
-  add(query_579470, "projection", newJString(projection))
-  add(query_579470, "fields", newJString(fields))
-  add(query_579470, "delimiter", newJString(delimiter))
-  add(query_579470, "maxResults", newJInt(maxResults))
-  add(query_579470, "versions", newJBool(versions))
-  result = call_579468.call(path_579469, query_579470, nil, nil, body_579471)
+    body_580496 = resource
+  add(query_580495, "projection", newJString(projection))
+  add(query_580495, "fields", newJString(fields))
+  add(query_580495, "delimiter", newJString(delimiter))
+  add(query_580495, "maxResults", newJInt(maxResults))
+  add(query_580495, "versions", newJBool(versions))
+  result = call_580493.call(path_580494, query_580495, nil, nil, body_580496)
 
-var storageObjectsWatchAll* = Call_StorageObjectsWatchAll_579446(
+var storageObjectsWatchAll* = Call_StorageObjectsWatchAll_580471(
     name: "storageObjectsWatchAll", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/b/{bucket}/o/watch",
-    validator: validate_StorageObjectsWatchAll_579447, base: "/storage/v1",
-    url: url_StorageObjectsWatchAll_579448, schemes: {Scheme.Https})
+    validator: validate_StorageObjectsWatchAll_580472, base: "/storage/v1",
+    url: url_StorageObjectsWatchAll_580473, schemes: {Scheme.Https})
 type
-  Call_StorageObjectsUpdate_579496 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectsUpdate_579498(protocol: Scheme; host: string; base: string;
+  Call_StorageObjectsUpdate_580521 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectsUpdate_580523(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5727,9 +5872,14 @@ proc url_StorageObjectsUpdate_579498(protocol: Scheme; host: string; base: strin
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectsUpdate_579497(path: JsonNode; query: JsonNode;
+proc validate_StorageObjectsUpdate_580522(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an object's metadata.
   ## 
@@ -5742,16 +5892,16 @@ proc validate_StorageObjectsUpdate_579497(path: JsonNode; query: JsonNode;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579499 = path.getOrDefault("bucket")
-  valid_579499 = validateParameter(valid_579499, JString, required = true,
+  var valid_580524 = path.getOrDefault("bucket")
+  valid_580524 = validateParameter(valid_580524, JString, required = true,
                                  default = nil)
-  if valid_579499 != nil:
-    section.add "bucket", valid_579499
-  var valid_579500 = path.getOrDefault("object")
-  valid_579500 = validateParameter(valid_579500, JString, required = true,
+  if valid_580524 != nil:
+    section.add "bucket", valid_580524
+  var valid_580525 = path.getOrDefault("object")
+  valid_580525 = validateParameter(valid_580525, JString, required = true,
                                  default = nil)
-  if valid_579500 != nil:
-    section.add "object", valid_579500
+  if valid_580525 != nil:
+    section.add "object", valid_580525
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -5787,86 +5937,86 @@ proc validate_StorageObjectsUpdate_579497(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579501 = query.getOrDefault("key")
-  valid_579501 = validateParameter(valid_579501, JString, required = false,
+  var valid_580526 = query.getOrDefault("key")
+  valid_580526 = validateParameter(valid_580526, JString, required = false,
                                  default = nil)
-  if valid_579501 != nil:
-    section.add "key", valid_579501
-  var valid_579502 = query.getOrDefault("prettyPrint")
-  valid_579502 = validateParameter(valid_579502, JBool, required = false,
+  if valid_580526 != nil:
+    section.add "key", valid_580526
+  var valid_580527 = query.getOrDefault("prettyPrint")
+  valid_580527 = validateParameter(valid_580527, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579502 != nil:
-    section.add "prettyPrint", valid_579502
-  var valid_579503 = query.getOrDefault("oauth_token")
-  valid_579503 = validateParameter(valid_579503, JString, required = false,
+  if valid_580527 != nil:
+    section.add "prettyPrint", valid_580527
+  var valid_580528 = query.getOrDefault("oauth_token")
+  valid_580528 = validateParameter(valid_580528, JString, required = false,
                                  default = nil)
-  if valid_579503 != nil:
-    section.add "oauth_token", valid_579503
-  var valid_579504 = query.getOrDefault("generation")
-  valid_579504 = validateParameter(valid_579504, JString, required = false,
+  if valid_580528 != nil:
+    section.add "oauth_token", valid_580528
+  var valid_580529 = query.getOrDefault("generation")
+  valid_580529 = validateParameter(valid_580529, JString, required = false,
                                  default = nil)
-  if valid_579504 != nil:
-    section.add "generation", valid_579504
-  var valid_579505 = query.getOrDefault("userProject")
-  valid_579505 = validateParameter(valid_579505, JString, required = false,
+  if valid_580529 != nil:
+    section.add "generation", valid_580529
+  var valid_580530 = query.getOrDefault("userProject")
+  valid_580530 = validateParameter(valid_580530, JString, required = false,
                                  default = nil)
-  if valid_579505 != nil:
-    section.add "userProject", valid_579505
-  var valid_579506 = query.getOrDefault("predefinedAcl")
-  valid_579506 = validateParameter(valid_579506, JString, required = false,
+  if valid_580530 != nil:
+    section.add "userProject", valid_580530
+  var valid_580531 = query.getOrDefault("predefinedAcl")
+  valid_580531 = validateParameter(valid_580531, JString, required = false,
                                  default = newJString("authenticatedRead"))
-  if valid_579506 != nil:
-    section.add "predefinedAcl", valid_579506
-  var valid_579507 = query.getOrDefault("ifGenerationMatch")
-  valid_579507 = validateParameter(valid_579507, JString, required = false,
+  if valid_580531 != nil:
+    section.add "predefinedAcl", valid_580531
+  var valid_580532 = query.getOrDefault("ifGenerationMatch")
+  valid_580532 = validateParameter(valid_580532, JString, required = false,
                                  default = nil)
-  if valid_579507 != nil:
-    section.add "ifGenerationMatch", valid_579507
-  var valid_579508 = query.getOrDefault("ifGenerationNotMatch")
-  valid_579508 = validateParameter(valid_579508, JString, required = false,
+  if valid_580532 != nil:
+    section.add "ifGenerationMatch", valid_580532
+  var valid_580533 = query.getOrDefault("ifGenerationNotMatch")
+  valid_580533 = validateParameter(valid_580533, JString, required = false,
                                  default = nil)
-  if valid_579508 != nil:
-    section.add "ifGenerationNotMatch", valid_579508
-  var valid_579509 = query.getOrDefault("alt")
-  valid_579509 = validateParameter(valid_579509, JString, required = false,
+  if valid_580533 != nil:
+    section.add "ifGenerationNotMatch", valid_580533
+  var valid_580534 = query.getOrDefault("alt")
+  valid_580534 = validateParameter(valid_580534, JString, required = false,
                                  default = newJString("json"))
-  if valid_579509 != nil:
-    section.add "alt", valid_579509
-  var valid_579510 = query.getOrDefault("userIp")
-  valid_579510 = validateParameter(valid_579510, JString, required = false,
+  if valid_580534 != nil:
+    section.add "alt", valid_580534
+  var valid_580535 = query.getOrDefault("userIp")
+  valid_580535 = validateParameter(valid_580535, JString, required = false,
                                  default = nil)
-  if valid_579510 != nil:
-    section.add "userIp", valid_579510
-  var valid_579511 = query.getOrDefault("quotaUser")
-  valid_579511 = validateParameter(valid_579511, JString, required = false,
+  if valid_580535 != nil:
+    section.add "userIp", valid_580535
+  var valid_580536 = query.getOrDefault("quotaUser")
+  valid_580536 = validateParameter(valid_580536, JString, required = false,
                                  default = nil)
-  if valid_579511 != nil:
-    section.add "quotaUser", valid_579511
-  var valid_579512 = query.getOrDefault("ifMetagenerationMatch")
-  valid_579512 = validateParameter(valid_579512, JString, required = false,
+  if valid_580536 != nil:
+    section.add "quotaUser", valid_580536
+  var valid_580537 = query.getOrDefault("ifMetagenerationMatch")
+  valid_580537 = validateParameter(valid_580537, JString, required = false,
                                  default = nil)
-  if valid_579512 != nil:
-    section.add "ifMetagenerationMatch", valid_579512
-  var valid_579513 = query.getOrDefault("provisionalUserProject")
-  valid_579513 = validateParameter(valid_579513, JString, required = false,
+  if valid_580537 != nil:
+    section.add "ifMetagenerationMatch", valid_580537
+  var valid_580538 = query.getOrDefault("provisionalUserProject")
+  valid_580538 = validateParameter(valid_580538, JString, required = false,
                                  default = nil)
-  if valid_579513 != nil:
-    section.add "provisionalUserProject", valid_579513
-  var valid_579514 = query.getOrDefault("ifMetagenerationNotMatch")
-  valid_579514 = validateParameter(valid_579514, JString, required = false,
+  if valid_580538 != nil:
+    section.add "provisionalUserProject", valid_580538
+  var valid_580539 = query.getOrDefault("ifMetagenerationNotMatch")
+  valid_580539 = validateParameter(valid_580539, JString, required = false,
                                  default = nil)
-  if valid_579514 != nil:
-    section.add "ifMetagenerationNotMatch", valid_579514
-  var valid_579515 = query.getOrDefault("projection")
-  valid_579515 = validateParameter(valid_579515, JString, required = false,
+  if valid_580539 != nil:
+    section.add "ifMetagenerationNotMatch", valid_580539
+  var valid_580540 = query.getOrDefault("projection")
+  valid_580540 = validateParameter(valid_580540, JString, required = false,
                                  default = newJString("full"))
-  if valid_579515 != nil:
-    section.add "projection", valid_579515
-  var valid_579516 = query.getOrDefault("fields")
-  valid_579516 = validateParameter(valid_579516, JString, required = false,
+  if valid_580540 != nil:
+    section.add "projection", valid_580540
+  var valid_580541 = query.getOrDefault("fields")
+  valid_580541 = validateParameter(valid_580541, JString, required = false,
                                  default = nil)
-  if valid_579516 != nil:
-    section.add "fields", valid_579516
+  if valid_580541 != nil:
+    section.add "fields", valid_580541
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5878,20 +6028,20 @@ proc validate_StorageObjectsUpdate_579497(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579518: Call_StorageObjectsUpdate_579496; path: JsonNode;
+proc call*(call_580543: Call_StorageObjectsUpdate_580521; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an object's metadata.
   ## 
-  let valid = call_579518.validator(path, query, header, formData, body)
-  let scheme = call_579518.pickScheme
+  let valid = call_580543.validator(path, query, header, formData, body)
+  let scheme = call_580543.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579518.url(scheme.get, call_579518.host, call_579518.base,
-                         call_579518.route, valid.getOrDefault("path"),
+  let url = call_580543.url(scheme.get, call_580543.host, call_580543.base,
+                         call_580543.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579518, url, valid)
+  result = hook(call_580543, url, valid)
 
-proc call*(call_579519: Call_StorageObjectsUpdate_579496; bucket: string;
+proc call*(call_580544: Call_StorageObjectsUpdate_580521; bucket: string;
           `object`: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; generation: string = ""; userProject: string = "";
           predefinedAcl: string = "authenticatedRead";
@@ -5940,40 +6090,40 @@ proc call*(call_579519: Call_StorageObjectsUpdate_579496; bucket: string;
   ##             : Set of properties to return. Defaults to full.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579520 = newJObject()
-  var query_579521 = newJObject()
-  var body_579522 = newJObject()
-  add(query_579521, "key", newJString(key))
-  add(query_579521, "prettyPrint", newJBool(prettyPrint))
-  add(query_579521, "oauth_token", newJString(oauthToken))
-  add(query_579521, "generation", newJString(generation))
-  add(query_579521, "userProject", newJString(userProject))
-  add(query_579521, "predefinedAcl", newJString(predefinedAcl))
-  add(query_579521, "ifGenerationMatch", newJString(ifGenerationMatch))
-  add(query_579521, "ifGenerationNotMatch", newJString(ifGenerationNotMatch))
-  add(query_579521, "alt", newJString(alt))
-  add(query_579521, "userIp", newJString(userIp))
-  add(query_579521, "quotaUser", newJString(quotaUser))
-  add(query_579521, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
-  add(path_579520, "bucket", newJString(bucket))
+  var path_580545 = newJObject()
+  var query_580546 = newJObject()
+  var body_580547 = newJObject()
+  add(query_580546, "key", newJString(key))
+  add(query_580546, "prettyPrint", newJBool(prettyPrint))
+  add(query_580546, "oauth_token", newJString(oauthToken))
+  add(query_580546, "generation", newJString(generation))
+  add(query_580546, "userProject", newJString(userProject))
+  add(query_580546, "predefinedAcl", newJString(predefinedAcl))
+  add(query_580546, "ifGenerationMatch", newJString(ifGenerationMatch))
+  add(query_580546, "ifGenerationNotMatch", newJString(ifGenerationNotMatch))
+  add(query_580546, "alt", newJString(alt))
+  add(query_580546, "userIp", newJString(userIp))
+  add(query_580546, "quotaUser", newJString(quotaUser))
+  add(query_580546, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
+  add(path_580545, "bucket", newJString(bucket))
   if body != nil:
-    body_579522 = body
-  add(query_579521, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579520, "object", newJString(`object`))
-  add(query_579521, "ifMetagenerationNotMatch",
+    body_580547 = body
+  add(query_580546, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580545, "object", newJString(`object`))
+  add(query_580546, "ifMetagenerationNotMatch",
       newJString(ifMetagenerationNotMatch))
-  add(query_579521, "projection", newJString(projection))
-  add(query_579521, "fields", newJString(fields))
-  result = call_579519.call(path_579520, query_579521, nil, nil, body_579522)
+  add(query_580546, "projection", newJString(projection))
+  add(query_580546, "fields", newJString(fields))
+  result = call_580544.call(path_580545, query_580546, nil, nil, body_580547)
 
-var storageObjectsUpdate* = Call_StorageObjectsUpdate_579496(
+var storageObjectsUpdate* = Call_StorageObjectsUpdate_580521(
     name: "storageObjectsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/b/{bucket}/o/{object}",
-    validator: validate_StorageObjectsUpdate_579497, base: "/storage/v1",
-    url: url_StorageObjectsUpdate_579498, schemes: {Scheme.Https})
+    validator: validate_StorageObjectsUpdate_580522, base: "/storage/v1",
+    url: url_StorageObjectsUpdate_580523, schemes: {Scheme.Https})
 type
-  Call_StorageObjectsGet_579472 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectsGet_579474(protocol: Scheme; host: string; base: string;
+  Call_StorageObjectsGet_580497 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectsGet_580499(protocol: Scheme; host: string; base: string;
                                  route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -5989,9 +6139,14 @@ proc url_StorageObjectsGet_579474(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectsGet_579473(path: JsonNode; query: JsonNode;
+proc validate_StorageObjectsGet_580498(path: JsonNode; query: JsonNode;
                                       header: JsonNode; formData: JsonNode;
                                       body: JsonNode): JsonNode =
   ## Retrieves an object or its metadata.
@@ -6005,16 +6160,16 @@ proc validate_StorageObjectsGet_579473(path: JsonNode; query: JsonNode;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579475 = path.getOrDefault("bucket")
-  valid_579475 = validateParameter(valid_579475, JString, required = true,
+  var valid_580500 = path.getOrDefault("bucket")
+  valid_580500 = validateParameter(valid_580500, JString, required = true,
                                  default = nil)
-  if valid_579475 != nil:
-    section.add "bucket", valid_579475
-  var valid_579476 = path.getOrDefault("object")
-  valid_579476 = validateParameter(valid_579476, JString, required = true,
+  if valid_580500 != nil:
+    section.add "bucket", valid_580500
+  var valid_580501 = path.getOrDefault("object")
+  valid_580501 = validateParameter(valid_580501, JString, required = true,
                                  default = nil)
-  if valid_579476 != nil:
-    section.add "object", valid_579476
+  if valid_580501 != nil:
+    section.add "object", valid_580501
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -6048,81 +6203,81 @@ proc validate_StorageObjectsGet_579473(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579477 = query.getOrDefault("key")
-  valid_579477 = validateParameter(valid_579477, JString, required = false,
+  var valid_580502 = query.getOrDefault("key")
+  valid_580502 = validateParameter(valid_580502, JString, required = false,
                                  default = nil)
-  if valid_579477 != nil:
-    section.add "key", valid_579477
-  var valid_579478 = query.getOrDefault("prettyPrint")
-  valid_579478 = validateParameter(valid_579478, JBool, required = false,
+  if valid_580502 != nil:
+    section.add "key", valid_580502
+  var valid_580503 = query.getOrDefault("prettyPrint")
+  valid_580503 = validateParameter(valid_580503, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579478 != nil:
-    section.add "prettyPrint", valid_579478
-  var valid_579479 = query.getOrDefault("oauth_token")
-  valid_579479 = validateParameter(valid_579479, JString, required = false,
+  if valid_580503 != nil:
+    section.add "prettyPrint", valid_580503
+  var valid_580504 = query.getOrDefault("oauth_token")
+  valid_580504 = validateParameter(valid_580504, JString, required = false,
                                  default = nil)
-  if valid_579479 != nil:
-    section.add "oauth_token", valid_579479
-  var valid_579480 = query.getOrDefault("generation")
-  valid_579480 = validateParameter(valid_579480, JString, required = false,
+  if valid_580504 != nil:
+    section.add "oauth_token", valid_580504
+  var valid_580505 = query.getOrDefault("generation")
+  valid_580505 = validateParameter(valid_580505, JString, required = false,
                                  default = nil)
-  if valid_579480 != nil:
-    section.add "generation", valid_579480
-  var valid_579481 = query.getOrDefault("userProject")
-  valid_579481 = validateParameter(valid_579481, JString, required = false,
+  if valid_580505 != nil:
+    section.add "generation", valid_580505
+  var valid_580506 = query.getOrDefault("userProject")
+  valid_580506 = validateParameter(valid_580506, JString, required = false,
                                  default = nil)
-  if valid_579481 != nil:
-    section.add "userProject", valid_579481
-  var valid_579482 = query.getOrDefault("ifGenerationMatch")
-  valid_579482 = validateParameter(valid_579482, JString, required = false,
+  if valid_580506 != nil:
+    section.add "userProject", valid_580506
+  var valid_580507 = query.getOrDefault("ifGenerationMatch")
+  valid_580507 = validateParameter(valid_580507, JString, required = false,
                                  default = nil)
-  if valid_579482 != nil:
-    section.add "ifGenerationMatch", valid_579482
-  var valid_579483 = query.getOrDefault("ifGenerationNotMatch")
-  valid_579483 = validateParameter(valid_579483, JString, required = false,
+  if valid_580507 != nil:
+    section.add "ifGenerationMatch", valid_580507
+  var valid_580508 = query.getOrDefault("ifGenerationNotMatch")
+  valid_580508 = validateParameter(valid_580508, JString, required = false,
                                  default = nil)
-  if valid_579483 != nil:
-    section.add "ifGenerationNotMatch", valid_579483
-  var valid_579484 = query.getOrDefault("alt")
-  valid_579484 = validateParameter(valid_579484, JString, required = false,
+  if valid_580508 != nil:
+    section.add "ifGenerationNotMatch", valid_580508
+  var valid_580509 = query.getOrDefault("alt")
+  valid_580509 = validateParameter(valid_580509, JString, required = false,
                                  default = newJString("json"))
-  if valid_579484 != nil:
-    section.add "alt", valid_579484
-  var valid_579485 = query.getOrDefault("userIp")
-  valid_579485 = validateParameter(valid_579485, JString, required = false,
+  if valid_580509 != nil:
+    section.add "alt", valid_580509
+  var valid_580510 = query.getOrDefault("userIp")
+  valid_580510 = validateParameter(valid_580510, JString, required = false,
                                  default = nil)
-  if valid_579485 != nil:
-    section.add "userIp", valid_579485
-  var valid_579486 = query.getOrDefault("quotaUser")
-  valid_579486 = validateParameter(valid_579486, JString, required = false,
+  if valid_580510 != nil:
+    section.add "userIp", valid_580510
+  var valid_580511 = query.getOrDefault("quotaUser")
+  valid_580511 = validateParameter(valid_580511, JString, required = false,
                                  default = nil)
-  if valid_579486 != nil:
-    section.add "quotaUser", valid_579486
-  var valid_579487 = query.getOrDefault("ifMetagenerationMatch")
-  valid_579487 = validateParameter(valid_579487, JString, required = false,
+  if valid_580511 != nil:
+    section.add "quotaUser", valid_580511
+  var valid_580512 = query.getOrDefault("ifMetagenerationMatch")
+  valid_580512 = validateParameter(valid_580512, JString, required = false,
                                  default = nil)
-  if valid_579487 != nil:
-    section.add "ifMetagenerationMatch", valid_579487
-  var valid_579488 = query.getOrDefault("provisionalUserProject")
-  valid_579488 = validateParameter(valid_579488, JString, required = false,
+  if valid_580512 != nil:
+    section.add "ifMetagenerationMatch", valid_580512
+  var valid_580513 = query.getOrDefault("provisionalUserProject")
+  valid_580513 = validateParameter(valid_580513, JString, required = false,
                                  default = nil)
-  if valid_579488 != nil:
-    section.add "provisionalUserProject", valid_579488
-  var valid_579489 = query.getOrDefault("ifMetagenerationNotMatch")
-  valid_579489 = validateParameter(valid_579489, JString, required = false,
+  if valid_580513 != nil:
+    section.add "provisionalUserProject", valid_580513
+  var valid_580514 = query.getOrDefault("ifMetagenerationNotMatch")
+  valid_580514 = validateParameter(valid_580514, JString, required = false,
                                  default = nil)
-  if valid_579489 != nil:
-    section.add "ifMetagenerationNotMatch", valid_579489
-  var valid_579490 = query.getOrDefault("projection")
-  valid_579490 = validateParameter(valid_579490, JString, required = false,
+  if valid_580514 != nil:
+    section.add "ifMetagenerationNotMatch", valid_580514
+  var valid_580515 = query.getOrDefault("projection")
+  valid_580515 = validateParameter(valid_580515, JString, required = false,
                                  default = newJString("full"))
-  if valid_579490 != nil:
-    section.add "projection", valid_579490
-  var valid_579491 = query.getOrDefault("fields")
-  valid_579491 = validateParameter(valid_579491, JString, required = false,
+  if valid_580515 != nil:
+    section.add "projection", valid_580515
+  var valid_580516 = query.getOrDefault("fields")
+  valid_580516 = validateParameter(valid_580516, JString, required = false,
                                  default = nil)
-  if valid_579491 != nil:
-    section.add "fields", valid_579491
+  if valid_580516 != nil:
+    section.add "fields", valid_580516
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6131,20 +6286,20 @@ proc validate_StorageObjectsGet_579473(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579492: Call_StorageObjectsGet_579472; path: JsonNode;
+proc call*(call_580517: Call_StorageObjectsGet_580497; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves an object or its metadata.
   ## 
-  let valid = call_579492.validator(path, query, header, formData, body)
-  let scheme = call_579492.pickScheme
+  let valid = call_580517.validator(path, query, header, formData, body)
+  let scheme = call_580517.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579492.url(scheme.get, call_579492.host, call_579492.base,
-                         call_579492.route, valid.getOrDefault("path"),
+  let url = call_580517.url(scheme.get, call_580517.host, call_580517.base,
+                         call_580517.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579492, url, valid)
+  result = hook(call_580517, url, valid)
 
-proc call*(call_579493: Call_StorageObjectsGet_579472; bucket: string;
+proc call*(call_580518: Call_StorageObjectsGet_580497; bucket: string;
           `object`: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; generation: string = ""; userProject: string = "";
           ifGenerationMatch: string = ""; ifGenerationNotMatch: string = "";
@@ -6188,35 +6343,35 @@ proc call*(call_579493: Call_StorageObjectsGet_579472; bucket: string;
   ##             : Set of properties to return. Defaults to noAcl.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579494 = newJObject()
-  var query_579495 = newJObject()
-  add(query_579495, "key", newJString(key))
-  add(query_579495, "prettyPrint", newJBool(prettyPrint))
-  add(query_579495, "oauth_token", newJString(oauthToken))
-  add(query_579495, "generation", newJString(generation))
-  add(query_579495, "userProject", newJString(userProject))
-  add(query_579495, "ifGenerationMatch", newJString(ifGenerationMatch))
-  add(query_579495, "ifGenerationNotMatch", newJString(ifGenerationNotMatch))
-  add(query_579495, "alt", newJString(alt))
-  add(query_579495, "userIp", newJString(userIp))
-  add(query_579495, "quotaUser", newJString(quotaUser))
-  add(query_579495, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
-  add(path_579494, "bucket", newJString(bucket))
-  add(query_579495, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579494, "object", newJString(`object`))
-  add(query_579495, "ifMetagenerationNotMatch",
+  var path_580519 = newJObject()
+  var query_580520 = newJObject()
+  add(query_580520, "key", newJString(key))
+  add(query_580520, "prettyPrint", newJBool(prettyPrint))
+  add(query_580520, "oauth_token", newJString(oauthToken))
+  add(query_580520, "generation", newJString(generation))
+  add(query_580520, "userProject", newJString(userProject))
+  add(query_580520, "ifGenerationMatch", newJString(ifGenerationMatch))
+  add(query_580520, "ifGenerationNotMatch", newJString(ifGenerationNotMatch))
+  add(query_580520, "alt", newJString(alt))
+  add(query_580520, "userIp", newJString(userIp))
+  add(query_580520, "quotaUser", newJString(quotaUser))
+  add(query_580520, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
+  add(path_580519, "bucket", newJString(bucket))
+  add(query_580520, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580519, "object", newJString(`object`))
+  add(query_580520, "ifMetagenerationNotMatch",
       newJString(ifMetagenerationNotMatch))
-  add(query_579495, "projection", newJString(projection))
-  add(query_579495, "fields", newJString(fields))
-  result = call_579493.call(path_579494, query_579495, nil, nil, nil)
+  add(query_580520, "projection", newJString(projection))
+  add(query_580520, "fields", newJString(fields))
+  result = call_580518.call(path_580519, query_580520, nil, nil, nil)
 
-var storageObjectsGet* = Call_StorageObjectsGet_579472(name: "storageObjectsGet",
+var storageObjectsGet* = Call_StorageObjectsGet_580497(name: "storageObjectsGet",
     meth: HttpMethod.HttpGet, host: "www.googleapis.com",
-    route: "/b/{bucket}/o/{object}", validator: validate_StorageObjectsGet_579473,
-    base: "/storage/v1", url: url_StorageObjectsGet_579474, schemes: {Scheme.Https})
+    route: "/b/{bucket}/o/{object}", validator: validate_StorageObjectsGet_580498,
+    base: "/storage/v1", url: url_StorageObjectsGet_580499, schemes: {Scheme.Https})
 type
-  Call_StorageObjectsPatch_579546 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectsPatch_579548(protocol: Scheme; host: string; base: string;
+  Call_StorageObjectsPatch_580571 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectsPatch_580573(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6232,9 +6387,14 @@ proc url_StorageObjectsPatch_579548(protocol: Scheme; host: string; base: string
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectsPatch_579547(path: JsonNode; query: JsonNode;
+proc validate_StorageObjectsPatch_580572(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Patches an object's metadata.
@@ -6248,16 +6408,16 @@ proc validate_StorageObjectsPatch_579547(path: JsonNode; query: JsonNode;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579549 = path.getOrDefault("bucket")
-  valid_579549 = validateParameter(valid_579549, JString, required = true,
+  var valid_580574 = path.getOrDefault("bucket")
+  valid_580574 = validateParameter(valid_580574, JString, required = true,
                                  default = nil)
-  if valid_579549 != nil:
-    section.add "bucket", valid_579549
-  var valid_579550 = path.getOrDefault("object")
-  valid_579550 = validateParameter(valid_579550, JString, required = true,
+  if valid_580574 != nil:
+    section.add "bucket", valid_580574
+  var valid_580575 = path.getOrDefault("object")
+  valid_580575 = validateParameter(valid_580575, JString, required = true,
                                  default = nil)
-  if valid_579550 != nil:
-    section.add "object", valid_579550
+  if valid_580575 != nil:
+    section.add "object", valid_580575
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -6293,86 +6453,86 @@ proc validate_StorageObjectsPatch_579547(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579551 = query.getOrDefault("key")
-  valid_579551 = validateParameter(valid_579551, JString, required = false,
+  var valid_580576 = query.getOrDefault("key")
+  valid_580576 = validateParameter(valid_580576, JString, required = false,
                                  default = nil)
-  if valid_579551 != nil:
-    section.add "key", valid_579551
-  var valid_579552 = query.getOrDefault("prettyPrint")
-  valid_579552 = validateParameter(valid_579552, JBool, required = false,
+  if valid_580576 != nil:
+    section.add "key", valid_580576
+  var valid_580577 = query.getOrDefault("prettyPrint")
+  valid_580577 = validateParameter(valid_580577, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579552 != nil:
-    section.add "prettyPrint", valid_579552
-  var valid_579553 = query.getOrDefault("oauth_token")
-  valid_579553 = validateParameter(valid_579553, JString, required = false,
+  if valid_580577 != nil:
+    section.add "prettyPrint", valid_580577
+  var valid_580578 = query.getOrDefault("oauth_token")
+  valid_580578 = validateParameter(valid_580578, JString, required = false,
                                  default = nil)
-  if valid_579553 != nil:
-    section.add "oauth_token", valid_579553
-  var valid_579554 = query.getOrDefault("generation")
-  valid_579554 = validateParameter(valid_579554, JString, required = false,
+  if valid_580578 != nil:
+    section.add "oauth_token", valid_580578
+  var valid_580579 = query.getOrDefault("generation")
+  valid_580579 = validateParameter(valid_580579, JString, required = false,
                                  default = nil)
-  if valid_579554 != nil:
-    section.add "generation", valid_579554
-  var valid_579555 = query.getOrDefault("userProject")
-  valid_579555 = validateParameter(valid_579555, JString, required = false,
+  if valid_580579 != nil:
+    section.add "generation", valid_580579
+  var valid_580580 = query.getOrDefault("userProject")
+  valid_580580 = validateParameter(valid_580580, JString, required = false,
                                  default = nil)
-  if valid_579555 != nil:
-    section.add "userProject", valid_579555
-  var valid_579556 = query.getOrDefault("predefinedAcl")
-  valid_579556 = validateParameter(valid_579556, JString, required = false,
+  if valid_580580 != nil:
+    section.add "userProject", valid_580580
+  var valid_580581 = query.getOrDefault("predefinedAcl")
+  valid_580581 = validateParameter(valid_580581, JString, required = false,
                                  default = newJString("authenticatedRead"))
-  if valid_579556 != nil:
-    section.add "predefinedAcl", valid_579556
-  var valid_579557 = query.getOrDefault("ifGenerationMatch")
-  valid_579557 = validateParameter(valid_579557, JString, required = false,
+  if valid_580581 != nil:
+    section.add "predefinedAcl", valid_580581
+  var valid_580582 = query.getOrDefault("ifGenerationMatch")
+  valid_580582 = validateParameter(valid_580582, JString, required = false,
                                  default = nil)
-  if valid_579557 != nil:
-    section.add "ifGenerationMatch", valid_579557
-  var valid_579558 = query.getOrDefault("ifGenerationNotMatch")
-  valid_579558 = validateParameter(valid_579558, JString, required = false,
+  if valid_580582 != nil:
+    section.add "ifGenerationMatch", valid_580582
+  var valid_580583 = query.getOrDefault("ifGenerationNotMatch")
+  valid_580583 = validateParameter(valid_580583, JString, required = false,
                                  default = nil)
-  if valid_579558 != nil:
-    section.add "ifGenerationNotMatch", valid_579558
-  var valid_579559 = query.getOrDefault("alt")
-  valid_579559 = validateParameter(valid_579559, JString, required = false,
+  if valid_580583 != nil:
+    section.add "ifGenerationNotMatch", valid_580583
+  var valid_580584 = query.getOrDefault("alt")
+  valid_580584 = validateParameter(valid_580584, JString, required = false,
                                  default = newJString("json"))
-  if valid_579559 != nil:
-    section.add "alt", valid_579559
-  var valid_579560 = query.getOrDefault("userIp")
-  valid_579560 = validateParameter(valid_579560, JString, required = false,
+  if valid_580584 != nil:
+    section.add "alt", valid_580584
+  var valid_580585 = query.getOrDefault("userIp")
+  valid_580585 = validateParameter(valid_580585, JString, required = false,
                                  default = nil)
-  if valid_579560 != nil:
-    section.add "userIp", valid_579560
-  var valid_579561 = query.getOrDefault("quotaUser")
-  valid_579561 = validateParameter(valid_579561, JString, required = false,
+  if valid_580585 != nil:
+    section.add "userIp", valid_580585
+  var valid_580586 = query.getOrDefault("quotaUser")
+  valid_580586 = validateParameter(valid_580586, JString, required = false,
                                  default = nil)
-  if valid_579561 != nil:
-    section.add "quotaUser", valid_579561
-  var valid_579562 = query.getOrDefault("ifMetagenerationMatch")
-  valid_579562 = validateParameter(valid_579562, JString, required = false,
+  if valid_580586 != nil:
+    section.add "quotaUser", valid_580586
+  var valid_580587 = query.getOrDefault("ifMetagenerationMatch")
+  valid_580587 = validateParameter(valid_580587, JString, required = false,
                                  default = nil)
-  if valid_579562 != nil:
-    section.add "ifMetagenerationMatch", valid_579562
-  var valid_579563 = query.getOrDefault("provisionalUserProject")
-  valid_579563 = validateParameter(valid_579563, JString, required = false,
+  if valid_580587 != nil:
+    section.add "ifMetagenerationMatch", valid_580587
+  var valid_580588 = query.getOrDefault("provisionalUserProject")
+  valid_580588 = validateParameter(valid_580588, JString, required = false,
                                  default = nil)
-  if valid_579563 != nil:
-    section.add "provisionalUserProject", valid_579563
-  var valid_579564 = query.getOrDefault("ifMetagenerationNotMatch")
-  valid_579564 = validateParameter(valid_579564, JString, required = false,
+  if valid_580588 != nil:
+    section.add "provisionalUserProject", valid_580588
+  var valid_580589 = query.getOrDefault("ifMetagenerationNotMatch")
+  valid_580589 = validateParameter(valid_580589, JString, required = false,
                                  default = nil)
-  if valid_579564 != nil:
-    section.add "ifMetagenerationNotMatch", valid_579564
-  var valid_579565 = query.getOrDefault("projection")
-  valid_579565 = validateParameter(valid_579565, JString, required = false,
+  if valid_580589 != nil:
+    section.add "ifMetagenerationNotMatch", valid_580589
+  var valid_580590 = query.getOrDefault("projection")
+  valid_580590 = validateParameter(valid_580590, JString, required = false,
                                  default = newJString("full"))
-  if valid_579565 != nil:
-    section.add "projection", valid_579565
-  var valid_579566 = query.getOrDefault("fields")
-  valid_579566 = validateParameter(valid_579566, JString, required = false,
+  if valid_580590 != nil:
+    section.add "projection", valid_580590
+  var valid_580591 = query.getOrDefault("fields")
+  valid_580591 = validateParameter(valid_580591, JString, required = false,
                                  default = nil)
-  if valid_579566 != nil:
-    section.add "fields", valid_579566
+  if valid_580591 != nil:
+    section.add "fields", valid_580591
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6384,20 +6544,20 @@ proc validate_StorageObjectsPatch_579547(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579568: Call_StorageObjectsPatch_579546; path: JsonNode;
+proc call*(call_580593: Call_StorageObjectsPatch_580571; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Patches an object's metadata.
   ## 
-  let valid = call_579568.validator(path, query, header, formData, body)
-  let scheme = call_579568.pickScheme
+  let valid = call_580593.validator(path, query, header, formData, body)
+  let scheme = call_580593.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579568.url(scheme.get, call_579568.host, call_579568.base,
-                         call_579568.route, valid.getOrDefault("path"),
+  let url = call_580593.url(scheme.get, call_580593.host, call_580593.base,
+                         call_580593.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579568, url, valid)
+  result = hook(call_580593, url, valid)
 
-proc call*(call_579569: Call_StorageObjectsPatch_579546; bucket: string;
+proc call*(call_580594: Call_StorageObjectsPatch_580571; bucket: string;
           `object`: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; generation: string = ""; userProject: string = "";
           predefinedAcl: string = "authenticatedRead";
@@ -6446,40 +6606,40 @@ proc call*(call_579569: Call_StorageObjectsPatch_579546; bucket: string;
   ##             : Set of properties to return. Defaults to full.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579570 = newJObject()
-  var query_579571 = newJObject()
-  var body_579572 = newJObject()
-  add(query_579571, "key", newJString(key))
-  add(query_579571, "prettyPrint", newJBool(prettyPrint))
-  add(query_579571, "oauth_token", newJString(oauthToken))
-  add(query_579571, "generation", newJString(generation))
-  add(query_579571, "userProject", newJString(userProject))
-  add(query_579571, "predefinedAcl", newJString(predefinedAcl))
-  add(query_579571, "ifGenerationMatch", newJString(ifGenerationMatch))
-  add(query_579571, "ifGenerationNotMatch", newJString(ifGenerationNotMatch))
-  add(query_579571, "alt", newJString(alt))
-  add(query_579571, "userIp", newJString(userIp))
-  add(query_579571, "quotaUser", newJString(quotaUser))
-  add(query_579571, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
-  add(path_579570, "bucket", newJString(bucket))
+  var path_580595 = newJObject()
+  var query_580596 = newJObject()
+  var body_580597 = newJObject()
+  add(query_580596, "key", newJString(key))
+  add(query_580596, "prettyPrint", newJBool(prettyPrint))
+  add(query_580596, "oauth_token", newJString(oauthToken))
+  add(query_580596, "generation", newJString(generation))
+  add(query_580596, "userProject", newJString(userProject))
+  add(query_580596, "predefinedAcl", newJString(predefinedAcl))
+  add(query_580596, "ifGenerationMatch", newJString(ifGenerationMatch))
+  add(query_580596, "ifGenerationNotMatch", newJString(ifGenerationNotMatch))
+  add(query_580596, "alt", newJString(alt))
+  add(query_580596, "userIp", newJString(userIp))
+  add(query_580596, "quotaUser", newJString(quotaUser))
+  add(query_580596, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
+  add(path_580595, "bucket", newJString(bucket))
   if body != nil:
-    body_579572 = body
-  add(query_579571, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579570, "object", newJString(`object`))
-  add(query_579571, "ifMetagenerationNotMatch",
+    body_580597 = body
+  add(query_580596, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580595, "object", newJString(`object`))
+  add(query_580596, "ifMetagenerationNotMatch",
       newJString(ifMetagenerationNotMatch))
-  add(query_579571, "projection", newJString(projection))
-  add(query_579571, "fields", newJString(fields))
-  result = call_579569.call(path_579570, query_579571, nil, nil, body_579572)
+  add(query_580596, "projection", newJString(projection))
+  add(query_580596, "fields", newJString(fields))
+  result = call_580594.call(path_580595, query_580596, nil, nil, body_580597)
 
-var storageObjectsPatch* = Call_StorageObjectsPatch_579546(
+var storageObjectsPatch* = Call_StorageObjectsPatch_580571(
     name: "storageObjectsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/b/{bucket}/o/{object}",
-    validator: validate_StorageObjectsPatch_579547, base: "/storage/v1",
-    url: url_StorageObjectsPatch_579548, schemes: {Scheme.Https})
+    validator: validate_StorageObjectsPatch_580572, base: "/storage/v1",
+    url: url_StorageObjectsPatch_580573, schemes: {Scheme.Https})
 type
-  Call_StorageObjectsDelete_579523 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectsDelete_579525(protocol: Scheme; host: string; base: string;
+  Call_StorageObjectsDelete_580548 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectsDelete_580550(protocol: Scheme; host: string; base: string;
                                     route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6495,9 +6655,14 @@ proc url_StorageObjectsDelete_579525(protocol: Scheme; host: string; base: strin
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectsDelete_579524(path: JsonNode; query: JsonNode;
+proc validate_StorageObjectsDelete_580549(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes an object and its metadata. Deletions are permanent if versioning is not enabled for the bucket, or if the generation parameter is used.
   ## 
@@ -6510,16 +6675,16 @@ proc validate_StorageObjectsDelete_579524(path: JsonNode; query: JsonNode;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579526 = path.getOrDefault("bucket")
-  valid_579526 = validateParameter(valid_579526, JString, required = true,
+  var valid_580551 = path.getOrDefault("bucket")
+  valid_580551 = validateParameter(valid_580551, JString, required = true,
                                  default = nil)
-  if valid_579526 != nil:
-    section.add "bucket", valid_579526
-  var valid_579527 = path.getOrDefault("object")
-  valid_579527 = validateParameter(valid_579527, JString, required = true,
+  if valid_580551 != nil:
+    section.add "bucket", valid_580551
+  var valid_580552 = path.getOrDefault("object")
+  valid_580552 = validateParameter(valid_580552, JString, required = true,
                                  default = nil)
-  if valid_579527 != nil:
-    section.add "object", valid_579527
+  if valid_580552 != nil:
+    section.add "object", valid_580552
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -6551,76 +6716,76 @@ proc validate_StorageObjectsDelete_579524(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579528 = query.getOrDefault("key")
-  valid_579528 = validateParameter(valid_579528, JString, required = false,
+  var valid_580553 = query.getOrDefault("key")
+  valid_580553 = validateParameter(valid_580553, JString, required = false,
                                  default = nil)
-  if valid_579528 != nil:
-    section.add "key", valid_579528
-  var valid_579529 = query.getOrDefault("prettyPrint")
-  valid_579529 = validateParameter(valid_579529, JBool, required = false,
+  if valid_580553 != nil:
+    section.add "key", valid_580553
+  var valid_580554 = query.getOrDefault("prettyPrint")
+  valid_580554 = validateParameter(valid_580554, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579529 != nil:
-    section.add "prettyPrint", valid_579529
-  var valid_579530 = query.getOrDefault("oauth_token")
-  valid_579530 = validateParameter(valid_579530, JString, required = false,
+  if valid_580554 != nil:
+    section.add "prettyPrint", valid_580554
+  var valid_580555 = query.getOrDefault("oauth_token")
+  valid_580555 = validateParameter(valid_580555, JString, required = false,
                                  default = nil)
-  if valid_579530 != nil:
-    section.add "oauth_token", valid_579530
-  var valid_579531 = query.getOrDefault("generation")
-  valid_579531 = validateParameter(valid_579531, JString, required = false,
+  if valid_580555 != nil:
+    section.add "oauth_token", valid_580555
+  var valid_580556 = query.getOrDefault("generation")
+  valid_580556 = validateParameter(valid_580556, JString, required = false,
                                  default = nil)
-  if valid_579531 != nil:
-    section.add "generation", valid_579531
-  var valid_579532 = query.getOrDefault("userProject")
-  valid_579532 = validateParameter(valid_579532, JString, required = false,
+  if valid_580556 != nil:
+    section.add "generation", valid_580556
+  var valid_580557 = query.getOrDefault("userProject")
+  valid_580557 = validateParameter(valid_580557, JString, required = false,
                                  default = nil)
-  if valid_579532 != nil:
-    section.add "userProject", valid_579532
-  var valid_579533 = query.getOrDefault("ifGenerationMatch")
-  valid_579533 = validateParameter(valid_579533, JString, required = false,
+  if valid_580557 != nil:
+    section.add "userProject", valid_580557
+  var valid_580558 = query.getOrDefault("ifGenerationMatch")
+  valid_580558 = validateParameter(valid_580558, JString, required = false,
                                  default = nil)
-  if valid_579533 != nil:
-    section.add "ifGenerationMatch", valid_579533
-  var valid_579534 = query.getOrDefault("ifGenerationNotMatch")
-  valid_579534 = validateParameter(valid_579534, JString, required = false,
+  if valid_580558 != nil:
+    section.add "ifGenerationMatch", valid_580558
+  var valid_580559 = query.getOrDefault("ifGenerationNotMatch")
+  valid_580559 = validateParameter(valid_580559, JString, required = false,
                                  default = nil)
-  if valid_579534 != nil:
-    section.add "ifGenerationNotMatch", valid_579534
-  var valid_579535 = query.getOrDefault("alt")
-  valid_579535 = validateParameter(valid_579535, JString, required = false,
+  if valid_580559 != nil:
+    section.add "ifGenerationNotMatch", valid_580559
+  var valid_580560 = query.getOrDefault("alt")
+  valid_580560 = validateParameter(valid_580560, JString, required = false,
                                  default = newJString("json"))
-  if valid_579535 != nil:
-    section.add "alt", valid_579535
-  var valid_579536 = query.getOrDefault("userIp")
-  valid_579536 = validateParameter(valid_579536, JString, required = false,
+  if valid_580560 != nil:
+    section.add "alt", valid_580560
+  var valid_580561 = query.getOrDefault("userIp")
+  valid_580561 = validateParameter(valid_580561, JString, required = false,
                                  default = nil)
-  if valid_579536 != nil:
-    section.add "userIp", valid_579536
-  var valid_579537 = query.getOrDefault("quotaUser")
-  valid_579537 = validateParameter(valid_579537, JString, required = false,
+  if valid_580561 != nil:
+    section.add "userIp", valid_580561
+  var valid_580562 = query.getOrDefault("quotaUser")
+  valid_580562 = validateParameter(valid_580562, JString, required = false,
                                  default = nil)
-  if valid_579537 != nil:
-    section.add "quotaUser", valid_579537
-  var valid_579538 = query.getOrDefault("ifMetagenerationMatch")
-  valid_579538 = validateParameter(valid_579538, JString, required = false,
+  if valid_580562 != nil:
+    section.add "quotaUser", valid_580562
+  var valid_580563 = query.getOrDefault("ifMetagenerationMatch")
+  valid_580563 = validateParameter(valid_580563, JString, required = false,
                                  default = nil)
-  if valid_579538 != nil:
-    section.add "ifMetagenerationMatch", valid_579538
-  var valid_579539 = query.getOrDefault("provisionalUserProject")
-  valid_579539 = validateParameter(valid_579539, JString, required = false,
+  if valid_580563 != nil:
+    section.add "ifMetagenerationMatch", valid_580563
+  var valid_580564 = query.getOrDefault("provisionalUserProject")
+  valid_580564 = validateParameter(valid_580564, JString, required = false,
                                  default = nil)
-  if valid_579539 != nil:
-    section.add "provisionalUserProject", valid_579539
-  var valid_579540 = query.getOrDefault("ifMetagenerationNotMatch")
-  valid_579540 = validateParameter(valid_579540, JString, required = false,
+  if valid_580564 != nil:
+    section.add "provisionalUserProject", valid_580564
+  var valid_580565 = query.getOrDefault("ifMetagenerationNotMatch")
+  valid_580565 = validateParameter(valid_580565, JString, required = false,
                                  default = nil)
-  if valid_579540 != nil:
-    section.add "ifMetagenerationNotMatch", valid_579540
-  var valid_579541 = query.getOrDefault("fields")
-  valid_579541 = validateParameter(valid_579541, JString, required = false,
+  if valid_580565 != nil:
+    section.add "ifMetagenerationNotMatch", valid_580565
+  var valid_580566 = query.getOrDefault("fields")
+  valid_580566 = validateParameter(valid_580566, JString, required = false,
                                  default = nil)
-  if valid_579541 != nil:
-    section.add "fields", valid_579541
+  if valid_580566 != nil:
+    section.add "fields", valid_580566
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6629,20 +6794,20 @@ proc validate_StorageObjectsDelete_579524(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579542: Call_StorageObjectsDelete_579523; path: JsonNode;
+proc call*(call_580567: Call_StorageObjectsDelete_580548; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes an object and its metadata. Deletions are permanent if versioning is not enabled for the bucket, or if the generation parameter is used.
   ## 
-  let valid = call_579542.validator(path, query, header, formData, body)
-  let scheme = call_579542.pickScheme
+  let valid = call_580567.validator(path, query, header, formData, body)
+  let scheme = call_580567.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579542.url(scheme.get, call_579542.host, call_579542.base,
-                         call_579542.route, valid.getOrDefault("path"),
+  let url = call_580567.url(scheme.get, call_580567.host, call_580567.base,
+                         call_580567.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579542, url, valid)
+  result = hook(call_580567, url, valid)
 
-proc call*(call_579543: Call_StorageObjectsDelete_579523; bucket: string;
+proc call*(call_580568: Call_StorageObjectsDelete_580548; bucket: string;
           `object`: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; generation: string = ""; userProject: string = "";
           ifGenerationMatch: string = ""; ifGenerationNotMatch: string = "";
@@ -6683,35 +6848,35 @@ proc call*(call_579543: Call_StorageObjectsDelete_579523; bucket: string;
   ##                           : Makes the operation conditional on whether the object's current metageneration does not match the given value.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579544 = newJObject()
-  var query_579545 = newJObject()
-  add(query_579545, "key", newJString(key))
-  add(query_579545, "prettyPrint", newJBool(prettyPrint))
-  add(query_579545, "oauth_token", newJString(oauthToken))
-  add(query_579545, "generation", newJString(generation))
-  add(query_579545, "userProject", newJString(userProject))
-  add(query_579545, "ifGenerationMatch", newJString(ifGenerationMatch))
-  add(query_579545, "ifGenerationNotMatch", newJString(ifGenerationNotMatch))
-  add(query_579545, "alt", newJString(alt))
-  add(query_579545, "userIp", newJString(userIp))
-  add(query_579545, "quotaUser", newJString(quotaUser))
-  add(query_579545, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
-  add(path_579544, "bucket", newJString(bucket))
-  add(query_579545, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579544, "object", newJString(`object`))
-  add(query_579545, "ifMetagenerationNotMatch",
+  var path_580569 = newJObject()
+  var query_580570 = newJObject()
+  add(query_580570, "key", newJString(key))
+  add(query_580570, "prettyPrint", newJBool(prettyPrint))
+  add(query_580570, "oauth_token", newJString(oauthToken))
+  add(query_580570, "generation", newJString(generation))
+  add(query_580570, "userProject", newJString(userProject))
+  add(query_580570, "ifGenerationMatch", newJString(ifGenerationMatch))
+  add(query_580570, "ifGenerationNotMatch", newJString(ifGenerationNotMatch))
+  add(query_580570, "alt", newJString(alt))
+  add(query_580570, "userIp", newJString(userIp))
+  add(query_580570, "quotaUser", newJString(quotaUser))
+  add(query_580570, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
+  add(path_580569, "bucket", newJString(bucket))
+  add(query_580570, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580569, "object", newJString(`object`))
+  add(query_580570, "ifMetagenerationNotMatch",
       newJString(ifMetagenerationNotMatch))
-  add(query_579545, "fields", newJString(fields))
-  result = call_579543.call(path_579544, query_579545, nil, nil, nil)
+  add(query_580570, "fields", newJString(fields))
+  result = call_580568.call(path_580569, query_580570, nil, nil, nil)
 
-var storageObjectsDelete* = Call_StorageObjectsDelete_579523(
+var storageObjectsDelete* = Call_StorageObjectsDelete_580548(
     name: "storageObjectsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/b/{bucket}/o/{object}",
-    validator: validate_StorageObjectsDelete_579524, base: "/storage/v1",
-    url: url_StorageObjectsDelete_579525, schemes: {Scheme.Https})
+    validator: validate_StorageObjectsDelete_580549, base: "/storage/v1",
+    url: url_StorageObjectsDelete_580550, schemes: {Scheme.Https})
 type
-  Call_StorageObjectAccessControlsInsert_579592 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectAccessControlsInsert_579594(protocol: Scheme; host: string;
+  Call_StorageObjectAccessControlsInsert_580617 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectAccessControlsInsert_580619(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6728,9 +6893,14 @@ proc url_StorageObjectAccessControlsInsert_579594(protocol: Scheme; host: string
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectAccessControlsInsert_579593(path: JsonNode;
+proc validate_StorageObjectAccessControlsInsert_580618(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new ACL entry on the specified object.
   ## 
@@ -6743,16 +6913,16 @@ proc validate_StorageObjectAccessControlsInsert_579593(path: JsonNode;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579595 = path.getOrDefault("bucket")
-  valid_579595 = validateParameter(valid_579595, JString, required = true,
+  var valid_580620 = path.getOrDefault("bucket")
+  valid_580620 = validateParameter(valid_580620, JString, required = true,
                                  default = nil)
-  if valid_579595 != nil:
-    section.add "bucket", valid_579595
-  var valid_579596 = path.getOrDefault("object")
-  valid_579596 = validateParameter(valid_579596, JString, required = true,
+  if valid_580620 != nil:
+    section.add "bucket", valid_580620
+  var valid_580621 = path.getOrDefault("object")
+  valid_580621 = validateParameter(valid_580621, JString, required = true,
                                  default = nil)
-  if valid_579596 != nil:
-    section.add "object", valid_579596
+  if valid_580621 != nil:
+    section.add "object", valid_580621
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -6776,56 +6946,56 @@ proc validate_StorageObjectAccessControlsInsert_579593(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579597 = query.getOrDefault("key")
-  valid_579597 = validateParameter(valid_579597, JString, required = false,
+  var valid_580622 = query.getOrDefault("key")
+  valid_580622 = validateParameter(valid_580622, JString, required = false,
                                  default = nil)
-  if valid_579597 != nil:
-    section.add "key", valid_579597
-  var valid_579598 = query.getOrDefault("prettyPrint")
-  valid_579598 = validateParameter(valid_579598, JBool, required = false,
+  if valid_580622 != nil:
+    section.add "key", valid_580622
+  var valid_580623 = query.getOrDefault("prettyPrint")
+  valid_580623 = validateParameter(valid_580623, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579598 != nil:
-    section.add "prettyPrint", valid_579598
-  var valid_579599 = query.getOrDefault("oauth_token")
-  valid_579599 = validateParameter(valid_579599, JString, required = false,
+  if valid_580623 != nil:
+    section.add "prettyPrint", valid_580623
+  var valid_580624 = query.getOrDefault("oauth_token")
+  valid_580624 = validateParameter(valid_580624, JString, required = false,
                                  default = nil)
-  if valid_579599 != nil:
-    section.add "oauth_token", valid_579599
-  var valid_579600 = query.getOrDefault("generation")
-  valid_579600 = validateParameter(valid_579600, JString, required = false,
+  if valid_580624 != nil:
+    section.add "oauth_token", valid_580624
+  var valid_580625 = query.getOrDefault("generation")
+  valid_580625 = validateParameter(valid_580625, JString, required = false,
                                  default = nil)
-  if valid_579600 != nil:
-    section.add "generation", valid_579600
-  var valid_579601 = query.getOrDefault("userProject")
-  valid_579601 = validateParameter(valid_579601, JString, required = false,
+  if valid_580625 != nil:
+    section.add "generation", valid_580625
+  var valid_580626 = query.getOrDefault("userProject")
+  valid_580626 = validateParameter(valid_580626, JString, required = false,
                                  default = nil)
-  if valid_579601 != nil:
-    section.add "userProject", valid_579601
-  var valid_579602 = query.getOrDefault("alt")
-  valid_579602 = validateParameter(valid_579602, JString, required = false,
+  if valid_580626 != nil:
+    section.add "userProject", valid_580626
+  var valid_580627 = query.getOrDefault("alt")
+  valid_580627 = validateParameter(valid_580627, JString, required = false,
                                  default = newJString("json"))
-  if valid_579602 != nil:
-    section.add "alt", valid_579602
-  var valid_579603 = query.getOrDefault("userIp")
-  valid_579603 = validateParameter(valid_579603, JString, required = false,
+  if valid_580627 != nil:
+    section.add "alt", valid_580627
+  var valid_580628 = query.getOrDefault("userIp")
+  valid_580628 = validateParameter(valid_580628, JString, required = false,
                                  default = nil)
-  if valid_579603 != nil:
-    section.add "userIp", valid_579603
-  var valid_579604 = query.getOrDefault("quotaUser")
-  valid_579604 = validateParameter(valid_579604, JString, required = false,
+  if valid_580628 != nil:
+    section.add "userIp", valid_580628
+  var valid_580629 = query.getOrDefault("quotaUser")
+  valid_580629 = validateParameter(valid_580629, JString, required = false,
                                  default = nil)
-  if valid_579604 != nil:
-    section.add "quotaUser", valid_579604
-  var valid_579605 = query.getOrDefault("provisionalUserProject")
-  valid_579605 = validateParameter(valid_579605, JString, required = false,
+  if valid_580629 != nil:
+    section.add "quotaUser", valid_580629
+  var valid_580630 = query.getOrDefault("provisionalUserProject")
+  valid_580630 = validateParameter(valid_580630, JString, required = false,
                                  default = nil)
-  if valid_579605 != nil:
-    section.add "provisionalUserProject", valid_579605
-  var valid_579606 = query.getOrDefault("fields")
-  valid_579606 = validateParameter(valid_579606, JString, required = false,
+  if valid_580630 != nil:
+    section.add "provisionalUserProject", valid_580630
+  var valid_580631 = query.getOrDefault("fields")
+  valid_580631 = validateParameter(valid_580631, JString, required = false,
                                  default = nil)
-  if valid_579606 != nil:
-    section.add "fields", valid_579606
+  if valid_580631 != nil:
+    section.add "fields", valid_580631
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -6837,21 +7007,21 @@ proc validate_StorageObjectAccessControlsInsert_579593(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579608: Call_StorageObjectAccessControlsInsert_579592;
+proc call*(call_580633: Call_StorageObjectAccessControlsInsert_580617;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Creates a new ACL entry on the specified object.
   ## 
-  let valid = call_579608.validator(path, query, header, formData, body)
-  let scheme = call_579608.pickScheme
+  let valid = call_580633.validator(path, query, header, formData, body)
+  let scheme = call_580633.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579608.url(scheme.get, call_579608.host, call_579608.base,
-                         call_579608.route, valid.getOrDefault("path"),
+  let url = call_580633.url(scheme.get, call_580633.host, call_580633.base,
+                         call_580633.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579608, url, valid)
+  result = hook(call_580633, url, valid)
 
-proc call*(call_579609: Call_StorageObjectAccessControlsInsert_579592;
+proc call*(call_580634: Call_StorageObjectAccessControlsInsert_580617;
           bucket: string; `object`: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; generation: string = ""; userProject: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -6883,34 +7053,34 @@ proc call*(call_579609: Call_StorageObjectAccessControlsInsert_579592;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579610 = newJObject()
-  var query_579611 = newJObject()
-  var body_579612 = newJObject()
-  add(query_579611, "key", newJString(key))
-  add(query_579611, "prettyPrint", newJBool(prettyPrint))
-  add(query_579611, "oauth_token", newJString(oauthToken))
-  add(query_579611, "generation", newJString(generation))
-  add(query_579611, "userProject", newJString(userProject))
-  add(query_579611, "alt", newJString(alt))
-  add(query_579611, "userIp", newJString(userIp))
-  add(query_579611, "quotaUser", newJString(quotaUser))
-  add(path_579610, "bucket", newJString(bucket))
+  var path_580635 = newJObject()
+  var query_580636 = newJObject()
+  var body_580637 = newJObject()
+  add(query_580636, "key", newJString(key))
+  add(query_580636, "prettyPrint", newJBool(prettyPrint))
+  add(query_580636, "oauth_token", newJString(oauthToken))
+  add(query_580636, "generation", newJString(generation))
+  add(query_580636, "userProject", newJString(userProject))
+  add(query_580636, "alt", newJString(alt))
+  add(query_580636, "userIp", newJString(userIp))
+  add(query_580636, "quotaUser", newJString(quotaUser))
+  add(path_580635, "bucket", newJString(bucket))
   if body != nil:
-    body_579612 = body
-  add(query_579611, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579610, "object", newJString(`object`))
-  add(query_579611, "fields", newJString(fields))
-  result = call_579609.call(path_579610, query_579611, nil, nil, body_579612)
+    body_580637 = body
+  add(query_580636, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580635, "object", newJString(`object`))
+  add(query_580636, "fields", newJString(fields))
+  result = call_580634.call(path_580635, query_580636, nil, nil, body_580637)
 
-var storageObjectAccessControlsInsert* = Call_StorageObjectAccessControlsInsert_579592(
+var storageObjectAccessControlsInsert* = Call_StorageObjectAccessControlsInsert_580617(
     name: "storageObjectAccessControlsInsert", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/b/{bucket}/o/{object}/acl",
-    validator: validate_StorageObjectAccessControlsInsert_579593,
-    base: "/storage/v1", url: url_StorageObjectAccessControlsInsert_579594,
+    validator: validate_StorageObjectAccessControlsInsert_580618,
+    base: "/storage/v1", url: url_StorageObjectAccessControlsInsert_580619,
     schemes: {Scheme.Https})
 type
-  Call_StorageObjectAccessControlsList_579573 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectAccessControlsList_579575(protocol: Scheme; host: string;
+  Call_StorageObjectAccessControlsList_580598 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectAccessControlsList_580600(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -6927,9 +7097,14 @@ proc url_StorageObjectAccessControlsList_579575(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectAccessControlsList_579574(path: JsonNode;
+proc validate_StorageObjectAccessControlsList_580599(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves ACL entries on the specified object.
   ## 
@@ -6942,16 +7117,16 @@ proc validate_StorageObjectAccessControlsList_579574(path: JsonNode;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579576 = path.getOrDefault("bucket")
-  valid_579576 = validateParameter(valid_579576, JString, required = true,
+  var valid_580601 = path.getOrDefault("bucket")
+  valid_580601 = validateParameter(valid_580601, JString, required = true,
                                  default = nil)
-  if valid_579576 != nil:
-    section.add "bucket", valid_579576
-  var valid_579577 = path.getOrDefault("object")
-  valid_579577 = validateParameter(valid_579577, JString, required = true,
+  if valid_580601 != nil:
+    section.add "bucket", valid_580601
+  var valid_580602 = path.getOrDefault("object")
+  valid_580602 = validateParameter(valid_580602, JString, required = true,
                                  default = nil)
-  if valid_579577 != nil:
-    section.add "object", valid_579577
+  if valid_580602 != nil:
+    section.add "object", valid_580602
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -6975,56 +7150,56 @@ proc validate_StorageObjectAccessControlsList_579574(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579578 = query.getOrDefault("key")
-  valid_579578 = validateParameter(valid_579578, JString, required = false,
+  var valid_580603 = query.getOrDefault("key")
+  valid_580603 = validateParameter(valid_580603, JString, required = false,
                                  default = nil)
-  if valid_579578 != nil:
-    section.add "key", valid_579578
-  var valid_579579 = query.getOrDefault("prettyPrint")
-  valid_579579 = validateParameter(valid_579579, JBool, required = false,
+  if valid_580603 != nil:
+    section.add "key", valid_580603
+  var valid_580604 = query.getOrDefault("prettyPrint")
+  valid_580604 = validateParameter(valid_580604, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579579 != nil:
-    section.add "prettyPrint", valid_579579
-  var valid_579580 = query.getOrDefault("oauth_token")
-  valid_579580 = validateParameter(valid_579580, JString, required = false,
+  if valid_580604 != nil:
+    section.add "prettyPrint", valid_580604
+  var valid_580605 = query.getOrDefault("oauth_token")
+  valid_580605 = validateParameter(valid_580605, JString, required = false,
                                  default = nil)
-  if valid_579580 != nil:
-    section.add "oauth_token", valid_579580
-  var valid_579581 = query.getOrDefault("generation")
-  valid_579581 = validateParameter(valid_579581, JString, required = false,
+  if valid_580605 != nil:
+    section.add "oauth_token", valid_580605
+  var valid_580606 = query.getOrDefault("generation")
+  valid_580606 = validateParameter(valid_580606, JString, required = false,
                                  default = nil)
-  if valid_579581 != nil:
-    section.add "generation", valid_579581
-  var valid_579582 = query.getOrDefault("userProject")
-  valid_579582 = validateParameter(valid_579582, JString, required = false,
+  if valid_580606 != nil:
+    section.add "generation", valid_580606
+  var valid_580607 = query.getOrDefault("userProject")
+  valid_580607 = validateParameter(valid_580607, JString, required = false,
                                  default = nil)
-  if valid_579582 != nil:
-    section.add "userProject", valid_579582
-  var valid_579583 = query.getOrDefault("alt")
-  valid_579583 = validateParameter(valid_579583, JString, required = false,
+  if valid_580607 != nil:
+    section.add "userProject", valid_580607
+  var valid_580608 = query.getOrDefault("alt")
+  valid_580608 = validateParameter(valid_580608, JString, required = false,
                                  default = newJString("json"))
-  if valid_579583 != nil:
-    section.add "alt", valid_579583
-  var valid_579584 = query.getOrDefault("userIp")
-  valid_579584 = validateParameter(valid_579584, JString, required = false,
+  if valid_580608 != nil:
+    section.add "alt", valid_580608
+  var valid_580609 = query.getOrDefault("userIp")
+  valid_580609 = validateParameter(valid_580609, JString, required = false,
                                  default = nil)
-  if valid_579584 != nil:
-    section.add "userIp", valid_579584
-  var valid_579585 = query.getOrDefault("quotaUser")
-  valid_579585 = validateParameter(valid_579585, JString, required = false,
+  if valid_580609 != nil:
+    section.add "userIp", valid_580609
+  var valid_580610 = query.getOrDefault("quotaUser")
+  valid_580610 = validateParameter(valid_580610, JString, required = false,
                                  default = nil)
-  if valid_579585 != nil:
-    section.add "quotaUser", valid_579585
-  var valid_579586 = query.getOrDefault("provisionalUserProject")
-  valid_579586 = validateParameter(valid_579586, JString, required = false,
+  if valid_580610 != nil:
+    section.add "quotaUser", valid_580610
+  var valid_580611 = query.getOrDefault("provisionalUserProject")
+  valid_580611 = validateParameter(valid_580611, JString, required = false,
                                  default = nil)
-  if valid_579586 != nil:
-    section.add "provisionalUserProject", valid_579586
-  var valid_579587 = query.getOrDefault("fields")
-  valid_579587 = validateParameter(valid_579587, JString, required = false,
+  if valid_580611 != nil:
+    section.add "provisionalUserProject", valid_580611
+  var valid_580612 = query.getOrDefault("fields")
+  valid_580612 = validateParameter(valid_580612, JString, required = false,
                                  default = nil)
-  if valid_579587 != nil:
-    section.add "fields", valid_579587
+  if valid_580612 != nil:
+    section.add "fields", valid_580612
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7033,21 +7208,21 @@ proc validate_StorageObjectAccessControlsList_579574(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579588: Call_StorageObjectAccessControlsList_579573;
+proc call*(call_580613: Call_StorageObjectAccessControlsList_580598;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Retrieves ACL entries on the specified object.
   ## 
-  let valid = call_579588.validator(path, query, header, formData, body)
-  let scheme = call_579588.pickScheme
+  let valid = call_580613.validator(path, query, header, formData, body)
+  let scheme = call_580613.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579588.url(scheme.get, call_579588.host, call_579588.base,
-                         call_579588.route, valid.getOrDefault("path"),
+  let url = call_580613.url(scheme.get, call_580613.host, call_580613.base,
+                         call_580613.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579588, url, valid)
+  result = hook(call_580613, url, valid)
 
-proc call*(call_579589: Call_StorageObjectAccessControlsList_579573;
+proc call*(call_580614: Call_StorageObjectAccessControlsList_580598;
           bucket: string; `object`: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; generation: string = ""; userProject: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -7078,31 +7253,31 @@ proc call*(call_579589: Call_StorageObjectAccessControlsList_579573;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579590 = newJObject()
-  var query_579591 = newJObject()
-  add(query_579591, "key", newJString(key))
-  add(query_579591, "prettyPrint", newJBool(prettyPrint))
-  add(query_579591, "oauth_token", newJString(oauthToken))
-  add(query_579591, "generation", newJString(generation))
-  add(query_579591, "userProject", newJString(userProject))
-  add(query_579591, "alt", newJString(alt))
-  add(query_579591, "userIp", newJString(userIp))
-  add(query_579591, "quotaUser", newJString(quotaUser))
-  add(path_579590, "bucket", newJString(bucket))
-  add(query_579591, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579590, "object", newJString(`object`))
-  add(query_579591, "fields", newJString(fields))
-  result = call_579589.call(path_579590, query_579591, nil, nil, nil)
+  var path_580615 = newJObject()
+  var query_580616 = newJObject()
+  add(query_580616, "key", newJString(key))
+  add(query_580616, "prettyPrint", newJBool(prettyPrint))
+  add(query_580616, "oauth_token", newJString(oauthToken))
+  add(query_580616, "generation", newJString(generation))
+  add(query_580616, "userProject", newJString(userProject))
+  add(query_580616, "alt", newJString(alt))
+  add(query_580616, "userIp", newJString(userIp))
+  add(query_580616, "quotaUser", newJString(quotaUser))
+  add(path_580615, "bucket", newJString(bucket))
+  add(query_580616, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580615, "object", newJString(`object`))
+  add(query_580616, "fields", newJString(fields))
+  result = call_580614.call(path_580615, query_580616, nil, nil, nil)
 
-var storageObjectAccessControlsList* = Call_StorageObjectAccessControlsList_579573(
+var storageObjectAccessControlsList* = Call_StorageObjectAccessControlsList_580598(
     name: "storageObjectAccessControlsList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/b/{bucket}/o/{object}/acl",
-    validator: validate_StorageObjectAccessControlsList_579574,
-    base: "/storage/v1", url: url_StorageObjectAccessControlsList_579575,
+    validator: validate_StorageObjectAccessControlsList_580599,
+    base: "/storage/v1", url: url_StorageObjectAccessControlsList_580600,
     schemes: {Scheme.Https})
 type
-  Call_StorageObjectAccessControlsUpdate_579633 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectAccessControlsUpdate_579635(protocol: Scheme; host: string;
+  Call_StorageObjectAccessControlsUpdate_580658 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectAccessControlsUpdate_580660(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7121,9 +7296,14 @@ proc url_StorageObjectAccessControlsUpdate_579635(protocol: Scheme; host: string
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectAccessControlsUpdate_579634(path: JsonNode;
+proc validate_StorageObjectAccessControlsUpdate_580659(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an ACL entry on the specified object.
   ## 
@@ -7138,21 +7318,21 @@ proc validate_StorageObjectAccessControlsUpdate_579634(path: JsonNode;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579636 = path.getOrDefault("bucket")
-  valid_579636 = validateParameter(valid_579636, JString, required = true,
+  var valid_580661 = path.getOrDefault("bucket")
+  valid_580661 = validateParameter(valid_580661, JString, required = true,
                                  default = nil)
-  if valid_579636 != nil:
-    section.add "bucket", valid_579636
-  var valid_579637 = path.getOrDefault("entity")
-  valid_579637 = validateParameter(valid_579637, JString, required = true,
+  if valid_580661 != nil:
+    section.add "bucket", valid_580661
+  var valid_580662 = path.getOrDefault("entity")
+  valid_580662 = validateParameter(valid_580662, JString, required = true,
                                  default = nil)
-  if valid_579637 != nil:
-    section.add "entity", valid_579637
-  var valid_579638 = path.getOrDefault("object")
-  valid_579638 = validateParameter(valid_579638, JString, required = true,
+  if valid_580662 != nil:
+    section.add "entity", valid_580662
+  var valid_580663 = path.getOrDefault("object")
+  valid_580663 = validateParameter(valid_580663, JString, required = true,
                                  default = nil)
-  if valid_579638 != nil:
-    section.add "object", valid_579638
+  if valid_580663 != nil:
+    section.add "object", valid_580663
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -7176,56 +7356,56 @@ proc validate_StorageObjectAccessControlsUpdate_579634(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579639 = query.getOrDefault("key")
-  valid_579639 = validateParameter(valid_579639, JString, required = false,
+  var valid_580664 = query.getOrDefault("key")
+  valid_580664 = validateParameter(valid_580664, JString, required = false,
                                  default = nil)
-  if valid_579639 != nil:
-    section.add "key", valid_579639
-  var valid_579640 = query.getOrDefault("prettyPrint")
-  valid_579640 = validateParameter(valid_579640, JBool, required = false,
+  if valid_580664 != nil:
+    section.add "key", valid_580664
+  var valid_580665 = query.getOrDefault("prettyPrint")
+  valid_580665 = validateParameter(valid_580665, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579640 != nil:
-    section.add "prettyPrint", valid_579640
-  var valid_579641 = query.getOrDefault("oauth_token")
-  valid_579641 = validateParameter(valid_579641, JString, required = false,
+  if valid_580665 != nil:
+    section.add "prettyPrint", valid_580665
+  var valid_580666 = query.getOrDefault("oauth_token")
+  valid_580666 = validateParameter(valid_580666, JString, required = false,
                                  default = nil)
-  if valid_579641 != nil:
-    section.add "oauth_token", valid_579641
-  var valid_579642 = query.getOrDefault("generation")
-  valid_579642 = validateParameter(valid_579642, JString, required = false,
+  if valid_580666 != nil:
+    section.add "oauth_token", valid_580666
+  var valid_580667 = query.getOrDefault("generation")
+  valid_580667 = validateParameter(valid_580667, JString, required = false,
                                  default = nil)
-  if valid_579642 != nil:
-    section.add "generation", valid_579642
-  var valid_579643 = query.getOrDefault("userProject")
-  valid_579643 = validateParameter(valid_579643, JString, required = false,
+  if valid_580667 != nil:
+    section.add "generation", valid_580667
+  var valid_580668 = query.getOrDefault("userProject")
+  valid_580668 = validateParameter(valid_580668, JString, required = false,
                                  default = nil)
-  if valid_579643 != nil:
-    section.add "userProject", valid_579643
-  var valid_579644 = query.getOrDefault("alt")
-  valid_579644 = validateParameter(valid_579644, JString, required = false,
+  if valid_580668 != nil:
+    section.add "userProject", valid_580668
+  var valid_580669 = query.getOrDefault("alt")
+  valid_580669 = validateParameter(valid_580669, JString, required = false,
                                  default = newJString("json"))
-  if valid_579644 != nil:
-    section.add "alt", valid_579644
-  var valid_579645 = query.getOrDefault("userIp")
-  valid_579645 = validateParameter(valid_579645, JString, required = false,
+  if valid_580669 != nil:
+    section.add "alt", valid_580669
+  var valid_580670 = query.getOrDefault("userIp")
+  valid_580670 = validateParameter(valid_580670, JString, required = false,
                                  default = nil)
-  if valid_579645 != nil:
-    section.add "userIp", valid_579645
-  var valid_579646 = query.getOrDefault("quotaUser")
-  valid_579646 = validateParameter(valid_579646, JString, required = false,
+  if valid_580670 != nil:
+    section.add "userIp", valid_580670
+  var valid_580671 = query.getOrDefault("quotaUser")
+  valid_580671 = validateParameter(valid_580671, JString, required = false,
                                  default = nil)
-  if valid_579646 != nil:
-    section.add "quotaUser", valid_579646
-  var valid_579647 = query.getOrDefault("provisionalUserProject")
-  valid_579647 = validateParameter(valid_579647, JString, required = false,
+  if valid_580671 != nil:
+    section.add "quotaUser", valid_580671
+  var valid_580672 = query.getOrDefault("provisionalUserProject")
+  valid_580672 = validateParameter(valid_580672, JString, required = false,
                                  default = nil)
-  if valid_579647 != nil:
-    section.add "provisionalUserProject", valid_579647
-  var valid_579648 = query.getOrDefault("fields")
-  valid_579648 = validateParameter(valid_579648, JString, required = false,
+  if valid_580672 != nil:
+    section.add "provisionalUserProject", valid_580672
+  var valid_580673 = query.getOrDefault("fields")
+  valid_580673 = validateParameter(valid_580673, JString, required = false,
                                  default = nil)
-  if valid_579648 != nil:
-    section.add "fields", valid_579648
+  if valid_580673 != nil:
+    section.add "fields", valid_580673
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7237,21 +7417,21 @@ proc validate_StorageObjectAccessControlsUpdate_579634(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579650: Call_StorageObjectAccessControlsUpdate_579633;
+proc call*(call_580675: Call_StorageObjectAccessControlsUpdate_580658;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Updates an ACL entry on the specified object.
   ## 
-  let valid = call_579650.validator(path, query, header, formData, body)
-  let scheme = call_579650.pickScheme
+  let valid = call_580675.validator(path, query, header, formData, body)
+  let scheme = call_580675.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579650.url(scheme.get, call_579650.host, call_579650.base,
-                         call_579650.route, valid.getOrDefault("path"),
+  let url = call_580675.url(scheme.get, call_580675.host, call_580675.base,
+                         call_580675.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579650, url, valid)
+  result = hook(call_580675, url, valid)
 
-proc call*(call_579651: Call_StorageObjectAccessControlsUpdate_579633;
+proc call*(call_580676: Call_StorageObjectAccessControlsUpdate_580658;
           bucket: string; entity: string; `object`: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; generation: string = "";
           userProject: string = ""; alt: string = "json"; userIp: string = "";
@@ -7286,35 +7466,35 @@ proc call*(call_579651: Call_StorageObjectAccessControlsUpdate_579633;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579652 = newJObject()
-  var query_579653 = newJObject()
-  var body_579654 = newJObject()
-  add(query_579653, "key", newJString(key))
-  add(query_579653, "prettyPrint", newJBool(prettyPrint))
-  add(query_579653, "oauth_token", newJString(oauthToken))
-  add(query_579653, "generation", newJString(generation))
-  add(query_579653, "userProject", newJString(userProject))
-  add(query_579653, "alt", newJString(alt))
-  add(query_579653, "userIp", newJString(userIp))
-  add(query_579653, "quotaUser", newJString(quotaUser))
-  add(path_579652, "bucket", newJString(bucket))
+  var path_580677 = newJObject()
+  var query_580678 = newJObject()
+  var body_580679 = newJObject()
+  add(query_580678, "key", newJString(key))
+  add(query_580678, "prettyPrint", newJBool(prettyPrint))
+  add(query_580678, "oauth_token", newJString(oauthToken))
+  add(query_580678, "generation", newJString(generation))
+  add(query_580678, "userProject", newJString(userProject))
+  add(query_580678, "alt", newJString(alt))
+  add(query_580678, "userIp", newJString(userIp))
+  add(query_580678, "quotaUser", newJString(quotaUser))
+  add(path_580677, "bucket", newJString(bucket))
   if body != nil:
-    body_579654 = body
-  add(query_579653, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579652, "entity", newJString(entity))
-  add(path_579652, "object", newJString(`object`))
-  add(query_579653, "fields", newJString(fields))
-  result = call_579651.call(path_579652, query_579653, nil, nil, body_579654)
+    body_580679 = body
+  add(query_580678, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580677, "entity", newJString(entity))
+  add(path_580677, "object", newJString(`object`))
+  add(query_580678, "fields", newJString(fields))
+  result = call_580676.call(path_580677, query_580678, nil, nil, body_580679)
 
-var storageObjectAccessControlsUpdate* = Call_StorageObjectAccessControlsUpdate_579633(
+var storageObjectAccessControlsUpdate* = Call_StorageObjectAccessControlsUpdate_580658(
     name: "storageObjectAccessControlsUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/b/{bucket}/o/{object}/acl/{entity}",
-    validator: validate_StorageObjectAccessControlsUpdate_579634,
-    base: "/storage/v1", url: url_StorageObjectAccessControlsUpdate_579635,
+    validator: validate_StorageObjectAccessControlsUpdate_580659,
+    base: "/storage/v1", url: url_StorageObjectAccessControlsUpdate_580660,
     schemes: {Scheme.Https})
 type
-  Call_StorageObjectAccessControlsGet_579613 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectAccessControlsGet_579615(protocol: Scheme; host: string;
+  Call_StorageObjectAccessControlsGet_580638 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectAccessControlsGet_580640(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7333,9 +7513,14 @@ proc url_StorageObjectAccessControlsGet_579615(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectAccessControlsGet_579614(path: JsonNode;
+proc validate_StorageObjectAccessControlsGet_580639(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns the ACL entry for the specified entity on the specified object.
   ## 
@@ -7350,21 +7535,21 @@ proc validate_StorageObjectAccessControlsGet_579614(path: JsonNode;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579616 = path.getOrDefault("bucket")
-  valid_579616 = validateParameter(valid_579616, JString, required = true,
+  var valid_580641 = path.getOrDefault("bucket")
+  valid_580641 = validateParameter(valid_580641, JString, required = true,
                                  default = nil)
-  if valid_579616 != nil:
-    section.add "bucket", valid_579616
-  var valid_579617 = path.getOrDefault("entity")
-  valid_579617 = validateParameter(valid_579617, JString, required = true,
+  if valid_580641 != nil:
+    section.add "bucket", valid_580641
+  var valid_580642 = path.getOrDefault("entity")
+  valid_580642 = validateParameter(valid_580642, JString, required = true,
                                  default = nil)
-  if valid_579617 != nil:
-    section.add "entity", valid_579617
-  var valid_579618 = path.getOrDefault("object")
-  valid_579618 = validateParameter(valid_579618, JString, required = true,
+  if valid_580642 != nil:
+    section.add "entity", valid_580642
+  var valid_580643 = path.getOrDefault("object")
+  valid_580643 = validateParameter(valid_580643, JString, required = true,
                                  default = nil)
-  if valid_579618 != nil:
-    section.add "object", valid_579618
+  if valid_580643 != nil:
+    section.add "object", valid_580643
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -7388,56 +7573,56 @@ proc validate_StorageObjectAccessControlsGet_579614(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579619 = query.getOrDefault("key")
-  valid_579619 = validateParameter(valid_579619, JString, required = false,
+  var valid_580644 = query.getOrDefault("key")
+  valid_580644 = validateParameter(valid_580644, JString, required = false,
                                  default = nil)
-  if valid_579619 != nil:
-    section.add "key", valid_579619
-  var valid_579620 = query.getOrDefault("prettyPrint")
-  valid_579620 = validateParameter(valid_579620, JBool, required = false,
+  if valid_580644 != nil:
+    section.add "key", valid_580644
+  var valid_580645 = query.getOrDefault("prettyPrint")
+  valid_580645 = validateParameter(valid_580645, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579620 != nil:
-    section.add "prettyPrint", valid_579620
-  var valid_579621 = query.getOrDefault("oauth_token")
-  valid_579621 = validateParameter(valid_579621, JString, required = false,
+  if valid_580645 != nil:
+    section.add "prettyPrint", valid_580645
+  var valid_580646 = query.getOrDefault("oauth_token")
+  valid_580646 = validateParameter(valid_580646, JString, required = false,
                                  default = nil)
-  if valid_579621 != nil:
-    section.add "oauth_token", valid_579621
-  var valid_579622 = query.getOrDefault("generation")
-  valid_579622 = validateParameter(valid_579622, JString, required = false,
+  if valid_580646 != nil:
+    section.add "oauth_token", valid_580646
+  var valid_580647 = query.getOrDefault("generation")
+  valid_580647 = validateParameter(valid_580647, JString, required = false,
                                  default = nil)
-  if valid_579622 != nil:
-    section.add "generation", valid_579622
-  var valid_579623 = query.getOrDefault("userProject")
-  valid_579623 = validateParameter(valid_579623, JString, required = false,
+  if valid_580647 != nil:
+    section.add "generation", valid_580647
+  var valid_580648 = query.getOrDefault("userProject")
+  valid_580648 = validateParameter(valid_580648, JString, required = false,
                                  default = nil)
-  if valid_579623 != nil:
-    section.add "userProject", valid_579623
-  var valid_579624 = query.getOrDefault("alt")
-  valid_579624 = validateParameter(valid_579624, JString, required = false,
+  if valid_580648 != nil:
+    section.add "userProject", valid_580648
+  var valid_580649 = query.getOrDefault("alt")
+  valid_580649 = validateParameter(valid_580649, JString, required = false,
                                  default = newJString("json"))
-  if valid_579624 != nil:
-    section.add "alt", valid_579624
-  var valid_579625 = query.getOrDefault("userIp")
-  valid_579625 = validateParameter(valid_579625, JString, required = false,
+  if valid_580649 != nil:
+    section.add "alt", valid_580649
+  var valid_580650 = query.getOrDefault("userIp")
+  valid_580650 = validateParameter(valid_580650, JString, required = false,
                                  default = nil)
-  if valid_579625 != nil:
-    section.add "userIp", valid_579625
-  var valid_579626 = query.getOrDefault("quotaUser")
-  valid_579626 = validateParameter(valid_579626, JString, required = false,
+  if valid_580650 != nil:
+    section.add "userIp", valid_580650
+  var valid_580651 = query.getOrDefault("quotaUser")
+  valid_580651 = validateParameter(valid_580651, JString, required = false,
                                  default = nil)
-  if valid_579626 != nil:
-    section.add "quotaUser", valid_579626
-  var valid_579627 = query.getOrDefault("provisionalUserProject")
-  valid_579627 = validateParameter(valid_579627, JString, required = false,
+  if valid_580651 != nil:
+    section.add "quotaUser", valid_580651
+  var valid_580652 = query.getOrDefault("provisionalUserProject")
+  valid_580652 = validateParameter(valid_580652, JString, required = false,
                                  default = nil)
-  if valid_579627 != nil:
-    section.add "provisionalUserProject", valid_579627
-  var valid_579628 = query.getOrDefault("fields")
-  valid_579628 = validateParameter(valid_579628, JString, required = false,
+  if valid_580652 != nil:
+    section.add "provisionalUserProject", valid_580652
+  var valid_580653 = query.getOrDefault("fields")
+  valid_580653 = validateParameter(valid_580653, JString, required = false,
                                  default = nil)
-  if valid_579628 != nil:
-    section.add "fields", valid_579628
+  if valid_580653 != nil:
+    section.add "fields", valid_580653
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7446,20 +7631,20 @@ proc validate_StorageObjectAccessControlsGet_579614(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579629: Call_StorageObjectAccessControlsGet_579613; path: JsonNode;
+proc call*(call_580654: Call_StorageObjectAccessControlsGet_580638; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns the ACL entry for the specified entity on the specified object.
   ## 
-  let valid = call_579629.validator(path, query, header, formData, body)
-  let scheme = call_579629.pickScheme
+  let valid = call_580654.validator(path, query, header, formData, body)
+  let scheme = call_580654.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579629.url(scheme.get, call_579629.host, call_579629.base,
-                         call_579629.route, valid.getOrDefault("path"),
+  let url = call_580654.url(scheme.get, call_580654.host, call_580654.base,
+                         call_580654.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579629, url, valid)
+  result = hook(call_580654, url, valid)
 
-proc call*(call_579630: Call_StorageObjectAccessControlsGet_579613; bucket: string;
+proc call*(call_580655: Call_StorageObjectAccessControlsGet_580638; bucket: string;
           entity: string; `object`: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; generation: string = ""; userProject: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -7492,32 +7677,32 @@ proc call*(call_579630: Call_StorageObjectAccessControlsGet_579613; bucket: stri
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579631 = newJObject()
-  var query_579632 = newJObject()
-  add(query_579632, "key", newJString(key))
-  add(query_579632, "prettyPrint", newJBool(prettyPrint))
-  add(query_579632, "oauth_token", newJString(oauthToken))
-  add(query_579632, "generation", newJString(generation))
-  add(query_579632, "userProject", newJString(userProject))
-  add(query_579632, "alt", newJString(alt))
-  add(query_579632, "userIp", newJString(userIp))
-  add(query_579632, "quotaUser", newJString(quotaUser))
-  add(path_579631, "bucket", newJString(bucket))
-  add(query_579632, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579631, "entity", newJString(entity))
-  add(path_579631, "object", newJString(`object`))
-  add(query_579632, "fields", newJString(fields))
-  result = call_579630.call(path_579631, query_579632, nil, nil, nil)
+  var path_580656 = newJObject()
+  var query_580657 = newJObject()
+  add(query_580657, "key", newJString(key))
+  add(query_580657, "prettyPrint", newJBool(prettyPrint))
+  add(query_580657, "oauth_token", newJString(oauthToken))
+  add(query_580657, "generation", newJString(generation))
+  add(query_580657, "userProject", newJString(userProject))
+  add(query_580657, "alt", newJString(alt))
+  add(query_580657, "userIp", newJString(userIp))
+  add(query_580657, "quotaUser", newJString(quotaUser))
+  add(path_580656, "bucket", newJString(bucket))
+  add(query_580657, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580656, "entity", newJString(entity))
+  add(path_580656, "object", newJString(`object`))
+  add(query_580657, "fields", newJString(fields))
+  result = call_580655.call(path_580656, query_580657, nil, nil, nil)
 
-var storageObjectAccessControlsGet* = Call_StorageObjectAccessControlsGet_579613(
+var storageObjectAccessControlsGet* = Call_StorageObjectAccessControlsGet_580638(
     name: "storageObjectAccessControlsGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/b/{bucket}/o/{object}/acl/{entity}",
-    validator: validate_StorageObjectAccessControlsGet_579614,
-    base: "/storage/v1", url: url_StorageObjectAccessControlsGet_579615,
+    validator: validate_StorageObjectAccessControlsGet_580639,
+    base: "/storage/v1", url: url_StorageObjectAccessControlsGet_580640,
     schemes: {Scheme.Https})
 type
-  Call_StorageObjectAccessControlsPatch_579675 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectAccessControlsPatch_579677(protocol: Scheme; host: string;
+  Call_StorageObjectAccessControlsPatch_580700 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectAccessControlsPatch_580702(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7536,9 +7721,14 @@ proc url_StorageObjectAccessControlsPatch_579677(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectAccessControlsPatch_579676(path: JsonNode;
+proc validate_StorageObjectAccessControlsPatch_580701(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Patches an ACL entry on the specified object.
   ## 
@@ -7553,21 +7743,21 @@ proc validate_StorageObjectAccessControlsPatch_579676(path: JsonNode;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579678 = path.getOrDefault("bucket")
-  valid_579678 = validateParameter(valid_579678, JString, required = true,
+  var valid_580703 = path.getOrDefault("bucket")
+  valid_580703 = validateParameter(valid_580703, JString, required = true,
                                  default = nil)
-  if valid_579678 != nil:
-    section.add "bucket", valid_579678
-  var valid_579679 = path.getOrDefault("entity")
-  valid_579679 = validateParameter(valid_579679, JString, required = true,
+  if valid_580703 != nil:
+    section.add "bucket", valid_580703
+  var valid_580704 = path.getOrDefault("entity")
+  valid_580704 = validateParameter(valid_580704, JString, required = true,
                                  default = nil)
-  if valid_579679 != nil:
-    section.add "entity", valid_579679
-  var valid_579680 = path.getOrDefault("object")
-  valid_579680 = validateParameter(valid_579680, JString, required = true,
+  if valid_580704 != nil:
+    section.add "entity", valid_580704
+  var valid_580705 = path.getOrDefault("object")
+  valid_580705 = validateParameter(valid_580705, JString, required = true,
                                  default = nil)
-  if valid_579680 != nil:
-    section.add "object", valid_579680
+  if valid_580705 != nil:
+    section.add "object", valid_580705
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -7591,56 +7781,56 @@ proc validate_StorageObjectAccessControlsPatch_579676(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579681 = query.getOrDefault("key")
-  valid_579681 = validateParameter(valid_579681, JString, required = false,
+  var valid_580706 = query.getOrDefault("key")
+  valid_580706 = validateParameter(valid_580706, JString, required = false,
                                  default = nil)
-  if valid_579681 != nil:
-    section.add "key", valid_579681
-  var valid_579682 = query.getOrDefault("prettyPrint")
-  valid_579682 = validateParameter(valid_579682, JBool, required = false,
+  if valid_580706 != nil:
+    section.add "key", valid_580706
+  var valid_580707 = query.getOrDefault("prettyPrint")
+  valid_580707 = validateParameter(valid_580707, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579682 != nil:
-    section.add "prettyPrint", valid_579682
-  var valid_579683 = query.getOrDefault("oauth_token")
-  valid_579683 = validateParameter(valid_579683, JString, required = false,
+  if valid_580707 != nil:
+    section.add "prettyPrint", valid_580707
+  var valid_580708 = query.getOrDefault("oauth_token")
+  valid_580708 = validateParameter(valid_580708, JString, required = false,
                                  default = nil)
-  if valid_579683 != nil:
-    section.add "oauth_token", valid_579683
-  var valid_579684 = query.getOrDefault("generation")
-  valid_579684 = validateParameter(valid_579684, JString, required = false,
+  if valid_580708 != nil:
+    section.add "oauth_token", valid_580708
+  var valid_580709 = query.getOrDefault("generation")
+  valid_580709 = validateParameter(valid_580709, JString, required = false,
                                  default = nil)
-  if valid_579684 != nil:
-    section.add "generation", valid_579684
-  var valid_579685 = query.getOrDefault("userProject")
-  valid_579685 = validateParameter(valid_579685, JString, required = false,
+  if valid_580709 != nil:
+    section.add "generation", valid_580709
+  var valid_580710 = query.getOrDefault("userProject")
+  valid_580710 = validateParameter(valid_580710, JString, required = false,
                                  default = nil)
-  if valid_579685 != nil:
-    section.add "userProject", valid_579685
-  var valid_579686 = query.getOrDefault("alt")
-  valid_579686 = validateParameter(valid_579686, JString, required = false,
+  if valid_580710 != nil:
+    section.add "userProject", valid_580710
+  var valid_580711 = query.getOrDefault("alt")
+  valid_580711 = validateParameter(valid_580711, JString, required = false,
                                  default = newJString("json"))
-  if valid_579686 != nil:
-    section.add "alt", valid_579686
-  var valid_579687 = query.getOrDefault("userIp")
-  valid_579687 = validateParameter(valid_579687, JString, required = false,
+  if valid_580711 != nil:
+    section.add "alt", valid_580711
+  var valid_580712 = query.getOrDefault("userIp")
+  valid_580712 = validateParameter(valid_580712, JString, required = false,
                                  default = nil)
-  if valid_579687 != nil:
-    section.add "userIp", valid_579687
-  var valid_579688 = query.getOrDefault("quotaUser")
-  valid_579688 = validateParameter(valid_579688, JString, required = false,
+  if valid_580712 != nil:
+    section.add "userIp", valid_580712
+  var valid_580713 = query.getOrDefault("quotaUser")
+  valid_580713 = validateParameter(valid_580713, JString, required = false,
                                  default = nil)
-  if valid_579688 != nil:
-    section.add "quotaUser", valid_579688
-  var valid_579689 = query.getOrDefault("provisionalUserProject")
-  valid_579689 = validateParameter(valid_579689, JString, required = false,
+  if valid_580713 != nil:
+    section.add "quotaUser", valid_580713
+  var valid_580714 = query.getOrDefault("provisionalUserProject")
+  valid_580714 = validateParameter(valid_580714, JString, required = false,
                                  default = nil)
-  if valid_579689 != nil:
-    section.add "provisionalUserProject", valid_579689
-  var valid_579690 = query.getOrDefault("fields")
-  valid_579690 = validateParameter(valid_579690, JString, required = false,
+  if valid_580714 != nil:
+    section.add "provisionalUserProject", valid_580714
+  var valid_580715 = query.getOrDefault("fields")
+  valid_580715 = validateParameter(valid_580715, JString, required = false,
                                  default = nil)
-  if valid_579690 != nil:
-    section.add "fields", valid_579690
+  if valid_580715 != nil:
+    section.add "fields", valid_580715
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7652,21 +7842,21 @@ proc validate_StorageObjectAccessControlsPatch_579676(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579692: Call_StorageObjectAccessControlsPatch_579675;
+proc call*(call_580717: Call_StorageObjectAccessControlsPatch_580700;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Patches an ACL entry on the specified object.
   ## 
-  let valid = call_579692.validator(path, query, header, formData, body)
-  let scheme = call_579692.pickScheme
+  let valid = call_580717.validator(path, query, header, formData, body)
+  let scheme = call_580717.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579692.url(scheme.get, call_579692.host, call_579692.base,
-                         call_579692.route, valid.getOrDefault("path"),
+  let url = call_580717.url(scheme.get, call_580717.host, call_580717.base,
+                         call_580717.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579692, url, valid)
+  result = hook(call_580717, url, valid)
 
-proc call*(call_579693: Call_StorageObjectAccessControlsPatch_579675;
+proc call*(call_580718: Call_StorageObjectAccessControlsPatch_580700;
           bucket: string; entity: string; `object`: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; generation: string = "";
           userProject: string = ""; alt: string = "json"; userIp: string = "";
@@ -7701,35 +7891,35 @@ proc call*(call_579693: Call_StorageObjectAccessControlsPatch_579675;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579694 = newJObject()
-  var query_579695 = newJObject()
-  var body_579696 = newJObject()
-  add(query_579695, "key", newJString(key))
-  add(query_579695, "prettyPrint", newJBool(prettyPrint))
-  add(query_579695, "oauth_token", newJString(oauthToken))
-  add(query_579695, "generation", newJString(generation))
-  add(query_579695, "userProject", newJString(userProject))
-  add(query_579695, "alt", newJString(alt))
-  add(query_579695, "userIp", newJString(userIp))
-  add(query_579695, "quotaUser", newJString(quotaUser))
-  add(path_579694, "bucket", newJString(bucket))
+  var path_580719 = newJObject()
+  var query_580720 = newJObject()
+  var body_580721 = newJObject()
+  add(query_580720, "key", newJString(key))
+  add(query_580720, "prettyPrint", newJBool(prettyPrint))
+  add(query_580720, "oauth_token", newJString(oauthToken))
+  add(query_580720, "generation", newJString(generation))
+  add(query_580720, "userProject", newJString(userProject))
+  add(query_580720, "alt", newJString(alt))
+  add(query_580720, "userIp", newJString(userIp))
+  add(query_580720, "quotaUser", newJString(quotaUser))
+  add(path_580719, "bucket", newJString(bucket))
   if body != nil:
-    body_579696 = body
-  add(query_579695, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579694, "entity", newJString(entity))
-  add(path_579694, "object", newJString(`object`))
-  add(query_579695, "fields", newJString(fields))
-  result = call_579693.call(path_579694, query_579695, nil, nil, body_579696)
+    body_580721 = body
+  add(query_580720, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580719, "entity", newJString(entity))
+  add(path_580719, "object", newJString(`object`))
+  add(query_580720, "fields", newJString(fields))
+  result = call_580718.call(path_580719, query_580720, nil, nil, body_580721)
 
-var storageObjectAccessControlsPatch* = Call_StorageObjectAccessControlsPatch_579675(
+var storageObjectAccessControlsPatch* = Call_StorageObjectAccessControlsPatch_580700(
     name: "storageObjectAccessControlsPatch", meth: HttpMethod.HttpPatch,
     host: "www.googleapis.com", route: "/b/{bucket}/o/{object}/acl/{entity}",
-    validator: validate_StorageObjectAccessControlsPatch_579676,
-    base: "/storage/v1", url: url_StorageObjectAccessControlsPatch_579677,
+    validator: validate_StorageObjectAccessControlsPatch_580701,
+    base: "/storage/v1", url: url_StorageObjectAccessControlsPatch_580702,
     schemes: {Scheme.Https})
 type
-  Call_StorageObjectAccessControlsDelete_579655 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectAccessControlsDelete_579657(protocol: Scheme; host: string;
+  Call_StorageObjectAccessControlsDelete_580680 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectAccessControlsDelete_580682(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7748,9 +7938,14 @@ proc url_StorageObjectAccessControlsDelete_579657(protocol: Scheme; host: string
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectAccessControlsDelete_579656(path: JsonNode;
+proc validate_StorageObjectAccessControlsDelete_580681(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Permanently deletes the ACL entry for the specified entity on the specified object.
   ## 
@@ -7765,21 +7960,21 @@ proc validate_StorageObjectAccessControlsDelete_579656(path: JsonNode;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579658 = path.getOrDefault("bucket")
-  valid_579658 = validateParameter(valid_579658, JString, required = true,
+  var valid_580683 = path.getOrDefault("bucket")
+  valid_580683 = validateParameter(valid_580683, JString, required = true,
                                  default = nil)
-  if valid_579658 != nil:
-    section.add "bucket", valid_579658
-  var valid_579659 = path.getOrDefault("entity")
-  valid_579659 = validateParameter(valid_579659, JString, required = true,
+  if valid_580683 != nil:
+    section.add "bucket", valid_580683
+  var valid_580684 = path.getOrDefault("entity")
+  valid_580684 = validateParameter(valid_580684, JString, required = true,
                                  default = nil)
-  if valid_579659 != nil:
-    section.add "entity", valid_579659
-  var valid_579660 = path.getOrDefault("object")
-  valid_579660 = validateParameter(valid_579660, JString, required = true,
+  if valid_580684 != nil:
+    section.add "entity", valid_580684
+  var valid_580685 = path.getOrDefault("object")
+  valid_580685 = validateParameter(valid_580685, JString, required = true,
                                  default = nil)
-  if valid_579660 != nil:
-    section.add "object", valid_579660
+  if valid_580685 != nil:
+    section.add "object", valid_580685
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -7803,56 +7998,56 @@ proc validate_StorageObjectAccessControlsDelete_579656(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579661 = query.getOrDefault("key")
-  valid_579661 = validateParameter(valid_579661, JString, required = false,
+  var valid_580686 = query.getOrDefault("key")
+  valid_580686 = validateParameter(valid_580686, JString, required = false,
                                  default = nil)
-  if valid_579661 != nil:
-    section.add "key", valid_579661
-  var valid_579662 = query.getOrDefault("prettyPrint")
-  valid_579662 = validateParameter(valid_579662, JBool, required = false,
+  if valid_580686 != nil:
+    section.add "key", valid_580686
+  var valid_580687 = query.getOrDefault("prettyPrint")
+  valid_580687 = validateParameter(valid_580687, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579662 != nil:
-    section.add "prettyPrint", valid_579662
-  var valid_579663 = query.getOrDefault("oauth_token")
-  valid_579663 = validateParameter(valid_579663, JString, required = false,
+  if valid_580687 != nil:
+    section.add "prettyPrint", valid_580687
+  var valid_580688 = query.getOrDefault("oauth_token")
+  valid_580688 = validateParameter(valid_580688, JString, required = false,
                                  default = nil)
-  if valid_579663 != nil:
-    section.add "oauth_token", valid_579663
-  var valid_579664 = query.getOrDefault("generation")
-  valid_579664 = validateParameter(valid_579664, JString, required = false,
+  if valid_580688 != nil:
+    section.add "oauth_token", valid_580688
+  var valid_580689 = query.getOrDefault("generation")
+  valid_580689 = validateParameter(valid_580689, JString, required = false,
                                  default = nil)
-  if valid_579664 != nil:
-    section.add "generation", valid_579664
-  var valid_579665 = query.getOrDefault("userProject")
-  valid_579665 = validateParameter(valid_579665, JString, required = false,
+  if valid_580689 != nil:
+    section.add "generation", valid_580689
+  var valid_580690 = query.getOrDefault("userProject")
+  valid_580690 = validateParameter(valid_580690, JString, required = false,
                                  default = nil)
-  if valid_579665 != nil:
-    section.add "userProject", valid_579665
-  var valid_579666 = query.getOrDefault("alt")
-  valid_579666 = validateParameter(valid_579666, JString, required = false,
+  if valid_580690 != nil:
+    section.add "userProject", valid_580690
+  var valid_580691 = query.getOrDefault("alt")
+  valid_580691 = validateParameter(valid_580691, JString, required = false,
                                  default = newJString("json"))
-  if valid_579666 != nil:
-    section.add "alt", valid_579666
-  var valid_579667 = query.getOrDefault("userIp")
-  valid_579667 = validateParameter(valid_579667, JString, required = false,
+  if valid_580691 != nil:
+    section.add "alt", valid_580691
+  var valid_580692 = query.getOrDefault("userIp")
+  valid_580692 = validateParameter(valid_580692, JString, required = false,
                                  default = nil)
-  if valid_579667 != nil:
-    section.add "userIp", valid_579667
-  var valid_579668 = query.getOrDefault("quotaUser")
-  valid_579668 = validateParameter(valid_579668, JString, required = false,
+  if valid_580692 != nil:
+    section.add "userIp", valid_580692
+  var valid_580693 = query.getOrDefault("quotaUser")
+  valid_580693 = validateParameter(valid_580693, JString, required = false,
                                  default = nil)
-  if valid_579668 != nil:
-    section.add "quotaUser", valid_579668
-  var valid_579669 = query.getOrDefault("provisionalUserProject")
-  valid_579669 = validateParameter(valid_579669, JString, required = false,
+  if valid_580693 != nil:
+    section.add "quotaUser", valid_580693
+  var valid_580694 = query.getOrDefault("provisionalUserProject")
+  valid_580694 = validateParameter(valid_580694, JString, required = false,
                                  default = nil)
-  if valid_579669 != nil:
-    section.add "provisionalUserProject", valid_579669
-  var valid_579670 = query.getOrDefault("fields")
-  valid_579670 = validateParameter(valid_579670, JString, required = false,
+  if valid_580694 != nil:
+    section.add "provisionalUserProject", valid_580694
+  var valid_580695 = query.getOrDefault("fields")
+  valid_580695 = validateParameter(valid_580695, JString, required = false,
                                  default = nil)
-  if valid_579670 != nil:
-    section.add "fields", valid_579670
+  if valid_580695 != nil:
+    section.add "fields", valid_580695
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -7861,21 +8056,21 @@ proc validate_StorageObjectAccessControlsDelete_579656(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579671: Call_StorageObjectAccessControlsDelete_579655;
+proc call*(call_580696: Call_StorageObjectAccessControlsDelete_580680;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Permanently deletes the ACL entry for the specified entity on the specified object.
   ## 
-  let valid = call_579671.validator(path, query, header, formData, body)
-  let scheme = call_579671.pickScheme
+  let valid = call_580696.validator(path, query, header, formData, body)
+  let scheme = call_580696.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579671.url(scheme.get, call_579671.host, call_579671.base,
-                         call_579671.route, valid.getOrDefault("path"),
+  let url = call_580696.url(scheme.get, call_580696.host, call_580696.base,
+                         call_580696.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579671, url, valid)
+  result = hook(call_580696, url, valid)
 
-proc call*(call_579672: Call_StorageObjectAccessControlsDelete_579655;
+proc call*(call_580697: Call_StorageObjectAccessControlsDelete_580680;
           bucket: string; entity: string; `object`: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; generation: string = "";
           userProject: string = ""; alt: string = "json"; userIp: string = "";
@@ -7909,32 +8104,32 @@ proc call*(call_579672: Call_StorageObjectAccessControlsDelete_579655;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579673 = newJObject()
-  var query_579674 = newJObject()
-  add(query_579674, "key", newJString(key))
-  add(query_579674, "prettyPrint", newJBool(prettyPrint))
-  add(query_579674, "oauth_token", newJString(oauthToken))
-  add(query_579674, "generation", newJString(generation))
-  add(query_579674, "userProject", newJString(userProject))
-  add(query_579674, "alt", newJString(alt))
-  add(query_579674, "userIp", newJString(userIp))
-  add(query_579674, "quotaUser", newJString(quotaUser))
-  add(path_579673, "bucket", newJString(bucket))
-  add(query_579674, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579673, "entity", newJString(entity))
-  add(path_579673, "object", newJString(`object`))
-  add(query_579674, "fields", newJString(fields))
-  result = call_579672.call(path_579673, query_579674, nil, nil, nil)
+  var path_580698 = newJObject()
+  var query_580699 = newJObject()
+  add(query_580699, "key", newJString(key))
+  add(query_580699, "prettyPrint", newJBool(prettyPrint))
+  add(query_580699, "oauth_token", newJString(oauthToken))
+  add(query_580699, "generation", newJString(generation))
+  add(query_580699, "userProject", newJString(userProject))
+  add(query_580699, "alt", newJString(alt))
+  add(query_580699, "userIp", newJString(userIp))
+  add(query_580699, "quotaUser", newJString(quotaUser))
+  add(path_580698, "bucket", newJString(bucket))
+  add(query_580699, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580698, "entity", newJString(entity))
+  add(path_580698, "object", newJString(`object`))
+  add(query_580699, "fields", newJString(fields))
+  result = call_580697.call(path_580698, query_580699, nil, nil, nil)
 
-var storageObjectAccessControlsDelete* = Call_StorageObjectAccessControlsDelete_579655(
+var storageObjectAccessControlsDelete* = Call_StorageObjectAccessControlsDelete_580680(
     name: "storageObjectAccessControlsDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com", route: "/b/{bucket}/o/{object}/acl/{entity}",
-    validator: validate_StorageObjectAccessControlsDelete_579656,
-    base: "/storage/v1", url: url_StorageObjectAccessControlsDelete_579657,
+    validator: validate_StorageObjectAccessControlsDelete_580681,
+    base: "/storage/v1", url: url_StorageObjectAccessControlsDelete_580682,
     schemes: {Scheme.Https})
 type
-  Call_StorageObjectsSetIamPolicy_579716 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectsSetIamPolicy_579718(protocol: Scheme; host: string;
+  Call_StorageObjectsSetIamPolicy_580741 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectsSetIamPolicy_580743(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -7951,9 +8146,14 @@ proc url_StorageObjectsSetIamPolicy_579718(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectsSetIamPolicy_579717(path: JsonNode; query: JsonNode;
+proc validate_StorageObjectsSetIamPolicy_580742(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates an IAM policy for the specified object.
   ## 
@@ -7966,16 +8166,16 @@ proc validate_StorageObjectsSetIamPolicy_579717(path: JsonNode; query: JsonNode;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579719 = path.getOrDefault("bucket")
-  valid_579719 = validateParameter(valid_579719, JString, required = true,
+  var valid_580744 = path.getOrDefault("bucket")
+  valid_580744 = validateParameter(valid_580744, JString, required = true,
                                  default = nil)
-  if valid_579719 != nil:
-    section.add "bucket", valid_579719
-  var valid_579720 = path.getOrDefault("object")
-  valid_579720 = validateParameter(valid_579720, JString, required = true,
+  if valid_580744 != nil:
+    section.add "bucket", valid_580744
+  var valid_580745 = path.getOrDefault("object")
+  valid_580745 = validateParameter(valid_580745, JString, required = true,
                                  default = nil)
-  if valid_579720 != nil:
-    section.add "object", valid_579720
+  if valid_580745 != nil:
+    section.add "object", valid_580745
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -7999,56 +8199,56 @@ proc validate_StorageObjectsSetIamPolicy_579717(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579721 = query.getOrDefault("key")
-  valid_579721 = validateParameter(valid_579721, JString, required = false,
+  var valid_580746 = query.getOrDefault("key")
+  valid_580746 = validateParameter(valid_580746, JString, required = false,
                                  default = nil)
-  if valid_579721 != nil:
-    section.add "key", valid_579721
-  var valid_579722 = query.getOrDefault("prettyPrint")
-  valid_579722 = validateParameter(valid_579722, JBool, required = false,
+  if valid_580746 != nil:
+    section.add "key", valid_580746
+  var valid_580747 = query.getOrDefault("prettyPrint")
+  valid_580747 = validateParameter(valid_580747, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579722 != nil:
-    section.add "prettyPrint", valid_579722
-  var valid_579723 = query.getOrDefault("oauth_token")
-  valid_579723 = validateParameter(valid_579723, JString, required = false,
+  if valid_580747 != nil:
+    section.add "prettyPrint", valid_580747
+  var valid_580748 = query.getOrDefault("oauth_token")
+  valid_580748 = validateParameter(valid_580748, JString, required = false,
                                  default = nil)
-  if valid_579723 != nil:
-    section.add "oauth_token", valid_579723
-  var valid_579724 = query.getOrDefault("generation")
-  valid_579724 = validateParameter(valid_579724, JString, required = false,
+  if valid_580748 != nil:
+    section.add "oauth_token", valid_580748
+  var valid_580749 = query.getOrDefault("generation")
+  valid_580749 = validateParameter(valid_580749, JString, required = false,
                                  default = nil)
-  if valid_579724 != nil:
-    section.add "generation", valid_579724
-  var valid_579725 = query.getOrDefault("userProject")
-  valid_579725 = validateParameter(valid_579725, JString, required = false,
+  if valid_580749 != nil:
+    section.add "generation", valid_580749
+  var valid_580750 = query.getOrDefault("userProject")
+  valid_580750 = validateParameter(valid_580750, JString, required = false,
                                  default = nil)
-  if valid_579725 != nil:
-    section.add "userProject", valid_579725
-  var valid_579726 = query.getOrDefault("alt")
-  valid_579726 = validateParameter(valid_579726, JString, required = false,
+  if valid_580750 != nil:
+    section.add "userProject", valid_580750
+  var valid_580751 = query.getOrDefault("alt")
+  valid_580751 = validateParameter(valid_580751, JString, required = false,
                                  default = newJString("json"))
-  if valid_579726 != nil:
-    section.add "alt", valid_579726
-  var valid_579727 = query.getOrDefault("userIp")
-  valid_579727 = validateParameter(valid_579727, JString, required = false,
+  if valid_580751 != nil:
+    section.add "alt", valid_580751
+  var valid_580752 = query.getOrDefault("userIp")
+  valid_580752 = validateParameter(valid_580752, JString, required = false,
                                  default = nil)
-  if valid_579727 != nil:
-    section.add "userIp", valid_579727
-  var valid_579728 = query.getOrDefault("quotaUser")
-  valid_579728 = validateParameter(valid_579728, JString, required = false,
+  if valid_580752 != nil:
+    section.add "userIp", valid_580752
+  var valid_580753 = query.getOrDefault("quotaUser")
+  valid_580753 = validateParameter(valid_580753, JString, required = false,
                                  default = nil)
-  if valid_579728 != nil:
-    section.add "quotaUser", valid_579728
-  var valid_579729 = query.getOrDefault("provisionalUserProject")
-  valid_579729 = validateParameter(valid_579729, JString, required = false,
+  if valid_580753 != nil:
+    section.add "quotaUser", valid_580753
+  var valid_580754 = query.getOrDefault("provisionalUserProject")
+  valid_580754 = validateParameter(valid_580754, JString, required = false,
                                  default = nil)
-  if valid_579729 != nil:
-    section.add "provisionalUserProject", valid_579729
-  var valid_579730 = query.getOrDefault("fields")
-  valid_579730 = validateParameter(valid_579730, JString, required = false,
+  if valid_580754 != nil:
+    section.add "provisionalUserProject", valid_580754
+  var valid_580755 = query.getOrDefault("fields")
+  valid_580755 = validateParameter(valid_580755, JString, required = false,
                                  default = nil)
-  if valid_579730 != nil:
-    section.add "fields", valid_579730
+  if valid_580755 != nil:
+    section.add "fields", valid_580755
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8060,20 +8260,20 @@ proc validate_StorageObjectsSetIamPolicy_579717(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579732: Call_StorageObjectsSetIamPolicy_579716; path: JsonNode;
+proc call*(call_580757: Call_StorageObjectsSetIamPolicy_580741; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates an IAM policy for the specified object.
   ## 
-  let valid = call_579732.validator(path, query, header, formData, body)
-  let scheme = call_579732.pickScheme
+  let valid = call_580757.validator(path, query, header, formData, body)
+  let scheme = call_580757.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579732.url(scheme.get, call_579732.host, call_579732.base,
-                         call_579732.route, valid.getOrDefault("path"),
+  let url = call_580757.url(scheme.get, call_580757.host, call_580757.base,
+                         call_580757.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579732, url, valid)
+  result = hook(call_580757, url, valid)
 
-proc call*(call_579733: Call_StorageObjectsSetIamPolicy_579716; bucket: string;
+proc call*(call_580758: Call_StorageObjectsSetIamPolicy_580741; bucket: string;
           `object`: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; generation: string = ""; userProject: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -8105,33 +8305,33 @@ proc call*(call_579733: Call_StorageObjectsSetIamPolicy_579716; bucket: string;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579734 = newJObject()
-  var query_579735 = newJObject()
-  var body_579736 = newJObject()
-  add(query_579735, "key", newJString(key))
-  add(query_579735, "prettyPrint", newJBool(prettyPrint))
-  add(query_579735, "oauth_token", newJString(oauthToken))
-  add(query_579735, "generation", newJString(generation))
-  add(query_579735, "userProject", newJString(userProject))
-  add(query_579735, "alt", newJString(alt))
-  add(query_579735, "userIp", newJString(userIp))
-  add(query_579735, "quotaUser", newJString(quotaUser))
-  add(path_579734, "bucket", newJString(bucket))
+  var path_580759 = newJObject()
+  var query_580760 = newJObject()
+  var body_580761 = newJObject()
+  add(query_580760, "key", newJString(key))
+  add(query_580760, "prettyPrint", newJBool(prettyPrint))
+  add(query_580760, "oauth_token", newJString(oauthToken))
+  add(query_580760, "generation", newJString(generation))
+  add(query_580760, "userProject", newJString(userProject))
+  add(query_580760, "alt", newJString(alt))
+  add(query_580760, "userIp", newJString(userIp))
+  add(query_580760, "quotaUser", newJString(quotaUser))
+  add(path_580759, "bucket", newJString(bucket))
   if body != nil:
-    body_579736 = body
-  add(query_579735, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579734, "object", newJString(`object`))
-  add(query_579735, "fields", newJString(fields))
-  result = call_579733.call(path_579734, query_579735, nil, nil, body_579736)
+    body_580761 = body
+  add(query_580760, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580759, "object", newJString(`object`))
+  add(query_580760, "fields", newJString(fields))
+  result = call_580758.call(path_580759, query_580760, nil, nil, body_580761)
 
-var storageObjectsSetIamPolicy* = Call_StorageObjectsSetIamPolicy_579716(
+var storageObjectsSetIamPolicy* = Call_StorageObjectsSetIamPolicy_580741(
     name: "storageObjectsSetIamPolicy", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com", route: "/b/{bucket}/o/{object}/iam",
-    validator: validate_StorageObjectsSetIamPolicy_579717, base: "/storage/v1",
-    url: url_StorageObjectsSetIamPolicy_579718, schemes: {Scheme.Https})
+    validator: validate_StorageObjectsSetIamPolicy_580742, base: "/storage/v1",
+    url: url_StorageObjectsSetIamPolicy_580743, schemes: {Scheme.Https})
 type
-  Call_StorageObjectsGetIamPolicy_579697 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectsGetIamPolicy_579699(protocol: Scheme; host: string;
+  Call_StorageObjectsGetIamPolicy_580722 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectsGetIamPolicy_580724(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8148,9 +8348,14 @@ proc url_StorageObjectsGetIamPolicy_579699(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectsGetIamPolicy_579698(path: JsonNode; query: JsonNode;
+proc validate_StorageObjectsGetIamPolicy_580723(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Returns an IAM policy for the specified object.
   ## 
@@ -8163,16 +8368,16 @@ proc validate_StorageObjectsGetIamPolicy_579698(path: JsonNode; query: JsonNode;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579700 = path.getOrDefault("bucket")
-  valid_579700 = validateParameter(valid_579700, JString, required = true,
+  var valid_580725 = path.getOrDefault("bucket")
+  valid_580725 = validateParameter(valid_580725, JString, required = true,
                                  default = nil)
-  if valid_579700 != nil:
-    section.add "bucket", valid_579700
-  var valid_579701 = path.getOrDefault("object")
-  valid_579701 = validateParameter(valid_579701, JString, required = true,
+  if valid_580725 != nil:
+    section.add "bucket", valid_580725
+  var valid_580726 = path.getOrDefault("object")
+  valid_580726 = validateParameter(valid_580726, JString, required = true,
                                  default = nil)
-  if valid_579701 != nil:
-    section.add "object", valid_579701
+  if valid_580726 != nil:
+    section.add "object", valid_580726
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -8196,56 +8401,56 @@ proc validate_StorageObjectsGetIamPolicy_579698(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579702 = query.getOrDefault("key")
-  valid_579702 = validateParameter(valid_579702, JString, required = false,
+  var valid_580727 = query.getOrDefault("key")
+  valid_580727 = validateParameter(valid_580727, JString, required = false,
                                  default = nil)
-  if valid_579702 != nil:
-    section.add "key", valid_579702
-  var valid_579703 = query.getOrDefault("prettyPrint")
-  valid_579703 = validateParameter(valid_579703, JBool, required = false,
+  if valid_580727 != nil:
+    section.add "key", valid_580727
+  var valid_580728 = query.getOrDefault("prettyPrint")
+  valid_580728 = validateParameter(valid_580728, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579703 != nil:
-    section.add "prettyPrint", valid_579703
-  var valid_579704 = query.getOrDefault("oauth_token")
-  valid_579704 = validateParameter(valid_579704, JString, required = false,
+  if valid_580728 != nil:
+    section.add "prettyPrint", valid_580728
+  var valid_580729 = query.getOrDefault("oauth_token")
+  valid_580729 = validateParameter(valid_580729, JString, required = false,
                                  default = nil)
-  if valid_579704 != nil:
-    section.add "oauth_token", valid_579704
-  var valid_579705 = query.getOrDefault("generation")
-  valid_579705 = validateParameter(valid_579705, JString, required = false,
+  if valid_580729 != nil:
+    section.add "oauth_token", valid_580729
+  var valid_580730 = query.getOrDefault("generation")
+  valid_580730 = validateParameter(valid_580730, JString, required = false,
                                  default = nil)
-  if valid_579705 != nil:
-    section.add "generation", valid_579705
-  var valid_579706 = query.getOrDefault("userProject")
-  valid_579706 = validateParameter(valid_579706, JString, required = false,
+  if valid_580730 != nil:
+    section.add "generation", valid_580730
+  var valid_580731 = query.getOrDefault("userProject")
+  valid_580731 = validateParameter(valid_580731, JString, required = false,
                                  default = nil)
-  if valid_579706 != nil:
-    section.add "userProject", valid_579706
-  var valid_579707 = query.getOrDefault("alt")
-  valid_579707 = validateParameter(valid_579707, JString, required = false,
+  if valid_580731 != nil:
+    section.add "userProject", valid_580731
+  var valid_580732 = query.getOrDefault("alt")
+  valid_580732 = validateParameter(valid_580732, JString, required = false,
                                  default = newJString("json"))
-  if valid_579707 != nil:
-    section.add "alt", valid_579707
-  var valid_579708 = query.getOrDefault("userIp")
-  valid_579708 = validateParameter(valid_579708, JString, required = false,
+  if valid_580732 != nil:
+    section.add "alt", valid_580732
+  var valid_580733 = query.getOrDefault("userIp")
+  valid_580733 = validateParameter(valid_580733, JString, required = false,
                                  default = nil)
-  if valid_579708 != nil:
-    section.add "userIp", valid_579708
-  var valid_579709 = query.getOrDefault("quotaUser")
-  valid_579709 = validateParameter(valid_579709, JString, required = false,
+  if valid_580733 != nil:
+    section.add "userIp", valid_580733
+  var valid_580734 = query.getOrDefault("quotaUser")
+  valid_580734 = validateParameter(valid_580734, JString, required = false,
                                  default = nil)
-  if valid_579709 != nil:
-    section.add "quotaUser", valid_579709
-  var valid_579710 = query.getOrDefault("provisionalUserProject")
-  valid_579710 = validateParameter(valid_579710, JString, required = false,
+  if valid_580734 != nil:
+    section.add "quotaUser", valid_580734
+  var valid_580735 = query.getOrDefault("provisionalUserProject")
+  valid_580735 = validateParameter(valid_580735, JString, required = false,
                                  default = nil)
-  if valid_579710 != nil:
-    section.add "provisionalUserProject", valid_579710
-  var valid_579711 = query.getOrDefault("fields")
-  valid_579711 = validateParameter(valid_579711, JString, required = false,
+  if valid_580735 != nil:
+    section.add "provisionalUserProject", valid_580735
+  var valid_580736 = query.getOrDefault("fields")
+  valid_580736 = validateParameter(valid_580736, JString, required = false,
                                  default = nil)
-  if valid_579711 != nil:
-    section.add "fields", valid_579711
+  if valid_580736 != nil:
+    section.add "fields", valid_580736
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8254,20 +8459,20 @@ proc validate_StorageObjectsGetIamPolicy_579698(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579712: Call_StorageObjectsGetIamPolicy_579697; path: JsonNode;
+proc call*(call_580737: Call_StorageObjectsGetIamPolicy_580722; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Returns an IAM policy for the specified object.
   ## 
-  let valid = call_579712.validator(path, query, header, formData, body)
-  let scheme = call_579712.pickScheme
+  let valid = call_580737.validator(path, query, header, formData, body)
+  let scheme = call_580737.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579712.url(scheme.get, call_579712.host, call_579712.base,
-                         call_579712.route, valid.getOrDefault("path"),
+  let url = call_580737.url(scheme.get, call_580737.host, call_580737.base,
+                         call_580737.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579712, url, valid)
+  result = hook(call_580737, url, valid)
 
-proc call*(call_579713: Call_StorageObjectsGetIamPolicy_579697; bucket: string;
+proc call*(call_580738: Call_StorageObjectsGetIamPolicy_580722; bucket: string;
           `object`: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; generation: string = ""; userProject: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -8298,30 +8503,30 @@ proc call*(call_579713: Call_StorageObjectsGetIamPolicy_579697; bucket: string;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579714 = newJObject()
-  var query_579715 = newJObject()
-  add(query_579715, "key", newJString(key))
-  add(query_579715, "prettyPrint", newJBool(prettyPrint))
-  add(query_579715, "oauth_token", newJString(oauthToken))
-  add(query_579715, "generation", newJString(generation))
-  add(query_579715, "userProject", newJString(userProject))
-  add(query_579715, "alt", newJString(alt))
-  add(query_579715, "userIp", newJString(userIp))
-  add(query_579715, "quotaUser", newJString(quotaUser))
-  add(path_579714, "bucket", newJString(bucket))
-  add(query_579715, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579714, "object", newJString(`object`))
-  add(query_579715, "fields", newJString(fields))
-  result = call_579713.call(path_579714, query_579715, nil, nil, nil)
+  var path_580739 = newJObject()
+  var query_580740 = newJObject()
+  add(query_580740, "key", newJString(key))
+  add(query_580740, "prettyPrint", newJBool(prettyPrint))
+  add(query_580740, "oauth_token", newJString(oauthToken))
+  add(query_580740, "generation", newJString(generation))
+  add(query_580740, "userProject", newJString(userProject))
+  add(query_580740, "alt", newJString(alt))
+  add(query_580740, "userIp", newJString(userIp))
+  add(query_580740, "quotaUser", newJString(quotaUser))
+  add(path_580739, "bucket", newJString(bucket))
+  add(query_580740, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580739, "object", newJString(`object`))
+  add(query_580740, "fields", newJString(fields))
+  result = call_580738.call(path_580739, query_580740, nil, nil, nil)
 
-var storageObjectsGetIamPolicy* = Call_StorageObjectsGetIamPolicy_579697(
+var storageObjectsGetIamPolicy* = Call_StorageObjectsGetIamPolicy_580722(
     name: "storageObjectsGetIamPolicy", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/b/{bucket}/o/{object}/iam",
-    validator: validate_StorageObjectsGetIamPolicy_579698, base: "/storage/v1",
-    url: url_StorageObjectsGetIamPolicy_579699, schemes: {Scheme.Https})
+    validator: validate_StorageObjectsGetIamPolicy_580723, base: "/storage/v1",
+    url: url_StorageObjectsGetIamPolicy_580724, schemes: {Scheme.Https})
 type
-  Call_StorageObjectsTestIamPermissions_579737 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectsTestIamPermissions_579739(protocol: Scheme; host: string;
+  Call_StorageObjectsTestIamPermissions_580762 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectsTestIamPermissions_580764(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8338,9 +8543,14 @@ proc url_StorageObjectsTestIamPermissions_579739(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectsTestIamPermissions_579738(path: JsonNode;
+proc validate_StorageObjectsTestIamPermissions_580763(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Tests a set of permissions on the given object to see which, if any, are held by the caller.
   ## 
@@ -8353,16 +8563,16 @@ proc validate_StorageObjectsTestIamPermissions_579738(path: JsonNode;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `bucket` field"
-  var valid_579740 = path.getOrDefault("bucket")
-  valid_579740 = validateParameter(valid_579740, JString, required = true,
+  var valid_580765 = path.getOrDefault("bucket")
+  valid_580765 = validateParameter(valid_580765, JString, required = true,
                                  default = nil)
-  if valid_579740 != nil:
-    section.add "bucket", valid_579740
-  var valid_579741 = path.getOrDefault("object")
-  valid_579741 = validateParameter(valid_579741, JString, required = true,
+  if valid_580765 != nil:
+    section.add "bucket", valid_580765
+  var valid_580766 = path.getOrDefault("object")
+  valid_580766 = validateParameter(valid_580766, JString, required = true,
                                  default = nil)
-  if valid_579741 != nil:
-    section.add "object", valid_579741
+  if valid_580766 != nil:
+    section.add "object", valid_580766
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -8388,62 +8598,62 @@ proc validate_StorageObjectsTestIamPermissions_579738(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579742 = query.getOrDefault("key")
-  valid_579742 = validateParameter(valid_579742, JString, required = false,
+  var valid_580767 = query.getOrDefault("key")
+  valid_580767 = validateParameter(valid_580767, JString, required = false,
                                  default = nil)
-  if valid_579742 != nil:
-    section.add "key", valid_579742
-  var valid_579743 = query.getOrDefault("prettyPrint")
-  valid_579743 = validateParameter(valid_579743, JBool, required = false,
+  if valid_580767 != nil:
+    section.add "key", valid_580767
+  var valid_580768 = query.getOrDefault("prettyPrint")
+  valid_580768 = validateParameter(valid_580768, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579743 != nil:
-    section.add "prettyPrint", valid_579743
-  var valid_579744 = query.getOrDefault("oauth_token")
-  valid_579744 = validateParameter(valid_579744, JString, required = false,
+  if valid_580768 != nil:
+    section.add "prettyPrint", valid_580768
+  var valid_580769 = query.getOrDefault("oauth_token")
+  valid_580769 = validateParameter(valid_580769, JString, required = false,
                                  default = nil)
-  if valid_579744 != nil:
-    section.add "oauth_token", valid_579744
-  var valid_579745 = query.getOrDefault("generation")
-  valid_579745 = validateParameter(valid_579745, JString, required = false,
+  if valid_580769 != nil:
+    section.add "oauth_token", valid_580769
+  var valid_580770 = query.getOrDefault("generation")
+  valid_580770 = validateParameter(valid_580770, JString, required = false,
                                  default = nil)
-  if valid_579745 != nil:
-    section.add "generation", valid_579745
-  var valid_579746 = query.getOrDefault("userProject")
-  valid_579746 = validateParameter(valid_579746, JString, required = false,
+  if valid_580770 != nil:
+    section.add "generation", valid_580770
+  var valid_580771 = query.getOrDefault("userProject")
+  valid_580771 = validateParameter(valid_580771, JString, required = false,
                                  default = nil)
-  if valid_579746 != nil:
-    section.add "userProject", valid_579746
+  if valid_580771 != nil:
+    section.add "userProject", valid_580771
   assert query != nil,
         "query argument is necessary due to required `permissions` field"
-  var valid_579747 = query.getOrDefault("permissions")
-  valid_579747 = validateParameter(valid_579747, JArray, required = true, default = nil)
-  if valid_579747 != nil:
-    section.add "permissions", valid_579747
-  var valid_579748 = query.getOrDefault("alt")
-  valid_579748 = validateParameter(valid_579748, JString, required = false,
+  var valid_580772 = query.getOrDefault("permissions")
+  valid_580772 = validateParameter(valid_580772, JArray, required = true, default = nil)
+  if valid_580772 != nil:
+    section.add "permissions", valid_580772
+  var valid_580773 = query.getOrDefault("alt")
+  valid_580773 = validateParameter(valid_580773, JString, required = false,
                                  default = newJString("json"))
-  if valid_579748 != nil:
-    section.add "alt", valid_579748
-  var valid_579749 = query.getOrDefault("userIp")
-  valid_579749 = validateParameter(valid_579749, JString, required = false,
+  if valid_580773 != nil:
+    section.add "alt", valid_580773
+  var valid_580774 = query.getOrDefault("userIp")
+  valid_580774 = validateParameter(valid_580774, JString, required = false,
                                  default = nil)
-  if valid_579749 != nil:
-    section.add "userIp", valid_579749
-  var valid_579750 = query.getOrDefault("quotaUser")
-  valid_579750 = validateParameter(valid_579750, JString, required = false,
+  if valid_580774 != nil:
+    section.add "userIp", valid_580774
+  var valid_580775 = query.getOrDefault("quotaUser")
+  valid_580775 = validateParameter(valid_580775, JString, required = false,
                                  default = nil)
-  if valid_579750 != nil:
-    section.add "quotaUser", valid_579750
-  var valid_579751 = query.getOrDefault("provisionalUserProject")
-  valid_579751 = validateParameter(valid_579751, JString, required = false,
+  if valid_580775 != nil:
+    section.add "quotaUser", valid_580775
+  var valid_580776 = query.getOrDefault("provisionalUserProject")
+  valid_580776 = validateParameter(valid_580776, JString, required = false,
                                  default = nil)
-  if valid_579751 != nil:
-    section.add "provisionalUserProject", valid_579751
-  var valid_579752 = query.getOrDefault("fields")
-  valid_579752 = validateParameter(valid_579752, JString, required = false,
+  if valid_580776 != nil:
+    section.add "provisionalUserProject", valid_580776
+  var valid_580777 = query.getOrDefault("fields")
+  valid_580777 = validateParameter(valid_580777, JString, required = false,
                                  default = nil)
-  if valid_579752 != nil:
-    section.add "fields", valid_579752
+  if valid_580777 != nil:
+    section.add "fields", valid_580777
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8452,21 +8662,21 @@ proc validate_StorageObjectsTestIamPermissions_579738(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579753: Call_StorageObjectsTestIamPermissions_579737;
+proc call*(call_580778: Call_StorageObjectsTestIamPermissions_580762;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Tests a set of permissions on the given object to see which, if any, are held by the caller.
   ## 
-  let valid = call_579753.validator(path, query, header, formData, body)
-  let scheme = call_579753.pickScheme
+  let valid = call_580778.validator(path, query, header, formData, body)
+  let scheme = call_580778.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579753.url(scheme.get, call_579753.host, call_579753.base,
-                         call_579753.route, valid.getOrDefault("path"),
+  let url = call_580778.url(scheme.get, call_580778.host, call_580778.base,
+                         call_580778.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579753, url, valid)
+  result = hook(call_580778, url, valid)
 
-proc call*(call_579754: Call_StorageObjectsTestIamPermissions_579737;
+proc call*(call_580779: Call_StorageObjectsTestIamPermissions_580762;
           permissions: JsonNode; bucket: string; `object`: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; generation: string = "";
           userProject: string = ""; alt: string = "json"; userIp: string = "";
@@ -8500,34 +8710,34 @@ proc call*(call_579754: Call_StorageObjectsTestIamPermissions_579737;
   ##         : Name of the object. For information about how to URL encode object names to be path safe, see Encoding URI Path Parts.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579755 = newJObject()
-  var query_579756 = newJObject()
-  add(query_579756, "key", newJString(key))
-  add(query_579756, "prettyPrint", newJBool(prettyPrint))
-  add(query_579756, "oauth_token", newJString(oauthToken))
-  add(query_579756, "generation", newJString(generation))
-  add(query_579756, "userProject", newJString(userProject))
+  var path_580780 = newJObject()
+  var query_580781 = newJObject()
+  add(query_580781, "key", newJString(key))
+  add(query_580781, "prettyPrint", newJBool(prettyPrint))
+  add(query_580781, "oauth_token", newJString(oauthToken))
+  add(query_580781, "generation", newJString(generation))
+  add(query_580781, "userProject", newJString(userProject))
   if permissions != nil:
-    query_579756.add "permissions", permissions
-  add(query_579756, "alt", newJString(alt))
-  add(query_579756, "userIp", newJString(userIp))
-  add(query_579756, "quotaUser", newJString(quotaUser))
-  add(path_579755, "bucket", newJString(bucket))
-  add(query_579756, "provisionalUserProject", newJString(provisionalUserProject))
-  add(path_579755, "object", newJString(`object`))
-  add(query_579756, "fields", newJString(fields))
-  result = call_579754.call(path_579755, query_579756, nil, nil, nil)
+    query_580781.add "permissions", permissions
+  add(query_580781, "alt", newJString(alt))
+  add(query_580781, "userIp", newJString(userIp))
+  add(query_580781, "quotaUser", newJString(quotaUser))
+  add(path_580780, "bucket", newJString(bucket))
+  add(query_580781, "provisionalUserProject", newJString(provisionalUserProject))
+  add(path_580780, "object", newJString(`object`))
+  add(query_580781, "fields", newJString(fields))
+  result = call_580779.call(path_580780, query_580781, nil, nil, nil)
 
-var storageObjectsTestIamPermissions* = Call_StorageObjectsTestIamPermissions_579737(
+var storageObjectsTestIamPermissions* = Call_StorageObjectsTestIamPermissions_580762(
     name: "storageObjectsTestIamPermissions", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/b/{bucket}/o/{object}/iam/testPermissions",
-    validator: validate_StorageObjectsTestIamPermissions_579738,
-    base: "/storage/v1", url: url_StorageObjectsTestIamPermissions_579739,
+    validator: validate_StorageObjectsTestIamPermissions_580763,
+    base: "/storage/v1", url: url_StorageObjectsTestIamPermissions_580764,
     schemes: {Scheme.Https})
 type
-  Call_StorageObjectsCompose_579757 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectsCompose_579759(protocol: Scheme; host: string; base: string;
+  Call_StorageObjectsCompose_580782 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectsCompose_580784(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8546,9 +8756,14 @@ proc url_StorageObjectsCompose_579759(protocol: Scheme; host: string; base: stri
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectsCompose_579758(path: JsonNode; query: JsonNode;
+proc validate_StorageObjectsCompose_580783(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Concatenates a list of existing objects into a new object in the same bucket.
   ## 
@@ -8562,16 +8777,16 @@ proc validate_StorageObjectsCompose_579758(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `destinationObject` field"
-  var valid_579760 = path.getOrDefault("destinationObject")
-  valid_579760 = validateParameter(valid_579760, JString, required = true,
+  var valid_580785 = path.getOrDefault("destinationObject")
+  valid_580785 = validateParameter(valid_580785, JString, required = true,
                                  default = nil)
-  if valid_579760 != nil:
-    section.add "destinationObject", valid_579760
-  var valid_579761 = path.getOrDefault("destinationBucket")
-  valid_579761 = validateParameter(valid_579761, JString, required = true,
+  if valid_580785 != nil:
+    section.add "destinationObject", valid_580785
+  var valid_580786 = path.getOrDefault("destinationBucket")
+  valid_580786 = validateParameter(valid_580786, JString, required = true,
                                  default = nil)
-  if valid_579761 != nil:
-    section.add "destinationBucket", valid_579761
+  if valid_580786 != nil:
+    section.add "destinationBucket", valid_580786
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -8601,71 +8816,71 @@ proc validate_StorageObjectsCompose_579758(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579762 = query.getOrDefault("key")
-  valid_579762 = validateParameter(valid_579762, JString, required = false,
+  var valid_580787 = query.getOrDefault("key")
+  valid_580787 = validateParameter(valid_580787, JString, required = false,
                                  default = nil)
-  if valid_579762 != nil:
-    section.add "key", valid_579762
-  var valid_579763 = query.getOrDefault("prettyPrint")
-  valid_579763 = validateParameter(valid_579763, JBool, required = false,
+  if valid_580787 != nil:
+    section.add "key", valid_580787
+  var valid_580788 = query.getOrDefault("prettyPrint")
+  valid_580788 = validateParameter(valid_580788, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579763 != nil:
-    section.add "prettyPrint", valid_579763
-  var valid_579764 = query.getOrDefault("oauth_token")
-  valid_579764 = validateParameter(valid_579764, JString, required = false,
+  if valid_580788 != nil:
+    section.add "prettyPrint", valid_580788
+  var valid_580789 = query.getOrDefault("oauth_token")
+  valid_580789 = validateParameter(valid_580789, JString, required = false,
                                  default = nil)
-  if valid_579764 != nil:
-    section.add "oauth_token", valid_579764
-  var valid_579765 = query.getOrDefault("kmsKeyName")
-  valid_579765 = validateParameter(valid_579765, JString, required = false,
+  if valid_580789 != nil:
+    section.add "oauth_token", valid_580789
+  var valid_580790 = query.getOrDefault("kmsKeyName")
+  valid_580790 = validateParameter(valid_580790, JString, required = false,
                                  default = nil)
-  if valid_579765 != nil:
-    section.add "kmsKeyName", valid_579765
-  var valid_579766 = query.getOrDefault("destinationPredefinedAcl")
-  valid_579766 = validateParameter(valid_579766, JString, required = false,
+  if valid_580790 != nil:
+    section.add "kmsKeyName", valid_580790
+  var valid_580791 = query.getOrDefault("destinationPredefinedAcl")
+  valid_580791 = validateParameter(valid_580791, JString, required = false,
                                  default = newJString("authenticatedRead"))
-  if valid_579766 != nil:
-    section.add "destinationPredefinedAcl", valid_579766
-  var valid_579767 = query.getOrDefault("userProject")
-  valid_579767 = validateParameter(valid_579767, JString, required = false,
+  if valid_580791 != nil:
+    section.add "destinationPredefinedAcl", valid_580791
+  var valid_580792 = query.getOrDefault("userProject")
+  valid_580792 = validateParameter(valid_580792, JString, required = false,
                                  default = nil)
-  if valid_579767 != nil:
-    section.add "userProject", valid_579767
-  var valid_579768 = query.getOrDefault("ifGenerationMatch")
-  valid_579768 = validateParameter(valid_579768, JString, required = false,
+  if valid_580792 != nil:
+    section.add "userProject", valid_580792
+  var valid_580793 = query.getOrDefault("ifGenerationMatch")
+  valid_580793 = validateParameter(valid_580793, JString, required = false,
                                  default = nil)
-  if valid_579768 != nil:
-    section.add "ifGenerationMatch", valid_579768
-  var valid_579769 = query.getOrDefault("alt")
-  valid_579769 = validateParameter(valid_579769, JString, required = false,
+  if valid_580793 != nil:
+    section.add "ifGenerationMatch", valid_580793
+  var valid_580794 = query.getOrDefault("alt")
+  valid_580794 = validateParameter(valid_580794, JString, required = false,
                                  default = newJString("json"))
-  if valid_579769 != nil:
-    section.add "alt", valid_579769
-  var valid_579770 = query.getOrDefault("userIp")
-  valid_579770 = validateParameter(valid_579770, JString, required = false,
+  if valid_580794 != nil:
+    section.add "alt", valid_580794
+  var valid_580795 = query.getOrDefault("userIp")
+  valid_580795 = validateParameter(valid_580795, JString, required = false,
                                  default = nil)
-  if valid_579770 != nil:
-    section.add "userIp", valid_579770
-  var valid_579771 = query.getOrDefault("quotaUser")
-  valid_579771 = validateParameter(valid_579771, JString, required = false,
+  if valid_580795 != nil:
+    section.add "userIp", valid_580795
+  var valid_580796 = query.getOrDefault("quotaUser")
+  valid_580796 = validateParameter(valid_580796, JString, required = false,
                                  default = nil)
-  if valid_579771 != nil:
-    section.add "quotaUser", valid_579771
-  var valid_579772 = query.getOrDefault("ifMetagenerationMatch")
-  valid_579772 = validateParameter(valid_579772, JString, required = false,
+  if valid_580796 != nil:
+    section.add "quotaUser", valid_580796
+  var valid_580797 = query.getOrDefault("ifMetagenerationMatch")
+  valid_580797 = validateParameter(valid_580797, JString, required = false,
                                  default = nil)
-  if valid_579772 != nil:
-    section.add "ifMetagenerationMatch", valid_579772
-  var valid_579773 = query.getOrDefault("provisionalUserProject")
-  valid_579773 = validateParameter(valid_579773, JString, required = false,
+  if valid_580797 != nil:
+    section.add "ifMetagenerationMatch", valid_580797
+  var valid_580798 = query.getOrDefault("provisionalUserProject")
+  valid_580798 = validateParameter(valid_580798, JString, required = false,
                                  default = nil)
-  if valid_579773 != nil:
-    section.add "provisionalUserProject", valid_579773
-  var valid_579774 = query.getOrDefault("fields")
-  valid_579774 = validateParameter(valid_579774, JString, required = false,
+  if valid_580798 != nil:
+    section.add "provisionalUserProject", valid_580798
+  var valid_580799 = query.getOrDefault("fields")
+  valid_580799 = validateParameter(valid_580799, JString, required = false,
                                  default = nil)
-  if valid_579774 != nil:
-    section.add "fields", valid_579774
+  if valid_580799 != nil:
+    section.add "fields", valid_580799
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8677,20 +8892,20 @@ proc validate_StorageObjectsCompose_579758(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579776: Call_StorageObjectsCompose_579757; path: JsonNode;
+proc call*(call_580801: Call_StorageObjectsCompose_580782; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Concatenates a list of existing objects into a new object in the same bucket.
   ## 
-  let valid = call_579776.validator(path, query, header, formData, body)
-  let scheme = call_579776.pickScheme
+  let valid = call_580801.validator(path, query, header, formData, body)
+  let scheme = call_580801.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579776.url(scheme.get, call_579776.host, call_579776.base,
-                         call_579776.route, valid.getOrDefault("path"),
+  let url = call_580801.url(scheme.get, call_580801.host, call_580801.base,
+                         call_580801.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579776, url, valid)
+  result = hook(call_580801, url, valid)
 
-proc call*(call_579777: Call_StorageObjectsCompose_579757;
+proc call*(call_580802: Call_StorageObjectsCompose_580782;
           destinationObject: string; destinationBucket: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; kmsKeyName: string = "";
           destinationPredefinedAcl: string = "authenticatedRead";
@@ -8731,38 +8946,38 @@ proc call*(call_579777: Call_StorageObjectsCompose_579757;
   ##                         : The project to be billed for this request if the target bucket is requester-pays bucket.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579778 = newJObject()
-  var query_579779 = newJObject()
-  var body_579780 = newJObject()
-  add(query_579779, "key", newJString(key))
-  add(query_579779, "prettyPrint", newJBool(prettyPrint))
-  add(query_579779, "oauth_token", newJString(oauthToken))
-  add(query_579779, "kmsKeyName", newJString(kmsKeyName))
-  add(path_579778, "destinationObject", newJString(destinationObject))
-  add(query_579779, "destinationPredefinedAcl",
+  var path_580803 = newJObject()
+  var query_580804 = newJObject()
+  var body_580805 = newJObject()
+  add(query_580804, "key", newJString(key))
+  add(query_580804, "prettyPrint", newJBool(prettyPrint))
+  add(query_580804, "oauth_token", newJString(oauthToken))
+  add(query_580804, "kmsKeyName", newJString(kmsKeyName))
+  add(path_580803, "destinationObject", newJString(destinationObject))
+  add(query_580804, "destinationPredefinedAcl",
       newJString(destinationPredefinedAcl))
-  add(query_579779, "userProject", newJString(userProject))
-  add(path_579778, "destinationBucket", newJString(destinationBucket))
-  add(query_579779, "ifGenerationMatch", newJString(ifGenerationMatch))
-  add(query_579779, "alt", newJString(alt))
-  add(query_579779, "userIp", newJString(userIp))
-  add(query_579779, "quotaUser", newJString(quotaUser))
-  add(query_579779, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
+  add(query_580804, "userProject", newJString(userProject))
+  add(path_580803, "destinationBucket", newJString(destinationBucket))
+  add(query_580804, "ifGenerationMatch", newJString(ifGenerationMatch))
+  add(query_580804, "alt", newJString(alt))
+  add(query_580804, "userIp", newJString(userIp))
+  add(query_580804, "quotaUser", newJString(quotaUser))
+  add(query_580804, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
   if body != nil:
-    body_579780 = body
-  add(query_579779, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579779, "fields", newJString(fields))
-  result = call_579777.call(path_579778, query_579779, nil, nil, body_579780)
+    body_580805 = body
+  add(query_580804, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580804, "fields", newJString(fields))
+  result = call_580802.call(path_580803, query_580804, nil, nil, body_580805)
 
-var storageObjectsCompose* = Call_StorageObjectsCompose_579757(
+var storageObjectsCompose* = Call_StorageObjectsCompose_580782(
     name: "storageObjectsCompose", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com",
     route: "/b/{destinationBucket}/o/{destinationObject}/compose",
-    validator: validate_StorageObjectsCompose_579758, base: "/storage/v1",
-    url: url_StorageObjectsCompose_579759, schemes: {Scheme.Https})
+    validator: validate_StorageObjectsCompose_580783, base: "/storage/v1",
+    url: url_StorageObjectsCompose_580784, schemes: {Scheme.Https})
 type
-  Call_StorageObjectsCopy_579781 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectsCopy_579783(protocol: Scheme; host: string; base: string;
+  Call_StorageObjectsCopy_580806 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectsCopy_580808(protocol: Scheme; host: string; base: string;
                                   route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -8786,9 +9001,14 @@ proc url_StorageObjectsCopy_579783(protocol: Scheme; host: string; base: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectsCopy_579782(path: JsonNode; query: JsonNode;
+proc validate_StorageObjectsCopy_580807(path: JsonNode; query: JsonNode;
                                        header: JsonNode; formData: JsonNode;
                                        body: JsonNode): JsonNode =
   ## Copies a source object to a destination object. Optionally overrides metadata.
@@ -8807,26 +9027,26 @@ proc validate_StorageObjectsCopy_579782(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `destinationObject` field"
-  var valid_579784 = path.getOrDefault("destinationObject")
-  valid_579784 = validateParameter(valid_579784, JString, required = true,
+  var valid_580809 = path.getOrDefault("destinationObject")
+  valid_580809 = validateParameter(valid_580809, JString, required = true,
                                  default = nil)
-  if valid_579784 != nil:
-    section.add "destinationObject", valid_579784
-  var valid_579785 = path.getOrDefault("destinationBucket")
-  valid_579785 = validateParameter(valid_579785, JString, required = true,
+  if valid_580809 != nil:
+    section.add "destinationObject", valid_580809
+  var valid_580810 = path.getOrDefault("destinationBucket")
+  valid_580810 = validateParameter(valid_580810, JString, required = true,
                                  default = nil)
-  if valid_579785 != nil:
-    section.add "destinationBucket", valid_579785
-  var valid_579786 = path.getOrDefault("sourceObject")
-  valid_579786 = validateParameter(valid_579786, JString, required = true,
+  if valid_580810 != nil:
+    section.add "destinationBucket", valid_580810
+  var valid_580811 = path.getOrDefault("sourceObject")
+  valid_580811 = validateParameter(valid_580811, JString, required = true,
                                  default = nil)
-  if valid_579786 != nil:
-    section.add "sourceObject", valid_579786
-  var valid_579787 = path.getOrDefault("sourceBucket")
-  valid_579787 = validateParameter(valid_579787, JString, required = true,
+  if valid_580811 != nil:
+    section.add "sourceObject", valid_580811
+  var valid_580812 = path.getOrDefault("sourceBucket")
+  valid_580812 = validateParameter(valid_580812, JString, required = true,
                                  default = nil)
-  if valid_579787 != nil:
-    section.add "sourceBucket", valid_579787
+  if valid_580812 != nil:
+    section.add "sourceBucket", valid_580812
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -8870,106 +9090,106 @@ proc validate_StorageObjectsCopy_579782(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579788 = query.getOrDefault("key")
-  valid_579788 = validateParameter(valid_579788, JString, required = false,
+  var valid_580813 = query.getOrDefault("key")
+  valid_580813 = validateParameter(valid_580813, JString, required = false,
                                  default = nil)
-  if valid_579788 != nil:
-    section.add "key", valid_579788
-  var valid_579789 = query.getOrDefault("ifSourceGenerationMatch")
-  valid_579789 = validateParameter(valid_579789, JString, required = false,
+  if valid_580813 != nil:
+    section.add "key", valid_580813
+  var valid_580814 = query.getOrDefault("ifSourceGenerationMatch")
+  valid_580814 = validateParameter(valid_580814, JString, required = false,
                                  default = nil)
-  if valid_579789 != nil:
-    section.add "ifSourceGenerationMatch", valid_579789
-  var valid_579790 = query.getOrDefault("prettyPrint")
-  valid_579790 = validateParameter(valid_579790, JBool, required = false,
+  if valid_580814 != nil:
+    section.add "ifSourceGenerationMatch", valid_580814
+  var valid_580815 = query.getOrDefault("prettyPrint")
+  valid_580815 = validateParameter(valid_580815, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579790 != nil:
-    section.add "prettyPrint", valid_579790
-  var valid_579791 = query.getOrDefault("oauth_token")
-  valid_579791 = validateParameter(valid_579791, JString, required = false,
+  if valid_580815 != nil:
+    section.add "prettyPrint", valid_580815
+  var valid_580816 = query.getOrDefault("oauth_token")
+  valid_580816 = validateParameter(valid_580816, JString, required = false,
                                  default = nil)
-  if valid_579791 != nil:
-    section.add "oauth_token", valid_579791
-  var valid_579792 = query.getOrDefault("destinationPredefinedAcl")
-  valid_579792 = validateParameter(valid_579792, JString, required = false,
+  if valid_580816 != nil:
+    section.add "oauth_token", valid_580816
+  var valid_580817 = query.getOrDefault("destinationPredefinedAcl")
+  valid_580817 = validateParameter(valid_580817, JString, required = false,
                                  default = newJString("authenticatedRead"))
-  if valid_579792 != nil:
-    section.add "destinationPredefinedAcl", valid_579792
-  var valid_579793 = query.getOrDefault("userProject")
-  valid_579793 = validateParameter(valid_579793, JString, required = false,
+  if valid_580817 != nil:
+    section.add "destinationPredefinedAcl", valid_580817
+  var valid_580818 = query.getOrDefault("userProject")
+  valid_580818 = validateParameter(valid_580818, JString, required = false,
                                  default = nil)
-  if valid_579793 != nil:
-    section.add "userProject", valid_579793
-  var valid_579794 = query.getOrDefault("ifSourceMetagenerationNotMatch")
-  valid_579794 = validateParameter(valid_579794, JString, required = false,
+  if valid_580818 != nil:
+    section.add "userProject", valid_580818
+  var valid_580819 = query.getOrDefault("ifSourceMetagenerationNotMatch")
+  valid_580819 = validateParameter(valid_580819, JString, required = false,
                                  default = nil)
-  if valid_579794 != nil:
-    section.add "ifSourceMetagenerationNotMatch", valid_579794
-  var valid_579795 = query.getOrDefault("ifGenerationMatch")
-  valid_579795 = validateParameter(valid_579795, JString, required = false,
+  if valid_580819 != nil:
+    section.add "ifSourceMetagenerationNotMatch", valid_580819
+  var valid_580820 = query.getOrDefault("ifGenerationMatch")
+  valid_580820 = validateParameter(valid_580820, JString, required = false,
                                  default = nil)
-  if valid_579795 != nil:
-    section.add "ifGenerationMatch", valid_579795
-  var valid_579796 = query.getOrDefault("alt")
-  valid_579796 = validateParameter(valid_579796, JString, required = false,
+  if valid_580820 != nil:
+    section.add "ifGenerationMatch", valid_580820
+  var valid_580821 = query.getOrDefault("alt")
+  valid_580821 = validateParameter(valid_580821, JString, required = false,
                                  default = newJString("json"))
-  if valid_579796 != nil:
-    section.add "alt", valid_579796
-  var valid_579797 = query.getOrDefault("userIp")
-  valid_579797 = validateParameter(valid_579797, JString, required = false,
+  if valid_580821 != nil:
+    section.add "alt", valid_580821
+  var valid_580822 = query.getOrDefault("userIp")
+  valid_580822 = validateParameter(valid_580822, JString, required = false,
                                  default = nil)
-  if valid_579797 != nil:
-    section.add "userIp", valid_579797
-  var valid_579798 = query.getOrDefault("ifGenerationNotMatch")
-  valid_579798 = validateParameter(valid_579798, JString, required = false,
+  if valid_580822 != nil:
+    section.add "userIp", valid_580822
+  var valid_580823 = query.getOrDefault("ifGenerationNotMatch")
+  valid_580823 = validateParameter(valid_580823, JString, required = false,
                                  default = nil)
-  if valid_579798 != nil:
-    section.add "ifGenerationNotMatch", valid_579798
-  var valid_579799 = query.getOrDefault("quotaUser")
-  valid_579799 = validateParameter(valid_579799, JString, required = false,
+  if valid_580823 != nil:
+    section.add "ifGenerationNotMatch", valid_580823
+  var valid_580824 = query.getOrDefault("quotaUser")
+  valid_580824 = validateParameter(valid_580824, JString, required = false,
                                  default = nil)
-  if valid_579799 != nil:
-    section.add "quotaUser", valid_579799
-  var valid_579800 = query.getOrDefault("ifSourceGenerationNotMatch")
-  valid_579800 = validateParameter(valid_579800, JString, required = false,
+  if valid_580824 != nil:
+    section.add "quotaUser", valid_580824
+  var valid_580825 = query.getOrDefault("ifSourceGenerationNotMatch")
+  valid_580825 = validateParameter(valid_580825, JString, required = false,
                                  default = nil)
-  if valid_579800 != nil:
-    section.add "ifSourceGenerationNotMatch", valid_579800
-  var valid_579801 = query.getOrDefault("ifMetagenerationMatch")
-  valid_579801 = validateParameter(valid_579801, JString, required = false,
+  if valid_580825 != nil:
+    section.add "ifSourceGenerationNotMatch", valid_580825
+  var valid_580826 = query.getOrDefault("ifMetagenerationMatch")
+  valid_580826 = validateParameter(valid_580826, JString, required = false,
                                  default = nil)
-  if valid_579801 != nil:
-    section.add "ifMetagenerationMatch", valid_579801
-  var valid_579802 = query.getOrDefault("sourceGeneration")
-  valid_579802 = validateParameter(valid_579802, JString, required = false,
+  if valid_580826 != nil:
+    section.add "ifMetagenerationMatch", valid_580826
+  var valid_580827 = query.getOrDefault("sourceGeneration")
+  valid_580827 = validateParameter(valid_580827, JString, required = false,
                                  default = nil)
-  if valid_579802 != nil:
-    section.add "sourceGeneration", valid_579802
-  var valid_579803 = query.getOrDefault("ifSourceMetagenerationMatch")
-  valid_579803 = validateParameter(valid_579803, JString, required = false,
+  if valid_580827 != nil:
+    section.add "sourceGeneration", valid_580827
+  var valid_580828 = query.getOrDefault("ifSourceMetagenerationMatch")
+  valid_580828 = validateParameter(valid_580828, JString, required = false,
                                  default = nil)
-  if valid_579803 != nil:
-    section.add "ifSourceMetagenerationMatch", valid_579803
-  var valid_579804 = query.getOrDefault("provisionalUserProject")
-  valid_579804 = validateParameter(valid_579804, JString, required = false,
+  if valid_580828 != nil:
+    section.add "ifSourceMetagenerationMatch", valid_580828
+  var valid_580829 = query.getOrDefault("provisionalUserProject")
+  valid_580829 = validateParameter(valid_580829, JString, required = false,
                                  default = nil)
-  if valid_579804 != nil:
-    section.add "provisionalUserProject", valid_579804
-  var valid_579805 = query.getOrDefault("ifMetagenerationNotMatch")
-  valid_579805 = validateParameter(valid_579805, JString, required = false,
+  if valid_580829 != nil:
+    section.add "provisionalUserProject", valid_580829
+  var valid_580830 = query.getOrDefault("ifMetagenerationNotMatch")
+  valid_580830 = validateParameter(valid_580830, JString, required = false,
                                  default = nil)
-  if valid_579805 != nil:
-    section.add "ifMetagenerationNotMatch", valid_579805
-  var valid_579806 = query.getOrDefault("projection")
-  valid_579806 = validateParameter(valid_579806, JString, required = false,
+  if valid_580830 != nil:
+    section.add "ifMetagenerationNotMatch", valid_580830
+  var valid_580831 = query.getOrDefault("projection")
+  valid_580831 = validateParameter(valid_580831, JString, required = false,
                                  default = newJString("full"))
-  if valid_579806 != nil:
-    section.add "projection", valid_579806
-  var valid_579807 = query.getOrDefault("fields")
-  valid_579807 = validateParameter(valid_579807, JString, required = false,
+  if valid_580831 != nil:
+    section.add "projection", valid_580831
+  var valid_580832 = query.getOrDefault("fields")
+  valid_580832 = validateParameter(valid_580832, JString, required = false,
                                  default = nil)
-  if valid_579807 != nil:
-    section.add "fields", valid_579807
+  if valid_580832 != nil:
+    section.add "fields", valid_580832
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -8981,20 +9201,20 @@ proc validate_StorageObjectsCopy_579782(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579809: Call_StorageObjectsCopy_579781; path: JsonNode;
+proc call*(call_580834: Call_StorageObjectsCopy_580806; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Copies a source object to a destination object. Optionally overrides metadata.
   ## 
-  let valid = call_579809.validator(path, query, header, formData, body)
-  let scheme = call_579809.pickScheme
+  let valid = call_580834.validator(path, query, header, formData, body)
+  let scheme = call_580834.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579809.url(scheme.get, call_579809.host, call_579809.base,
-                         call_579809.route, valid.getOrDefault("path"),
+  let url = call_580834.url(scheme.get, call_580834.host, call_580834.base,
+                         call_580834.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579809, url, valid)
+  result = hook(call_580834, url, valid)
 
-proc call*(call_579810: Call_StorageObjectsCopy_579781; destinationObject: string;
+proc call*(call_580835: Call_StorageObjectsCopy_580806; destinationObject: string;
           destinationBucket: string; sourceObject: string; sourceBucket: string;
           key: string = ""; ifSourceGenerationMatch: string = "";
           prettyPrint: bool = true; oauthToken: string = "";
@@ -9059,50 +9279,50 @@ proc call*(call_579810: Call_StorageObjectsCopy_579781; destinationObject: strin
   ##             : Set of properties to return. Defaults to noAcl, unless the object resource specifies the acl property, when it defaults to full.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579811 = newJObject()
-  var query_579812 = newJObject()
-  var body_579813 = newJObject()
-  add(query_579812, "key", newJString(key))
-  add(query_579812, "ifSourceGenerationMatch", newJString(ifSourceGenerationMatch))
-  add(query_579812, "prettyPrint", newJBool(prettyPrint))
-  add(query_579812, "oauth_token", newJString(oauthToken))
-  add(path_579811, "destinationObject", newJString(destinationObject))
-  add(query_579812, "destinationPredefinedAcl",
+  var path_580836 = newJObject()
+  var query_580837 = newJObject()
+  var body_580838 = newJObject()
+  add(query_580837, "key", newJString(key))
+  add(query_580837, "ifSourceGenerationMatch", newJString(ifSourceGenerationMatch))
+  add(query_580837, "prettyPrint", newJBool(prettyPrint))
+  add(query_580837, "oauth_token", newJString(oauthToken))
+  add(path_580836, "destinationObject", newJString(destinationObject))
+  add(query_580837, "destinationPredefinedAcl",
       newJString(destinationPredefinedAcl))
-  add(query_579812, "userProject", newJString(userProject))
-  add(query_579812, "ifSourceMetagenerationNotMatch",
+  add(query_580837, "userProject", newJString(userProject))
+  add(query_580837, "ifSourceMetagenerationNotMatch",
       newJString(ifSourceMetagenerationNotMatch))
-  add(path_579811, "destinationBucket", newJString(destinationBucket))
-  add(query_579812, "ifGenerationMatch", newJString(ifGenerationMatch))
-  add(query_579812, "alt", newJString(alt))
-  add(query_579812, "userIp", newJString(userIp))
-  add(query_579812, "ifGenerationNotMatch", newJString(ifGenerationNotMatch))
-  add(query_579812, "quotaUser", newJString(quotaUser))
-  add(query_579812, "ifSourceGenerationNotMatch",
+  add(path_580836, "destinationBucket", newJString(destinationBucket))
+  add(query_580837, "ifGenerationMatch", newJString(ifGenerationMatch))
+  add(query_580837, "alt", newJString(alt))
+  add(query_580837, "userIp", newJString(userIp))
+  add(query_580837, "ifGenerationNotMatch", newJString(ifGenerationNotMatch))
+  add(query_580837, "quotaUser", newJString(quotaUser))
+  add(query_580837, "ifSourceGenerationNotMatch",
       newJString(ifSourceGenerationNotMatch))
-  add(path_579811, "sourceObject", newJString(sourceObject))
-  add(query_579812, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
-  add(query_579812, "sourceGeneration", newJString(sourceGeneration))
-  add(query_579812, "ifSourceMetagenerationMatch",
+  add(path_580836, "sourceObject", newJString(sourceObject))
+  add(query_580837, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
+  add(query_580837, "sourceGeneration", newJString(sourceGeneration))
+  add(query_580837, "ifSourceMetagenerationMatch",
       newJString(ifSourceMetagenerationMatch))
-  add(path_579811, "sourceBucket", newJString(sourceBucket))
+  add(path_580836, "sourceBucket", newJString(sourceBucket))
   if body != nil:
-    body_579813 = body
-  add(query_579812, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579812, "ifMetagenerationNotMatch",
+    body_580838 = body
+  add(query_580837, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580837, "ifMetagenerationNotMatch",
       newJString(ifMetagenerationNotMatch))
-  add(query_579812, "projection", newJString(projection))
-  add(query_579812, "fields", newJString(fields))
-  result = call_579810.call(path_579811, query_579812, nil, nil, body_579813)
+  add(query_580837, "projection", newJString(projection))
+  add(query_580837, "fields", newJString(fields))
+  result = call_580835.call(path_580836, query_580837, nil, nil, body_580838)
 
-var storageObjectsCopy* = Call_StorageObjectsCopy_579781(
+var storageObjectsCopy* = Call_StorageObjectsCopy_580806(
     name: "storageObjectsCopy", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/b/{sourceBucket}/o/{sourceObject}/copyTo/b/{destinationBucket}/o/{destinationObject}",
-    validator: validate_StorageObjectsCopy_579782, base: "/storage/v1",
-    url: url_StorageObjectsCopy_579783, schemes: {Scheme.Https})
+    validator: validate_StorageObjectsCopy_580807, base: "/storage/v1",
+    url: url_StorageObjectsCopy_580808, schemes: {Scheme.Https})
 type
-  Call_StorageObjectsRewrite_579814 = ref object of OpenApiRestCall_578355
-proc url_StorageObjectsRewrite_579816(protocol: Scheme; host: string; base: string;
+  Call_StorageObjectsRewrite_580839 = ref object of OpenApiRestCall_579380
+proc url_StorageObjectsRewrite_580841(protocol: Scheme; host: string; base: string;
                                      route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9126,9 +9346,14 @@ proc url_StorageObjectsRewrite_579816(protocol: Scheme; host: string; base: stri
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageObjectsRewrite_579815(path: JsonNode; query: JsonNode;
+proc validate_StorageObjectsRewrite_580840(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Rewrites a source object to a destination object. Optionally overrides metadata.
   ## 
@@ -9146,26 +9371,26 @@ proc validate_StorageObjectsRewrite_579815(path: JsonNode; query: JsonNode;
   section = newJObject()
   assert path != nil,
         "path argument is necessary due to required `destinationObject` field"
-  var valid_579817 = path.getOrDefault("destinationObject")
-  valid_579817 = validateParameter(valid_579817, JString, required = true,
+  var valid_580842 = path.getOrDefault("destinationObject")
+  valid_580842 = validateParameter(valid_580842, JString, required = true,
                                  default = nil)
-  if valid_579817 != nil:
-    section.add "destinationObject", valid_579817
-  var valid_579818 = path.getOrDefault("destinationBucket")
-  valid_579818 = validateParameter(valid_579818, JString, required = true,
+  if valid_580842 != nil:
+    section.add "destinationObject", valid_580842
+  var valid_580843 = path.getOrDefault("destinationBucket")
+  valid_580843 = validateParameter(valid_580843, JString, required = true,
                                  default = nil)
-  if valid_579818 != nil:
-    section.add "destinationBucket", valid_579818
-  var valid_579819 = path.getOrDefault("sourceObject")
-  valid_579819 = validateParameter(valid_579819, JString, required = true,
+  if valid_580843 != nil:
+    section.add "destinationBucket", valid_580843
+  var valid_580844 = path.getOrDefault("sourceObject")
+  valid_580844 = validateParameter(valid_580844, JString, required = true,
                                  default = nil)
-  if valid_579819 != nil:
-    section.add "sourceObject", valid_579819
-  var valid_579820 = path.getOrDefault("sourceBucket")
-  valid_579820 = validateParameter(valid_579820, JString, required = true,
+  if valid_580844 != nil:
+    section.add "sourceObject", valid_580844
+  var valid_580845 = path.getOrDefault("sourceBucket")
+  valid_580845 = validateParameter(valid_580845, JString, required = true,
                                  default = nil)
-  if valid_579820 != nil:
-    section.add "sourceBucket", valid_579820
+  if valid_580845 != nil:
+    section.add "sourceBucket", valid_580845
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -9215,121 +9440,121 @@ proc validate_StorageObjectsRewrite_579815(path: JsonNode; query: JsonNode;
   ##   destinationKmsKeyName: JString
   ##                        : Resource name of the Cloud KMS key, of the form projects/my-project/locations/global/keyRings/my-kr/cryptoKeys/my-key, that will be used to encrypt the object. Overrides the object metadata's kms_key_name value, if any.
   section = newJObject()
-  var valid_579821 = query.getOrDefault("key")
-  valid_579821 = validateParameter(valid_579821, JString, required = false,
+  var valid_580846 = query.getOrDefault("key")
+  valid_580846 = validateParameter(valid_580846, JString, required = false,
                                  default = nil)
-  if valid_579821 != nil:
-    section.add "key", valid_579821
-  var valid_579822 = query.getOrDefault("ifSourceGenerationMatch")
-  valid_579822 = validateParameter(valid_579822, JString, required = false,
+  if valid_580846 != nil:
+    section.add "key", valid_580846
+  var valid_580847 = query.getOrDefault("ifSourceGenerationMatch")
+  valid_580847 = validateParameter(valid_580847, JString, required = false,
                                  default = nil)
-  if valid_579822 != nil:
-    section.add "ifSourceGenerationMatch", valid_579822
-  var valid_579823 = query.getOrDefault("prettyPrint")
-  valid_579823 = validateParameter(valid_579823, JBool, required = false,
+  if valid_580847 != nil:
+    section.add "ifSourceGenerationMatch", valid_580847
+  var valid_580848 = query.getOrDefault("prettyPrint")
+  valid_580848 = validateParameter(valid_580848, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579823 != nil:
-    section.add "prettyPrint", valid_579823
-  var valid_579824 = query.getOrDefault("oauth_token")
-  valid_579824 = validateParameter(valid_579824, JString, required = false,
+  if valid_580848 != nil:
+    section.add "prettyPrint", valid_580848
+  var valid_580849 = query.getOrDefault("oauth_token")
+  valid_580849 = validateParameter(valid_580849, JString, required = false,
                                  default = nil)
-  if valid_579824 != nil:
-    section.add "oauth_token", valid_579824
-  var valid_579825 = query.getOrDefault("destinationPredefinedAcl")
-  valid_579825 = validateParameter(valid_579825, JString, required = false,
+  if valid_580849 != nil:
+    section.add "oauth_token", valid_580849
+  var valid_580850 = query.getOrDefault("destinationPredefinedAcl")
+  valid_580850 = validateParameter(valid_580850, JString, required = false,
                                  default = newJString("authenticatedRead"))
-  if valid_579825 != nil:
-    section.add "destinationPredefinedAcl", valid_579825
-  var valid_579826 = query.getOrDefault("userProject")
-  valid_579826 = validateParameter(valid_579826, JString, required = false,
+  if valid_580850 != nil:
+    section.add "destinationPredefinedAcl", valid_580850
+  var valid_580851 = query.getOrDefault("userProject")
+  valid_580851 = validateParameter(valid_580851, JString, required = false,
                                  default = nil)
-  if valid_579826 != nil:
-    section.add "userProject", valid_579826
-  var valid_579827 = query.getOrDefault("ifSourceMetagenerationNotMatch")
-  valid_579827 = validateParameter(valid_579827, JString, required = false,
+  if valid_580851 != nil:
+    section.add "userProject", valid_580851
+  var valid_580852 = query.getOrDefault("ifSourceMetagenerationNotMatch")
+  valid_580852 = validateParameter(valid_580852, JString, required = false,
                                  default = nil)
-  if valid_579827 != nil:
-    section.add "ifSourceMetagenerationNotMatch", valid_579827
-  var valid_579828 = query.getOrDefault("ifGenerationMatch")
-  valid_579828 = validateParameter(valid_579828, JString, required = false,
+  if valid_580852 != nil:
+    section.add "ifSourceMetagenerationNotMatch", valid_580852
+  var valid_580853 = query.getOrDefault("ifGenerationMatch")
+  valid_580853 = validateParameter(valid_580853, JString, required = false,
                                  default = nil)
-  if valid_579828 != nil:
-    section.add "ifGenerationMatch", valid_579828
-  var valid_579829 = query.getOrDefault("alt")
-  valid_579829 = validateParameter(valid_579829, JString, required = false,
+  if valid_580853 != nil:
+    section.add "ifGenerationMatch", valid_580853
+  var valid_580854 = query.getOrDefault("alt")
+  valid_580854 = validateParameter(valid_580854, JString, required = false,
                                  default = newJString("json"))
-  if valid_579829 != nil:
-    section.add "alt", valid_579829
-  var valid_579830 = query.getOrDefault("userIp")
-  valid_579830 = validateParameter(valid_579830, JString, required = false,
+  if valid_580854 != nil:
+    section.add "alt", valid_580854
+  var valid_580855 = query.getOrDefault("userIp")
+  valid_580855 = validateParameter(valid_580855, JString, required = false,
                                  default = nil)
-  if valid_579830 != nil:
-    section.add "userIp", valid_579830
-  var valid_579831 = query.getOrDefault("ifGenerationNotMatch")
-  valid_579831 = validateParameter(valid_579831, JString, required = false,
+  if valid_580855 != nil:
+    section.add "userIp", valid_580855
+  var valid_580856 = query.getOrDefault("ifGenerationNotMatch")
+  valid_580856 = validateParameter(valid_580856, JString, required = false,
                                  default = nil)
-  if valid_579831 != nil:
-    section.add "ifGenerationNotMatch", valid_579831
-  var valid_579832 = query.getOrDefault("quotaUser")
-  valid_579832 = validateParameter(valid_579832, JString, required = false,
+  if valid_580856 != nil:
+    section.add "ifGenerationNotMatch", valid_580856
+  var valid_580857 = query.getOrDefault("quotaUser")
+  valid_580857 = validateParameter(valid_580857, JString, required = false,
                                  default = nil)
-  if valid_579832 != nil:
-    section.add "quotaUser", valid_579832
-  var valid_579833 = query.getOrDefault("ifSourceGenerationNotMatch")
-  valid_579833 = validateParameter(valid_579833, JString, required = false,
+  if valid_580857 != nil:
+    section.add "quotaUser", valid_580857
+  var valid_580858 = query.getOrDefault("ifSourceGenerationNotMatch")
+  valid_580858 = validateParameter(valid_580858, JString, required = false,
                                  default = nil)
-  if valid_579833 != nil:
-    section.add "ifSourceGenerationNotMatch", valid_579833
-  var valid_579834 = query.getOrDefault("ifMetagenerationMatch")
-  valid_579834 = validateParameter(valid_579834, JString, required = false,
+  if valid_580858 != nil:
+    section.add "ifSourceGenerationNotMatch", valid_580858
+  var valid_580859 = query.getOrDefault("ifMetagenerationMatch")
+  valid_580859 = validateParameter(valid_580859, JString, required = false,
                                  default = nil)
-  if valid_579834 != nil:
-    section.add "ifMetagenerationMatch", valid_579834
-  var valid_579835 = query.getOrDefault("rewriteToken")
-  valid_579835 = validateParameter(valid_579835, JString, required = false,
+  if valid_580859 != nil:
+    section.add "ifMetagenerationMatch", valid_580859
+  var valid_580860 = query.getOrDefault("rewriteToken")
+  valid_580860 = validateParameter(valid_580860, JString, required = false,
                                  default = nil)
-  if valid_579835 != nil:
-    section.add "rewriteToken", valid_579835
-  var valid_579836 = query.getOrDefault("sourceGeneration")
-  valid_579836 = validateParameter(valid_579836, JString, required = false,
+  if valid_580860 != nil:
+    section.add "rewriteToken", valid_580860
+  var valid_580861 = query.getOrDefault("sourceGeneration")
+  valid_580861 = validateParameter(valid_580861, JString, required = false,
                                  default = nil)
-  if valid_579836 != nil:
-    section.add "sourceGeneration", valid_579836
-  var valid_579837 = query.getOrDefault("ifSourceMetagenerationMatch")
-  valid_579837 = validateParameter(valid_579837, JString, required = false,
+  if valid_580861 != nil:
+    section.add "sourceGeneration", valid_580861
+  var valid_580862 = query.getOrDefault("ifSourceMetagenerationMatch")
+  valid_580862 = validateParameter(valid_580862, JString, required = false,
                                  default = nil)
-  if valid_579837 != nil:
-    section.add "ifSourceMetagenerationMatch", valid_579837
-  var valid_579838 = query.getOrDefault("maxBytesRewrittenPerCall")
-  valid_579838 = validateParameter(valid_579838, JString, required = false,
+  if valid_580862 != nil:
+    section.add "ifSourceMetagenerationMatch", valid_580862
+  var valid_580863 = query.getOrDefault("maxBytesRewrittenPerCall")
+  valid_580863 = validateParameter(valid_580863, JString, required = false,
                                  default = nil)
-  if valid_579838 != nil:
-    section.add "maxBytesRewrittenPerCall", valid_579838
-  var valid_579839 = query.getOrDefault("provisionalUserProject")
-  valid_579839 = validateParameter(valid_579839, JString, required = false,
+  if valid_580863 != nil:
+    section.add "maxBytesRewrittenPerCall", valid_580863
+  var valid_580864 = query.getOrDefault("provisionalUserProject")
+  valid_580864 = validateParameter(valid_580864, JString, required = false,
                                  default = nil)
-  if valid_579839 != nil:
-    section.add "provisionalUserProject", valid_579839
-  var valid_579840 = query.getOrDefault("ifMetagenerationNotMatch")
-  valid_579840 = validateParameter(valid_579840, JString, required = false,
+  if valid_580864 != nil:
+    section.add "provisionalUserProject", valid_580864
+  var valid_580865 = query.getOrDefault("ifMetagenerationNotMatch")
+  valid_580865 = validateParameter(valid_580865, JString, required = false,
                                  default = nil)
-  if valid_579840 != nil:
-    section.add "ifMetagenerationNotMatch", valid_579840
-  var valid_579841 = query.getOrDefault("projection")
-  valid_579841 = validateParameter(valid_579841, JString, required = false,
+  if valid_580865 != nil:
+    section.add "ifMetagenerationNotMatch", valid_580865
+  var valid_580866 = query.getOrDefault("projection")
+  valid_580866 = validateParameter(valid_580866, JString, required = false,
                                  default = newJString("full"))
-  if valid_579841 != nil:
-    section.add "projection", valid_579841
-  var valid_579842 = query.getOrDefault("fields")
-  valid_579842 = validateParameter(valid_579842, JString, required = false,
+  if valid_580866 != nil:
+    section.add "projection", valid_580866
+  var valid_580867 = query.getOrDefault("fields")
+  valid_580867 = validateParameter(valid_580867, JString, required = false,
                                  default = nil)
-  if valid_579842 != nil:
-    section.add "fields", valid_579842
-  var valid_579843 = query.getOrDefault("destinationKmsKeyName")
-  valid_579843 = validateParameter(valid_579843, JString, required = false,
+  if valid_580867 != nil:
+    section.add "fields", valid_580867
+  var valid_580868 = query.getOrDefault("destinationKmsKeyName")
+  valid_580868 = validateParameter(valid_580868, JString, required = false,
                                  default = nil)
-  if valid_579843 != nil:
-    section.add "destinationKmsKeyName", valid_579843
+  if valid_580868 != nil:
+    section.add "destinationKmsKeyName", valid_580868
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9341,20 +9566,20 @@ proc validate_StorageObjectsRewrite_579815(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579845: Call_StorageObjectsRewrite_579814; path: JsonNode;
+proc call*(call_580870: Call_StorageObjectsRewrite_580839; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Rewrites a source object to a destination object. Optionally overrides metadata.
   ## 
-  let valid = call_579845.validator(path, query, header, formData, body)
-  let scheme = call_579845.pickScheme
+  let valid = call_580870.validator(path, query, header, formData, body)
+  let scheme = call_580870.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579845.url(scheme.get, call_579845.host, call_579845.base,
-                         call_579845.route, valid.getOrDefault("path"),
+  let url = call_580870.url(scheme.get, call_580870.host, call_580870.base,
+                         call_580870.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579845, url, valid)
+  result = hook(call_580870, url, valid)
 
-proc call*(call_579846: Call_StorageObjectsRewrite_579814;
+proc call*(call_580871: Call_StorageObjectsRewrite_580839;
           destinationObject: string; destinationBucket: string;
           sourceObject: string; sourceBucket: string; key: string = "";
           ifSourceGenerationMatch: string = ""; prettyPrint: bool = true;
@@ -9427,61 +9652,66 @@ proc call*(call_579846: Call_StorageObjectsRewrite_579814;
   ##         : Selector specifying which fields to include in a partial response.
   ##   destinationKmsKeyName: string
   ##                        : Resource name of the Cloud KMS key, of the form projects/my-project/locations/global/keyRings/my-kr/cryptoKeys/my-key, that will be used to encrypt the object. Overrides the object metadata's kms_key_name value, if any.
-  var path_579847 = newJObject()
-  var query_579848 = newJObject()
-  var body_579849 = newJObject()
-  add(query_579848, "key", newJString(key))
-  add(query_579848, "ifSourceGenerationMatch", newJString(ifSourceGenerationMatch))
-  add(query_579848, "prettyPrint", newJBool(prettyPrint))
-  add(query_579848, "oauth_token", newJString(oauthToken))
-  add(path_579847, "destinationObject", newJString(destinationObject))
-  add(query_579848, "destinationPredefinedAcl",
+  var path_580872 = newJObject()
+  var query_580873 = newJObject()
+  var body_580874 = newJObject()
+  add(query_580873, "key", newJString(key))
+  add(query_580873, "ifSourceGenerationMatch", newJString(ifSourceGenerationMatch))
+  add(query_580873, "prettyPrint", newJBool(prettyPrint))
+  add(query_580873, "oauth_token", newJString(oauthToken))
+  add(path_580872, "destinationObject", newJString(destinationObject))
+  add(query_580873, "destinationPredefinedAcl",
       newJString(destinationPredefinedAcl))
-  add(query_579848, "userProject", newJString(userProject))
-  add(query_579848, "ifSourceMetagenerationNotMatch",
+  add(query_580873, "userProject", newJString(userProject))
+  add(query_580873, "ifSourceMetagenerationNotMatch",
       newJString(ifSourceMetagenerationNotMatch))
-  add(path_579847, "destinationBucket", newJString(destinationBucket))
-  add(query_579848, "ifGenerationMatch", newJString(ifGenerationMatch))
-  add(query_579848, "alt", newJString(alt))
-  add(query_579848, "userIp", newJString(userIp))
-  add(query_579848, "ifGenerationNotMatch", newJString(ifGenerationNotMatch))
-  add(query_579848, "quotaUser", newJString(quotaUser))
-  add(query_579848, "ifSourceGenerationNotMatch",
+  add(path_580872, "destinationBucket", newJString(destinationBucket))
+  add(query_580873, "ifGenerationMatch", newJString(ifGenerationMatch))
+  add(query_580873, "alt", newJString(alt))
+  add(query_580873, "userIp", newJString(userIp))
+  add(query_580873, "ifGenerationNotMatch", newJString(ifGenerationNotMatch))
+  add(query_580873, "quotaUser", newJString(quotaUser))
+  add(query_580873, "ifSourceGenerationNotMatch",
       newJString(ifSourceGenerationNotMatch))
-  add(path_579847, "sourceObject", newJString(sourceObject))
-  add(query_579848, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
-  add(query_579848, "rewriteToken", newJString(rewriteToken))
-  add(query_579848, "sourceGeneration", newJString(sourceGeneration))
-  add(query_579848, "ifSourceMetagenerationMatch",
+  add(path_580872, "sourceObject", newJString(sourceObject))
+  add(query_580873, "ifMetagenerationMatch", newJString(ifMetagenerationMatch))
+  add(query_580873, "rewriteToken", newJString(rewriteToken))
+  add(query_580873, "sourceGeneration", newJString(sourceGeneration))
+  add(query_580873, "ifSourceMetagenerationMatch",
       newJString(ifSourceMetagenerationMatch))
-  add(path_579847, "sourceBucket", newJString(sourceBucket))
+  add(path_580872, "sourceBucket", newJString(sourceBucket))
   if body != nil:
-    body_579849 = body
-  add(query_579848, "maxBytesRewrittenPerCall",
+    body_580874 = body
+  add(query_580873, "maxBytesRewrittenPerCall",
       newJString(maxBytesRewrittenPerCall))
-  add(query_579848, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579848, "ifMetagenerationNotMatch",
+  add(query_580873, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580873, "ifMetagenerationNotMatch",
       newJString(ifMetagenerationNotMatch))
-  add(query_579848, "projection", newJString(projection))
-  add(query_579848, "fields", newJString(fields))
-  add(query_579848, "destinationKmsKeyName", newJString(destinationKmsKeyName))
-  result = call_579846.call(path_579847, query_579848, nil, nil, body_579849)
+  add(query_580873, "projection", newJString(projection))
+  add(query_580873, "fields", newJString(fields))
+  add(query_580873, "destinationKmsKeyName", newJString(destinationKmsKeyName))
+  result = call_580871.call(path_580872, query_580873, nil, nil, body_580874)
 
-var storageObjectsRewrite* = Call_StorageObjectsRewrite_579814(
+var storageObjectsRewrite* = Call_StorageObjectsRewrite_580839(
     name: "storageObjectsRewrite", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/b/{sourceBucket}/o/{sourceObject}/rewriteTo/b/{destinationBucket}/o/{destinationObject}",
-    validator: validate_StorageObjectsRewrite_579815, base: "/storage/v1",
-    url: url_StorageObjectsRewrite_579816, schemes: {Scheme.Https})
+    validator: validate_StorageObjectsRewrite_580840, base: "/storage/v1",
+    url: url_StorageObjectsRewrite_580841, schemes: {Scheme.Https})
 type
-  Call_StorageChannelsStop_579850 = ref object of OpenApiRestCall_578355
-proc url_StorageChannelsStop_579852(protocol: Scheme; host: string; base: string;
+  Call_StorageChannelsStop_580875 = ref object of OpenApiRestCall_579380
+proc url_StorageChannelsStop_580877(protocol: Scheme; host: string; base: string;
                                    route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
-  result.path = base & route
+  if base ==
+      "/" and
+      route.startsWith "/":
+    result.path = route
+  else:
+    result.path = base & route
 
-proc validate_StorageChannelsStop_579851(path: JsonNode; query: JsonNode;
+proc validate_StorageChannelsStop_580876(path: JsonNode; query: JsonNode;
                                         header: JsonNode; formData: JsonNode;
                                         body: JsonNode): JsonNode =
   ## Stop watching resources through this channel
@@ -9506,41 +9736,41 @@ proc validate_StorageChannelsStop_579851(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579853 = query.getOrDefault("key")
-  valid_579853 = validateParameter(valid_579853, JString, required = false,
+  var valid_580878 = query.getOrDefault("key")
+  valid_580878 = validateParameter(valid_580878, JString, required = false,
                                  default = nil)
-  if valid_579853 != nil:
-    section.add "key", valid_579853
-  var valid_579854 = query.getOrDefault("prettyPrint")
-  valid_579854 = validateParameter(valid_579854, JBool, required = false,
+  if valid_580878 != nil:
+    section.add "key", valid_580878
+  var valid_580879 = query.getOrDefault("prettyPrint")
+  valid_580879 = validateParameter(valid_580879, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579854 != nil:
-    section.add "prettyPrint", valid_579854
-  var valid_579855 = query.getOrDefault("oauth_token")
-  valid_579855 = validateParameter(valid_579855, JString, required = false,
+  if valid_580879 != nil:
+    section.add "prettyPrint", valid_580879
+  var valid_580880 = query.getOrDefault("oauth_token")
+  valid_580880 = validateParameter(valid_580880, JString, required = false,
                                  default = nil)
-  if valid_579855 != nil:
-    section.add "oauth_token", valid_579855
-  var valid_579856 = query.getOrDefault("alt")
-  valid_579856 = validateParameter(valid_579856, JString, required = false,
+  if valid_580880 != nil:
+    section.add "oauth_token", valid_580880
+  var valid_580881 = query.getOrDefault("alt")
+  valid_580881 = validateParameter(valid_580881, JString, required = false,
                                  default = newJString("json"))
-  if valid_579856 != nil:
-    section.add "alt", valid_579856
-  var valid_579857 = query.getOrDefault("userIp")
-  valid_579857 = validateParameter(valid_579857, JString, required = false,
+  if valid_580881 != nil:
+    section.add "alt", valid_580881
+  var valid_580882 = query.getOrDefault("userIp")
+  valid_580882 = validateParameter(valid_580882, JString, required = false,
                                  default = nil)
-  if valid_579857 != nil:
-    section.add "userIp", valid_579857
-  var valid_579858 = query.getOrDefault("quotaUser")
-  valid_579858 = validateParameter(valid_579858, JString, required = false,
+  if valid_580882 != nil:
+    section.add "userIp", valid_580882
+  var valid_580883 = query.getOrDefault("quotaUser")
+  valid_580883 = validateParameter(valid_580883, JString, required = false,
                                  default = nil)
-  if valid_579858 != nil:
-    section.add "quotaUser", valid_579858
-  var valid_579859 = query.getOrDefault("fields")
-  valid_579859 = validateParameter(valid_579859, JString, required = false,
+  if valid_580883 != nil:
+    section.add "quotaUser", valid_580883
+  var valid_580884 = query.getOrDefault("fields")
+  valid_580884 = validateParameter(valid_580884, JString, required = false,
                                  default = nil)
-  if valid_579859 != nil:
-    section.add "fields", valid_579859
+  if valid_580884 != nil:
+    section.add "fields", valid_580884
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9552,20 +9782,20 @@ proc validate_StorageChannelsStop_579851(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579861: Call_StorageChannelsStop_579850; path: JsonNode;
+proc call*(call_580886: Call_StorageChannelsStop_580875; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Stop watching resources through this channel
   ## 
-  let valid = call_579861.validator(path, query, header, formData, body)
-  let scheme = call_579861.pickScheme
+  let valid = call_580886.validator(path, query, header, formData, body)
+  let scheme = call_580886.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579861.url(scheme.get, call_579861.host, call_579861.base,
-                         call_579861.route, valid.getOrDefault("path"),
+  let url = call_580886.url(scheme.get, call_580886.host, call_580886.base,
+                         call_580886.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579861, url, valid)
+  result = hook(call_580886, url, valid)
 
-proc call*(call_579862: Call_StorageChannelsStop_579850; key: string = "";
+proc call*(call_580887: Call_StorageChannelsStop_580875; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; resource: JsonNode = nil;
           fields: string = ""): Recallable =
@@ -9586,27 +9816,27 @@ proc call*(call_579862: Call_StorageChannelsStop_579850; key: string = "";
   ##   resource: JObject
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var query_579863 = newJObject()
-  var body_579864 = newJObject()
-  add(query_579863, "key", newJString(key))
-  add(query_579863, "prettyPrint", newJBool(prettyPrint))
-  add(query_579863, "oauth_token", newJString(oauthToken))
-  add(query_579863, "alt", newJString(alt))
-  add(query_579863, "userIp", newJString(userIp))
-  add(query_579863, "quotaUser", newJString(quotaUser))
+  var query_580888 = newJObject()
+  var body_580889 = newJObject()
+  add(query_580888, "key", newJString(key))
+  add(query_580888, "prettyPrint", newJBool(prettyPrint))
+  add(query_580888, "oauth_token", newJString(oauthToken))
+  add(query_580888, "alt", newJString(alt))
+  add(query_580888, "userIp", newJString(userIp))
+  add(query_580888, "quotaUser", newJString(quotaUser))
   if resource != nil:
-    body_579864 = resource
-  add(query_579863, "fields", newJString(fields))
-  result = call_579862.call(nil, query_579863, nil, nil, body_579864)
+    body_580889 = resource
+  add(query_580888, "fields", newJString(fields))
+  result = call_580887.call(nil, query_580888, nil, nil, body_580889)
 
-var storageChannelsStop* = Call_StorageChannelsStop_579850(
+var storageChannelsStop* = Call_StorageChannelsStop_580875(
     name: "storageChannelsStop", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/channels/stop",
-    validator: validate_StorageChannelsStop_579851, base: "/storage/v1",
-    url: url_StorageChannelsStop_579852, schemes: {Scheme.Https})
+    validator: validate_StorageChannelsStop_580876, base: "/storage/v1",
+    url: url_StorageChannelsStop_580877, schemes: {Scheme.Https})
 type
-  Call_StorageProjectsHmacKeysCreate_579885 = ref object of OpenApiRestCall_578355
-proc url_StorageProjectsHmacKeysCreate_579887(protocol: Scheme; host: string;
+  Call_StorageProjectsHmacKeysCreate_580910 = ref object of OpenApiRestCall_579380
+proc url_StorageProjectsHmacKeysCreate_580912(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9620,9 +9850,14 @@ proc url_StorageProjectsHmacKeysCreate_579887(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageProjectsHmacKeysCreate_579886(path: JsonNode; query: JsonNode;
+proc validate_StorageProjectsHmacKeysCreate_580911(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Creates a new HMAC key for the specified service account.
   ## 
@@ -9633,11 +9868,11 @@ proc validate_StorageProjectsHmacKeysCreate_579886(path: JsonNode; query: JsonNo
   ##            : Project ID owning the service account.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `projectId` field"
-  var valid_579888 = path.getOrDefault("projectId")
-  valid_579888 = validateParameter(valid_579888, JString, required = true,
+  var valid_580913 = path.getOrDefault("projectId")
+  valid_580913 = validateParameter(valid_580913, JString, required = true,
                                  default = nil)
-  if valid_579888 != nil:
-    section.add "projectId", valid_579888
+  if valid_580913 != nil:
+    section.add "projectId", valid_580913
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -9659,52 +9894,52 @@ proc validate_StorageProjectsHmacKeysCreate_579886(path: JsonNode; query: JsonNo
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579889 = query.getOrDefault("key")
-  valid_579889 = validateParameter(valid_579889, JString, required = false,
+  var valid_580914 = query.getOrDefault("key")
+  valid_580914 = validateParameter(valid_580914, JString, required = false,
                                  default = nil)
-  if valid_579889 != nil:
-    section.add "key", valid_579889
-  var valid_579890 = query.getOrDefault("prettyPrint")
-  valid_579890 = validateParameter(valid_579890, JBool, required = false,
+  if valid_580914 != nil:
+    section.add "key", valid_580914
+  var valid_580915 = query.getOrDefault("prettyPrint")
+  valid_580915 = validateParameter(valid_580915, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579890 != nil:
-    section.add "prettyPrint", valid_579890
-  var valid_579891 = query.getOrDefault("oauth_token")
-  valid_579891 = validateParameter(valid_579891, JString, required = false,
+  if valid_580915 != nil:
+    section.add "prettyPrint", valid_580915
+  var valid_580916 = query.getOrDefault("oauth_token")
+  valid_580916 = validateParameter(valid_580916, JString, required = false,
                                  default = nil)
-  if valid_579891 != nil:
-    section.add "oauth_token", valid_579891
-  var valid_579892 = query.getOrDefault("userProject")
-  valid_579892 = validateParameter(valid_579892, JString, required = false,
+  if valid_580916 != nil:
+    section.add "oauth_token", valid_580916
+  var valid_580917 = query.getOrDefault("userProject")
+  valid_580917 = validateParameter(valid_580917, JString, required = false,
                                  default = nil)
-  if valid_579892 != nil:
-    section.add "userProject", valid_579892
-  var valid_579893 = query.getOrDefault("alt")
-  valid_579893 = validateParameter(valid_579893, JString, required = false,
+  if valid_580917 != nil:
+    section.add "userProject", valid_580917
+  var valid_580918 = query.getOrDefault("alt")
+  valid_580918 = validateParameter(valid_580918, JString, required = false,
                                  default = newJString("json"))
-  if valid_579893 != nil:
-    section.add "alt", valid_579893
-  var valid_579894 = query.getOrDefault("userIp")
-  valid_579894 = validateParameter(valid_579894, JString, required = false,
+  if valid_580918 != nil:
+    section.add "alt", valid_580918
+  var valid_580919 = query.getOrDefault("userIp")
+  valid_580919 = validateParameter(valid_580919, JString, required = false,
                                  default = nil)
-  if valid_579894 != nil:
-    section.add "userIp", valid_579894
-  var valid_579895 = query.getOrDefault("quotaUser")
-  valid_579895 = validateParameter(valid_579895, JString, required = false,
+  if valid_580919 != nil:
+    section.add "userIp", valid_580919
+  var valid_580920 = query.getOrDefault("quotaUser")
+  valid_580920 = validateParameter(valid_580920, JString, required = false,
                                  default = nil)
-  if valid_579895 != nil:
-    section.add "quotaUser", valid_579895
+  if valid_580920 != nil:
+    section.add "quotaUser", valid_580920
   assert query != nil, "query argument is necessary due to required `serviceAccountEmail` field"
-  var valid_579896 = query.getOrDefault("serviceAccountEmail")
-  valid_579896 = validateParameter(valid_579896, JString, required = true,
+  var valid_580921 = query.getOrDefault("serviceAccountEmail")
+  valid_580921 = validateParameter(valid_580921, JString, required = true,
                                  default = nil)
-  if valid_579896 != nil:
-    section.add "serviceAccountEmail", valid_579896
-  var valid_579897 = query.getOrDefault("fields")
-  valid_579897 = validateParameter(valid_579897, JString, required = false,
+  if valid_580921 != nil:
+    section.add "serviceAccountEmail", valid_580921
+  var valid_580922 = query.getOrDefault("fields")
+  valid_580922 = validateParameter(valid_580922, JString, required = false,
                                  default = nil)
-  if valid_579897 != nil:
-    section.add "fields", valid_579897
+  if valid_580922 != nil:
+    section.add "fields", valid_580922
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9713,20 +9948,20 @@ proc validate_StorageProjectsHmacKeysCreate_579886(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_579898: Call_StorageProjectsHmacKeysCreate_579885; path: JsonNode;
+proc call*(call_580923: Call_StorageProjectsHmacKeysCreate_580910; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Creates a new HMAC key for the specified service account.
   ## 
-  let valid = call_579898.validator(path, query, header, formData, body)
-  let scheme = call_579898.pickScheme
+  let valid = call_580923.validator(path, query, header, formData, body)
+  let scheme = call_580923.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579898.url(scheme.get, call_579898.host, call_579898.base,
-                         call_579898.route, valid.getOrDefault("path"),
+  let url = call_580923.url(scheme.get, call_580923.host, call_580923.base,
+                         call_580923.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579898, url, valid)
+  result = hook(call_580923, url, valid)
 
-proc call*(call_579899: Call_StorageProjectsHmacKeysCreate_579885;
+proc call*(call_580924: Call_StorageProjectsHmacKeysCreate_580910;
           projectId: string; serviceAccountEmail: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; userProject: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -9753,28 +9988,28 @@ proc call*(call_579899: Call_StorageProjectsHmacKeysCreate_579885;
   ##                      : Email address of the service account.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579900 = newJObject()
-  var query_579901 = newJObject()
-  add(query_579901, "key", newJString(key))
-  add(query_579901, "prettyPrint", newJBool(prettyPrint))
-  add(query_579901, "oauth_token", newJString(oauthToken))
-  add(path_579900, "projectId", newJString(projectId))
-  add(query_579901, "userProject", newJString(userProject))
-  add(query_579901, "alt", newJString(alt))
-  add(query_579901, "userIp", newJString(userIp))
-  add(query_579901, "quotaUser", newJString(quotaUser))
-  add(query_579901, "serviceAccountEmail", newJString(serviceAccountEmail))
-  add(query_579901, "fields", newJString(fields))
-  result = call_579899.call(path_579900, query_579901, nil, nil, nil)
+  var path_580925 = newJObject()
+  var query_580926 = newJObject()
+  add(query_580926, "key", newJString(key))
+  add(query_580926, "prettyPrint", newJBool(prettyPrint))
+  add(query_580926, "oauth_token", newJString(oauthToken))
+  add(path_580925, "projectId", newJString(projectId))
+  add(query_580926, "userProject", newJString(userProject))
+  add(query_580926, "alt", newJString(alt))
+  add(query_580926, "userIp", newJString(userIp))
+  add(query_580926, "quotaUser", newJString(quotaUser))
+  add(query_580926, "serviceAccountEmail", newJString(serviceAccountEmail))
+  add(query_580926, "fields", newJString(fields))
+  result = call_580924.call(path_580925, query_580926, nil, nil, nil)
 
-var storageProjectsHmacKeysCreate* = Call_StorageProjectsHmacKeysCreate_579885(
+var storageProjectsHmacKeysCreate* = Call_StorageProjectsHmacKeysCreate_580910(
     name: "storageProjectsHmacKeysCreate", meth: HttpMethod.HttpPost,
     host: "www.googleapis.com", route: "/projects/{projectId}/hmacKeys",
-    validator: validate_StorageProjectsHmacKeysCreate_579886, base: "/storage/v1",
-    url: url_StorageProjectsHmacKeysCreate_579887, schemes: {Scheme.Https})
+    validator: validate_StorageProjectsHmacKeysCreate_580911, base: "/storage/v1",
+    url: url_StorageProjectsHmacKeysCreate_580912, schemes: {Scheme.Https})
 type
-  Call_StorageProjectsHmacKeysList_579865 = ref object of OpenApiRestCall_578355
-proc url_StorageProjectsHmacKeysList_579867(protocol: Scheme; host: string;
+  Call_StorageProjectsHmacKeysList_580890 = ref object of OpenApiRestCall_579380
+proc url_StorageProjectsHmacKeysList_580892(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9788,9 +10023,14 @@ proc url_StorageProjectsHmacKeysList_579867(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageProjectsHmacKeysList_579866(path: JsonNode; query: JsonNode;
+proc validate_StorageProjectsHmacKeysList_580891(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves a list of HMAC keys matching the criteria.
   ## 
@@ -9801,11 +10041,11 @@ proc validate_StorageProjectsHmacKeysList_579866(path: JsonNode; query: JsonNode
   ##            : Name of the project in which to look for HMAC keys.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `projectId` field"
-  var valid_579868 = path.getOrDefault("projectId")
-  valid_579868 = validateParameter(valid_579868, JString, required = true,
+  var valid_580893 = path.getOrDefault("projectId")
+  valid_580893 = validateParameter(valid_580893, JString, required = true,
                                  default = nil)
-  if valid_579868 != nil:
-    section.add "projectId", valid_579868
+  if valid_580893 != nil:
+    section.add "projectId", valid_580893
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -9833,65 +10073,65 @@ proc validate_StorageProjectsHmacKeysList_579866(path: JsonNode; query: JsonNode
   ##   maxResults: JInt
   ##             : Maximum number of items to return in a single page of responses. The service uses this parameter or 250 items, whichever is smaller. The max number of items per page will also be limited by the number of distinct service accounts in the response. If the number of service accounts in a single response is too high, the page will truncated and a next page token will be returned.
   section = newJObject()
-  var valid_579869 = query.getOrDefault("key")
-  valid_579869 = validateParameter(valid_579869, JString, required = false,
+  var valid_580894 = query.getOrDefault("key")
+  valid_580894 = validateParameter(valid_580894, JString, required = false,
                                  default = nil)
-  if valid_579869 != nil:
-    section.add "key", valid_579869
-  var valid_579870 = query.getOrDefault("prettyPrint")
-  valid_579870 = validateParameter(valid_579870, JBool, required = false,
+  if valid_580894 != nil:
+    section.add "key", valid_580894
+  var valid_580895 = query.getOrDefault("prettyPrint")
+  valid_580895 = validateParameter(valid_580895, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579870 != nil:
-    section.add "prettyPrint", valid_579870
-  var valid_579871 = query.getOrDefault("oauth_token")
-  valid_579871 = validateParameter(valid_579871, JString, required = false,
+  if valid_580895 != nil:
+    section.add "prettyPrint", valid_580895
+  var valid_580896 = query.getOrDefault("oauth_token")
+  valid_580896 = validateParameter(valid_580896, JString, required = false,
                                  default = nil)
-  if valid_579871 != nil:
-    section.add "oauth_token", valid_579871
-  var valid_579872 = query.getOrDefault("userProject")
-  valid_579872 = validateParameter(valid_579872, JString, required = false,
+  if valid_580896 != nil:
+    section.add "oauth_token", valid_580896
+  var valid_580897 = query.getOrDefault("userProject")
+  valid_580897 = validateParameter(valid_580897, JString, required = false,
                                  default = nil)
-  if valid_579872 != nil:
-    section.add "userProject", valid_579872
-  var valid_579873 = query.getOrDefault("alt")
-  valid_579873 = validateParameter(valid_579873, JString, required = false,
+  if valid_580897 != nil:
+    section.add "userProject", valid_580897
+  var valid_580898 = query.getOrDefault("alt")
+  valid_580898 = validateParameter(valid_580898, JString, required = false,
                                  default = newJString("json"))
-  if valid_579873 != nil:
-    section.add "alt", valid_579873
-  var valid_579874 = query.getOrDefault("userIp")
-  valid_579874 = validateParameter(valid_579874, JString, required = false,
+  if valid_580898 != nil:
+    section.add "alt", valid_580898
+  var valid_580899 = query.getOrDefault("userIp")
+  valid_580899 = validateParameter(valid_580899, JString, required = false,
                                  default = nil)
-  if valid_579874 != nil:
-    section.add "userIp", valid_579874
-  var valid_579875 = query.getOrDefault("quotaUser")
-  valid_579875 = validateParameter(valid_579875, JString, required = false,
+  if valid_580899 != nil:
+    section.add "userIp", valid_580899
+  var valid_580900 = query.getOrDefault("quotaUser")
+  valid_580900 = validateParameter(valid_580900, JString, required = false,
                                  default = nil)
-  if valid_579875 != nil:
-    section.add "quotaUser", valid_579875
-  var valid_579876 = query.getOrDefault("pageToken")
-  valid_579876 = validateParameter(valid_579876, JString, required = false,
+  if valid_580900 != nil:
+    section.add "quotaUser", valid_580900
+  var valid_580901 = query.getOrDefault("pageToken")
+  valid_580901 = validateParameter(valid_580901, JString, required = false,
                                  default = nil)
-  if valid_579876 != nil:
-    section.add "pageToken", valid_579876
-  var valid_579877 = query.getOrDefault("showDeletedKeys")
-  valid_579877 = validateParameter(valid_579877, JBool, required = false, default = nil)
-  if valid_579877 != nil:
-    section.add "showDeletedKeys", valid_579877
-  var valid_579878 = query.getOrDefault("serviceAccountEmail")
-  valid_579878 = validateParameter(valid_579878, JString, required = false,
+  if valid_580901 != nil:
+    section.add "pageToken", valid_580901
+  var valid_580902 = query.getOrDefault("showDeletedKeys")
+  valid_580902 = validateParameter(valid_580902, JBool, required = false, default = nil)
+  if valid_580902 != nil:
+    section.add "showDeletedKeys", valid_580902
+  var valid_580903 = query.getOrDefault("serviceAccountEmail")
+  valid_580903 = validateParameter(valid_580903, JString, required = false,
                                  default = nil)
-  if valid_579878 != nil:
-    section.add "serviceAccountEmail", valid_579878
-  var valid_579879 = query.getOrDefault("fields")
-  valid_579879 = validateParameter(valid_579879, JString, required = false,
+  if valid_580903 != nil:
+    section.add "serviceAccountEmail", valid_580903
+  var valid_580904 = query.getOrDefault("fields")
+  valid_580904 = validateParameter(valid_580904, JString, required = false,
                                  default = nil)
-  if valid_579879 != nil:
-    section.add "fields", valid_579879
-  var valid_579880 = query.getOrDefault("maxResults")
-  valid_579880 = validateParameter(valid_579880, JInt, required = false,
+  if valid_580904 != nil:
+    section.add "fields", valid_580904
+  var valid_580905 = query.getOrDefault("maxResults")
+  valid_580905 = validateParameter(valid_580905, JInt, required = false,
                                  default = newJInt(250))
-  if valid_579880 != nil:
-    section.add "maxResults", valid_579880
+  if valid_580905 != nil:
+    section.add "maxResults", valid_580905
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -9900,20 +10140,20 @@ proc validate_StorageProjectsHmacKeysList_579866(path: JsonNode; query: JsonNode
   if body != nil:
     result.add "body", body
 
-proc call*(call_579881: Call_StorageProjectsHmacKeysList_579865; path: JsonNode;
+proc call*(call_580906: Call_StorageProjectsHmacKeysList_580890; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves a list of HMAC keys matching the criteria.
   ## 
-  let valid = call_579881.validator(path, query, header, formData, body)
-  let scheme = call_579881.pickScheme
+  let valid = call_580906.validator(path, query, header, formData, body)
+  let scheme = call_580906.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579881.url(scheme.get, call_579881.host, call_579881.base,
-                         call_579881.route, valid.getOrDefault("path"),
+  let url = call_580906.url(scheme.get, call_580906.host, call_580906.base,
+                         call_580906.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579881, url, valid)
+  result = hook(call_580906, url, valid)
 
-proc call*(call_579882: Call_StorageProjectsHmacKeysList_579865; projectId: string;
+proc call*(call_580907: Call_StorageProjectsHmacKeysList_580890; projectId: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           userProject: string = ""; alt: string = "json"; userIp: string = "";
           quotaUser: string = ""; pageToken: string = ""; showDeletedKeys: bool = false;
@@ -9946,31 +10186,31 @@ proc call*(call_579882: Call_StorageProjectsHmacKeysList_579865; projectId: stri
   ##         : Selector specifying which fields to include in a partial response.
   ##   maxResults: int
   ##             : Maximum number of items to return in a single page of responses. The service uses this parameter or 250 items, whichever is smaller. The max number of items per page will also be limited by the number of distinct service accounts in the response. If the number of service accounts in a single response is too high, the page will truncated and a next page token will be returned.
-  var path_579883 = newJObject()
-  var query_579884 = newJObject()
-  add(query_579884, "key", newJString(key))
-  add(query_579884, "prettyPrint", newJBool(prettyPrint))
-  add(query_579884, "oauth_token", newJString(oauthToken))
-  add(path_579883, "projectId", newJString(projectId))
-  add(query_579884, "userProject", newJString(userProject))
-  add(query_579884, "alt", newJString(alt))
-  add(query_579884, "userIp", newJString(userIp))
-  add(query_579884, "quotaUser", newJString(quotaUser))
-  add(query_579884, "pageToken", newJString(pageToken))
-  add(query_579884, "showDeletedKeys", newJBool(showDeletedKeys))
-  add(query_579884, "serviceAccountEmail", newJString(serviceAccountEmail))
-  add(query_579884, "fields", newJString(fields))
-  add(query_579884, "maxResults", newJInt(maxResults))
-  result = call_579882.call(path_579883, query_579884, nil, nil, nil)
+  var path_580908 = newJObject()
+  var query_580909 = newJObject()
+  add(query_580909, "key", newJString(key))
+  add(query_580909, "prettyPrint", newJBool(prettyPrint))
+  add(query_580909, "oauth_token", newJString(oauthToken))
+  add(path_580908, "projectId", newJString(projectId))
+  add(query_580909, "userProject", newJString(userProject))
+  add(query_580909, "alt", newJString(alt))
+  add(query_580909, "userIp", newJString(userIp))
+  add(query_580909, "quotaUser", newJString(quotaUser))
+  add(query_580909, "pageToken", newJString(pageToken))
+  add(query_580909, "showDeletedKeys", newJBool(showDeletedKeys))
+  add(query_580909, "serviceAccountEmail", newJString(serviceAccountEmail))
+  add(query_580909, "fields", newJString(fields))
+  add(query_580909, "maxResults", newJInt(maxResults))
+  result = call_580907.call(path_580908, query_580909, nil, nil, nil)
 
-var storageProjectsHmacKeysList* = Call_StorageProjectsHmacKeysList_579865(
+var storageProjectsHmacKeysList* = Call_StorageProjectsHmacKeysList_580890(
     name: "storageProjectsHmacKeysList", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/projects/{projectId}/hmacKeys",
-    validator: validate_StorageProjectsHmacKeysList_579866, base: "/storage/v1",
-    url: url_StorageProjectsHmacKeysList_579867, schemes: {Scheme.Https})
+    validator: validate_StorageProjectsHmacKeysList_580891, base: "/storage/v1",
+    url: url_StorageProjectsHmacKeysList_580892, schemes: {Scheme.Https})
 type
-  Call_StorageProjectsHmacKeysUpdate_579919 = ref object of OpenApiRestCall_578355
-proc url_StorageProjectsHmacKeysUpdate_579921(protocol: Scheme; host: string;
+  Call_StorageProjectsHmacKeysUpdate_580944 = ref object of OpenApiRestCall_579380
+proc url_StorageProjectsHmacKeysUpdate_580946(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -9986,9 +10226,14 @@ proc url_StorageProjectsHmacKeysUpdate_579921(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageProjectsHmacKeysUpdate_579920(path: JsonNode; query: JsonNode;
+proc validate_StorageProjectsHmacKeysUpdate_580945(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Updates the state of an HMAC key. See the HMAC Key resource descriptor for valid states.
   ## 
@@ -10001,16 +10246,16 @@ proc validate_StorageProjectsHmacKeysUpdate_579920(path: JsonNode; query: JsonNo
   ##           : Name of the HMAC key being updated.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `projectId` field"
-  var valid_579922 = path.getOrDefault("projectId")
-  valid_579922 = validateParameter(valid_579922, JString, required = true,
+  var valid_580947 = path.getOrDefault("projectId")
+  valid_580947 = validateParameter(valid_580947, JString, required = true,
                                  default = nil)
-  if valid_579922 != nil:
-    section.add "projectId", valid_579922
-  var valid_579923 = path.getOrDefault("accessId")
-  valid_579923 = validateParameter(valid_579923, JString, required = true,
+  if valid_580947 != nil:
+    section.add "projectId", valid_580947
+  var valid_580948 = path.getOrDefault("accessId")
+  valid_580948 = validateParameter(valid_580948, JString, required = true,
                                  default = nil)
-  if valid_579923 != nil:
-    section.add "accessId", valid_579923
+  if valid_580948 != nil:
+    section.add "accessId", valid_580948
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -10030,46 +10275,46 @@ proc validate_StorageProjectsHmacKeysUpdate_579920(path: JsonNode; query: JsonNo
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579924 = query.getOrDefault("key")
-  valid_579924 = validateParameter(valid_579924, JString, required = false,
+  var valid_580949 = query.getOrDefault("key")
+  valid_580949 = validateParameter(valid_580949, JString, required = false,
                                  default = nil)
-  if valid_579924 != nil:
-    section.add "key", valid_579924
-  var valid_579925 = query.getOrDefault("prettyPrint")
-  valid_579925 = validateParameter(valid_579925, JBool, required = false,
+  if valid_580949 != nil:
+    section.add "key", valid_580949
+  var valid_580950 = query.getOrDefault("prettyPrint")
+  valid_580950 = validateParameter(valid_580950, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579925 != nil:
-    section.add "prettyPrint", valid_579925
-  var valid_579926 = query.getOrDefault("oauth_token")
-  valid_579926 = validateParameter(valid_579926, JString, required = false,
+  if valid_580950 != nil:
+    section.add "prettyPrint", valid_580950
+  var valid_580951 = query.getOrDefault("oauth_token")
+  valid_580951 = validateParameter(valid_580951, JString, required = false,
                                  default = nil)
-  if valid_579926 != nil:
-    section.add "oauth_token", valid_579926
-  var valid_579927 = query.getOrDefault("userProject")
-  valid_579927 = validateParameter(valid_579927, JString, required = false,
+  if valid_580951 != nil:
+    section.add "oauth_token", valid_580951
+  var valid_580952 = query.getOrDefault("userProject")
+  valid_580952 = validateParameter(valid_580952, JString, required = false,
                                  default = nil)
-  if valid_579927 != nil:
-    section.add "userProject", valid_579927
-  var valid_579928 = query.getOrDefault("alt")
-  valid_579928 = validateParameter(valid_579928, JString, required = false,
+  if valid_580952 != nil:
+    section.add "userProject", valid_580952
+  var valid_580953 = query.getOrDefault("alt")
+  valid_580953 = validateParameter(valid_580953, JString, required = false,
                                  default = newJString("json"))
-  if valid_579928 != nil:
-    section.add "alt", valid_579928
-  var valid_579929 = query.getOrDefault("userIp")
-  valid_579929 = validateParameter(valid_579929, JString, required = false,
+  if valid_580953 != nil:
+    section.add "alt", valid_580953
+  var valid_580954 = query.getOrDefault("userIp")
+  valid_580954 = validateParameter(valid_580954, JString, required = false,
                                  default = nil)
-  if valid_579929 != nil:
-    section.add "userIp", valid_579929
-  var valid_579930 = query.getOrDefault("quotaUser")
-  valid_579930 = validateParameter(valid_579930, JString, required = false,
+  if valid_580954 != nil:
+    section.add "userIp", valid_580954
+  var valid_580955 = query.getOrDefault("quotaUser")
+  valid_580955 = validateParameter(valid_580955, JString, required = false,
                                  default = nil)
-  if valid_579930 != nil:
-    section.add "quotaUser", valid_579930
-  var valid_579931 = query.getOrDefault("fields")
-  valid_579931 = validateParameter(valid_579931, JString, required = false,
+  if valid_580955 != nil:
+    section.add "quotaUser", valid_580955
+  var valid_580956 = query.getOrDefault("fields")
+  valid_580956 = validateParameter(valid_580956, JString, required = false,
                                  default = nil)
-  if valid_579931 != nil:
-    section.add "fields", valid_579931
+  if valid_580956 != nil:
+    section.add "fields", valid_580956
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10081,20 +10326,20 @@ proc validate_StorageProjectsHmacKeysUpdate_579920(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_579933: Call_StorageProjectsHmacKeysUpdate_579919; path: JsonNode;
+proc call*(call_580958: Call_StorageProjectsHmacKeysUpdate_580944; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Updates the state of an HMAC key. See the HMAC Key resource descriptor for valid states.
   ## 
-  let valid = call_579933.validator(path, query, header, formData, body)
-  let scheme = call_579933.pickScheme
+  let valid = call_580958.validator(path, query, header, formData, body)
+  let scheme = call_580958.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579933.url(scheme.get, call_579933.host, call_579933.base,
-                         call_579933.route, valid.getOrDefault("path"),
+  let url = call_580958.url(scheme.get, call_580958.host, call_580958.base,
+                         call_580958.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579933, url, valid)
+  result = hook(call_580958, url, valid)
 
-proc call*(call_579934: Call_StorageProjectsHmacKeysUpdate_579919;
+proc call*(call_580959: Call_StorageProjectsHmacKeysUpdate_580944;
           projectId: string; accessId: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; userProject: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -10122,32 +10367,32 @@ proc call*(call_579934: Call_StorageProjectsHmacKeysUpdate_579919;
   ##   body: JObject
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579935 = newJObject()
-  var query_579936 = newJObject()
-  var body_579937 = newJObject()
-  add(query_579936, "key", newJString(key))
-  add(query_579936, "prettyPrint", newJBool(prettyPrint))
-  add(query_579936, "oauth_token", newJString(oauthToken))
-  add(path_579935, "projectId", newJString(projectId))
-  add(query_579936, "userProject", newJString(userProject))
-  add(query_579936, "alt", newJString(alt))
-  add(query_579936, "userIp", newJString(userIp))
-  add(query_579936, "quotaUser", newJString(quotaUser))
-  add(path_579935, "accessId", newJString(accessId))
+  var path_580960 = newJObject()
+  var query_580961 = newJObject()
+  var body_580962 = newJObject()
+  add(query_580961, "key", newJString(key))
+  add(query_580961, "prettyPrint", newJBool(prettyPrint))
+  add(query_580961, "oauth_token", newJString(oauthToken))
+  add(path_580960, "projectId", newJString(projectId))
+  add(query_580961, "userProject", newJString(userProject))
+  add(query_580961, "alt", newJString(alt))
+  add(query_580961, "userIp", newJString(userIp))
+  add(query_580961, "quotaUser", newJString(quotaUser))
+  add(path_580960, "accessId", newJString(accessId))
   if body != nil:
-    body_579937 = body
-  add(query_579936, "fields", newJString(fields))
-  result = call_579934.call(path_579935, query_579936, nil, nil, body_579937)
+    body_580962 = body
+  add(query_580961, "fields", newJString(fields))
+  result = call_580959.call(path_580960, query_580961, nil, nil, body_580962)
 
-var storageProjectsHmacKeysUpdate* = Call_StorageProjectsHmacKeysUpdate_579919(
+var storageProjectsHmacKeysUpdate* = Call_StorageProjectsHmacKeysUpdate_580944(
     name: "storageProjectsHmacKeysUpdate", meth: HttpMethod.HttpPut,
     host: "www.googleapis.com",
     route: "/projects/{projectId}/hmacKeys/{accessId}",
-    validator: validate_StorageProjectsHmacKeysUpdate_579920, base: "/storage/v1",
-    url: url_StorageProjectsHmacKeysUpdate_579921, schemes: {Scheme.Https})
+    validator: validate_StorageProjectsHmacKeysUpdate_580945, base: "/storage/v1",
+    url: url_StorageProjectsHmacKeysUpdate_580946, schemes: {Scheme.Https})
 type
-  Call_StorageProjectsHmacKeysGet_579902 = ref object of OpenApiRestCall_578355
-proc url_StorageProjectsHmacKeysGet_579904(protocol: Scheme; host: string;
+  Call_StorageProjectsHmacKeysGet_580927 = ref object of OpenApiRestCall_579380
+proc url_StorageProjectsHmacKeysGet_580929(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -10163,9 +10408,14 @@ proc url_StorageProjectsHmacKeysGet_579904(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageProjectsHmacKeysGet_579903(path: JsonNode; query: JsonNode;
+proc validate_StorageProjectsHmacKeysGet_580928(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Retrieves an HMAC key's metadata
   ## 
@@ -10178,16 +10428,16 @@ proc validate_StorageProjectsHmacKeysGet_579903(path: JsonNode; query: JsonNode;
   ##           : Name of the HMAC key.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `projectId` field"
-  var valid_579905 = path.getOrDefault("projectId")
-  valid_579905 = validateParameter(valid_579905, JString, required = true,
+  var valid_580930 = path.getOrDefault("projectId")
+  valid_580930 = validateParameter(valid_580930, JString, required = true,
                                  default = nil)
-  if valid_579905 != nil:
-    section.add "projectId", valid_579905
-  var valid_579906 = path.getOrDefault("accessId")
-  valid_579906 = validateParameter(valid_579906, JString, required = true,
+  if valid_580930 != nil:
+    section.add "projectId", valid_580930
+  var valid_580931 = path.getOrDefault("accessId")
+  valid_580931 = validateParameter(valid_580931, JString, required = true,
                                  default = nil)
-  if valid_579906 != nil:
-    section.add "accessId", valid_579906
+  if valid_580931 != nil:
+    section.add "accessId", valid_580931
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -10207,46 +10457,46 @@ proc validate_StorageProjectsHmacKeysGet_579903(path: JsonNode; query: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579907 = query.getOrDefault("key")
-  valid_579907 = validateParameter(valid_579907, JString, required = false,
+  var valid_580932 = query.getOrDefault("key")
+  valid_580932 = validateParameter(valid_580932, JString, required = false,
                                  default = nil)
-  if valid_579907 != nil:
-    section.add "key", valid_579907
-  var valid_579908 = query.getOrDefault("prettyPrint")
-  valid_579908 = validateParameter(valid_579908, JBool, required = false,
+  if valid_580932 != nil:
+    section.add "key", valid_580932
+  var valid_580933 = query.getOrDefault("prettyPrint")
+  valid_580933 = validateParameter(valid_580933, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579908 != nil:
-    section.add "prettyPrint", valid_579908
-  var valid_579909 = query.getOrDefault("oauth_token")
-  valid_579909 = validateParameter(valid_579909, JString, required = false,
+  if valid_580933 != nil:
+    section.add "prettyPrint", valid_580933
+  var valid_580934 = query.getOrDefault("oauth_token")
+  valid_580934 = validateParameter(valid_580934, JString, required = false,
                                  default = nil)
-  if valid_579909 != nil:
-    section.add "oauth_token", valid_579909
-  var valid_579910 = query.getOrDefault("userProject")
-  valid_579910 = validateParameter(valid_579910, JString, required = false,
+  if valid_580934 != nil:
+    section.add "oauth_token", valid_580934
+  var valid_580935 = query.getOrDefault("userProject")
+  valid_580935 = validateParameter(valid_580935, JString, required = false,
                                  default = nil)
-  if valid_579910 != nil:
-    section.add "userProject", valid_579910
-  var valid_579911 = query.getOrDefault("alt")
-  valid_579911 = validateParameter(valid_579911, JString, required = false,
+  if valid_580935 != nil:
+    section.add "userProject", valid_580935
+  var valid_580936 = query.getOrDefault("alt")
+  valid_580936 = validateParameter(valid_580936, JString, required = false,
                                  default = newJString("json"))
-  if valid_579911 != nil:
-    section.add "alt", valid_579911
-  var valid_579912 = query.getOrDefault("userIp")
-  valid_579912 = validateParameter(valid_579912, JString, required = false,
+  if valid_580936 != nil:
+    section.add "alt", valid_580936
+  var valid_580937 = query.getOrDefault("userIp")
+  valid_580937 = validateParameter(valid_580937, JString, required = false,
                                  default = nil)
-  if valid_579912 != nil:
-    section.add "userIp", valid_579912
-  var valid_579913 = query.getOrDefault("quotaUser")
-  valid_579913 = validateParameter(valid_579913, JString, required = false,
+  if valid_580937 != nil:
+    section.add "userIp", valid_580937
+  var valid_580938 = query.getOrDefault("quotaUser")
+  valid_580938 = validateParameter(valid_580938, JString, required = false,
                                  default = nil)
-  if valid_579913 != nil:
-    section.add "quotaUser", valid_579913
-  var valid_579914 = query.getOrDefault("fields")
-  valid_579914 = validateParameter(valid_579914, JString, required = false,
+  if valid_580938 != nil:
+    section.add "quotaUser", valid_580938
+  var valid_580939 = query.getOrDefault("fields")
+  valid_580939 = validateParameter(valid_580939, JString, required = false,
                                  default = nil)
-  if valid_579914 != nil:
-    section.add "fields", valid_579914
+  if valid_580939 != nil:
+    section.add "fields", valid_580939
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10255,20 +10505,20 @@ proc validate_StorageProjectsHmacKeysGet_579903(path: JsonNode; query: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579915: Call_StorageProjectsHmacKeysGet_579902; path: JsonNode;
+proc call*(call_580940: Call_StorageProjectsHmacKeysGet_580927; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Retrieves an HMAC key's metadata
   ## 
-  let valid = call_579915.validator(path, query, header, formData, body)
-  let scheme = call_579915.pickScheme
+  let valid = call_580940.validator(path, query, header, formData, body)
+  let scheme = call_580940.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579915.url(scheme.get, call_579915.host, call_579915.base,
-                         call_579915.route, valid.getOrDefault("path"),
+  let url = call_580940.url(scheme.get, call_580940.host, call_580940.base,
+                         call_580940.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579915, url, valid)
+  result = hook(call_580940, url, valid)
 
-proc call*(call_579916: Call_StorageProjectsHmacKeysGet_579902; projectId: string;
+proc call*(call_580941: Call_StorageProjectsHmacKeysGet_580927; projectId: string;
           accessId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = ""; fields: string = ""): Recallable =
@@ -10294,29 +10544,29 @@ proc call*(call_579916: Call_StorageProjectsHmacKeysGet_579902; projectId: strin
   ##           : Name of the HMAC key.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579917 = newJObject()
-  var query_579918 = newJObject()
-  add(query_579918, "key", newJString(key))
-  add(query_579918, "prettyPrint", newJBool(prettyPrint))
-  add(query_579918, "oauth_token", newJString(oauthToken))
-  add(path_579917, "projectId", newJString(projectId))
-  add(query_579918, "userProject", newJString(userProject))
-  add(query_579918, "alt", newJString(alt))
-  add(query_579918, "userIp", newJString(userIp))
-  add(query_579918, "quotaUser", newJString(quotaUser))
-  add(path_579917, "accessId", newJString(accessId))
-  add(query_579918, "fields", newJString(fields))
-  result = call_579916.call(path_579917, query_579918, nil, nil, nil)
+  var path_580942 = newJObject()
+  var query_580943 = newJObject()
+  add(query_580943, "key", newJString(key))
+  add(query_580943, "prettyPrint", newJBool(prettyPrint))
+  add(query_580943, "oauth_token", newJString(oauthToken))
+  add(path_580942, "projectId", newJString(projectId))
+  add(query_580943, "userProject", newJString(userProject))
+  add(query_580943, "alt", newJString(alt))
+  add(query_580943, "userIp", newJString(userIp))
+  add(query_580943, "quotaUser", newJString(quotaUser))
+  add(path_580942, "accessId", newJString(accessId))
+  add(query_580943, "fields", newJString(fields))
+  result = call_580941.call(path_580942, query_580943, nil, nil, nil)
 
-var storageProjectsHmacKeysGet* = Call_StorageProjectsHmacKeysGet_579902(
+var storageProjectsHmacKeysGet* = Call_StorageProjectsHmacKeysGet_580927(
     name: "storageProjectsHmacKeysGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com",
     route: "/projects/{projectId}/hmacKeys/{accessId}",
-    validator: validate_StorageProjectsHmacKeysGet_579903, base: "/storage/v1",
-    url: url_StorageProjectsHmacKeysGet_579904, schemes: {Scheme.Https})
+    validator: validate_StorageProjectsHmacKeysGet_580928, base: "/storage/v1",
+    url: url_StorageProjectsHmacKeysGet_580929, schemes: {Scheme.Https})
 type
-  Call_StorageProjectsHmacKeysDelete_579938 = ref object of OpenApiRestCall_578355
-proc url_StorageProjectsHmacKeysDelete_579940(protocol: Scheme; host: string;
+  Call_StorageProjectsHmacKeysDelete_580963 = ref object of OpenApiRestCall_579380
+proc url_StorageProjectsHmacKeysDelete_580965(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -10332,9 +10582,14 @@ proc url_StorageProjectsHmacKeysDelete_579940(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageProjectsHmacKeysDelete_579939(path: JsonNode; query: JsonNode;
+proc validate_StorageProjectsHmacKeysDelete_580964(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Deletes an HMAC key.
   ## 
@@ -10347,16 +10602,16 @@ proc validate_StorageProjectsHmacKeysDelete_579939(path: JsonNode; query: JsonNo
   ##           : Name of the HMAC key to be deleted.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `projectId` field"
-  var valid_579941 = path.getOrDefault("projectId")
-  valid_579941 = validateParameter(valid_579941, JString, required = true,
+  var valid_580966 = path.getOrDefault("projectId")
+  valid_580966 = validateParameter(valid_580966, JString, required = true,
                                  default = nil)
-  if valid_579941 != nil:
-    section.add "projectId", valid_579941
-  var valid_579942 = path.getOrDefault("accessId")
-  valid_579942 = validateParameter(valid_579942, JString, required = true,
+  if valid_580966 != nil:
+    section.add "projectId", valid_580966
+  var valid_580967 = path.getOrDefault("accessId")
+  valid_580967 = validateParameter(valid_580967, JString, required = true,
                                  default = nil)
-  if valid_579942 != nil:
-    section.add "accessId", valid_579942
+  if valid_580967 != nil:
+    section.add "accessId", valid_580967
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -10376,46 +10631,46 @@ proc validate_StorageProjectsHmacKeysDelete_579939(path: JsonNode; query: JsonNo
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579943 = query.getOrDefault("key")
-  valid_579943 = validateParameter(valid_579943, JString, required = false,
+  var valid_580968 = query.getOrDefault("key")
+  valid_580968 = validateParameter(valid_580968, JString, required = false,
                                  default = nil)
-  if valid_579943 != nil:
-    section.add "key", valid_579943
-  var valid_579944 = query.getOrDefault("prettyPrint")
-  valid_579944 = validateParameter(valid_579944, JBool, required = false,
+  if valid_580968 != nil:
+    section.add "key", valid_580968
+  var valid_580969 = query.getOrDefault("prettyPrint")
+  valid_580969 = validateParameter(valid_580969, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579944 != nil:
-    section.add "prettyPrint", valid_579944
-  var valid_579945 = query.getOrDefault("oauth_token")
-  valid_579945 = validateParameter(valid_579945, JString, required = false,
+  if valid_580969 != nil:
+    section.add "prettyPrint", valid_580969
+  var valid_580970 = query.getOrDefault("oauth_token")
+  valid_580970 = validateParameter(valid_580970, JString, required = false,
                                  default = nil)
-  if valid_579945 != nil:
-    section.add "oauth_token", valid_579945
-  var valid_579946 = query.getOrDefault("userProject")
-  valid_579946 = validateParameter(valid_579946, JString, required = false,
+  if valid_580970 != nil:
+    section.add "oauth_token", valid_580970
+  var valid_580971 = query.getOrDefault("userProject")
+  valid_580971 = validateParameter(valid_580971, JString, required = false,
                                  default = nil)
-  if valid_579946 != nil:
-    section.add "userProject", valid_579946
-  var valid_579947 = query.getOrDefault("alt")
-  valid_579947 = validateParameter(valid_579947, JString, required = false,
+  if valid_580971 != nil:
+    section.add "userProject", valid_580971
+  var valid_580972 = query.getOrDefault("alt")
+  valid_580972 = validateParameter(valid_580972, JString, required = false,
                                  default = newJString("json"))
-  if valid_579947 != nil:
-    section.add "alt", valid_579947
-  var valid_579948 = query.getOrDefault("userIp")
-  valid_579948 = validateParameter(valid_579948, JString, required = false,
+  if valid_580972 != nil:
+    section.add "alt", valid_580972
+  var valid_580973 = query.getOrDefault("userIp")
+  valid_580973 = validateParameter(valid_580973, JString, required = false,
                                  default = nil)
-  if valid_579948 != nil:
-    section.add "userIp", valid_579948
-  var valid_579949 = query.getOrDefault("quotaUser")
-  valid_579949 = validateParameter(valid_579949, JString, required = false,
+  if valid_580973 != nil:
+    section.add "userIp", valid_580973
+  var valid_580974 = query.getOrDefault("quotaUser")
+  valid_580974 = validateParameter(valid_580974, JString, required = false,
                                  default = nil)
-  if valid_579949 != nil:
-    section.add "quotaUser", valid_579949
-  var valid_579950 = query.getOrDefault("fields")
-  valid_579950 = validateParameter(valid_579950, JString, required = false,
+  if valid_580974 != nil:
+    section.add "quotaUser", valid_580974
+  var valid_580975 = query.getOrDefault("fields")
+  valid_580975 = validateParameter(valid_580975, JString, required = false,
                                  default = nil)
-  if valid_579950 != nil:
-    section.add "fields", valid_579950
+  if valid_580975 != nil:
+    section.add "fields", valid_580975
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10424,20 +10679,20 @@ proc validate_StorageProjectsHmacKeysDelete_579939(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_579951: Call_StorageProjectsHmacKeysDelete_579938; path: JsonNode;
+proc call*(call_580976: Call_StorageProjectsHmacKeysDelete_580963; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Deletes an HMAC key.
   ## 
-  let valid = call_579951.validator(path, query, header, formData, body)
-  let scheme = call_579951.pickScheme
+  let valid = call_580976.validator(path, query, header, formData, body)
+  let scheme = call_580976.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579951.url(scheme.get, call_579951.host, call_579951.base,
-                         call_579951.route, valid.getOrDefault("path"),
+  let url = call_580976.url(scheme.get, call_580976.host, call_580976.base,
+                         call_580976.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579951, url, valid)
+  result = hook(call_580976, url, valid)
 
-proc call*(call_579952: Call_StorageProjectsHmacKeysDelete_579938;
+proc call*(call_580977: Call_StorageProjectsHmacKeysDelete_580963;
           projectId: string; accessId: string; key: string = "";
           prettyPrint: bool = true; oauthToken: string = ""; userProject: string = "";
           alt: string = "json"; userIp: string = ""; quotaUser: string = "";
@@ -10464,29 +10719,29 @@ proc call*(call_579952: Call_StorageProjectsHmacKeysDelete_579938;
   ##           : Name of the HMAC key to be deleted.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579953 = newJObject()
-  var query_579954 = newJObject()
-  add(query_579954, "key", newJString(key))
-  add(query_579954, "prettyPrint", newJBool(prettyPrint))
-  add(query_579954, "oauth_token", newJString(oauthToken))
-  add(path_579953, "projectId", newJString(projectId))
-  add(query_579954, "userProject", newJString(userProject))
-  add(query_579954, "alt", newJString(alt))
-  add(query_579954, "userIp", newJString(userIp))
-  add(query_579954, "quotaUser", newJString(quotaUser))
-  add(path_579953, "accessId", newJString(accessId))
-  add(query_579954, "fields", newJString(fields))
-  result = call_579952.call(path_579953, query_579954, nil, nil, nil)
+  var path_580978 = newJObject()
+  var query_580979 = newJObject()
+  add(query_580979, "key", newJString(key))
+  add(query_580979, "prettyPrint", newJBool(prettyPrint))
+  add(query_580979, "oauth_token", newJString(oauthToken))
+  add(path_580978, "projectId", newJString(projectId))
+  add(query_580979, "userProject", newJString(userProject))
+  add(query_580979, "alt", newJString(alt))
+  add(query_580979, "userIp", newJString(userIp))
+  add(query_580979, "quotaUser", newJString(quotaUser))
+  add(path_580978, "accessId", newJString(accessId))
+  add(query_580979, "fields", newJString(fields))
+  result = call_580977.call(path_580978, query_580979, nil, nil, nil)
 
-var storageProjectsHmacKeysDelete* = Call_StorageProjectsHmacKeysDelete_579938(
+var storageProjectsHmacKeysDelete* = Call_StorageProjectsHmacKeysDelete_580963(
     name: "storageProjectsHmacKeysDelete", meth: HttpMethod.HttpDelete,
     host: "www.googleapis.com",
     route: "/projects/{projectId}/hmacKeys/{accessId}",
-    validator: validate_StorageProjectsHmacKeysDelete_579939, base: "/storage/v1",
-    url: url_StorageProjectsHmacKeysDelete_579940, schemes: {Scheme.Https})
+    validator: validate_StorageProjectsHmacKeysDelete_580964, base: "/storage/v1",
+    url: url_StorageProjectsHmacKeysDelete_580965, schemes: {Scheme.Https})
 type
-  Call_StorageProjectsServiceAccountGet_579955 = ref object of OpenApiRestCall_578355
-proc url_StorageProjectsServiceAccountGet_579957(protocol: Scheme; host: string;
+  Call_StorageProjectsServiceAccountGet_580980 = ref object of OpenApiRestCall_579380
+proc url_StorageProjectsServiceAccountGet_580982(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -10500,9 +10755,14 @@ proc url_StorageProjectsServiceAccountGet_579957(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_StorageProjectsServiceAccountGet_579956(path: JsonNode;
+proc validate_StorageProjectsServiceAccountGet_580981(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Get the email address of this project's Google Cloud Storage service account.
   ## 
@@ -10513,11 +10773,11 @@ proc validate_StorageProjectsServiceAccountGet_579956(path: JsonNode;
   ##            : Project ID
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `projectId` field"
-  var valid_579958 = path.getOrDefault("projectId")
-  valid_579958 = validateParameter(valid_579958, JString, required = true,
+  var valid_580983 = path.getOrDefault("projectId")
+  valid_580983 = validateParameter(valid_580983, JString, required = true,
                                  default = nil)
-  if valid_579958 != nil:
-    section.add "projectId", valid_579958
+  if valid_580983 != nil:
+    section.add "projectId", valid_580983
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -10539,51 +10799,51 @@ proc validate_StorageProjectsServiceAccountGet_579956(path: JsonNode;
   ##   fields: JString
   ##         : Selector specifying which fields to include in a partial response.
   section = newJObject()
-  var valid_579959 = query.getOrDefault("key")
-  valid_579959 = validateParameter(valid_579959, JString, required = false,
+  var valid_580984 = query.getOrDefault("key")
+  valid_580984 = validateParameter(valid_580984, JString, required = false,
                                  default = nil)
-  if valid_579959 != nil:
-    section.add "key", valid_579959
-  var valid_579960 = query.getOrDefault("prettyPrint")
-  valid_579960 = validateParameter(valid_579960, JBool, required = false,
+  if valid_580984 != nil:
+    section.add "key", valid_580984
+  var valid_580985 = query.getOrDefault("prettyPrint")
+  valid_580985 = validateParameter(valid_580985, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579960 != nil:
-    section.add "prettyPrint", valid_579960
-  var valid_579961 = query.getOrDefault("oauth_token")
-  valid_579961 = validateParameter(valid_579961, JString, required = false,
+  if valid_580985 != nil:
+    section.add "prettyPrint", valid_580985
+  var valid_580986 = query.getOrDefault("oauth_token")
+  valid_580986 = validateParameter(valid_580986, JString, required = false,
                                  default = nil)
-  if valid_579961 != nil:
-    section.add "oauth_token", valid_579961
-  var valid_579962 = query.getOrDefault("userProject")
-  valid_579962 = validateParameter(valid_579962, JString, required = false,
+  if valid_580986 != nil:
+    section.add "oauth_token", valid_580986
+  var valid_580987 = query.getOrDefault("userProject")
+  valid_580987 = validateParameter(valid_580987, JString, required = false,
                                  default = nil)
-  if valid_579962 != nil:
-    section.add "userProject", valid_579962
-  var valid_579963 = query.getOrDefault("alt")
-  valid_579963 = validateParameter(valid_579963, JString, required = false,
+  if valid_580987 != nil:
+    section.add "userProject", valid_580987
+  var valid_580988 = query.getOrDefault("alt")
+  valid_580988 = validateParameter(valid_580988, JString, required = false,
                                  default = newJString("json"))
-  if valid_579963 != nil:
-    section.add "alt", valid_579963
-  var valid_579964 = query.getOrDefault("userIp")
-  valid_579964 = validateParameter(valid_579964, JString, required = false,
+  if valid_580988 != nil:
+    section.add "alt", valid_580988
+  var valid_580989 = query.getOrDefault("userIp")
+  valid_580989 = validateParameter(valid_580989, JString, required = false,
                                  default = nil)
-  if valid_579964 != nil:
-    section.add "userIp", valid_579964
-  var valid_579965 = query.getOrDefault("quotaUser")
-  valid_579965 = validateParameter(valid_579965, JString, required = false,
+  if valid_580989 != nil:
+    section.add "userIp", valid_580989
+  var valid_580990 = query.getOrDefault("quotaUser")
+  valid_580990 = validateParameter(valid_580990, JString, required = false,
                                  default = nil)
-  if valid_579965 != nil:
-    section.add "quotaUser", valid_579965
-  var valid_579966 = query.getOrDefault("provisionalUserProject")
-  valid_579966 = validateParameter(valid_579966, JString, required = false,
+  if valid_580990 != nil:
+    section.add "quotaUser", valid_580990
+  var valid_580991 = query.getOrDefault("provisionalUserProject")
+  valid_580991 = validateParameter(valid_580991, JString, required = false,
                                  default = nil)
-  if valid_579966 != nil:
-    section.add "provisionalUserProject", valid_579966
-  var valid_579967 = query.getOrDefault("fields")
-  valid_579967 = validateParameter(valid_579967, JString, required = false,
+  if valid_580991 != nil:
+    section.add "provisionalUserProject", valid_580991
+  var valid_580992 = query.getOrDefault("fields")
+  valid_580992 = validateParameter(valid_580992, JString, required = false,
                                  default = nil)
-  if valid_579967 != nil:
-    section.add "fields", valid_579967
+  if valid_580992 != nil:
+    section.add "fields", valid_580992
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -10592,21 +10852,21 @@ proc validate_StorageProjectsServiceAccountGet_579956(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579968: Call_StorageProjectsServiceAccountGet_579955;
+proc call*(call_580993: Call_StorageProjectsServiceAccountGet_580980;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Get the email address of this project's Google Cloud Storage service account.
   ## 
-  let valid = call_579968.validator(path, query, header, formData, body)
-  let scheme = call_579968.pickScheme
+  let valid = call_580993.validator(path, query, header, formData, body)
+  let scheme = call_580993.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579968.url(scheme.get, call_579968.host, call_579968.base,
-                         call_579968.route, valid.getOrDefault("path"),
+  let url = call_580993.url(scheme.get, call_580993.host, call_580993.base,
+                         call_580993.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579968, url, valid)
+  result = hook(call_580993, url, valid)
 
-proc call*(call_579969: Call_StorageProjectsServiceAccountGet_579955;
+proc call*(call_580994: Call_StorageProjectsServiceAccountGet_580980;
           projectId: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; userProject: string = ""; alt: string = "json";
           userIp: string = ""; quotaUser: string = "";
@@ -10633,25 +10893,25 @@ proc call*(call_579969: Call_StorageProjectsServiceAccountGet_579955;
   ##                         : The project to be billed for this request if the target bucket is requester-pays bucket.
   ##   fields: string
   ##         : Selector specifying which fields to include in a partial response.
-  var path_579970 = newJObject()
-  var query_579971 = newJObject()
-  add(query_579971, "key", newJString(key))
-  add(query_579971, "prettyPrint", newJBool(prettyPrint))
-  add(query_579971, "oauth_token", newJString(oauthToken))
-  add(path_579970, "projectId", newJString(projectId))
-  add(query_579971, "userProject", newJString(userProject))
-  add(query_579971, "alt", newJString(alt))
-  add(query_579971, "userIp", newJString(userIp))
-  add(query_579971, "quotaUser", newJString(quotaUser))
-  add(query_579971, "provisionalUserProject", newJString(provisionalUserProject))
-  add(query_579971, "fields", newJString(fields))
-  result = call_579969.call(path_579970, query_579971, nil, nil, nil)
+  var path_580995 = newJObject()
+  var query_580996 = newJObject()
+  add(query_580996, "key", newJString(key))
+  add(query_580996, "prettyPrint", newJBool(prettyPrint))
+  add(query_580996, "oauth_token", newJString(oauthToken))
+  add(path_580995, "projectId", newJString(projectId))
+  add(query_580996, "userProject", newJString(userProject))
+  add(query_580996, "alt", newJString(alt))
+  add(query_580996, "userIp", newJString(userIp))
+  add(query_580996, "quotaUser", newJString(quotaUser))
+  add(query_580996, "provisionalUserProject", newJString(provisionalUserProject))
+  add(query_580996, "fields", newJString(fields))
+  result = call_580994.call(path_580995, query_580996, nil, nil, nil)
 
-var storageProjectsServiceAccountGet* = Call_StorageProjectsServiceAccountGet_579955(
+var storageProjectsServiceAccountGet* = Call_StorageProjectsServiceAccountGet_580980(
     name: "storageProjectsServiceAccountGet", meth: HttpMethod.HttpGet,
     host: "www.googleapis.com", route: "/projects/{projectId}/serviceAccount",
-    validator: validate_StorageProjectsServiceAccountGet_579956,
-    base: "/storage/v1", url: url_StorageProjectsServiceAccountGet_579957,
+    validator: validate_StorageProjectsServiceAccountGet_580981,
+    base: "/storage/v1", url: url_StorageProjectsServiceAccountGet_580982,
     schemes: {Scheme.Https})
 export
   rest

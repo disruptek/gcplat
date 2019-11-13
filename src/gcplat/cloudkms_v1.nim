@@ -1,7 +1,7 @@
 
 import
-  json, options, hashes, uri, rest, os, uri, strutils, times, httpcore, httpclient,
-  asyncdispatch, jwt
+  json, options, hashes, uri, strutils, rest, os, uri, strutils, times, httpcore,
+  httpclient, asyncdispatch, jwt
 
 ## auto-generated via openapi macro
 ## title: Cloud Key Management Service (KMS)
@@ -30,15 +30,15 @@ type
     url*: proc (protocol: Scheme; host: string; base: string; route: string;
               path: JsonNode; query: JsonNode): Uri
 
-  OpenApiRestCall_578339 = ref object of OpenApiRestCall
+  OpenApiRestCall_579364 = ref object of OpenApiRestCall
 proc hash(scheme: Scheme): Hash {.used.} =
   result = hash(ord(scheme))
 
-proc clone[T: OpenApiRestCall_578339](t: T): T {.used.} =
+proc clone[T: OpenApiRestCall_579364](t: T): T {.used.} =
   result = T(name: t.name, meth: t.meth, host: t.host, base: t.base, route: t.route,
            schemes: t.schemes, validator: t.validator, url: t.url)
 
-proc pickScheme(t: OpenApiRestCall_578339): Option[Scheme] {.used.} =
+proc pickScheme(t: OpenApiRestCall_579364): Option[Scheme] {.used.} =
   ## select a supported scheme from a set of candidates
   for scheme in Scheme.low ..
       Scheme.high:
@@ -113,9 +113,10 @@ const
 proc composeQueryString(query: JsonNode): string
 method hook(call: OpenApiRestCall; url: Uri; input: JsonNode): Recallable {.base.}
 type
-  Call_CloudkmsProjectsLocationsKeyRingsImportJobsGet_578610 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsImportJobsGet_578612(protocol: Scheme;
-    host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGet_579635 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGet_579637(
+    protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
+    query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
   result.query = $composeQueryString(query)
@@ -127,25 +128,30 @@ proc url_CloudkmsProjectsLocationsKeyRingsImportJobsGet_578612(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsGet_578611(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGet_579636(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
-  ## Returns metadata for a given ImportJob.
+  ## Returns metadata for a given CryptoKeyVersion.
   ## 
   var section: JsonNode
   result = newJObject()
   ## parameters in `path` object:
   ##   name: JString (required)
-  ##       : The name of the ImportJob to get.
+  ##       : Required. The name of the CryptoKeyVersion to get.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578738 = path.getOrDefault("name")
-  valid_578738 = validateParameter(valid_578738, JString, required = true,
+  var valid_579763 = path.getOrDefault("name")
+  valid_579763 = validateParameter(valid_579763, JString, required = true,
                                  default = nil)
-  if valid_578738 != nil:
-    section.add "name", valid_578738
+  if valid_579763 != nil:
+    section.add "name", valid_579763
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -171,61 +177,61 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsGet_578611(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578739 = query.getOrDefault("key")
-  valid_578739 = validateParameter(valid_578739, JString, required = false,
+  var valid_579764 = query.getOrDefault("key")
+  valid_579764 = validateParameter(valid_579764, JString, required = false,
                                  default = nil)
-  if valid_578739 != nil:
-    section.add "key", valid_578739
-  var valid_578753 = query.getOrDefault("prettyPrint")
-  valid_578753 = validateParameter(valid_578753, JBool, required = false,
+  if valid_579764 != nil:
+    section.add "key", valid_579764
+  var valid_579778 = query.getOrDefault("prettyPrint")
+  valid_579778 = validateParameter(valid_579778, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578753 != nil:
-    section.add "prettyPrint", valid_578753
-  var valid_578754 = query.getOrDefault("oauth_token")
-  valid_578754 = validateParameter(valid_578754, JString, required = false,
+  if valid_579778 != nil:
+    section.add "prettyPrint", valid_579778
+  var valid_579779 = query.getOrDefault("oauth_token")
+  valid_579779 = validateParameter(valid_579779, JString, required = false,
                                  default = nil)
-  if valid_578754 != nil:
-    section.add "oauth_token", valid_578754
-  var valid_578755 = query.getOrDefault("$.xgafv")
-  valid_578755 = validateParameter(valid_578755, JString, required = false,
+  if valid_579779 != nil:
+    section.add "oauth_token", valid_579779
+  var valid_579780 = query.getOrDefault("$.xgafv")
+  valid_579780 = validateParameter(valid_579780, JString, required = false,
                                  default = newJString("1"))
-  if valid_578755 != nil:
-    section.add "$.xgafv", valid_578755
-  var valid_578756 = query.getOrDefault("alt")
-  valid_578756 = validateParameter(valid_578756, JString, required = false,
+  if valid_579780 != nil:
+    section.add "$.xgafv", valid_579780
+  var valid_579781 = query.getOrDefault("alt")
+  valid_579781 = validateParameter(valid_579781, JString, required = false,
                                  default = newJString("json"))
-  if valid_578756 != nil:
-    section.add "alt", valid_578756
-  var valid_578757 = query.getOrDefault("uploadType")
-  valid_578757 = validateParameter(valid_578757, JString, required = false,
+  if valid_579781 != nil:
+    section.add "alt", valid_579781
+  var valid_579782 = query.getOrDefault("uploadType")
+  valid_579782 = validateParameter(valid_579782, JString, required = false,
                                  default = nil)
-  if valid_578757 != nil:
-    section.add "uploadType", valid_578757
-  var valid_578758 = query.getOrDefault("quotaUser")
-  valid_578758 = validateParameter(valid_578758, JString, required = false,
+  if valid_579782 != nil:
+    section.add "uploadType", valid_579782
+  var valid_579783 = query.getOrDefault("quotaUser")
+  valid_579783 = validateParameter(valid_579783, JString, required = false,
                                  default = nil)
-  if valid_578758 != nil:
-    section.add "quotaUser", valid_578758
-  var valid_578759 = query.getOrDefault("callback")
-  valid_578759 = validateParameter(valid_578759, JString, required = false,
+  if valid_579783 != nil:
+    section.add "quotaUser", valid_579783
+  var valid_579784 = query.getOrDefault("callback")
+  valid_579784 = validateParameter(valid_579784, JString, required = false,
                                  default = nil)
-  if valid_578759 != nil:
-    section.add "callback", valid_578759
-  var valid_578760 = query.getOrDefault("fields")
-  valid_578760 = validateParameter(valid_578760, JString, required = false,
+  if valid_579784 != nil:
+    section.add "callback", valid_579784
+  var valid_579785 = query.getOrDefault("fields")
+  valid_579785 = validateParameter(valid_579785, JString, required = false,
                                  default = nil)
-  if valid_578760 != nil:
-    section.add "fields", valid_578760
-  var valid_578761 = query.getOrDefault("access_token")
-  valid_578761 = validateParameter(valid_578761, JString, required = false,
+  if valid_579785 != nil:
+    section.add "fields", valid_579785
+  var valid_579786 = query.getOrDefault("access_token")
+  valid_579786 = validateParameter(valid_579786, JString, required = false,
                                  default = nil)
-  if valid_578761 != nil:
-    section.add "access_token", valid_578761
-  var valid_578762 = query.getOrDefault("upload_protocol")
-  valid_578762 = validateParameter(valid_578762, JString, required = false,
+  if valid_579786 != nil:
+    section.add "access_token", valid_579786
+  var valid_579787 = query.getOrDefault("upload_protocol")
+  valid_579787 = validateParameter(valid_579787, JString, required = false,
                                  default = nil)
-  if valid_578762 != nil:
-    section.add "upload_protocol", valid_578762
+  if valid_579787 != nil:
+    section.add "upload_protocol", valid_579787
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -234,27 +240,27 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsGet_578611(
   if body != nil:
     result.add "body", body
 
-proc call*(call_578785: Call_CloudkmsProjectsLocationsKeyRingsImportJobsGet_578610;
+proc call*(call_579810: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGet_579635;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
-  ## Returns metadata for a given ImportJob.
+  ## Returns metadata for a given CryptoKeyVersion.
   ## 
-  let valid = call_578785.validator(path, query, header, formData, body)
-  let scheme = call_578785.pickScheme
+  let valid = call_579810.validator(path, query, header, formData, body)
+  let scheme = call_579810.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578785.url(scheme.get, call_578785.host, call_578785.base,
-                         call_578785.route, valid.getOrDefault("path"),
+  let url = call_579810.url(scheme.get, call_579810.host, call_579810.base,
+                         call_579810.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578785, url, valid)
+  result = hook(call_579810, url, valid)
 
-proc call*(call_578856: Call_CloudkmsProjectsLocationsKeyRingsImportJobsGet_578610;
+proc call*(call_579881: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGet_579635;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; callback: string = "";
           fields: string = ""; accessToken: string = ""; uploadProtocol: string = ""): Recallable =
-  ## cloudkmsProjectsLocationsKeyRingsImportJobsGet
-  ## Returns metadata for a given ImportJob.
+  ## cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGet
+  ## Returns metadata for a given CryptoKeyVersion.
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
@@ -270,7 +276,7 @@ proc call*(call_578856: Call_CloudkmsProjectsLocationsKeyRingsImportJobsGet_5786
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
-  ##       : The name of the ImportJob to get.
+  ##       : Required. The name of the CryptoKeyVersion to get.
   ##   callback: string
   ##           : JSONP
   ##   fields: string
@@ -279,31 +285,31 @@ proc call*(call_578856: Call_CloudkmsProjectsLocationsKeyRingsImportJobsGet_5786
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578857 = newJObject()
-  var query_578859 = newJObject()
-  add(query_578859, "key", newJString(key))
-  add(query_578859, "prettyPrint", newJBool(prettyPrint))
-  add(query_578859, "oauth_token", newJString(oauthToken))
-  add(query_578859, "$.xgafv", newJString(Xgafv))
-  add(query_578859, "alt", newJString(alt))
-  add(query_578859, "uploadType", newJString(uploadType))
-  add(query_578859, "quotaUser", newJString(quotaUser))
-  add(path_578857, "name", newJString(name))
-  add(query_578859, "callback", newJString(callback))
-  add(query_578859, "fields", newJString(fields))
-  add(query_578859, "access_token", newJString(accessToken))
-  add(query_578859, "upload_protocol", newJString(uploadProtocol))
-  result = call_578856.call(path_578857, query_578859, nil, nil, nil)
+  var path_579882 = newJObject()
+  var query_579884 = newJObject()
+  add(query_579884, "key", newJString(key))
+  add(query_579884, "prettyPrint", newJBool(prettyPrint))
+  add(query_579884, "oauth_token", newJString(oauthToken))
+  add(query_579884, "$.xgafv", newJString(Xgafv))
+  add(query_579884, "alt", newJString(alt))
+  add(query_579884, "uploadType", newJString(uploadType))
+  add(query_579884, "quotaUser", newJString(quotaUser))
+  add(path_579882, "name", newJString(name))
+  add(query_579884, "callback", newJString(callback))
+  add(query_579884, "fields", newJString(fields))
+  add(query_579884, "access_token", newJString(accessToken))
+  add(query_579884, "upload_protocol", newJString(uploadProtocol))
+  result = call_579881.call(path_579882, query_579884, nil, nil, nil)
 
-var cloudkmsProjectsLocationsKeyRingsImportJobsGet* = Call_CloudkmsProjectsLocationsKeyRingsImportJobsGet_578610(
-    name: "cloudkmsProjectsLocationsKeyRingsImportJobsGet",
-    meth: HttpMethod.HttpGet, host: "cloudkms.googleapis.com", route: "/v1/{name}",
-    validator: validate_CloudkmsProjectsLocationsKeyRingsImportJobsGet_578611,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsImportJobsGet_578612,
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGet* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGet_579635(
+    name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGet",
+    meth: HttpMethod.HttpGet, host: "cloudkms.googleapis.com", route: "/v1/{name}", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGet_579636,
+    base: "/",
+    url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGet_579637,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_578898 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_578900(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_579923 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_579925(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -317,9 +323,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_57890
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_578899(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_579924(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Update a CryptoKeyVersion's metadata.
@@ -338,11 +349,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_
   ## `projects/*/locations/*/keyRings/*/cryptoKeys/*/cryptoKeyVersions/*`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578901 = path.getOrDefault("name")
-  valid_578901 = validateParameter(valid_578901, JString, required = true,
+  var valid_579926 = path.getOrDefault("name")
+  valid_579926 = validateParameter(valid_579926, JString, required = true,
                                  default = nil)
-  if valid_578901 != nil:
-    section.add "name", valid_578901
+  if valid_579926 != nil:
+    section.add "name", valid_579926
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -360,7 +371,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_
   ##   quotaUser: JString
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   updateMask: JString
-  ##             : Required list of fields to be updated in this request.
+  ##             : Required. List of fields to be updated in this request.
   ##   callback: JString
   ##           : JSONP
   ##   fields: JString
@@ -370,66 +381,66 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578902 = query.getOrDefault("key")
-  valid_578902 = validateParameter(valid_578902, JString, required = false,
+  var valid_579927 = query.getOrDefault("key")
+  valid_579927 = validateParameter(valid_579927, JString, required = false,
                                  default = nil)
-  if valid_578902 != nil:
-    section.add "key", valid_578902
-  var valid_578903 = query.getOrDefault("prettyPrint")
-  valid_578903 = validateParameter(valid_578903, JBool, required = false,
+  if valid_579927 != nil:
+    section.add "key", valid_579927
+  var valid_579928 = query.getOrDefault("prettyPrint")
+  valid_579928 = validateParameter(valid_579928, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578903 != nil:
-    section.add "prettyPrint", valid_578903
-  var valid_578904 = query.getOrDefault("oauth_token")
-  valid_578904 = validateParameter(valid_578904, JString, required = false,
+  if valid_579928 != nil:
+    section.add "prettyPrint", valid_579928
+  var valid_579929 = query.getOrDefault("oauth_token")
+  valid_579929 = validateParameter(valid_579929, JString, required = false,
                                  default = nil)
-  if valid_578904 != nil:
-    section.add "oauth_token", valid_578904
-  var valid_578905 = query.getOrDefault("$.xgafv")
-  valid_578905 = validateParameter(valid_578905, JString, required = false,
+  if valid_579929 != nil:
+    section.add "oauth_token", valid_579929
+  var valid_579930 = query.getOrDefault("$.xgafv")
+  valid_579930 = validateParameter(valid_579930, JString, required = false,
                                  default = newJString("1"))
-  if valid_578905 != nil:
-    section.add "$.xgafv", valid_578905
-  var valid_578906 = query.getOrDefault("alt")
-  valid_578906 = validateParameter(valid_578906, JString, required = false,
+  if valid_579930 != nil:
+    section.add "$.xgafv", valid_579930
+  var valid_579931 = query.getOrDefault("alt")
+  valid_579931 = validateParameter(valid_579931, JString, required = false,
                                  default = newJString("json"))
-  if valid_578906 != nil:
-    section.add "alt", valid_578906
-  var valid_578907 = query.getOrDefault("uploadType")
-  valid_578907 = validateParameter(valid_578907, JString, required = false,
+  if valid_579931 != nil:
+    section.add "alt", valid_579931
+  var valid_579932 = query.getOrDefault("uploadType")
+  valid_579932 = validateParameter(valid_579932, JString, required = false,
                                  default = nil)
-  if valid_578907 != nil:
-    section.add "uploadType", valid_578907
-  var valid_578908 = query.getOrDefault("quotaUser")
-  valid_578908 = validateParameter(valid_578908, JString, required = false,
+  if valid_579932 != nil:
+    section.add "uploadType", valid_579932
+  var valid_579933 = query.getOrDefault("quotaUser")
+  valid_579933 = validateParameter(valid_579933, JString, required = false,
                                  default = nil)
-  if valid_578908 != nil:
-    section.add "quotaUser", valid_578908
-  var valid_578909 = query.getOrDefault("updateMask")
-  valid_578909 = validateParameter(valid_578909, JString, required = false,
+  if valid_579933 != nil:
+    section.add "quotaUser", valid_579933
+  var valid_579934 = query.getOrDefault("updateMask")
+  valid_579934 = validateParameter(valid_579934, JString, required = false,
                                  default = nil)
-  if valid_578909 != nil:
-    section.add "updateMask", valid_578909
-  var valid_578910 = query.getOrDefault("callback")
-  valid_578910 = validateParameter(valid_578910, JString, required = false,
+  if valid_579934 != nil:
+    section.add "updateMask", valid_579934
+  var valid_579935 = query.getOrDefault("callback")
+  valid_579935 = validateParameter(valid_579935, JString, required = false,
                                  default = nil)
-  if valid_578910 != nil:
-    section.add "callback", valid_578910
-  var valid_578911 = query.getOrDefault("fields")
-  valid_578911 = validateParameter(valid_578911, JString, required = false,
+  if valid_579935 != nil:
+    section.add "callback", valid_579935
+  var valid_579936 = query.getOrDefault("fields")
+  valid_579936 = validateParameter(valid_579936, JString, required = false,
                                  default = nil)
-  if valid_578911 != nil:
-    section.add "fields", valid_578911
-  var valid_578912 = query.getOrDefault("access_token")
-  valid_578912 = validateParameter(valid_578912, JString, required = false,
+  if valid_579936 != nil:
+    section.add "fields", valid_579936
+  var valid_579937 = query.getOrDefault("access_token")
+  valid_579937 = validateParameter(valid_579937, JString, required = false,
                                  default = nil)
-  if valid_578912 != nil:
-    section.add "access_token", valid_578912
-  var valid_578913 = query.getOrDefault("upload_protocol")
-  valid_578913 = validateParameter(valid_578913, JString, required = false,
+  if valid_579937 != nil:
+    section.add "access_token", valid_579937
+  var valid_579938 = query.getOrDefault("upload_protocol")
+  valid_579938 = validateParameter(valid_579938, JString, required = false,
                                  default = nil)
-  if valid_578913 != nil:
-    section.add "upload_protocol", valid_578913
+  if valid_579938 != nil:
+    section.add "upload_protocol", valid_579938
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -441,7 +452,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_
   if body != nil:
     result.add "body", body
 
-proc call*(call_578915: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_578898;
+proc call*(call_579940: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_579923;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Update a CryptoKeyVersion's metadata.
@@ -452,16 +463,16 @@ proc call*(call_578915: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ## method. See DestroyCryptoKeyVersion and RestoreCryptoKeyVersion to
   ## move between other states.
   ## 
-  let valid = call_578915.validator(path, query, header, formData, body)
-  let scheme = call_578915.pickScheme
+  let valid = call_579940.validator(path, query, header, formData, body)
+  let scheme = call_579940.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578915.url(scheme.get, call_578915.host, call_578915.base,
-                         call_578915.route, valid.getOrDefault("path"),
+  let url = call_579940.url(scheme.get, call_579940.host, call_579940.base,
+                         call_579940.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578915, url, valid)
+  result = hook(call_579940, url, valid)
 
-proc call*(call_578916: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_578898;
+proc call*(call_579941: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_579923;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; updateMask: string = "";
@@ -493,7 +504,7 @@ proc call*(call_578916: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ##       : Output only. The resource name for this CryptoKeyVersion in the format
   ## `projects/*/locations/*/keyRings/*/cryptoKeys/*/cryptoKeyVersions/*`.
   ##   updateMask: string
-  ##             : Required list of fields to be updated in this request.
+  ##             : Required. List of fields to be updated in this request.
   ##   body: JObject
   ##   callback: string
   ##           : JSONP
@@ -503,36 +514,36 @@ proc call*(call_578916: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578917 = newJObject()
-  var query_578918 = newJObject()
-  var body_578919 = newJObject()
-  add(query_578918, "key", newJString(key))
-  add(query_578918, "prettyPrint", newJBool(prettyPrint))
-  add(query_578918, "oauth_token", newJString(oauthToken))
-  add(query_578918, "$.xgafv", newJString(Xgafv))
-  add(query_578918, "alt", newJString(alt))
-  add(query_578918, "uploadType", newJString(uploadType))
-  add(query_578918, "quotaUser", newJString(quotaUser))
-  add(path_578917, "name", newJString(name))
-  add(query_578918, "updateMask", newJString(updateMask))
+  var path_579942 = newJObject()
+  var query_579943 = newJObject()
+  var body_579944 = newJObject()
+  add(query_579943, "key", newJString(key))
+  add(query_579943, "prettyPrint", newJBool(prettyPrint))
+  add(query_579943, "oauth_token", newJString(oauthToken))
+  add(query_579943, "$.xgafv", newJString(Xgafv))
+  add(query_579943, "alt", newJString(alt))
+  add(query_579943, "uploadType", newJString(uploadType))
+  add(query_579943, "quotaUser", newJString(quotaUser))
+  add(path_579942, "name", newJString(name))
+  add(query_579943, "updateMask", newJString(updateMask))
   if body != nil:
-    body_578919 = body
-  add(query_578918, "callback", newJString(callback))
-  add(query_578918, "fields", newJString(fields))
-  add(query_578918, "access_token", newJString(accessToken))
-  add(query_578918, "upload_protocol", newJString(uploadProtocol))
-  result = call_578916.call(path_578917, query_578918, nil, nil, body_578919)
+    body_579944 = body
+  add(query_579943, "callback", newJString(callback))
+  add(query_579943, "fields", newJString(fields))
+  add(query_579943, "access_token", newJString(accessToken))
+  add(query_579943, "upload_protocol", newJString(uploadProtocol))
+  result = call_579941.call(path_579942, query_579943, nil, nil, body_579944)
 
-var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_578898(
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_579923(
     name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch",
     meth: HttpMethod.HttpPatch, host: "cloudkms.googleapis.com",
-    route: "/v1/{name}", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_578899,
+    route: "/v1/{name}", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_579924,
     base: "/",
-    url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_578900,
+    url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatch_579925,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsList_578920 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsList_578922(protocol: Scheme; host: string;
+  Call_CloudkmsProjectsLocationsList_579945 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsList_579947(protocol: Scheme; host: string;
     base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -546,9 +557,14 @@ proc url_CloudkmsProjectsLocationsList_578922(protocol: Scheme; host: string;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsList_578921(path: JsonNode; query: JsonNode;
+proc validate_CloudkmsProjectsLocationsList_579946(path: JsonNode; query: JsonNode;
     header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists information about the supported locations for this service.
   ## 
@@ -559,11 +575,11 @@ proc validate_CloudkmsProjectsLocationsList_578921(path: JsonNode; query: JsonNo
   ##       : The resource that owns the locations collection, if applicable.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578923 = path.getOrDefault("name")
-  valid_578923 = validateParameter(valid_578923, JString, required = true,
+  var valid_579948 = path.getOrDefault("name")
+  valid_579948 = validateParameter(valid_579948, JString, required = true,
                                  default = nil)
-  if valid_578923 != nil:
-    section.add "name", valid_578923
+  if valid_579948 != nil:
+    section.add "name", valid_579948
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -595,75 +611,75 @@ proc validate_CloudkmsProjectsLocationsList_578921(path: JsonNode; query: JsonNo
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578924 = query.getOrDefault("key")
-  valid_578924 = validateParameter(valid_578924, JString, required = false,
+  var valid_579949 = query.getOrDefault("key")
+  valid_579949 = validateParameter(valid_579949, JString, required = false,
                                  default = nil)
-  if valid_578924 != nil:
-    section.add "key", valid_578924
-  var valid_578925 = query.getOrDefault("prettyPrint")
-  valid_578925 = validateParameter(valid_578925, JBool, required = false,
+  if valid_579949 != nil:
+    section.add "key", valid_579949
+  var valid_579950 = query.getOrDefault("prettyPrint")
+  valid_579950 = validateParameter(valid_579950, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578925 != nil:
-    section.add "prettyPrint", valid_578925
-  var valid_578926 = query.getOrDefault("oauth_token")
-  valid_578926 = validateParameter(valid_578926, JString, required = false,
+  if valid_579950 != nil:
+    section.add "prettyPrint", valid_579950
+  var valid_579951 = query.getOrDefault("oauth_token")
+  valid_579951 = validateParameter(valid_579951, JString, required = false,
                                  default = nil)
-  if valid_578926 != nil:
-    section.add "oauth_token", valid_578926
-  var valid_578927 = query.getOrDefault("$.xgafv")
-  valid_578927 = validateParameter(valid_578927, JString, required = false,
+  if valid_579951 != nil:
+    section.add "oauth_token", valid_579951
+  var valid_579952 = query.getOrDefault("$.xgafv")
+  valid_579952 = validateParameter(valid_579952, JString, required = false,
                                  default = newJString("1"))
-  if valid_578927 != nil:
-    section.add "$.xgafv", valid_578927
-  var valid_578928 = query.getOrDefault("pageSize")
-  valid_578928 = validateParameter(valid_578928, JInt, required = false, default = nil)
-  if valid_578928 != nil:
-    section.add "pageSize", valid_578928
-  var valid_578929 = query.getOrDefault("alt")
-  valid_578929 = validateParameter(valid_578929, JString, required = false,
+  if valid_579952 != nil:
+    section.add "$.xgafv", valid_579952
+  var valid_579953 = query.getOrDefault("pageSize")
+  valid_579953 = validateParameter(valid_579953, JInt, required = false, default = nil)
+  if valid_579953 != nil:
+    section.add "pageSize", valid_579953
+  var valid_579954 = query.getOrDefault("alt")
+  valid_579954 = validateParameter(valid_579954, JString, required = false,
                                  default = newJString("json"))
-  if valid_578929 != nil:
-    section.add "alt", valid_578929
-  var valid_578930 = query.getOrDefault("uploadType")
-  valid_578930 = validateParameter(valid_578930, JString, required = false,
+  if valid_579954 != nil:
+    section.add "alt", valid_579954
+  var valid_579955 = query.getOrDefault("uploadType")
+  valid_579955 = validateParameter(valid_579955, JString, required = false,
                                  default = nil)
-  if valid_578930 != nil:
-    section.add "uploadType", valid_578930
-  var valid_578931 = query.getOrDefault("quotaUser")
-  valid_578931 = validateParameter(valid_578931, JString, required = false,
+  if valid_579955 != nil:
+    section.add "uploadType", valid_579955
+  var valid_579956 = query.getOrDefault("quotaUser")
+  valid_579956 = validateParameter(valid_579956, JString, required = false,
                                  default = nil)
-  if valid_578931 != nil:
-    section.add "quotaUser", valid_578931
-  var valid_578932 = query.getOrDefault("filter")
-  valid_578932 = validateParameter(valid_578932, JString, required = false,
+  if valid_579956 != nil:
+    section.add "quotaUser", valid_579956
+  var valid_579957 = query.getOrDefault("filter")
+  valid_579957 = validateParameter(valid_579957, JString, required = false,
                                  default = nil)
-  if valid_578932 != nil:
-    section.add "filter", valid_578932
-  var valid_578933 = query.getOrDefault("pageToken")
-  valid_578933 = validateParameter(valid_578933, JString, required = false,
+  if valid_579957 != nil:
+    section.add "filter", valid_579957
+  var valid_579958 = query.getOrDefault("pageToken")
+  valid_579958 = validateParameter(valid_579958, JString, required = false,
                                  default = nil)
-  if valid_578933 != nil:
-    section.add "pageToken", valid_578933
-  var valid_578934 = query.getOrDefault("callback")
-  valid_578934 = validateParameter(valid_578934, JString, required = false,
+  if valid_579958 != nil:
+    section.add "pageToken", valid_579958
+  var valid_579959 = query.getOrDefault("callback")
+  valid_579959 = validateParameter(valid_579959, JString, required = false,
                                  default = nil)
-  if valid_578934 != nil:
-    section.add "callback", valid_578934
-  var valid_578935 = query.getOrDefault("fields")
-  valid_578935 = validateParameter(valid_578935, JString, required = false,
+  if valid_579959 != nil:
+    section.add "callback", valid_579959
+  var valid_579960 = query.getOrDefault("fields")
+  valid_579960 = validateParameter(valid_579960, JString, required = false,
                                  default = nil)
-  if valid_578935 != nil:
-    section.add "fields", valid_578935
-  var valid_578936 = query.getOrDefault("access_token")
-  valid_578936 = validateParameter(valid_578936, JString, required = false,
+  if valid_579960 != nil:
+    section.add "fields", valid_579960
+  var valid_579961 = query.getOrDefault("access_token")
+  valid_579961 = validateParameter(valid_579961, JString, required = false,
                                  default = nil)
-  if valid_578936 != nil:
-    section.add "access_token", valid_578936
-  var valid_578937 = query.getOrDefault("upload_protocol")
-  valid_578937 = validateParameter(valid_578937, JString, required = false,
+  if valid_579961 != nil:
+    section.add "access_token", valid_579961
+  var valid_579962 = query.getOrDefault("upload_protocol")
+  valid_579962 = validateParameter(valid_579962, JString, required = false,
                                  default = nil)
-  if valid_578937 != nil:
-    section.add "upload_protocol", valid_578937
+  if valid_579962 != nil:
+    section.add "upload_protocol", valid_579962
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -672,20 +688,20 @@ proc validate_CloudkmsProjectsLocationsList_578921(path: JsonNode; query: JsonNo
   if body != nil:
     result.add "body", body
 
-proc call*(call_578938: Call_CloudkmsProjectsLocationsList_578920; path: JsonNode;
+proc call*(call_579963: Call_CloudkmsProjectsLocationsList_579945; path: JsonNode;
           query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): Recallable =
   ## Lists information about the supported locations for this service.
   ## 
-  let valid = call_578938.validator(path, query, header, formData, body)
-  let scheme = call_578938.pickScheme
+  let valid = call_579963.validator(path, query, header, formData, body)
+  let scheme = call_579963.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578938.url(scheme.get, call_578938.host, call_578938.base,
-                         call_578938.route, valid.getOrDefault("path"),
+  let url = call_579963.url(scheme.get, call_579963.host, call_579963.base,
+                         call_579963.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578938, url, valid)
+  result = hook(call_579963, url, valid)
 
-proc call*(call_578939: Call_CloudkmsProjectsLocationsList_578920; name: string;
+proc call*(call_579964: Call_CloudkmsProjectsLocationsList_579945; name: string;
           key: string = ""; prettyPrint: bool = true; oauthToken: string = "";
           Xgafv: string = "1"; pageSize: int = 0; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; filter: string = "";
@@ -723,33 +739,33 @@ proc call*(call_578939: Call_CloudkmsProjectsLocationsList_578920; name: string;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578940 = newJObject()
-  var query_578941 = newJObject()
-  add(query_578941, "key", newJString(key))
-  add(query_578941, "prettyPrint", newJBool(prettyPrint))
-  add(query_578941, "oauth_token", newJString(oauthToken))
-  add(query_578941, "$.xgafv", newJString(Xgafv))
-  add(query_578941, "pageSize", newJInt(pageSize))
-  add(query_578941, "alt", newJString(alt))
-  add(query_578941, "uploadType", newJString(uploadType))
-  add(query_578941, "quotaUser", newJString(quotaUser))
-  add(path_578940, "name", newJString(name))
-  add(query_578941, "filter", newJString(filter))
-  add(query_578941, "pageToken", newJString(pageToken))
-  add(query_578941, "callback", newJString(callback))
-  add(query_578941, "fields", newJString(fields))
-  add(query_578941, "access_token", newJString(accessToken))
-  add(query_578941, "upload_protocol", newJString(uploadProtocol))
-  result = call_578939.call(path_578940, query_578941, nil, nil, nil)
+  var path_579965 = newJObject()
+  var query_579966 = newJObject()
+  add(query_579966, "key", newJString(key))
+  add(query_579966, "prettyPrint", newJBool(prettyPrint))
+  add(query_579966, "oauth_token", newJString(oauthToken))
+  add(query_579966, "$.xgafv", newJString(Xgafv))
+  add(query_579966, "pageSize", newJInt(pageSize))
+  add(query_579966, "alt", newJString(alt))
+  add(query_579966, "uploadType", newJString(uploadType))
+  add(query_579966, "quotaUser", newJString(quotaUser))
+  add(path_579965, "name", newJString(name))
+  add(query_579966, "filter", newJString(filter))
+  add(query_579966, "pageToken", newJString(pageToken))
+  add(query_579966, "callback", newJString(callback))
+  add(query_579966, "fields", newJString(fields))
+  add(query_579966, "access_token", newJString(accessToken))
+  add(query_579966, "upload_protocol", newJString(uploadProtocol))
+  result = call_579964.call(path_579965, query_579966, nil, nil, nil)
 
-var cloudkmsProjectsLocationsList* = Call_CloudkmsProjectsLocationsList_578920(
+var cloudkmsProjectsLocationsList* = Call_CloudkmsProjectsLocationsList_579945(
     name: "cloudkmsProjectsLocationsList", meth: HttpMethod.HttpGet,
     host: "cloudkms.googleapis.com", route: "/v1/{name}/locations",
-    validator: validate_CloudkmsProjectsLocationsList_578921, base: "/",
-    url: url_CloudkmsProjectsLocationsList_578922, schemes: {Scheme.Https})
+    validator: validate_CloudkmsProjectsLocationsList_579946, base: "/",
+    url: url_CloudkmsProjectsLocationsList_579947, schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_578942 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_578944(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_579967 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_579969(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -764,9 +780,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKe
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_578943(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_579968(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Returns the public key for the given CryptoKeyVersion. The
@@ -778,15 +799,15 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPub
   result = newJObject()
   ## parameters in `path` object:
   ##   name: JString (required)
-  ##       : The name of the CryptoKeyVersion public key to
+  ##       : Required. The name of the CryptoKeyVersion public key to
   ## get.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578945 = path.getOrDefault("name")
-  valid_578945 = validateParameter(valid_578945, JString, required = true,
+  var valid_579970 = path.getOrDefault("name")
+  valid_579970 = validateParameter(valid_579970, JString, required = true,
                                  default = nil)
-  if valid_578945 != nil:
-    section.add "name", valid_578945
+  if valid_579970 != nil:
+    section.add "name", valid_579970
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -812,61 +833,61 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPub
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578946 = query.getOrDefault("key")
-  valid_578946 = validateParameter(valid_578946, JString, required = false,
+  var valid_579971 = query.getOrDefault("key")
+  valid_579971 = validateParameter(valid_579971, JString, required = false,
                                  default = nil)
-  if valid_578946 != nil:
-    section.add "key", valid_578946
-  var valid_578947 = query.getOrDefault("prettyPrint")
-  valid_578947 = validateParameter(valid_578947, JBool, required = false,
+  if valid_579971 != nil:
+    section.add "key", valid_579971
+  var valid_579972 = query.getOrDefault("prettyPrint")
+  valid_579972 = validateParameter(valid_579972, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578947 != nil:
-    section.add "prettyPrint", valid_578947
-  var valid_578948 = query.getOrDefault("oauth_token")
-  valid_578948 = validateParameter(valid_578948, JString, required = false,
+  if valid_579972 != nil:
+    section.add "prettyPrint", valid_579972
+  var valid_579973 = query.getOrDefault("oauth_token")
+  valid_579973 = validateParameter(valid_579973, JString, required = false,
                                  default = nil)
-  if valid_578948 != nil:
-    section.add "oauth_token", valid_578948
-  var valid_578949 = query.getOrDefault("$.xgafv")
-  valid_578949 = validateParameter(valid_578949, JString, required = false,
+  if valid_579973 != nil:
+    section.add "oauth_token", valid_579973
+  var valid_579974 = query.getOrDefault("$.xgafv")
+  valid_579974 = validateParameter(valid_579974, JString, required = false,
                                  default = newJString("1"))
-  if valid_578949 != nil:
-    section.add "$.xgafv", valid_578949
-  var valid_578950 = query.getOrDefault("alt")
-  valid_578950 = validateParameter(valid_578950, JString, required = false,
+  if valid_579974 != nil:
+    section.add "$.xgafv", valid_579974
+  var valid_579975 = query.getOrDefault("alt")
+  valid_579975 = validateParameter(valid_579975, JString, required = false,
                                  default = newJString("json"))
-  if valid_578950 != nil:
-    section.add "alt", valid_578950
-  var valid_578951 = query.getOrDefault("uploadType")
-  valid_578951 = validateParameter(valid_578951, JString, required = false,
+  if valid_579975 != nil:
+    section.add "alt", valid_579975
+  var valid_579976 = query.getOrDefault("uploadType")
+  valid_579976 = validateParameter(valid_579976, JString, required = false,
                                  default = nil)
-  if valid_578951 != nil:
-    section.add "uploadType", valid_578951
-  var valid_578952 = query.getOrDefault("quotaUser")
-  valid_578952 = validateParameter(valid_578952, JString, required = false,
+  if valid_579976 != nil:
+    section.add "uploadType", valid_579976
+  var valid_579977 = query.getOrDefault("quotaUser")
+  valid_579977 = validateParameter(valid_579977, JString, required = false,
                                  default = nil)
-  if valid_578952 != nil:
-    section.add "quotaUser", valid_578952
-  var valid_578953 = query.getOrDefault("callback")
-  valid_578953 = validateParameter(valid_578953, JString, required = false,
+  if valid_579977 != nil:
+    section.add "quotaUser", valid_579977
+  var valid_579978 = query.getOrDefault("callback")
+  valid_579978 = validateParameter(valid_579978, JString, required = false,
                                  default = nil)
-  if valid_578953 != nil:
-    section.add "callback", valid_578953
-  var valid_578954 = query.getOrDefault("fields")
-  valid_578954 = validateParameter(valid_578954, JString, required = false,
+  if valid_579978 != nil:
+    section.add "callback", valid_579978
+  var valid_579979 = query.getOrDefault("fields")
+  valid_579979 = validateParameter(valid_579979, JString, required = false,
                                  default = nil)
-  if valid_578954 != nil:
-    section.add "fields", valid_578954
-  var valid_578955 = query.getOrDefault("access_token")
-  valid_578955 = validateParameter(valid_578955, JString, required = false,
+  if valid_579979 != nil:
+    section.add "fields", valid_579979
+  var valid_579980 = query.getOrDefault("access_token")
+  valid_579980 = validateParameter(valid_579980, JString, required = false,
                                  default = nil)
-  if valid_578955 != nil:
-    section.add "access_token", valid_578955
-  var valid_578956 = query.getOrDefault("upload_protocol")
-  valid_578956 = validateParameter(valid_578956, JString, required = false,
+  if valid_579980 != nil:
+    section.add "access_token", valid_579980
+  var valid_579981 = query.getOrDefault("upload_protocol")
+  valid_579981 = validateParameter(valid_579981, JString, required = false,
                                  default = nil)
-  if valid_578956 != nil:
-    section.add "upload_protocol", valid_578956
+  if valid_579981 != nil:
+    section.add "upload_protocol", valid_579981
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -875,7 +896,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPub
   if body != nil:
     result.add "body", body
 
-proc call*(call_578957: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_578942;
+proc call*(call_579982: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_579967;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns the public key for the given CryptoKeyVersion. The
@@ -883,16 +904,16 @@ proc call*(call_578957: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ## ASYMMETRIC_SIGN or
   ## ASYMMETRIC_DECRYPT.
   ## 
-  let valid = call_578957.validator(path, query, header, formData, body)
-  let scheme = call_578957.pickScheme
+  let valid = call_579982.validator(path, query, header, formData, body)
+  let scheme = call_579982.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578957.url(scheme.get, call_578957.host, call_578957.base,
-                         call_578957.route, valid.getOrDefault("path"),
+  let url = call_579982.url(scheme.get, call_579982.host, call_579982.base,
+                         call_579982.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578957, url, valid)
+  result = hook(call_579982, url, valid)
 
-proc call*(call_578958: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_578942;
+proc call*(call_579983: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_579967;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; callback: string = "";
@@ -917,7 +938,7 @@ proc call*(call_578958: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
-  ##       : The name of the CryptoKeyVersion public key to
+  ##       : Required. The name of the CryptoKeyVersion public key to
   ## get.
   ##   callback: string
   ##           : JSONP
@@ -927,30 +948,30 @@ proc call*(call_578958: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578959 = newJObject()
-  var query_578960 = newJObject()
-  add(query_578960, "key", newJString(key))
-  add(query_578960, "prettyPrint", newJBool(prettyPrint))
-  add(query_578960, "oauth_token", newJString(oauthToken))
-  add(query_578960, "$.xgafv", newJString(Xgafv))
-  add(query_578960, "alt", newJString(alt))
-  add(query_578960, "uploadType", newJString(uploadType))
-  add(query_578960, "quotaUser", newJString(quotaUser))
-  add(path_578959, "name", newJString(name))
-  add(query_578960, "callback", newJString(callback))
-  add(query_578960, "fields", newJString(fields))
-  add(query_578960, "access_token", newJString(accessToken))
-  add(query_578960, "upload_protocol", newJString(uploadProtocol))
-  result = call_578958.call(path_578959, query_578960, nil, nil, nil)
+  var path_579984 = newJObject()
+  var query_579985 = newJObject()
+  add(query_579985, "key", newJString(key))
+  add(query_579985, "prettyPrint", newJBool(prettyPrint))
+  add(query_579985, "oauth_token", newJString(oauthToken))
+  add(query_579985, "$.xgafv", newJString(Xgafv))
+  add(query_579985, "alt", newJString(alt))
+  add(query_579985, "uploadType", newJString(uploadType))
+  add(query_579985, "quotaUser", newJString(quotaUser))
+  add(path_579984, "name", newJString(name))
+  add(query_579985, "callback", newJString(callback))
+  add(query_579985, "fields", newJString(fields))
+  add(query_579985, "access_token", newJString(accessToken))
+  add(query_579985, "upload_protocol", newJString(uploadProtocol))
+  result = call_579983.call(path_579984, query_579985, nil, nil, nil)
 
-var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_578942(name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey",
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_579967(name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey",
     meth: HttpMethod.HttpGet, host: "cloudkms.googleapis.com",
-    route: "/v1/{name}/publicKey", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_578943,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_578944,
+    route: "/v1/{name}/publicKey", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_579968,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKey_579969,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_578961 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_578963(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_579986 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_579988(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -965,9 +986,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricD
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_578962(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_579987(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Decrypts data that was encrypted with a public key retrieved from
@@ -982,11 +1008,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymme
   ## decryption.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578964 = path.getOrDefault("name")
-  valid_578964 = validateParameter(valid_578964, JString, required = true,
+  var valid_579989 = path.getOrDefault("name")
+  valid_579989 = validateParameter(valid_579989, JString, required = true,
                                  default = nil)
-  if valid_578964 != nil:
-    section.add "name", valid_578964
+  if valid_579989 != nil:
+    section.add "name", valid_579989
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1012,61 +1038,61 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymme
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578965 = query.getOrDefault("key")
-  valid_578965 = validateParameter(valid_578965, JString, required = false,
+  var valid_579990 = query.getOrDefault("key")
+  valid_579990 = validateParameter(valid_579990, JString, required = false,
                                  default = nil)
-  if valid_578965 != nil:
-    section.add "key", valid_578965
-  var valid_578966 = query.getOrDefault("prettyPrint")
-  valid_578966 = validateParameter(valid_578966, JBool, required = false,
+  if valid_579990 != nil:
+    section.add "key", valid_579990
+  var valid_579991 = query.getOrDefault("prettyPrint")
+  valid_579991 = validateParameter(valid_579991, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578966 != nil:
-    section.add "prettyPrint", valid_578966
-  var valid_578967 = query.getOrDefault("oauth_token")
-  valid_578967 = validateParameter(valid_578967, JString, required = false,
+  if valid_579991 != nil:
+    section.add "prettyPrint", valid_579991
+  var valid_579992 = query.getOrDefault("oauth_token")
+  valid_579992 = validateParameter(valid_579992, JString, required = false,
                                  default = nil)
-  if valid_578967 != nil:
-    section.add "oauth_token", valid_578967
-  var valid_578968 = query.getOrDefault("$.xgafv")
-  valid_578968 = validateParameter(valid_578968, JString, required = false,
+  if valid_579992 != nil:
+    section.add "oauth_token", valid_579992
+  var valid_579993 = query.getOrDefault("$.xgafv")
+  valid_579993 = validateParameter(valid_579993, JString, required = false,
                                  default = newJString("1"))
-  if valid_578968 != nil:
-    section.add "$.xgafv", valid_578968
-  var valid_578969 = query.getOrDefault("alt")
-  valid_578969 = validateParameter(valid_578969, JString, required = false,
+  if valid_579993 != nil:
+    section.add "$.xgafv", valid_579993
+  var valid_579994 = query.getOrDefault("alt")
+  valid_579994 = validateParameter(valid_579994, JString, required = false,
                                  default = newJString("json"))
-  if valid_578969 != nil:
-    section.add "alt", valid_578969
-  var valid_578970 = query.getOrDefault("uploadType")
-  valid_578970 = validateParameter(valid_578970, JString, required = false,
+  if valid_579994 != nil:
+    section.add "alt", valid_579994
+  var valid_579995 = query.getOrDefault("uploadType")
+  valid_579995 = validateParameter(valid_579995, JString, required = false,
                                  default = nil)
-  if valid_578970 != nil:
-    section.add "uploadType", valid_578970
-  var valid_578971 = query.getOrDefault("quotaUser")
-  valid_578971 = validateParameter(valid_578971, JString, required = false,
+  if valid_579995 != nil:
+    section.add "uploadType", valid_579995
+  var valid_579996 = query.getOrDefault("quotaUser")
+  valid_579996 = validateParameter(valid_579996, JString, required = false,
                                  default = nil)
-  if valid_578971 != nil:
-    section.add "quotaUser", valid_578971
-  var valid_578972 = query.getOrDefault("callback")
-  valid_578972 = validateParameter(valid_578972, JString, required = false,
+  if valid_579996 != nil:
+    section.add "quotaUser", valid_579996
+  var valid_579997 = query.getOrDefault("callback")
+  valid_579997 = validateParameter(valid_579997, JString, required = false,
                                  default = nil)
-  if valid_578972 != nil:
-    section.add "callback", valid_578972
-  var valid_578973 = query.getOrDefault("fields")
-  valid_578973 = validateParameter(valid_578973, JString, required = false,
+  if valid_579997 != nil:
+    section.add "callback", valid_579997
+  var valid_579998 = query.getOrDefault("fields")
+  valid_579998 = validateParameter(valid_579998, JString, required = false,
                                  default = nil)
-  if valid_578973 != nil:
-    section.add "fields", valid_578973
-  var valid_578974 = query.getOrDefault("access_token")
-  valid_578974 = validateParameter(valid_578974, JString, required = false,
+  if valid_579998 != nil:
+    section.add "fields", valid_579998
+  var valid_579999 = query.getOrDefault("access_token")
+  valid_579999 = validateParameter(valid_579999, JString, required = false,
                                  default = nil)
-  if valid_578974 != nil:
-    section.add "access_token", valid_578974
-  var valid_578975 = query.getOrDefault("upload_protocol")
-  valid_578975 = validateParameter(valid_578975, JString, required = false,
+  if valid_579999 != nil:
+    section.add "access_token", valid_579999
+  var valid_580000 = query.getOrDefault("upload_protocol")
+  valid_580000 = validateParameter(valid_580000, JString, required = false,
                                  default = nil)
-  if valid_578975 != nil:
-    section.add "upload_protocol", valid_578975
+  if valid_580000 != nil:
+    section.add "upload_protocol", valid_580000
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1078,23 +1104,23 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymme
   if body != nil:
     result.add "body", body
 
-proc call*(call_578977: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_578961;
+proc call*(call_580002: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_579986;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Decrypts data that was encrypted with a public key retrieved from
   ## GetPublicKey corresponding to a CryptoKeyVersion with
   ## CryptoKey.purpose ASYMMETRIC_DECRYPT.
   ## 
-  let valid = call_578977.validator(path, query, header, formData, body)
-  let scheme = call_578977.pickScheme
+  let valid = call_580002.validator(path, query, header, formData, body)
+  let scheme = call_580002.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578977.url(scheme.get, call_578977.host, call_578977.base,
-                         call_578977.route, valid.getOrDefault("path"),
+  let url = call_580002.url(scheme.get, call_580002.host, call_580002.base,
+                         call_580002.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578977, url, valid)
+  result = hook(call_580002, url, valid)
 
-proc call*(call_578978: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_578961;
+proc call*(call_580003: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_579986;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -1130,33 +1156,33 @@ proc call*(call_578978: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_578979 = newJObject()
-  var query_578980 = newJObject()
-  var body_578981 = newJObject()
-  add(query_578980, "key", newJString(key))
-  add(query_578980, "prettyPrint", newJBool(prettyPrint))
-  add(query_578980, "oauth_token", newJString(oauthToken))
-  add(query_578980, "$.xgafv", newJString(Xgafv))
-  add(query_578980, "alt", newJString(alt))
-  add(query_578980, "uploadType", newJString(uploadType))
-  add(query_578980, "quotaUser", newJString(quotaUser))
-  add(path_578979, "name", newJString(name))
+  var path_580004 = newJObject()
+  var query_580005 = newJObject()
+  var body_580006 = newJObject()
+  add(query_580005, "key", newJString(key))
+  add(query_580005, "prettyPrint", newJBool(prettyPrint))
+  add(query_580005, "oauth_token", newJString(oauthToken))
+  add(query_580005, "$.xgafv", newJString(Xgafv))
+  add(query_580005, "alt", newJString(alt))
+  add(query_580005, "uploadType", newJString(uploadType))
+  add(query_580005, "quotaUser", newJString(quotaUser))
+  add(path_580004, "name", newJString(name))
   if body != nil:
-    body_578981 = body
-  add(query_578980, "callback", newJString(callback))
-  add(query_578980, "fields", newJString(fields))
-  add(query_578980, "access_token", newJString(accessToken))
-  add(query_578980, "upload_protocol", newJString(uploadProtocol))
-  result = call_578978.call(path_578979, query_578980, nil, nil, body_578981)
+    body_580006 = body
+  add(query_580005, "callback", newJString(callback))
+  add(query_580005, "fields", newJString(fields))
+  add(query_580005, "access_token", newJString(accessToken))
+  add(query_580005, "upload_protocol", newJString(uploadProtocol))
+  result = call_580003.call(path_580004, query_580005, nil, nil, body_580006)
 
-var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_578961(name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt",
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_579986(name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt",
     meth: HttpMethod.HttpPost, host: "cloudkms.googleapis.com",
-    route: "/v1/{name}:asymmetricDecrypt", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_578962,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_578963,
+    route: "/v1/{name}:asymmetricDecrypt", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_579987,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecrypt_579988,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_578982 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_578984(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_580007 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_580009(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1171,9 +1197,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricS
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_578983(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_580008(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Signs data using a CryptoKeyVersion with CryptoKey.purpose
@@ -1187,11 +1218,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymme
   ##       : Required. The resource name of the CryptoKeyVersion to use for signing.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_578985 = path.getOrDefault("name")
-  valid_578985 = validateParameter(valid_578985, JString, required = true,
+  var valid_580010 = path.getOrDefault("name")
+  valid_580010 = validateParameter(valid_580010, JString, required = true,
                                  default = nil)
-  if valid_578985 != nil:
-    section.add "name", valid_578985
+  if valid_580010 != nil:
+    section.add "name", valid_580010
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1217,61 +1248,61 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymme
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_578986 = query.getOrDefault("key")
-  valid_578986 = validateParameter(valid_578986, JString, required = false,
+  var valid_580011 = query.getOrDefault("key")
+  valid_580011 = validateParameter(valid_580011, JString, required = false,
                                  default = nil)
-  if valid_578986 != nil:
-    section.add "key", valid_578986
-  var valid_578987 = query.getOrDefault("prettyPrint")
-  valid_578987 = validateParameter(valid_578987, JBool, required = false,
+  if valid_580011 != nil:
+    section.add "key", valid_580011
+  var valid_580012 = query.getOrDefault("prettyPrint")
+  valid_580012 = validateParameter(valid_580012, JBool, required = false,
                                  default = newJBool(true))
-  if valid_578987 != nil:
-    section.add "prettyPrint", valid_578987
-  var valid_578988 = query.getOrDefault("oauth_token")
-  valid_578988 = validateParameter(valid_578988, JString, required = false,
+  if valid_580012 != nil:
+    section.add "prettyPrint", valid_580012
+  var valid_580013 = query.getOrDefault("oauth_token")
+  valid_580013 = validateParameter(valid_580013, JString, required = false,
                                  default = nil)
-  if valid_578988 != nil:
-    section.add "oauth_token", valid_578988
-  var valid_578989 = query.getOrDefault("$.xgafv")
-  valid_578989 = validateParameter(valid_578989, JString, required = false,
+  if valid_580013 != nil:
+    section.add "oauth_token", valid_580013
+  var valid_580014 = query.getOrDefault("$.xgafv")
+  valid_580014 = validateParameter(valid_580014, JString, required = false,
                                  default = newJString("1"))
-  if valid_578989 != nil:
-    section.add "$.xgafv", valid_578989
-  var valid_578990 = query.getOrDefault("alt")
-  valid_578990 = validateParameter(valid_578990, JString, required = false,
+  if valid_580014 != nil:
+    section.add "$.xgafv", valid_580014
+  var valid_580015 = query.getOrDefault("alt")
+  valid_580015 = validateParameter(valid_580015, JString, required = false,
                                  default = newJString("json"))
-  if valid_578990 != nil:
-    section.add "alt", valid_578990
-  var valid_578991 = query.getOrDefault("uploadType")
-  valid_578991 = validateParameter(valid_578991, JString, required = false,
+  if valid_580015 != nil:
+    section.add "alt", valid_580015
+  var valid_580016 = query.getOrDefault("uploadType")
+  valid_580016 = validateParameter(valid_580016, JString, required = false,
                                  default = nil)
-  if valid_578991 != nil:
-    section.add "uploadType", valid_578991
-  var valid_578992 = query.getOrDefault("quotaUser")
-  valid_578992 = validateParameter(valid_578992, JString, required = false,
+  if valid_580016 != nil:
+    section.add "uploadType", valid_580016
+  var valid_580017 = query.getOrDefault("quotaUser")
+  valid_580017 = validateParameter(valid_580017, JString, required = false,
                                  default = nil)
-  if valid_578992 != nil:
-    section.add "quotaUser", valid_578992
-  var valid_578993 = query.getOrDefault("callback")
-  valid_578993 = validateParameter(valid_578993, JString, required = false,
+  if valid_580017 != nil:
+    section.add "quotaUser", valid_580017
+  var valid_580018 = query.getOrDefault("callback")
+  valid_580018 = validateParameter(valid_580018, JString, required = false,
                                  default = nil)
-  if valid_578993 != nil:
-    section.add "callback", valid_578993
-  var valid_578994 = query.getOrDefault("fields")
-  valid_578994 = validateParameter(valid_578994, JString, required = false,
+  if valid_580018 != nil:
+    section.add "callback", valid_580018
+  var valid_580019 = query.getOrDefault("fields")
+  valid_580019 = validateParameter(valid_580019, JString, required = false,
                                  default = nil)
-  if valid_578994 != nil:
-    section.add "fields", valid_578994
-  var valid_578995 = query.getOrDefault("access_token")
-  valid_578995 = validateParameter(valid_578995, JString, required = false,
+  if valid_580019 != nil:
+    section.add "fields", valid_580019
+  var valid_580020 = query.getOrDefault("access_token")
+  valid_580020 = validateParameter(valid_580020, JString, required = false,
                                  default = nil)
-  if valid_578995 != nil:
-    section.add "access_token", valid_578995
-  var valid_578996 = query.getOrDefault("upload_protocol")
-  valid_578996 = validateParameter(valid_578996, JString, required = false,
+  if valid_580020 != nil:
+    section.add "access_token", valid_580020
+  var valid_580021 = query.getOrDefault("upload_protocol")
+  valid_580021 = validateParameter(valid_580021, JString, required = false,
                                  default = nil)
-  if valid_578996 != nil:
-    section.add "upload_protocol", valid_578996
+  if valid_580021 != nil:
+    section.add "upload_protocol", valid_580021
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1283,23 +1314,23 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymme
   if body != nil:
     result.add "body", body
 
-proc call*(call_578998: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_578982;
+proc call*(call_580023: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_580007;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Signs data using a CryptoKeyVersion with CryptoKey.purpose
   ## ASYMMETRIC_SIGN, producing a signature that can be verified with the public
   ## key retrieved from GetPublicKey.
   ## 
-  let valid = call_578998.validator(path, query, header, formData, body)
-  let scheme = call_578998.pickScheme
+  let valid = call_580023.validator(path, query, header, formData, body)
+  let scheme = call_580023.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_578998.url(scheme.get, call_578998.host, call_578998.base,
-                         call_578998.route, valid.getOrDefault("path"),
+  let url = call_580023.url(scheme.get, call_580023.host, call_580023.base,
+                         call_580023.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_578998, url, valid)
+  result = hook(call_580023, url, valid)
 
-proc call*(call_578999: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_578982;
+proc call*(call_580024: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_580007;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -1334,33 +1365,33 @@ proc call*(call_578999: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579000 = newJObject()
-  var query_579001 = newJObject()
-  var body_579002 = newJObject()
-  add(query_579001, "key", newJString(key))
-  add(query_579001, "prettyPrint", newJBool(prettyPrint))
-  add(query_579001, "oauth_token", newJString(oauthToken))
-  add(query_579001, "$.xgafv", newJString(Xgafv))
-  add(query_579001, "alt", newJString(alt))
-  add(query_579001, "uploadType", newJString(uploadType))
-  add(query_579001, "quotaUser", newJString(quotaUser))
-  add(path_579000, "name", newJString(name))
+  var path_580025 = newJObject()
+  var query_580026 = newJObject()
+  var body_580027 = newJObject()
+  add(query_580026, "key", newJString(key))
+  add(query_580026, "prettyPrint", newJBool(prettyPrint))
+  add(query_580026, "oauth_token", newJString(oauthToken))
+  add(query_580026, "$.xgafv", newJString(Xgafv))
+  add(query_580026, "alt", newJString(alt))
+  add(query_580026, "uploadType", newJString(uploadType))
+  add(query_580026, "quotaUser", newJString(quotaUser))
+  add(path_580025, "name", newJString(name))
   if body != nil:
-    body_579002 = body
-  add(query_579001, "callback", newJString(callback))
-  add(query_579001, "fields", newJString(fields))
-  add(query_579001, "access_token", newJString(accessToken))
-  add(query_579001, "upload_protocol", newJString(uploadProtocol))
-  result = call_578999.call(path_579000, query_579001, nil, nil, body_579002)
+    body_580027 = body
+  add(query_580026, "callback", newJString(callback))
+  add(query_580026, "fields", newJString(fields))
+  add(query_580026, "access_token", newJString(accessToken))
+  add(query_580026, "upload_protocol", newJString(uploadProtocol))
+  result = call_580024.call(path_580025, query_580026, nil, nil, body_580027)
 
-var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_578982(name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign",
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_580007(name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign",
     meth: HttpMethod.HttpPost, host: "cloudkms.googleapis.com",
-    route: "/v1/{name}:asymmetricSign", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_578983,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_578984,
+    route: "/v1/{name}:asymmetricSign", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_580008,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSign_580009,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_579003 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_579005(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_580028 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_580030(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1375,9 +1406,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_579005(
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_579004(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_580029(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Decrypts data that was protected by Encrypt. The CryptoKey.purpose
@@ -1391,11 +1427,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_579004(
   ## The server will choose the appropriate version.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579006 = path.getOrDefault("name")
-  valid_579006 = validateParameter(valid_579006, JString, required = true,
+  var valid_580031 = path.getOrDefault("name")
+  valid_580031 = validateParameter(valid_580031, JString, required = true,
                                  default = nil)
-  if valid_579006 != nil:
-    section.add "name", valid_579006
+  if valid_580031 != nil:
+    section.add "name", valid_580031
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1421,61 +1457,61 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_579004(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579007 = query.getOrDefault("key")
-  valid_579007 = validateParameter(valid_579007, JString, required = false,
+  var valid_580032 = query.getOrDefault("key")
+  valid_580032 = validateParameter(valid_580032, JString, required = false,
                                  default = nil)
-  if valid_579007 != nil:
-    section.add "key", valid_579007
-  var valid_579008 = query.getOrDefault("prettyPrint")
-  valid_579008 = validateParameter(valid_579008, JBool, required = false,
+  if valid_580032 != nil:
+    section.add "key", valid_580032
+  var valid_580033 = query.getOrDefault("prettyPrint")
+  valid_580033 = validateParameter(valid_580033, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579008 != nil:
-    section.add "prettyPrint", valid_579008
-  var valid_579009 = query.getOrDefault("oauth_token")
-  valid_579009 = validateParameter(valid_579009, JString, required = false,
+  if valid_580033 != nil:
+    section.add "prettyPrint", valid_580033
+  var valid_580034 = query.getOrDefault("oauth_token")
+  valid_580034 = validateParameter(valid_580034, JString, required = false,
                                  default = nil)
-  if valid_579009 != nil:
-    section.add "oauth_token", valid_579009
-  var valid_579010 = query.getOrDefault("$.xgafv")
-  valid_579010 = validateParameter(valid_579010, JString, required = false,
+  if valid_580034 != nil:
+    section.add "oauth_token", valid_580034
+  var valid_580035 = query.getOrDefault("$.xgafv")
+  valid_580035 = validateParameter(valid_580035, JString, required = false,
                                  default = newJString("1"))
-  if valid_579010 != nil:
-    section.add "$.xgafv", valid_579010
-  var valid_579011 = query.getOrDefault("alt")
-  valid_579011 = validateParameter(valid_579011, JString, required = false,
+  if valid_580035 != nil:
+    section.add "$.xgafv", valid_580035
+  var valid_580036 = query.getOrDefault("alt")
+  valid_580036 = validateParameter(valid_580036, JString, required = false,
                                  default = newJString("json"))
-  if valid_579011 != nil:
-    section.add "alt", valid_579011
-  var valid_579012 = query.getOrDefault("uploadType")
-  valid_579012 = validateParameter(valid_579012, JString, required = false,
+  if valid_580036 != nil:
+    section.add "alt", valid_580036
+  var valid_580037 = query.getOrDefault("uploadType")
+  valid_580037 = validateParameter(valid_580037, JString, required = false,
                                  default = nil)
-  if valid_579012 != nil:
-    section.add "uploadType", valid_579012
-  var valid_579013 = query.getOrDefault("quotaUser")
-  valid_579013 = validateParameter(valid_579013, JString, required = false,
+  if valid_580037 != nil:
+    section.add "uploadType", valid_580037
+  var valid_580038 = query.getOrDefault("quotaUser")
+  valid_580038 = validateParameter(valid_580038, JString, required = false,
                                  default = nil)
-  if valid_579013 != nil:
-    section.add "quotaUser", valid_579013
-  var valid_579014 = query.getOrDefault("callback")
-  valid_579014 = validateParameter(valid_579014, JString, required = false,
+  if valid_580038 != nil:
+    section.add "quotaUser", valid_580038
+  var valid_580039 = query.getOrDefault("callback")
+  valid_580039 = validateParameter(valid_580039, JString, required = false,
                                  default = nil)
-  if valid_579014 != nil:
-    section.add "callback", valid_579014
-  var valid_579015 = query.getOrDefault("fields")
-  valid_579015 = validateParameter(valid_579015, JString, required = false,
+  if valid_580039 != nil:
+    section.add "callback", valid_580039
+  var valid_580040 = query.getOrDefault("fields")
+  valid_580040 = validateParameter(valid_580040, JString, required = false,
                                  default = nil)
-  if valid_579015 != nil:
-    section.add "fields", valid_579015
-  var valid_579016 = query.getOrDefault("access_token")
-  valid_579016 = validateParameter(valid_579016, JString, required = false,
+  if valid_580040 != nil:
+    section.add "fields", valid_580040
+  var valid_580041 = query.getOrDefault("access_token")
+  valid_580041 = validateParameter(valid_580041, JString, required = false,
                                  default = nil)
-  if valid_579016 != nil:
-    section.add "access_token", valid_579016
-  var valid_579017 = query.getOrDefault("upload_protocol")
-  valid_579017 = validateParameter(valid_579017, JString, required = false,
+  if valid_580041 != nil:
+    section.add "access_token", valid_580041
+  var valid_580042 = query.getOrDefault("upload_protocol")
+  valid_580042 = validateParameter(valid_580042, JString, required = false,
                                  default = nil)
-  if valid_579017 != nil:
-    section.add "upload_protocol", valid_579017
+  if valid_580042 != nil:
+    section.add "upload_protocol", valid_580042
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1487,22 +1523,22 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_579004(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579019: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_579003;
+proc call*(call_580044: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_580028;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Decrypts data that was protected by Encrypt. The CryptoKey.purpose
   ## must be ENCRYPT_DECRYPT.
   ## 
-  let valid = call_579019.validator(path, query, header, formData, body)
-  let scheme = call_579019.pickScheme
+  let valid = call_580044.validator(path, query, header, formData, body)
+  let scheme = call_580044.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579019.url(scheme.get, call_579019.host, call_579019.base,
-                         call_579019.route, valid.getOrDefault("path"),
+  let url = call_580044.url(scheme.get, call_580044.host, call_580044.base,
+                         call_580044.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579019, url, valid)
+  result = hook(call_580044, url, valid)
 
-proc call*(call_579020: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_579003;
+proc call*(call_580045: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_580028;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -1537,35 +1573,35 @@ proc call*(call_579020: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579021 = newJObject()
-  var query_579022 = newJObject()
-  var body_579023 = newJObject()
-  add(query_579022, "key", newJString(key))
-  add(query_579022, "prettyPrint", newJBool(prettyPrint))
-  add(query_579022, "oauth_token", newJString(oauthToken))
-  add(query_579022, "$.xgafv", newJString(Xgafv))
-  add(query_579022, "alt", newJString(alt))
-  add(query_579022, "uploadType", newJString(uploadType))
-  add(query_579022, "quotaUser", newJString(quotaUser))
-  add(path_579021, "name", newJString(name))
+  var path_580046 = newJObject()
+  var query_580047 = newJObject()
+  var body_580048 = newJObject()
+  add(query_580047, "key", newJString(key))
+  add(query_580047, "prettyPrint", newJBool(prettyPrint))
+  add(query_580047, "oauth_token", newJString(oauthToken))
+  add(query_580047, "$.xgafv", newJString(Xgafv))
+  add(query_580047, "alt", newJString(alt))
+  add(query_580047, "uploadType", newJString(uploadType))
+  add(query_580047, "quotaUser", newJString(quotaUser))
+  add(path_580046, "name", newJString(name))
   if body != nil:
-    body_579023 = body
-  add(query_579022, "callback", newJString(callback))
-  add(query_579022, "fields", newJString(fields))
-  add(query_579022, "access_token", newJString(accessToken))
-  add(query_579022, "upload_protocol", newJString(uploadProtocol))
-  result = call_579020.call(path_579021, query_579022, nil, nil, body_579023)
+    body_580048 = body
+  add(query_580047, "callback", newJString(callback))
+  add(query_580047, "fields", newJString(fields))
+  add(query_580047, "access_token", newJString(accessToken))
+  add(query_580047, "upload_protocol", newJString(uploadProtocol))
+  result = call_580045.call(path_580046, query_580047, nil, nil, body_580048)
 
-var cloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_579003(
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_580028(
     name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt",
     meth: HttpMethod.HttpPost, host: "cloudkms.googleapis.com",
     route: "/v1/{name}:decrypt",
-    validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_579004,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_579005,
+    validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_580029,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysDecrypt_580030,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_579024 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_579026(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_580049 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_580051(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1580,9 +1616,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_579
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_579025(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_580050(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Schedule a CryptoKeyVersion for destruction.
@@ -1602,14 +1643,14 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestro
   result = newJObject()
   ## parameters in `path` object:
   ##   name: JString (required)
-  ##       : The resource name of the CryptoKeyVersion to destroy.
+  ##       : Required. The resource name of the CryptoKeyVersion to destroy.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579027 = path.getOrDefault("name")
-  valid_579027 = validateParameter(valid_579027, JString, required = true,
+  var valid_580052 = path.getOrDefault("name")
+  valid_580052 = validateParameter(valid_580052, JString, required = true,
                                  default = nil)
-  if valid_579027 != nil:
-    section.add "name", valid_579027
+  if valid_580052 != nil:
+    section.add "name", valid_580052
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1635,61 +1676,61 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestro
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579028 = query.getOrDefault("key")
-  valid_579028 = validateParameter(valid_579028, JString, required = false,
+  var valid_580053 = query.getOrDefault("key")
+  valid_580053 = validateParameter(valid_580053, JString, required = false,
                                  default = nil)
-  if valid_579028 != nil:
-    section.add "key", valid_579028
-  var valid_579029 = query.getOrDefault("prettyPrint")
-  valid_579029 = validateParameter(valid_579029, JBool, required = false,
+  if valid_580053 != nil:
+    section.add "key", valid_580053
+  var valid_580054 = query.getOrDefault("prettyPrint")
+  valid_580054 = validateParameter(valid_580054, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579029 != nil:
-    section.add "prettyPrint", valid_579029
-  var valid_579030 = query.getOrDefault("oauth_token")
-  valid_579030 = validateParameter(valid_579030, JString, required = false,
+  if valid_580054 != nil:
+    section.add "prettyPrint", valid_580054
+  var valid_580055 = query.getOrDefault("oauth_token")
+  valid_580055 = validateParameter(valid_580055, JString, required = false,
                                  default = nil)
-  if valid_579030 != nil:
-    section.add "oauth_token", valid_579030
-  var valid_579031 = query.getOrDefault("$.xgafv")
-  valid_579031 = validateParameter(valid_579031, JString, required = false,
+  if valid_580055 != nil:
+    section.add "oauth_token", valid_580055
+  var valid_580056 = query.getOrDefault("$.xgafv")
+  valid_580056 = validateParameter(valid_580056, JString, required = false,
                                  default = newJString("1"))
-  if valid_579031 != nil:
-    section.add "$.xgafv", valid_579031
-  var valid_579032 = query.getOrDefault("alt")
-  valid_579032 = validateParameter(valid_579032, JString, required = false,
+  if valid_580056 != nil:
+    section.add "$.xgafv", valid_580056
+  var valid_580057 = query.getOrDefault("alt")
+  valid_580057 = validateParameter(valid_580057, JString, required = false,
                                  default = newJString("json"))
-  if valid_579032 != nil:
-    section.add "alt", valid_579032
-  var valid_579033 = query.getOrDefault("uploadType")
-  valid_579033 = validateParameter(valid_579033, JString, required = false,
+  if valid_580057 != nil:
+    section.add "alt", valid_580057
+  var valid_580058 = query.getOrDefault("uploadType")
+  valid_580058 = validateParameter(valid_580058, JString, required = false,
                                  default = nil)
-  if valid_579033 != nil:
-    section.add "uploadType", valid_579033
-  var valid_579034 = query.getOrDefault("quotaUser")
-  valid_579034 = validateParameter(valid_579034, JString, required = false,
+  if valid_580058 != nil:
+    section.add "uploadType", valid_580058
+  var valid_580059 = query.getOrDefault("quotaUser")
+  valid_580059 = validateParameter(valid_580059, JString, required = false,
                                  default = nil)
-  if valid_579034 != nil:
-    section.add "quotaUser", valid_579034
-  var valid_579035 = query.getOrDefault("callback")
-  valid_579035 = validateParameter(valid_579035, JString, required = false,
+  if valid_580059 != nil:
+    section.add "quotaUser", valid_580059
+  var valid_580060 = query.getOrDefault("callback")
+  valid_580060 = validateParameter(valid_580060, JString, required = false,
                                  default = nil)
-  if valid_579035 != nil:
-    section.add "callback", valid_579035
-  var valid_579036 = query.getOrDefault("fields")
-  valid_579036 = validateParameter(valid_579036, JString, required = false,
+  if valid_580060 != nil:
+    section.add "callback", valid_580060
+  var valid_580061 = query.getOrDefault("fields")
+  valid_580061 = validateParameter(valid_580061, JString, required = false,
                                  default = nil)
-  if valid_579036 != nil:
-    section.add "fields", valid_579036
-  var valid_579037 = query.getOrDefault("access_token")
-  valid_579037 = validateParameter(valid_579037, JString, required = false,
+  if valid_580061 != nil:
+    section.add "fields", valid_580061
+  var valid_580062 = query.getOrDefault("access_token")
+  valid_580062 = validateParameter(valid_580062, JString, required = false,
                                  default = nil)
-  if valid_579037 != nil:
-    section.add "access_token", valid_579037
-  var valid_579038 = query.getOrDefault("upload_protocol")
-  valid_579038 = validateParameter(valid_579038, JString, required = false,
+  if valid_580062 != nil:
+    section.add "access_token", valid_580062
+  var valid_580063 = query.getOrDefault("upload_protocol")
+  valid_580063 = validateParameter(valid_580063, JString, required = false,
                                  default = nil)
-  if valid_579038 != nil:
-    section.add "upload_protocol", valid_579038
+  if valid_580063 != nil:
+    section.add "upload_protocol", valid_580063
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1701,7 +1742,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestro
   if body != nil:
     result.add "body", body
 
-proc call*(call_579040: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_579024;
+proc call*(call_580065: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_580049;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Schedule a CryptoKeyVersion for destruction.
@@ -1717,16 +1758,16 @@ proc call*(call_579040: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ## Before the destroy_time is reached,
   ## RestoreCryptoKeyVersion may be called to reverse the process.
   ## 
-  let valid = call_579040.validator(path, query, header, formData, body)
-  let scheme = call_579040.pickScheme
+  let valid = call_580065.validator(path, query, header, formData, body)
+  let scheme = call_580065.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579040.url(scheme.get, call_579040.host, call_579040.base,
-                         call_579040.route, valid.getOrDefault("path"),
+  let url = call_580065.url(scheme.get, call_580065.host, call_580065.base,
+                         call_580065.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579040, url, valid)
+  result = hook(call_580065, url, valid)
 
-proc call*(call_579041: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_579024;
+proc call*(call_580066: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_580049;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -1760,7 +1801,7 @@ proc call*(call_579041: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
-  ##       : The resource name of the CryptoKeyVersion to destroy.
+  ##       : Required. The resource name of the CryptoKeyVersion to destroy.
   ##   body: JObject
   ##   callback: string
   ##           : JSONP
@@ -1770,33 +1811,33 @@ proc call*(call_579041: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579042 = newJObject()
-  var query_579043 = newJObject()
-  var body_579044 = newJObject()
-  add(query_579043, "key", newJString(key))
-  add(query_579043, "prettyPrint", newJBool(prettyPrint))
-  add(query_579043, "oauth_token", newJString(oauthToken))
-  add(query_579043, "$.xgafv", newJString(Xgafv))
-  add(query_579043, "alt", newJString(alt))
-  add(query_579043, "uploadType", newJString(uploadType))
-  add(query_579043, "quotaUser", newJString(quotaUser))
-  add(path_579042, "name", newJString(name))
+  var path_580067 = newJObject()
+  var query_580068 = newJObject()
+  var body_580069 = newJObject()
+  add(query_580068, "key", newJString(key))
+  add(query_580068, "prettyPrint", newJBool(prettyPrint))
+  add(query_580068, "oauth_token", newJString(oauthToken))
+  add(query_580068, "$.xgafv", newJString(Xgafv))
+  add(query_580068, "alt", newJString(alt))
+  add(query_580068, "uploadType", newJString(uploadType))
+  add(query_580068, "quotaUser", newJString(quotaUser))
+  add(path_580067, "name", newJString(name))
   if body != nil:
-    body_579044 = body
-  add(query_579043, "callback", newJString(callback))
-  add(query_579043, "fields", newJString(fields))
-  add(query_579043, "access_token", newJString(accessToken))
-  add(query_579043, "upload_protocol", newJString(uploadProtocol))
-  result = call_579041.call(path_579042, query_579043, nil, nil, body_579044)
+    body_580069 = body
+  add(query_580068, "callback", newJString(callback))
+  add(query_580068, "fields", newJString(fields))
+  add(query_580068, "access_token", newJString(accessToken))
+  add(query_580068, "upload_protocol", newJString(uploadProtocol))
+  result = call_580066.call(path_580067, query_580068, nil, nil, body_580069)
 
-var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_579024(name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy",
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_580049(name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy",
     meth: HttpMethod.HttpPost, host: "cloudkms.googleapis.com",
-    route: "/v1/{name}:destroy", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_579025,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_579026,
+    route: "/v1/{name}:destroy", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_580050,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroy_580051,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_579045 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_579047(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_580070 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_580072(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -1811,9 +1852,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_579047(
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_579046(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_580071(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Encrypts data, so that it can only be recovered by a call to Decrypt.
@@ -1831,11 +1877,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_579046(
   ## primary version.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579048 = path.getOrDefault("name")
-  valid_579048 = validateParameter(valid_579048, JString, required = true,
+  var valid_580073 = path.getOrDefault("name")
+  valid_580073 = validateParameter(valid_580073, JString, required = true,
                                  default = nil)
-  if valid_579048 != nil:
-    section.add "name", valid_579048
+  if valid_580073 != nil:
+    section.add "name", valid_580073
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -1861,61 +1907,61 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_579046(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579049 = query.getOrDefault("key")
-  valid_579049 = validateParameter(valid_579049, JString, required = false,
+  var valid_580074 = query.getOrDefault("key")
+  valid_580074 = validateParameter(valid_580074, JString, required = false,
                                  default = nil)
-  if valid_579049 != nil:
-    section.add "key", valid_579049
-  var valid_579050 = query.getOrDefault("prettyPrint")
-  valid_579050 = validateParameter(valid_579050, JBool, required = false,
+  if valid_580074 != nil:
+    section.add "key", valid_580074
+  var valid_580075 = query.getOrDefault("prettyPrint")
+  valid_580075 = validateParameter(valid_580075, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579050 != nil:
-    section.add "prettyPrint", valid_579050
-  var valid_579051 = query.getOrDefault("oauth_token")
-  valid_579051 = validateParameter(valid_579051, JString, required = false,
+  if valid_580075 != nil:
+    section.add "prettyPrint", valid_580075
+  var valid_580076 = query.getOrDefault("oauth_token")
+  valid_580076 = validateParameter(valid_580076, JString, required = false,
                                  default = nil)
-  if valid_579051 != nil:
-    section.add "oauth_token", valid_579051
-  var valid_579052 = query.getOrDefault("$.xgafv")
-  valid_579052 = validateParameter(valid_579052, JString, required = false,
+  if valid_580076 != nil:
+    section.add "oauth_token", valid_580076
+  var valid_580077 = query.getOrDefault("$.xgafv")
+  valid_580077 = validateParameter(valid_580077, JString, required = false,
                                  default = newJString("1"))
-  if valid_579052 != nil:
-    section.add "$.xgafv", valid_579052
-  var valid_579053 = query.getOrDefault("alt")
-  valid_579053 = validateParameter(valid_579053, JString, required = false,
+  if valid_580077 != nil:
+    section.add "$.xgafv", valid_580077
+  var valid_580078 = query.getOrDefault("alt")
+  valid_580078 = validateParameter(valid_580078, JString, required = false,
                                  default = newJString("json"))
-  if valid_579053 != nil:
-    section.add "alt", valid_579053
-  var valid_579054 = query.getOrDefault("uploadType")
-  valid_579054 = validateParameter(valid_579054, JString, required = false,
+  if valid_580078 != nil:
+    section.add "alt", valid_580078
+  var valid_580079 = query.getOrDefault("uploadType")
+  valid_580079 = validateParameter(valid_580079, JString, required = false,
                                  default = nil)
-  if valid_579054 != nil:
-    section.add "uploadType", valid_579054
-  var valid_579055 = query.getOrDefault("quotaUser")
-  valid_579055 = validateParameter(valid_579055, JString, required = false,
+  if valid_580079 != nil:
+    section.add "uploadType", valid_580079
+  var valid_580080 = query.getOrDefault("quotaUser")
+  valid_580080 = validateParameter(valid_580080, JString, required = false,
                                  default = nil)
-  if valid_579055 != nil:
-    section.add "quotaUser", valid_579055
-  var valid_579056 = query.getOrDefault("callback")
-  valid_579056 = validateParameter(valid_579056, JString, required = false,
+  if valid_580080 != nil:
+    section.add "quotaUser", valid_580080
+  var valid_580081 = query.getOrDefault("callback")
+  valid_580081 = validateParameter(valid_580081, JString, required = false,
                                  default = nil)
-  if valid_579056 != nil:
-    section.add "callback", valid_579056
-  var valid_579057 = query.getOrDefault("fields")
-  valid_579057 = validateParameter(valid_579057, JString, required = false,
+  if valid_580081 != nil:
+    section.add "callback", valid_580081
+  var valid_580082 = query.getOrDefault("fields")
+  valid_580082 = validateParameter(valid_580082, JString, required = false,
                                  default = nil)
-  if valid_579057 != nil:
-    section.add "fields", valid_579057
-  var valid_579058 = query.getOrDefault("access_token")
-  valid_579058 = validateParameter(valid_579058, JString, required = false,
+  if valid_580082 != nil:
+    section.add "fields", valid_580082
+  var valid_580083 = query.getOrDefault("access_token")
+  valid_580083 = validateParameter(valid_580083, JString, required = false,
                                  default = nil)
-  if valid_579058 != nil:
-    section.add "access_token", valid_579058
-  var valid_579059 = query.getOrDefault("upload_protocol")
-  valid_579059 = validateParameter(valid_579059, JString, required = false,
+  if valid_580083 != nil:
+    section.add "access_token", valid_580083
+  var valid_580084 = query.getOrDefault("upload_protocol")
+  valid_580084 = validateParameter(valid_580084, JString, required = false,
                                  default = nil)
-  if valid_579059 != nil:
-    section.add "upload_protocol", valid_579059
+  if valid_580084 != nil:
+    section.add "upload_protocol", valid_580084
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -1927,23 +1973,23 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_579046(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579061: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_579045;
+proc call*(call_580086: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_580070;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Encrypts data, so that it can only be recovered by a call to Decrypt.
   ## The CryptoKey.purpose must be
   ## ENCRYPT_DECRYPT.
   ## 
-  let valid = call_579061.validator(path, query, header, formData, body)
-  let scheme = call_579061.pickScheme
+  let valid = call_580086.validator(path, query, header, formData, body)
+  let scheme = call_580086.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579061.url(scheme.get, call_579061.host, call_579061.base,
-                         call_579061.route, valid.getOrDefault("path"),
+  let url = call_580086.url(scheme.get, call_580086.host, call_580086.base,
+                         call_580086.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579061, url, valid)
+  result = hook(call_580086, url, valid)
 
-proc call*(call_579062: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_579045;
+proc call*(call_580087: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_580070;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -1982,35 +2028,35 @@ proc call*(call_579062: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579063 = newJObject()
-  var query_579064 = newJObject()
-  var body_579065 = newJObject()
-  add(query_579064, "key", newJString(key))
-  add(query_579064, "prettyPrint", newJBool(prettyPrint))
-  add(query_579064, "oauth_token", newJString(oauthToken))
-  add(query_579064, "$.xgafv", newJString(Xgafv))
-  add(query_579064, "alt", newJString(alt))
-  add(query_579064, "uploadType", newJString(uploadType))
-  add(query_579064, "quotaUser", newJString(quotaUser))
-  add(path_579063, "name", newJString(name))
+  var path_580088 = newJObject()
+  var query_580089 = newJObject()
+  var body_580090 = newJObject()
+  add(query_580089, "key", newJString(key))
+  add(query_580089, "prettyPrint", newJBool(prettyPrint))
+  add(query_580089, "oauth_token", newJString(oauthToken))
+  add(query_580089, "$.xgafv", newJString(Xgafv))
+  add(query_580089, "alt", newJString(alt))
+  add(query_580089, "uploadType", newJString(uploadType))
+  add(query_580089, "quotaUser", newJString(quotaUser))
+  add(path_580088, "name", newJString(name))
   if body != nil:
-    body_579065 = body
-  add(query_579064, "callback", newJString(callback))
-  add(query_579064, "fields", newJString(fields))
-  add(query_579064, "access_token", newJString(accessToken))
-  add(query_579064, "upload_protocol", newJString(uploadProtocol))
-  result = call_579062.call(path_579063, query_579064, nil, nil, body_579065)
+    body_580090 = body
+  add(query_580089, "callback", newJString(callback))
+  add(query_580089, "fields", newJString(fields))
+  add(query_580089, "access_token", newJString(accessToken))
+  add(query_580089, "upload_protocol", newJString(uploadProtocol))
+  result = call_580087.call(path_580088, query_580089, nil, nil, body_580090)
 
-var cloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_579045(
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_580070(
     name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt",
     meth: HttpMethod.HttpPost, host: "cloudkms.googleapis.com",
     route: "/v1/{name}:encrypt",
-    validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_579046,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_579047,
+    validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_580071,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysEncrypt_580072,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_579066 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_579068(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_580091 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_580093(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -2025,9 +2071,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_579
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_579067(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_580092(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Restore a CryptoKeyVersion in the
@@ -2042,14 +2093,14 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestor
   result = newJObject()
   ## parameters in `path` object:
   ##   name: JString (required)
-  ##       : The resource name of the CryptoKeyVersion to restore.
+  ##       : Required. The resource name of the CryptoKeyVersion to restore.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579069 = path.getOrDefault("name")
-  valid_579069 = validateParameter(valid_579069, JString, required = true,
+  var valid_580094 = path.getOrDefault("name")
+  valid_580094 = validateParameter(valid_580094, JString, required = true,
                                  default = nil)
-  if valid_579069 != nil:
-    section.add "name", valid_579069
+  if valid_580094 != nil:
+    section.add "name", valid_580094
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2075,61 +2126,61 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestor
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579070 = query.getOrDefault("key")
-  valid_579070 = validateParameter(valid_579070, JString, required = false,
+  var valid_580095 = query.getOrDefault("key")
+  valid_580095 = validateParameter(valid_580095, JString, required = false,
                                  default = nil)
-  if valid_579070 != nil:
-    section.add "key", valid_579070
-  var valid_579071 = query.getOrDefault("prettyPrint")
-  valid_579071 = validateParameter(valid_579071, JBool, required = false,
+  if valid_580095 != nil:
+    section.add "key", valid_580095
+  var valid_580096 = query.getOrDefault("prettyPrint")
+  valid_580096 = validateParameter(valid_580096, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579071 != nil:
-    section.add "prettyPrint", valid_579071
-  var valid_579072 = query.getOrDefault("oauth_token")
-  valid_579072 = validateParameter(valid_579072, JString, required = false,
+  if valid_580096 != nil:
+    section.add "prettyPrint", valid_580096
+  var valid_580097 = query.getOrDefault("oauth_token")
+  valid_580097 = validateParameter(valid_580097, JString, required = false,
                                  default = nil)
-  if valid_579072 != nil:
-    section.add "oauth_token", valid_579072
-  var valid_579073 = query.getOrDefault("$.xgafv")
-  valid_579073 = validateParameter(valid_579073, JString, required = false,
+  if valid_580097 != nil:
+    section.add "oauth_token", valid_580097
+  var valid_580098 = query.getOrDefault("$.xgafv")
+  valid_580098 = validateParameter(valid_580098, JString, required = false,
                                  default = newJString("1"))
-  if valid_579073 != nil:
-    section.add "$.xgafv", valid_579073
-  var valid_579074 = query.getOrDefault("alt")
-  valid_579074 = validateParameter(valid_579074, JString, required = false,
+  if valid_580098 != nil:
+    section.add "$.xgafv", valid_580098
+  var valid_580099 = query.getOrDefault("alt")
+  valid_580099 = validateParameter(valid_580099, JString, required = false,
                                  default = newJString("json"))
-  if valid_579074 != nil:
-    section.add "alt", valid_579074
-  var valid_579075 = query.getOrDefault("uploadType")
-  valid_579075 = validateParameter(valid_579075, JString, required = false,
+  if valid_580099 != nil:
+    section.add "alt", valid_580099
+  var valid_580100 = query.getOrDefault("uploadType")
+  valid_580100 = validateParameter(valid_580100, JString, required = false,
                                  default = nil)
-  if valid_579075 != nil:
-    section.add "uploadType", valid_579075
-  var valid_579076 = query.getOrDefault("quotaUser")
-  valid_579076 = validateParameter(valid_579076, JString, required = false,
+  if valid_580100 != nil:
+    section.add "uploadType", valid_580100
+  var valid_580101 = query.getOrDefault("quotaUser")
+  valid_580101 = validateParameter(valid_580101, JString, required = false,
                                  default = nil)
-  if valid_579076 != nil:
-    section.add "quotaUser", valid_579076
-  var valid_579077 = query.getOrDefault("callback")
-  valid_579077 = validateParameter(valid_579077, JString, required = false,
+  if valid_580101 != nil:
+    section.add "quotaUser", valid_580101
+  var valid_580102 = query.getOrDefault("callback")
+  valid_580102 = validateParameter(valid_580102, JString, required = false,
                                  default = nil)
-  if valid_579077 != nil:
-    section.add "callback", valid_579077
-  var valid_579078 = query.getOrDefault("fields")
-  valid_579078 = validateParameter(valid_579078, JString, required = false,
+  if valid_580102 != nil:
+    section.add "callback", valid_580102
+  var valid_580103 = query.getOrDefault("fields")
+  valid_580103 = validateParameter(valid_580103, JString, required = false,
                                  default = nil)
-  if valid_579078 != nil:
-    section.add "fields", valid_579078
-  var valid_579079 = query.getOrDefault("access_token")
-  valid_579079 = validateParameter(valid_579079, JString, required = false,
+  if valid_580103 != nil:
+    section.add "fields", valid_580103
+  var valid_580104 = query.getOrDefault("access_token")
+  valid_580104 = validateParameter(valid_580104, JString, required = false,
                                  default = nil)
-  if valid_579079 != nil:
-    section.add "access_token", valid_579079
-  var valid_579080 = query.getOrDefault("upload_protocol")
-  valid_579080 = validateParameter(valid_579080, JString, required = false,
+  if valid_580104 != nil:
+    section.add "access_token", valid_580104
+  var valid_580105 = query.getOrDefault("upload_protocol")
+  valid_580105 = validateParameter(valid_580105, JString, required = false,
                                  default = nil)
-  if valid_579080 != nil:
-    section.add "upload_protocol", valid_579080
+  if valid_580105 != nil:
+    section.add "upload_protocol", valid_580105
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2141,7 +2192,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestor
   if body != nil:
     result.add "body", body
 
-proc call*(call_579082: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_579066;
+proc call*(call_580107: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_580091;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Restore a CryptoKeyVersion in the
@@ -2152,16 +2203,16 @@ proc call*(call_579082: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ## will be set to DISABLED,
   ## and destroy_time will be cleared.
   ## 
-  let valid = call_579082.validator(path, query, header, formData, body)
-  let scheme = call_579082.pickScheme
+  let valid = call_580107.validator(path, query, header, formData, body)
+  let scheme = call_580107.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579082.url(scheme.get, call_579082.host, call_579082.base,
-                         call_579082.route, valid.getOrDefault("path"),
+  let url = call_580107.url(scheme.get, call_580107.host, call_580107.base,
+                         call_580107.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579082, url, valid)
+  result = hook(call_580107, url, valid)
 
-proc call*(call_579083: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_579066;
+proc call*(call_580108: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_580091;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -2190,7 +2241,7 @@ proc call*(call_579083: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
-  ##       : The resource name of the CryptoKeyVersion to restore.
+  ##       : Required. The resource name of the CryptoKeyVersion to restore.
   ##   body: JObject
   ##   callback: string
   ##           : JSONP
@@ -2200,33 +2251,33 @@ proc call*(call_579083: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579084 = newJObject()
-  var query_579085 = newJObject()
-  var body_579086 = newJObject()
-  add(query_579085, "key", newJString(key))
-  add(query_579085, "prettyPrint", newJBool(prettyPrint))
-  add(query_579085, "oauth_token", newJString(oauthToken))
-  add(query_579085, "$.xgafv", newJString(Xgafv))
-  add(query_579085, "alt", newJString(alt))
-  add(query_579085, "uploadType", newJString(uploadType))
-  add(query_579085, "quotaUser", newJString(quotaUser))
-  add(path_579084, "name", newJString(name))
+  var path_580109 = newJObject()
+  var query_580110 = newJObject()
+  var body_580111 = newJObject()
+  add(query_580110, "key", newJString(key))
+  add(query_580110, "prettyPrint", newJBool(prettyPrint))
+  add(query_580110, "oauth_token", newJString(oauthToken))
+  add(query_580110, "$.xgafv", newJString(Xgafv))
+  add(query_580110, "alt", newJString(alt))
+  add(query_580110, "uploadType", newJString(uploadType))
+  add(query_580110, "quotaUser", newJString(quotaUser))
+  add(path_580109, "name", newJString(name))
   if body != nil:
-    body_579086 = body
-  add(query_579085, "callback", newJString(callback))
-  add(query_579085, "fields", newJString(fields))
-  add(query_579085, "access_token", newJString(accessToken))
-  add(query_579085, "upload_protocol", newJString(uploadProtocol))
-  result = call_579083.call(path_579084, query_579085, nil, nil, body_579086)
+    body_580111 = body
+  add(query_580110, "callback", newJString(callback))
+  add(query_580110, "fields", newJString(fields))
+  add(query_580110, "access_token", newJString(accessToken))
+  add(query_580110, "upload_protocol", newJString(uploadProtocol))
+  result = call_580108.call(path_580109, query_580110, nil, nil, body_580111)
 
-var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_579066(name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore",
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_580091(name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore",
     meth: HttpMethod.HttpPost, host: "cloudkms.googleapis.com",
-    route: "/v1/{name}:restore", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_579067,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_579068,
+    route: "/v1/{name}:restore", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_580092,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestore_580093,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_579087 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_579089(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_580112 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_580114(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -2241,9 +2292,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_579089(
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_579088(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_580113(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Update the version of a CryptoKey that will be used in Encrypt.
@@ -2254,14 +2310,14 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_57
   result = newJObject()
   ## parameters in `path` object:
   ##   name: JString (required)
-  ##       : The resource name of the CryptoKey to update.
+  ##       : Required. The resource name of the CryptoKey to update.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `name` field"
-  var valid_579090 = path.getOrDefault("name")
-  valid_579090 = validateParameter(valid_579090, JString, required = true,
+  var valid_580115 = path.getOrDefault("name")
+  valid_580115 = validateParameter(valid_580115, JString, required = true,
                                  default = nil)
-  if valid_579090 != nil:
-    section.add "name", valid_579090
+  if valid_580115 != nil:
+    section.add "name", valid_580115
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2287,61 +2343,61 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_57
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579091 = query.getOrDefault("key")
-  valid_579091 = validateParameter(valid_579091, JString, required = false,
+  var valid_580116 = query.getOrDefault("key")
+  valid_580116 = validateParameter(valid_580116, JString, required = false,
                                  default = nil)
-  if valid_579091 != nil:
-    section.add "key", valid_579091
-  var valid_579092 = query.getOrDefault("prettyPrint")
-  valid_579092 = validateParameter(valid_579092, JBool, required = false,
+  if valid_580116 != nil:
+    section.add "key", valid_580116
+  var valid_580117 = query.getOrDefault("prettyPrint")
+  valid_580117 = validateParameter(valid_580117, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579092 != nil:
-    section.add "prettyPrint", valid_579092
-  var valid_579093 = query.getOrDefault("oauth_token")
-  valid_579093 = validateParameter(valid_579093, JString, required = false,
+  if valid_580117 != nil:
+    section.add "prettyPrint", valid_580117
+  var valid_580118 = query.getOrDefault("oauth_token")
+  valid_580118 = validateParameter(valid_580118, JString, required = false,
                                  default = nil)
-  if valid_579093 != nil:
-    section.add "oauth_token", valid_579093
-  var valid_579094 = query.getOrDefault("$.xgafv")
-  valid_579094 = validateParameter(valid_579094, JString, required = false,
+  if valid_580118 != nil:
+    section.add "oauth_token", valid_580118
+  var valid_580119 = query.getOrDefault("$.xgafv")
+  valid_580119 = validateParameter(valid_580119, JString, required = false,
                                  default = newJString("1"))
-  if valid_579094 != nil:
-    section.add "$.xgafv", valid_579094
-  var valid_579095 = query.getOrDefault("alt")
-  valid_579095 = validateParameter(valid_579095, JString, required = false,
+  if valid_580119 != nil:
+    section.add "$.xgafv", valid_580119
+  var valid_580120 = query.getOrDefault("alt")
+  valid_580120 = validateParameter(valid_580120, JString, required = false,
                                  default = newJString("json"))
-  if valid_579095 != nil:
-    section.add "alt", valid_579095
-  var valid_579096 = query.getOrDefault("uploadType")
-  valid_579096 = validateParameter(valid_579096, JString, required = false,
+  if valid_580120 != nil:
+    section.add "alt", valid_580120
+  var valid_580121 = query.getOrDefault("uploadType")
+  valid_580121 = validateParameter(valid_580121, JString, required = false,
                                  default = nil)
-  if valid_579096 != nil:
-    section.add "uploadType", valid_579096
-  var valid_579097 = query.getOrDefault("quotaUser")
-  valid_579097 = validateParameter(valid_579097, JString, required = false,
+  if valid_580121 != nil:
+    section.add "uploadType", valid_580121
+  var valid_580122 = query.getOrDefault("quotaUser")
+  valid_580122 = validateParameter(valid_580122, JString, required = false,
                                  default = nil)
-  if valid_579097 != nil:
-    section.add "quotaUser", valid_579097
-  var valid_579098 = query.getOrDefault("callback")
-  valid_579098 = validateParameter(valid_579098, JString, required = false,
+  if valid_580122 != nil:
+    section.add "quotaUser", valid_580122
+  var valid_580123 = query.getOrDefault("callback")
+  valid_580123 = validateParameter(valid_580123, JString, required = false,
                                  default = nil)
-  if valid_579098 != nil:
-    section.add "callback", valid_579098
-  var valid_579099 = query.getOrDefault("fields")
-  valid_579099 = validateParameter(valid_579099, JString, required = false,
+  if valid_580123 != nil:
+    section.add "callback", valid_580123
+  var valid_580124 = query.getOrDefault("fields")
+  valid_580124 = validateParameter(valid_580124, JString, required = false,
                                  default = nil)
-  if valid_579099 != nil:
-    section.add "fields", valid_579099
-  var valid_579100 = query.getOrDefault("access_token")
-  valid_579100 = validateParameter(valid_579100, JString, required = false,
+  if valid_580124 != nil:
+    section.add "fields", valid_580124
+  var valid_580125 = query.getOrDefault("access_token")
+  valid_580125 = validateParameter(valid_580125, JString, required = false,
                                  default = nil)
-  if valid_579100 != nil:
-    section.add "access_token", valid_579100
-  var valid_579101 = query.getOrDefault("upload_protocol")
-  valid_579101 = validateParameter(valid_579101, JString, required = false,
+  if valid_580125 != nil:
+    section.add "access_token", valid_580125
+  var valid_580126 = query.getOrDefault("upload_protocol")
+  valid_580126 = validateParameter(valid_580126, JString, required = false,
                                  default = nil)
-  if valid_579101 != nil:
-    section.add "upload_protocol", valid_579101
+  if valid_580126 != nil:
+    section.add "upload_protocol", valid_580126
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2353,23 +2409,23 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_57
   if body != nil:
     result.add "body", body
 
-proc call*(call_579103: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_579087;
+proc call*(call_580128: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_580112;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Update the version of a CryptoKey that will be used in Encrypt.
   ## 
   ## Returns an error if called on an asymmetric key.
   ## 
-  let valid = call_579103.validator(path, query, header, formData, body)
-  let scheme = call_579103.pickScheme
+  let valid = call_580128.validator(path, query, header, formData, body)
+  let scheme = call_580128.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579103.url(scheme.get, call_579103.host, call_579103.base,
-                         call_579103.route, valid.getOrDefault("path"),
+  let url = call_580128.url(scheme.get, call_580128.host, call_580128.base,
+                         call_580128.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579103, url, valid)
+  result = hook(call_580128, url, valid)
 
-proc call*(call_579104: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_579087;
+proc call*(call_580129: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_580112;
           name: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -2394,7 +2450,7 @@ proc call*(call_579104: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePr
   ##   quotaUser: string
   ##            : Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.
   ##   name: string (required)
-  ##       : The resource name of the CryptoKey to update.
+  ##       : Required. The resource name of the CryptoKey to update.
   ##   body: JObject
   ##   callback: string
   ##           : JSONP
@@ -2404,35 +2460,35 @@ proc call*(call_579104: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePr
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579105 = newJObject()
-  var query_579106 = newJObject()
-  var body_579107 = newJObject()
-  add(query_579106, "key", newJString(key))
-  add(query_579106, "prettyPrint", newJBool(prettyPrint))
-  add(query_579106, "oauth_token", newJString(oauthToken))
-  add(query_579106, "$.xgafv", newJString(Xgafv))
-  add(query_579106, "alt", newJString(alt))
-  add(query_579106, "uploadType", newJString(uploadType))
-  add(query_579106, "quotaUser", newJString(quotaUser))
-  add(path_579105, "name", newJString(name))
+  var path_580130 = newJObject()
+  var query_580131 = newJObject()
+  var body_580132 = newJObject()
+  add(query_580131, "key", newJString(key))
+  add(query_580131, "prettyPrint", newJBool(prettyPrint))
+  add(query_580131, "oauth_token", newJString(oauthToken))
+  add(query_580131, "$.xgafv", newJString(Xgafv))
+  add(query_580131, "alt", newJString(alt))
+  add(query_580131, "uploadType", newJString(uploadType))
+  add(query_580131, "quotaUser", newJString(quotaUser))
+  add(path_580130, "name", newJString(name))
   if body != nil:
-    body_579107 = body
-  add(query_579106, "callback", newJString(callback))
-  add(query_579106, "fields", newJString(fields))
-  add(query_579106, "access_token", newJString(accessToken))
-  add(query_579106, "upload_protocol", newJString(uploadProtocol))
-  result = call_579104.call(path_579105, query_579106, nil, nil, body_579107)
+    body_580132 = body
+  add(query_580131, "callback", newJString(callback))
+  add(query_580131, "fields", newJString(fields))
+  add(query_580131, "access_token", newJString(accessToken))
+  add(query_580131, "upload_protocol", newJString(uploadProtocol))
+  result = call_580129.call(path_580130, query_580131, nil, nil, body_580132)
 
-var cloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_579087(
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_580112(
     name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion",
     meth: HttpMethod.HttpPost, host: "cloudkms.googleapis.com",
-    route: "/v1/{name}:updatePrimaryVersion", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_579088,
+    route: "/v1/{name}:updatePrimaryVersion", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_580113,
     base: "/",
-    url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_579089,
+    url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersion_580114,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_579132 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_579134(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_580157 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_580159(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -2447,9 +2503,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_5791
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_579133(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_580158(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Create a new CryptoKeyVersion in a CryptoKey.
@@ -2466,11 +2527,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate
   ## the CryptoKeyVersions.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_579135 = path.getOrDefault("parent")
-  valid_579135 = validateParameter(valid_579135, JString, required = true,
+  var valid_580160 = path.getOrDefault("parent")
+  valid_580160 = validateParameter(valid_580160, JString, required = true,
                                  default = nil)
-  if valid_579135 != nil:
-    section.add "parent", valid_579135
+  if valid_580160 != nil:
+    section.add "parent", valid_580160
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2496,61 +2557,61 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579136 = query.getOrDefault("key")
-  valid_579136 = validateParameter(valid_579136, JString, required = false,
+  var valid_580161 = query.getOrDefault("key")
+  valid_580161 = validateParameter(valid_580161, JString, required = false,
                                  default = nil)
-  if valid_579136 != nil:
-    section.add "key", valid_579136
-  var valid_579137 = query.getOrDefault("prettyPrint")
-  valid_579137 = validateParameter(valid_579137, JBool, required = false,
+  if valid_580161 != nil:
+    section.add "key", valid_580161
+  var valid_580162 = query.getOrDefault("prettyPrint")
+  valid_580162 = validateParameter(valid_580162, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579137 != nil:
-    section.add "prettyPrint", valid_579137
-  var valid_579138 = query.getOrDefault("oauth_token")
-  valid_579138 = validateParameter(valid_579138, JString, required = false,
+  if valid_580162 != nil:
+    section.add "prettyPrint", valid_580162
+  var valid_580163 = query.getOrDefault("oauth_token")
+  valid_580163 = validateParameter(valid_580163, JString, required = false,
                                  default = nil)
-  if valid_579138 != nil:
-    section.add "oauth_token", valid_579138
-  var valid_579139 = query.getOrDefault("$.xgafv")
-  valid_579139 = validateParameter(valid_579139, JString, required = false,
+  if valid_580163 != nil:
+    section.add "oauth_token", valid_580163
+  var valid_580164 = query.getOrDefault("$.xgafv")
+  valid_580164 = validateParameter(valid_580164, JString, required = false,
                                  default = newJString("1"))
-  if valid_579139 != nil:
-    section.add "$.xgafv", valid_579139
-  var valid_579140 = query.getOrDefault("alt")
-  valid_579140 = validateParameter(valid_579140, JString, required = false,
+  if valid_580164 != nil:
+    section.add "$.xgafv", valid_580164
+  var valid_580165 = query.getOrDefault("alt")
+  valid_580165 = validateParameter(valid_580165, JString, required = false,
                                  default = newJString("json"))
-  if valid_579140 != nil:
-    section.add "alt", valid_579140
-  var valid_579141 = query.getOrDefault("uploadType")
-  valid_579141 = validateParameter(valid_579141, JString, required = false,
+  if valid_580165 != nil:
+    section.add "alt", valid_580165
+  var valid_580166 = query.getOrDefault("uploadType")
+  valid_580166 = validateParameter(valid_580166, JString, required = false,
                                  default = nil)
-  if valid_579141 != nil:
-    section.add "uploadType", valid_579141
-  var valid_579142 = query.getOrDefault("quotaUser")
-  valid_579142 = validateParameter(valid_579142, JString, required = false,
+  if valid_580166 != nil:
+    section.add "uploadType", valid_580166
+  var valid_580167 = query.getOrDefault("quotaUser")
+  valid_580167 = validateParameter(valid_580167, JString, required = false,
                                  default = nil)
-  if valid_579142 != nil:
-    section.add "quotaUser", valid_579142
-  var valid_579143 = query.getOrDefault("callback")
-  valid_579143 = validateParameter(valid_579143, JString, required = false,
+  if valid_580167 != nil:
+    section.add "quotaUser", valid_580167
+  var valid_580168 = query.getOrDefault("callback")
+  valid_580168 = validateParameter(valid_580168, JString, required = false,
                                  default = nil)
-  if valid_579143 != nil:
-    section.add "callback", valid_579143
-  var valid_579144 = query.getOrDefault("fields")
-  valid_579144 = validateParameter(valid_579144, JString, required = false,
+  if valid_580168 != nil:
+    section.add "callback", valid_580168
+  var valid_580169 = query.getOrDefault("fields")
+  valid_580169 = validateParameter(valid_580169, JString, required = false,
                                  default = nil)
-  if valid_579144 != nil:
-    section.add "fields", valid_579144
-  var valid_579145 = query.getOrDefault("access_token")
-  valid_579145 = validateParameter(valid_579145, JString, required = false,
+  if valid_580169 != nil:
+    section.add "fields", valid_580169
+  var valid_580170 = query.getOrDefault("access_token")
+  valid_580170 = validateParameter(valid_580170, JString, required = false,
                                  default = nil)
-  if valid_579145 != nil:
-    section.add "access_token", valid_579145
-  var valid_579146 = query.getOrDefault("upload_protocol")
-  valid_579146 = validateParameter(valid_579146, JString, required = false,
+  if valid_580170 != nil:
+    section.add "access_token", valid_580170
+  var valid_580171 = query.getOrDefault("upload_protocol")
+  valid_580171 = validateParameter(valid_580171, JString, required = false,
                                  default = nil)
-  if valid_579146 != nil:
-    section.add "upload_protocol", valid_579146
+  if valid_580171 != nil:
+    section.add "upload_protocol", valid_580171
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2562,7 +2623,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate
   if body != nil:
     result.add "body", body
 
-proc call*(call_579148: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_579132;
+proc call*(call_580173: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_580157;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Create a new CryptoKeyVersion in a CryptoKey.
@@ -2571,16 +2632,16 @@ proc call*(call_579148: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ## state will be set to
   ## ENABLED.
   ## 
-  let valid = call_579148.validator(path, query, header, formData, body)
-  let scheme = call_579148.pickScheme
+  let valid = call_580173.validator(path, query, header, formData, body)
+  let scheme = call_580173.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579148.url(scheme.get, call_579148.host, call_579148.base,
-                         call_579148.route, valid.getOrDefault("path"),
+  let url = call_580173.url(scheme.get, call_580173.host, call_580173.base,
+                         call_580173.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579148, url, valid)
+  result = hook(call_580173, url, valid)
 
-proc call*(call_579149: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_579132;
+proc call*(call_580174: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_580157;
           parent: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -2618,34 +2679,34 @@ proc call*(call_579149: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579150 = newJObject()
-  var query_579151 = newJObject()
-  var body_579152 = newJObject()
-  add(query_579151, "key", newJString(key))
-  add(query_579151, "prettyPrint", newJBool(prettyPrint))
-  add(query_579151, "oauth_token", newJString(oauthToken))
-  add(query_579151, "$.xgafv", newJString(Xgafv))
-  add(query_579151, "alt", newJString(alt))
-  add(query_579151, "uploadType", newJString(uploadType))
-  add(query_579151, "quotaUser", newJString(quotaUser))
+  var path_580175 = newJObject()
+  var query_580176 = newJObject()
+  var body_580177 = newJObject()
+  add(query_580176, "key", newJString(key))
+  add(query_580176, "prettyPrint", newJBool(prettyPrint))
+  add(query_580176, "oauth_token", newJString(oauthToken))
+  add(query_580176, "$.xgafv", newJString(Xgafv))
+  add(query_580176, "alt", newJString(alt))
+  add(query_580176, "uploadType", newJString(uploadType))
+  add(query_580176, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579152 = body
-  add(query_579151, "callback", newJString(callback))
-  add(path_579150, "parent", newJString(parent))
-  add(query_579151, "fields", newJString(fields))
-  add(query_579151, "access_token", newJString(accessToken))
-  add(query_579151, "upload_protocol", newJString(uploadProtocol))
-  result = call_579149.call(path_579150, query_579151, nil, nil, body_579152)
+    body_580177 = body
+  add(query_580176, "callback", newJString(callback))
+  add(path_580175, "parent", newJString(parent))
+  add(query_580176, "fields", newJString(fields))
+  add(query_580176, "access_token", newJString(accessToken))
+  add(query_580176, "upload_protocol", newJString(uploadProtocol))
+  result = call_580174.call(path_580175, query_580176, nil, nil, body_580177)
 
-var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_579132(
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_580157(
     name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate",
     meth: HttpMethod.HttpPost, host: "cloudkms.googleapis.com",
-    route: "/v1/{parent}/cryptoKeyVersions", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_579133,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_579134,
+    route: "/v1/{parent}/cryptoKeyVersions", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_580158,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreate_580159,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_579108 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_579110(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_580133 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_580135(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -2660,9 +2721,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_579110
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_579109(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_580134(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Lists CryptoKeyVersions.
@@ -2675,11 +2741,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_5
   ## `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_579111 = path.getOrDefault("parent")
-  valid_579111 = validateParameter(valid_579111, JString, required = true,
+  var valid_580136 = path.getOrDefault("parent")
+  valid_580136 = validateParameter(valid_580136, JString, required = true,
                                  default = nil)
-  if valid_579111 != nil:
-    section.add "parent", valid_579111
+  if valid_580136 != nil:
+    section.add "parent", valid_580136
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2691,7 +2757,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_5
   ##   $.xgafv: JString
   ##          : V1 error format.
   ##   pageSize: JInt
-  ##           : Optional limit on the number of CryptoKeyVersions to
+  ##           : Optional. Optional limit on the number of CryptoKeyVersions to
   ## include in the response. Further CryptoKeyVersions can
   ## subsequently be obtained by including the
   ## ListCryptoKeyVersionsResponse.next_page_token in a subsequent request.
@@ -2713,7 +2779,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_5
   ## [Sorting and filtering list
   ## results](https://cloud.google.com/kms/docs/sorting-and-filtering).
   ##   pageToken: JString
-  ##            : Optional pagination token, returned earlier via
+  ##            : Optional. Optional pagination token, returned earlier via
   ## ListCryptoKeyVersionsResponse.next_page_token.
   ##   callback: JString
   ##           : JSONP
@@ -2726,85 +2792,85 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_5
   ##   view: JString
   ##       : The fields to include in the response.
   section = newJObject()
-  var valid_579112 = query.getOrDefault("key")
-  valid_579112 = validateParameter(valid_579112, JString, required = false,
+  var valid_580137 = query.getOrDefault("key")
+  valid_580137 = validateParameter(valid_580137, JString, required = false,
                                  default = nil)
-  if valid_579112 != nil:
-    section.add "key", valid_579112
-  var valid_579113 = query.getOrDefault("prettyPrint")
-  valid_579113 = validateParameter(valid_579113, JBool, required = false,
+  if valid_580137 != nil:
+    section.add "key", valid_580137
+  var valid_580138 = query.getOrDefault("prettyPrint")
+  valid_580138 = validateParameter(valid_580138, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579113 != nil:
-    section.add "prettyPrint", valid_579113
-  var valid_579114 = query.getOrDefault("oauth_token")
-  valid_579114 = validateParameter(valid_579114, JString, required = false,
+  if valid_580138 != nil:
+    section.add "prettyPrint", valid_580138
+  var valid_580139 = query.getOrDefault("oauth_token")
+  valid_580139 = validateParameter(valid_580139, JString, required = false,
                                  default = nil)
-  if valid_579114 != nil:
-    section.add "oauth_token", valid_579114
-  var valid_579115 = query.getOrDefault("$.xgafv")
-  valid_579115 = validateParameter(valid_579115, JString, required = false,
+  if valid_580139 != nil:
+    section.add "oauth_token", valid_580139
+  var valid_580140 = query.getOrDefault("$.xgafv")
+  valid_580140 = validateParameter(valid_580140, JString, required = false,
                                  default = newJString("1"))
-  if valid_579115 != nil:
-    section.add "$.xgafv", valid_579115
-  var valid_579116 = query.getOrDefault("pageSize")
-  valid_579116 = validateParameter(valid_579116, JInt, required = false, default = nil)
-  if valid_579116 != nil:
-    section.add "pageSize", valid_579116
-  var valid_579117 = query.getOrDefault("alt")
-  valid_579117 = validateParameter(valid_579117, JString, required = false,
+  if valid_580140 != nil:
+    section.add "$.xgafv", valid_580140
+  var valid_580141 = query.getOrDefault("pageSize")
+  valid_580141 = validateParameter(valid_580141, JInt, required = false, default = nil)
+  if valid_580141 != nil:
+    section.add "pageSize", valid_580141
+  var valid_580142 = query.getOrDefault("alt")
+  valid_580142 = validateParameter(valid_580142, JString, required = false,
                                  default = newJString("json"))
-  if valid_579117 != nil:
-    section.add "alt", valid_579117
-  var valid_579118 = query.getOrDefault("uploadType")
-  valid_579118 = validateParameter(valid_579118, JString, required = false,
+  if valid_580142 != nil:
+    section.add "alt", valid_580142
+  var valid_580143 = query.getOrDefault("uploadType")
+  valid_580143 = validateParameter(valid_580143, JString, required = false,
                                  default = nil)
-  if valid_579118 != nil:
-    section.add "uploadType", valid_579118
-  var valid_579119 = query.getOrDefault("quotaUser")
-  valid_579119 = validateParameter(valid_579119, JString, required = false,
+  if valid_580143 != nil:
+    section.add "uploadType", valid_580143
+  var valid_580144 = query.getOrDefault("quotaUser")
+  valid_580144 = validateParameter(valid_580144, JString, required = false,
                                  default = nil)
-  if valid_579119 != nil:
-    section.add "quotaUser", valid_579119
-  var valid_579120 = query.getOrDefault("orderBy")
-  valid_579120 = validateParameter(valid_579120, JString, required = false,
+  if valid_580144 != nil:
+    section.add "quotaUser", valid_580144
+  var valid_580145 = query.getOrDefault("orderBy")
+  valid_580145 = validateParameter(valid_580145, JString, required = false,
                                  default = nil)
-  if valid_579120 != nil:
-    section.add "orderBy", valid_579120
-  var valid_579121 = query.getOrDefault("filter")
-  valid_579121 = validateParameter(valid_579121, JString, required = false,
+  if valid_580145 != nil:
+    section.add "orderBy", valid_580145
+  var valid_580146 = query.getOrDefault("filter")
+  valid_580146 = validateParameter(valid_580146, JString, required = false,
                                  default = nil)
-  if valid_579121 != nil:
-    section.add "filter", valid_579121
-  var valid_579122 = query.getOrDefault("pageToken")
-  valid_579122 = validateParameter(valid_579122, JString, required = false,
+  if valid_580146 != nil:
+    section.add "filter", valid_580146
+  var valid_580147 = query.getOrDefault("pageToken")
+  valid_580147 = validateParameter(valid_580147, JString, required = false,
                                  default = nil)
-  if valid_579122 != nil:
-    section.add "pageToken", valid_579122
-  var valid_579123 = query.getOrDefault("callback")
-  valid_579123 = validateParameter(valid_579123, JString, required = false,
+  if valid_580147 != nil:
+    section.add "pageToken", valid_580147
+  var valid_580148 = query.getOrDefault("callback")
+  valid_580148 = validateParameter(valid_580148, JString, required = false,
                                  default = nil)
-  if valid_579123 != nil:
-    section.add "callback", valid_579123
-  var valid_579124 = query.getOrDefault("fields")
-  valid_579124 = validateParameter(valid_579124, JString, required = false,
+  if valid_580148 != nil:
+    section.add "callback", valid_580148
+  var valid_580149 = query.getOrDefault("fields")
+  valid_580149 = validateParameter(valid_580149, JString, required = false,
                                  default = nil)
-  if valid_579124 != nil:
-    section.add "fields", valid_579124
-  var valid_579125 = query.getOrDefault("access_token")
-  valid_579125 = validateParameter(valid_579125, JString, required = false,
+  if valid_580149 != nil:
+    section.add "fields", valid_580149
+  var valid_580150 = query.getOrDefault("access_token")
+  valid_580150 = validateParameter(valid_580150, JString, required = false,
                                  default = nil)
-  if valid_579125 != nil:
-    section.add "access_token", valid_579125
-  var valid_579126 = query.getOrDefault("upload_protocol")
-  valid_579126 = validateParameter(valid_579126, JString, required = false,
+  if valid_580150 != nil:
+    section.add "access_token", valid_580150
+  var valid_580151 = query.getOrDefault("upload_protocol")
+  valid_580151 = validateParameter(valid_580151, JString, required = false,
                                  default = nil)
-  if valid_579126 != nil:
-    section.add "upload_protocol", valid_579126
-  var valid_579127 = query.getOrDefault("view")
-  valid_579127 = validateParameter(valid_579127, JString, required = false, default = newJString(
+  if valid_580151 != nil:
+    section.add "upload_protocol", valid_580151
+  var valid_580152 = query.getOrDefault("view")
+  valid_580152 = validateParameter(valid_580152, JString, required = false, default = newJString(
       "CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED"))
-  if valid_579127 != nil:
-    section.add "view", valid_579127
+  if valid_580152 != nil:
+    section.add "view", valid_580152
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -2813,21 +2879,21 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_5
   if body != nil:
     result.add "body", body
 
-proc call*(call_579128: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_579108;
+proc call*(call_580153: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_580133;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists CryptoKeyVersions.
   ## 
-  let valid = call_579128.validator(path, query, header, formData, body)
-  let scheme = call_579128.pickScheme
+  let valid = call_580153.validator(path, query, header, formData, body)
+  let scheme = call_580153.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579128.url(scheme.get, call_579128.host, call_579128.base,
-                         call_579128.route, valid.getOrDefault("path"),
+  let url = call_580153.url(scheme.get, call_580153.host, call_580153.base,
+                         call_580153.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579128, url, valid)
+  result = hook(call_580153, url, valid)
 
-proc call*(call_579129: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_579108;
+proc call*(call_580154: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_580133;
           parent: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; pageSize: int = 0;
           alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
@@ -2846,7 +2912,7 @@ proc call*(call_579129: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ##   Xgafv: string
   ##        : V1 error format.
   ##   pageSize: int
-  ##           : Optional limit on the number of CryptoKeyVersions to
+  ##           : Optional. Optional limit on the number of CryptoKeyVersions to
   ## include in the response. Further CryptoKeyVersions can
   ## subsequently be obtained by including the
   ## ListCryptoKeyVersionsResponse.next_page_token in a subsequent request.
@@ -2868,7 +2934,7 @@ proc call*(call_579129: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ## [Sorting and filtering list
   ## results](https://cloud.google.com/kms/docs/sorting-and-filtering).
   ##   pageToken: string
-  ##            : Optional pagination token, returned earlier via
+  ##            : Optional. Optional pagination token, returned earlier via
   ## ListCryptoKeyVersionsResponse.next_page_token.
   ##   callback: string
   ##           : JSONP
@@ -2883,37 +2949,37 @@ proc call*(call_579129: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
   ##   view: string
   ##       : The fields to include in the response.
-  var path_579130 = newJObject()
-  var query_579131 = newJObject()
-  add(query_579131, "key", newJString(key))
-  add(query_579131, "prettyPrint", newJBool(prettyPrint))
-  add(query_579131, "oauth_token", newJString(oauthToken))
-  add(query_579131, "$.xgafv", newJString(Xgafv))
-  add(query_579131, "pageSize", newJInt(pageSize))
-  add(query_579131, "alt", newJString(alt))
-  add(query_579131, "uploadType", newJString(uploadType))
-  add(query_579131, "quotaUser", newJString(quotaUser))
-  add(query_579131, "orderBy", newJString(orderBy))
-  add(query_579131, "filter", newJString(filter))
-  add(query_579131, "pageToken", newJString(pageToken))
-  add(query_579131, "callback", newJString(callback))
-  add(path_579130, "parent", newJString(parent))
-  add(query_579131, "fields", newJString(fields))
-  add(query_579131, "access_token", newJString(accessToken))
-  add(query_579131, "upload_protocol", newJString(uploadProtocol))
-  add(query_579131, "view", newJString(view))
-  result = call_579129.call(path_579130, query_579131, nil, nil, nil)
+  var path_580155 = newJObject()
+  var query_580156 = newJObject()
+  add(query_580156, "key", newJString(key))
+  add(query_580156, "prettyPrint", newJBool(prettyPrint))
+  add(query_580156, "oauth_token", newJString(oauthToken))
+  add(query_580156, "$.xgafv", newJString(Xgafv))
+  add(query_580156, "pageSize", newJInt(pageSize))
+  add(query_580156, "alt", newJString(alt))
+  add(query_580156, "uploadType", newJString(uploadType))
+  add(query_580156, "quotaUser", newJString(quotaUser))
+  add(query_580156, "orderBy", newJString(orderBy))
+  add(query_580156, "filter", newJString(filter))
+  add(query_580156, "pageToken", newJString(pageToken))
+  add(query_580156, "callback", newJString(callback))
+  add(path_580155, "parent", newJString(parent))
+  add(query_580156, "fields", newJString(fields))
+  add(query_580156, "access_token", newJString(accessToken))
+  add(query_580156, "upload_protocol", newJString(uploadProtocol))
+  add(query_580156, "view", newJString(view))
+  result = call_580154.call(path_580155, query_580156, nil, nil, nil)
 
-var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_579108(
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_580133(
     name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList",
     meth: HttpMethod.HttpGet, host: "cloudkms.googleapis.com",
-    route: "/v1/{parent}/cryptoKeyVersions", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_579109,
+    route: "/v1/{parent}/cryptoKeyVersions", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_580134,
     base: "/",
-    url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_579110,
+    url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsList_580135,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_579153 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_579155(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_580178 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_580180(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -2928,9 +2994,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_5791
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_579154(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_580179(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Imports a new CryptoKeyVersion into an existing CryptoKey using the
@@ -2947,11 +3018,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport
   ## be imported into.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_579156 = path.getOrDefault("parent")
-  valid_579156 = validateParameter(valid_579156, JString, required = true,
+  var valid_580181 = path.getOrDefault("parent")
+  valid_580181 = validateParameter(valid_580181, JString, required = true,
                                  default = nil)
-  if valid_579156 != nil:
-    section.add "parent", valid_579156
+  if valid_580181 != nil:
+    section.add "parent", valid_580181
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -2977,61 +3048,61 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579157 = query.getOrDefault("key")
-  valid_579157 = validateParameter(valid_579157, JString, required = false,
+  var valid_580182 = query.getOrDefault("key")
+  valid_580182 = validateParameter(valid_580182, JString, required = false,
                                  default = nil)
-  if valid_579157 != nil:
-    section.add "key", valid_579157
-  var valid_579158 = query.getOrDefault("prettyPrint")
-  valid_579158 = validateParameter(valid_579158, JBool, required = false,
+  if valid_580182 != nil:
+    section.add "key", valid_580182
+  var valid_580183 = query.getOrDefault("prettyPrint")
+  valid_580183 = validateParameter(valid_580183, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579158 != nil:
-    section.add "prettyPrint", valid_579158
-  var valid_579159 = query.getOrDefault("oauth_token")
-  valid_579159 = validateParameter(valid_579159, JString, required = false,
+  if valid_580183 != nil:
+    section.add "prettyPrint", valid_580183
+  var valid_580184 = query.getOrDefault("oauth_token")
+  valid_580184 = validateParameter(valid_580184, JString, required = false,
                                  default = nil)
-  if valid_579159 != nil:
-    section.add "oauth_token", valid_579159
-  var valid_579160 = query.getOrDefault("$.xgafv")
-  valid_579160 = validateParameter(valid_579160, JString, required = false,
+  if valid_580184 != nil:
+    section.add "oauth_token", valid_580184
+  var valid_580185 = query.getOrDefault("$.xgafv")
+  valid_580185 = validateParameter(valid_580185, JString, required = false,
                                  default = newJString("1"))
-  if valid_579160 != nil:
-    section.add "$.xgafv", valid_579160
-  var valid_579161 = query.getOrDefault("alt")
-  valid_579161 = validateParameter(valid_579161, JString, required = false,
+  if valid_580185 != nil:
+    section.add "$.xgafv", valid_580185
+  var valid_580186 = query.getOrDefault("alt")
+  valid_580186 = validateParameter(valid_580186, JString, required = false,
                                  default = newJString("json"))
-  if valid_579161 != nil:
-    section.add "alt", valid_579161
-  var valid_579162 = query.getOrDefault("uploadType")
-  valid_579162 = validateParameter(valid_579162, JString, required = false,
+  if valid_580186 != nil:
+    section.add "alt", valid_580186
+  var valid_580187 = query.getOrDefault("uploadType")
+  valid_580187 = validateParameter(valid_580187, JString, required = false,
                                  default = nil)
-  if valid_579162 != nil:
-    section.add "uploadType", valid_579162
-  var valid_579163 = query.getOrDefault("quotaUser")
-  valid_579163 = validateParameter(valid_579163, JString, required = false,
+  if valid_580187 != nil:
+    section.add "uploadType", valid_580187
+  var valid_580188 = query.getOrDefault("quotaUser")
+  valid_580188 = validateParameter(valid_580188, JString, required = false,
                                  default = nil)
-  if valid_579163 != nil:
-    section.add "quotaUser", valid_579163
-  var valid_579164 = query.getOrDefault("callback")
-  valid_579164 = validateParameter(valid_579164, JString, required = false,
+  if valid_580188 != nil:
+    section.add "quotaUser", valid_580188
+  var valid_580189 = query.getOrDefault("callback")
+  valid_580189 = validateParameter(valid_580189, JString, required = false,
                                  default = nil)
-  if valid_579164 != nil:
-    section.add "callback", valid_579164
-  var valid_579165 = query.getOrDefault("fields")
-  valid_579165 = validateParameter(valid_579165, JString, required = false,
+  if valid_580189 != nil:
+    section.add "callback", valid_580189
+  var valid_580190 = query.getOrDefault("fields")
+  valid_580190 = validateParameter(valid_580190, JString, required = false,
                                  default = nil)
-  if valid_579165 != nil:
-    section.add "fields", valid_579165
-  var valid_579166 = query.getOrDefault("access_token")
-  valid_579166 = validateParameter(valid_579166, JString, required = false,
+  if valid_580190 != nil:
+    section.add "fields", valid_580190
+  var valid_580191 = query.getOrDefault("access_token")
+  valid_580191 = validateParameter(valid_580191, JString, required = false,
                                  default = nil)
-  if valid_579166 != nil:
-    section.add "access_token", valid_579166
-  var valid_579167 = query.getOrDefault("upload_protocol")
-  valid_579167 = validateParameter(valid_579167, JString, required = false,
+  if valid_580191 != nil:
+    section.add "access_token", valid_580191
+  var valid_580192 = query.getOrDefault("upload_protocol")
+  valid_580192 = validateParameter(valid_580192, JString, required = false,
                                  default = nil)
-  if valid_579167 != nil:
-    section.add "upload_protocol", valid_579167
+  if valid_580192 != nil:
+    section.add "upload_protocol", valid_580192
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3043,7 +3114,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport
   if body != nil:
     result.add "body", body
 
-proc call*(call_579169: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_579153;
+proc call*(call_580194: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_580178;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Imports a new CryptoKeyVersion into an existing CryptoKey using the
@@ -3052,16 +3123,16 @@ proc call*(call_579169: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ## The version ID will be assigned the next sequential id within the
   ## CryptoKey.
   ## 
-  let valid = call_579169.validator(path, query, header, formData, body)
-  let scheme = call_579169.pickScheme
+  let valid = call_580194.validator(path, query, header, formData, body)
+  let scheme = call_580194.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579169.url(scheme.get, call_579169.host, call_579169.base,
-                         call_579169.route, valid.getOrDefault("path"),
+  let url = call_580194.url(scheme.get, call_580194.host, call_580194.base,
+                         call_580194.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579169, url, valid)
+  result = hook(call_580194, url, valid)
 
-proc call*(call_579170: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_579153;
+proc call*(call_580195: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_580178;
           parent: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -3099,34 +3170,34 @@ proc call*(call_579170: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKe
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579171 = newJObject()
-  var query_579172 = newJObject()
-  var body_579173 = newJObject()
-  add(query_579172, "key", newJString(key))
-  add(query_579172, "prettyPrint", newJBool(prettyPrint))
-  add(query_579172, "oauth_token", newJString(oauthToken))
-  add(query_579172, "$.xgafv", newJString(Xgafv))
-  add(query_579172, "alt", newJString(alt))
-  add(query_579172, "uploadType", newJString(uploadType))
-  add(query_579172, "quotaUser", newJString(quotaUser))
+  var path_580196 = newJObject()
+  var query_580197 = newJObject()
+  var body_580198 = newJObject()
+  add(query_580197, "key", newJString(key))
+  add(query_580197, "prettyPrint", newJBool(prettyPrint))
+  add(query_580197, "oauth_token", newJString(oauthToken))
+  add(query_580197, "$.xgafv", newJString(Xgafv))
+  add(query_580197, "alt", newJString(alt))
+  add(query_580197, "uploadType", newJString(uploadType))
+  add(query_580197, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579173 = body
-  add(query_579172, "callback", newJString(callback))
-  add(path_579171, "parent", newJString(parent))
-  add(query_579172, "fields", newJString(fields))
-  add(query_579172, "access_token", newJString(accessToken))
-  add(query_579172, "upload_protocol", newJString(uploadProtocol))
-  result = call_579170.call(path_579171, query_579172, nil, nil, body_579173)
+    body_580198 = body
+  add(query_580197, "callback", newJString(callback))
+  add(path_580196, "parent", newJString(parent))
+  add(query_580197, "fields", newJString(fields))
+  add(query_580197, "access_token", newJString(accessToken))
+  add(query_580197, "upload_protocol", newJString(uploadProtocol))
+  result = call_580195.call(path_580196, query_580197, nil, nil, body_580198)
 
-var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_579153(
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_580178(
     name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport",
     meth: HttpMethod.HttpPost, host: "cloudkms.googleapis.com",
-    route: "/v1/{parent}/cryptoKeyVersions:import", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_579154,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_579155,
+    route: "/v1/{parent}/cryptoKeyVersions:import", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_580179,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImport_580180,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_579198 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_579200(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_580223 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_580225(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -3141,9 +3212,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_579200(
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_579199(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_580224(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Create a new CryptoKey within a KeyRing.
@@ -3160,11 +3236,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_579199(
   ## CryptoKeys.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_579201 = path.getOrDefault("parent")
-  valid_579201 = validateParameter(valid_579201, JString, required = true,
+  var valid_580226 = path.getOrDefault("parent")
+  valid_580226 = validateParameter(valid_580226, JString, required = true,
                                  default = nil)
-  if valid_579201 != nil:
-    section.add "parent", valid_579201
+  if valid_580226 != nil:
+    section.add "parent", valid_580226
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3199,70 +3275,70 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_579199(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579202 = query.getOrDefault("key")
-  valid_579202 = validateParameter(valid_579202, JString, required = false,
+  var valid_580227 = query.getOrDefault("key")
+  valid_580227 = validateParameter(valid_580227, JString, required = false,
                                  default = nil)
-  if valid_579202 != nil:
-    section.add "key", valid_579202
-  var valid_579203 = query.getOrDefault("prettyPrint")
-  valid_579203 = validateParameter(valid_579203, JBool, required = false,
+  if valid_580227 != nil:
+    section.add "key", valid_580227
+  var valid_580228 = query.getOrDefault("prettyPrint")
+  valid_580228 = validateParameter(valid_580228, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579203 != nil:
-    section.add "prettyPrint", valid_579203
-  var valid_579204 = query.getOrDefault("oauth_token")
-  valid_579204 = validateParameter(valid_579204, JString, required = false,
+  if valid_580228 != nil:
+    section.add "prettyPrint", valid_580228
+  var valid_580229 = query.getOrDefault("oauth_token")
+  valid_580229 = validateParameter(valid_580229, JString, required = false,
                                  default = nil)
-  if valid_579204 != nil:
-    section.add "oauth_token", valid_579204
-  var valid_579205 = query.getOrDefault("$.xgafv")
-  valid_579205 = validateParameter(valid_579205, JString, required = false,
+  if valid_580229 != nil:
+    section.add "oauth_token", valid_580229
+  var valid_580230 = query.getOrDefault("$.xgafv")
+  valid_580230 = validateParameter(valid_580230, JString, required = false,
                                  default = newJString("1"))
-  if valid_579205 != nil:
-    section.add "$.xgafv", valid_579205
-  var valid_579206 = query.getOrDefault("alt")
-  valid_579206 = validateParameter(valid_579206, JString, required = false,
+  if valid_580230 != nil:
+    section.add "$.xgafv", valid_580230
+  var valid_580231 = query.getOrDefault("alt")
+  valid_580231 = validateParameter(valid_580231, JString, required = false,
                                  default = newJString("json"))
-  if valid_579206 != nil:
-    section.add "alt", valid_579206
-  var valid_579207 = query.getOrDefault("uploadType")
-  valid_579207 = validateParameter(valid_579207, JString, required = false,
+  if valid_580231 != nil:
+    section.add "alt", valid_580231
+  var valid_580232 = query.getOrDefault("uploadType")
+  valid_580232 = validateParameter(valid_580232, JString, required = false,
                                  default = nil)
-  if valid_579207 != nil:
-    section.add "uploadType", valid_579207
-  var valid_579208 = query.getOrDefault("quotaUser")
-  valid_579208 = validateParameter(valid_579208, JString, required = false,
+  if valid_580232 != nil:
+    section.add "uploadType", valid_580232
+  var valid_580233 = query.getOrDefault("quotaUser")
+  valid_580233 = validateParameter(valid_580233, JString, required = false,
                                  default = nil)
-  if valid_579208 != nil:
-    section.add "quotaUser", valid_579208
-  var valid_579209 = query.getOrDefault("cryptoKeyId")
-  valid_579209 = validateParameter(valid_579209, JString, required = false,
+  if valid_580233 != nil:
+    section.add "quotaUser", valid_580233
+  var valid_580234 = query.getOrDefault("cryptoKeyId")
+  valid_580234 = validateParameter(valid_580234, JString, required = false,
                                  default = nil)
-  if valid_579209 != nil:
-    section.add "cryptoKeyId", valid_579209
-  var valid_579210 = query.getOrDefault("skipInitialVersionCreation")
-  valid_579210 = validateParameter(valid_579210, JBool, required = false, default = nil)
-  if valid_579210 != nil:
-    section.add "skipInitialVersionCreation", valid_579210
-  var valid_579211 = query.getOrDefault("callback")
-  valid_579211 = validateParameter(valid_579211, JString, required = false,
+  if valid_580234 != nil:
+    section.add "cryptoKeyId", valid_580234
+  var valid_580235 = query.getOrDefault("skipInitialVersionCreation")
+  valid_580235 = validateParameter(valid_580235, JBool, required = false, default = nil)
+  if valid_580235 != nil:
+    section.add "skipInitialVersionCreation", valid_580235
+  var valid_580236 = query.getOrDefault("callback")
+  valid_580236 = validateParameter(valid_580236, JString, required = false,
                                  default = nil)
-  if valid_579211 != nil:
-    section.add "callback", valid_579211
-  var valid_579212 = query.getOrDefault("fields")
-  valid_579212 = validateParameter(valid_579212, JString, required = false,
+  if valid_580236 != nil:
+    section.add "callback", valid_580236
+  var valid_580237 = query.getOrDefault("fields")
+  valid_580237 = validateParameter(valid_580237, JString, required = false,
                                  default = nil)
-  if valid_579212 != nil:
-    section.add "fields", valid_579212
-  var valid_579213 = query.getOrDefault("access_token")
-  valid_579213 = validateParameter(valid_579213, JString, required = false,
+  if valid_580237 != nil:
+    section.add "fields", valid_580237
+  var valid_580238 = query.getOrDefault("access_token")
+  valid_580238 = validateParameter(valid_580238, JString, required = false,
                                  default = nil)
-  if valid_579213 != nil:
-    section.add "access_token", valid_579213
-  var valid_579214 = query.getOrDefault("upload_protocol")
-  valid_579214 = validateParameter(valid_579214, JString, required = false,
+  if valid_580238 != nil:
+    section.add "access_token", valid_580238
+  var valid_580239 = query.getOrDefault("upload_protocol")
+  valid_580239 = validateParameter(valid_580239, JString, required = false,
                                  default = nil)
-  if valid_579214 != nil:
-    section.add "upload_protocol", valid_579214
+  if valid_580239 != nil:
+    section.add "upload_protocol", valid_580239
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3274,7 +3350,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_579199(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579216: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_579198;
+proc call*(call_580241: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_580223;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Create a new CryptoKey within a KeyRing.
@@ -3283,16 +3359,16 @@ proc call*(call_579216: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_5
   ## CryptoKey.version_template.algorithm
   ## are required.
   ## 
-  let valid = call_579216.validator(path, query, header, formData, body)
-  let scheme = call_579216.pickScheme
+  let valid = call_580241.validator(path, query, header, formData, body)
+  let scheme = call_580241.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579216.url(scheme.get, call_579216.host, call_579216.base,
-                         call_579216.route, valid.getOrDefault("path"),
+  let url = call_580241.url(scheme.get, call_580241.host, call_580241.base,
+                         call_580241.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579216, url, valid)
+  result = hook(call_580241, url, valid)
 
-proc call*(call_579217: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_579198;
+proc call*(call_580242: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_580223;
           parent: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; cryptoKeyId: string = "";
@@ -3340,38 +3416,38 @@ proc call*(call_579217: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_5
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579218 = newJObject()
-  var query_579219 = newJObject()
-  var body_579220 = newJObject()
-  add(query_579219, "key", newJString(key))
-  add(query_579219, "prettyPrint", newJBool(prettyPrint))
-  add(query_579219, "oauth_token", newJString(oauthToken))
-  add(query_579219, "$.xgafv", newJString(Xgafv))
-  add(query_579219, "alt", newJString(alt))
-  add(query_579219, "uploadType", newJString(uploadType))
-  add(query_579219, "quotaUser", newJString(quotaUser))
-  add(query_579219, "cryptoKeyId", newJString(cryptoKeyId))
-  add(query_579219, "skipInitialVersionCreation",
+  var path_580243 = newJObject()
+  var query_580244 = newJObject()
+  var body_580245 = newJObject()
+  add(query_580244, "key", newJString(key))
+  add(query_580244, "prettyPrint", newJBool(prettyPrint))
+  add(query_580244, "oauth_token", newJString(oauthToken))
+  add(query_580244, "$.xgafv", newJString(Xgafv))
+  add(query_580244, "alt", newJString(alt))
+  add(query_580244, "uploadType", newJString(uploadType))
+  add(query_580244, "quotaUser", newJString(quotaUser))
+  add(query_580244, "cryptoKeyId", newJString(cryptoKeyId))
+  add(query_580244, "skipInitialVersionCreation",
       newJBool(skipInitialVersionCreation))
   if body != nil:
-    body_579220 = body
-  add(query_579219, "callback", newJString(callback))
-  add(path_579218, "parent", newJString(parent))
-  add(query_579219, "fields", newJString(fields))
-  add(query_579219, "access_token", newJString(accessToken))
-  add(query_579219, "upload_protocol", newJString(uploadProtocol))
-  result = call_579217.call(path_579218, query_579219, nil, nil, body_579220)
+    body_580245 = body
+  add(query_580244, "callback", newJString(callback))
+  add(path_580243, "parent", newJString(parent))
+  add(query_580244, "fields", newJString(fields))
+  add(query_580244, "access_token", newJString(accessToken))
+  add(query_580244, "upload_protocol", newJString(uploadProtocol))
+  result = call_580242.call(path_580243, query_580244, nil, nil, body_580245)
 
-var cloudkmsProjectsLocationsKeyRingsCryptoKeysCreate* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_579198(
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysCreate* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_580223(
     name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysCreate",
     meth: HttpMethod.HttpPost, host: "cloudkms.googleapis.com",
     route: "/v1/{parent}/cryptoKeys",
-    validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_579199,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_579200,
+    validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_580224,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysCreate_580225,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579174 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579176(protocol: Scheme;
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_580199 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_580201(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3385,9 +3461,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579176(protocol: Scheme
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579175(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_580200(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Lists CryptoKeys.
@@ -3400,11 +3481,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579175(
   ## `projects/*/locations/*/keyRings/*`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_579177 = path.getOrDefault("parent")
-  valid_579177 = validateParameter(valid_579177, JString, required = true,
+  var valid_580202 = path.getOrDefault("parent")
+  valid_580202 = validateParameter(valid_580202, JString, required = true,
                                  default = nil)
-  if valid_579177 != nil:
-    section.add "parent", valid_579177
+  if valid_580202 != nil:
+    section.add "parent", valid_580202
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3418,7 +3499,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579175(
   ##   $.xgafv: JString
   ##          : V1 error format.
   ##   pageSize: JInt
-  ##           : Optional limit on the number of CryptoKeys to include in the
+  ##           : Optional. Optional limit on the number of CryptoKeys to include in the
   ## response.  Further CryptoKeys can subsequently be obtained by
   ## including the ListCryptoKeysResponse.next_page_token in a subsequent
   ## request.  If unspecified, the server will pick an appropriate default.
@@ -3439,7 +3520,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579175(
   ## [Sorting and filtering list
   ## results](https://cloud.google.com/kms/docs/sorting-and-filtering).
   ##   pageToken: JString
-  ##            : Optional pagination token, returned earlier via
+  ##            : Optional. Optional pagination token, returned earlier via
   ## ListCryptoKeysResponse.next_page_token.
   ##   callback: JString
   ##           : JSONP
@@ -3450,85 +3531,85 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579175(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579178 = query.getOrDefault("key")
-  valid_579178 = validateParameter(valid_579178, JString, required = false,
+  var valid_580203 = query.getOrDefault("key")
+  valid_580203 = validateParameter(valid_580203, JString, required = false,
                                  default = nil)
-  if valid_579178 != nil:
-    section.add "key", valid_579178
-  var valid_579179 = query.getOrDefault("prettyPrint")
-  valid_579179 = validateParameter(valid_579179, JBool, required = false,
+  if valid_580203 != nil:
+    section.add "key", valid_580203
+  var valid_580204 = query.getOrDefault("prettyPrint")
+  valid_580204 = validateParameter(valid_580204, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579179 != nil:
-    section.add "prettyPrint", valid_579179
-  var valid_579180 = query.getOrDefault("oauth_token")
-  valid_579180 = validateParameter(valid_579180, JString, required = false,
+  if valid_580204 != nil:
+    section.add "prettyPrint", valid_580204
+  var valid_580205 = query.getOrDefault("oauth_token")
+  valid_580205 = validateParameter(valid_580205, JString, required = false,
                                  default = nil)
-  if valid_579180 != nil:
-    section.add "oauth_token", valid_579180
-  var valid_579181 = query.getOrDefault("versionView")
-  valid_579181 = validateParameter(valid_579181, JString, required = false, default = newJString(
+  if valid_580205 != nil:
+    section.add "oauth_token", valid_580205
+  var valid_580206 = query.getOrDefault("versionView")
+  valid_580206 = validateParameter(valid_580206, JString, required = false, default = newJString(
       "CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED"))
-  if valid_579181 != nil:
-    section.add "versionView", valid_579181
-  var valid_579182 = query.getOrDefault("$.xgafv")
-  valid_579182 = validateParameter(valid_579182, JString, required = false,
+  if valid_580206 != nil:
+    section.add "versionView", valid_580206
+  var valid_580207 = query.getOrDefault("$.xgafv")
+  valid_580207 = validateParameter(valid_580207, JString, required = false,
                                  default = newJString("1"))
-  if valid_579182 != nil:
-    section.add "$.xgafv", valid_579182
-  var valid_579183 = query.getOrDefault("pageSize")
-  valid_579183 = validateParameter(valid_579183, JInt, required = false, default = nil)
-  if valid_579183 != nil:
-    section.add "pageSize", valid_579183
-  var valid_579184 = query.getOrDefault("alt")
-  valid_579184 = validateParameter(valid_579184, JString, required = false,
+  if valid_580207 != nil:
+    section.add "$.xgafv", valid_580207
+  var valid_580208 = query.getOrDefault("pageSize")
+  valid_580208 = validateParameter(valid_580208, JInt, required = false, default = nil)
+  if valid_580208 != nil:
+    section.add "pageSize", valid_580208
+  var valid_580209 = query.getOrDefault("alt")
+  valid_580209 = validateParameter(valid_580209, JString, required = false,
                                  default = newJString("json"))
-  if valid_579184 != nil:
-    section.add "alt", valid_579184
-  var valid_579185 = query.getOrDefault("uploadType")
-  valid_579185 = validateParameter(valid_579185, JString, required = false,
+  if valid_580209 != nil:
+    section.add "alt", valid_580209
+  var valid_580210 = query.getOrDefault("uploadType")
+  valid_580210 = validateParameter(valid_580210, JString, required = false,
                                  default = nil)
-  if valid_579185 != nil:
-    section.add "uploadType", valid_579185
-  var valid_579186 = query.getOrDefault("quotaUser")
-  valid_579186 = validateParameter(valid_579186, JString, required = false,
+  if valid_580210 != nil:
+    section.add "uploadType", valid_580210
+  var valid_580211 = query.getOrDefault("quotaUser")
+  valid_580211 = validateParameter(valid_580211, JString, required = false,
                                  default = nil)
-  if valid_579186 != nil:
-    section.add "quotaUser", valid_579186
-  var valid_579187 = query.getOrDefault("orderBy")
-  valid_579187 = validateParameter(valid_579187, JString, required = false,
+  if valid_580211 != nil:
+    section.add "quotaUser", valid_580211
+  var valid_580212 = query.getOrDefault("orderBy")
+  valid_580212 = validateParameter(valid_580212, JString, required = false,
                                  default = nil)
-  if valid_579187 != nil:
-    section.add "orderBy", valid_579187
-  var valid_579188 = query.getOrDefault("filter")
-  valid_579188 = validateParameter(valid_579188, JString, required = false,
+  if valid_580212 != nil:
+    section.add "orderBy", valid_580212
+  var valid_580213 = query.getOrDefault("filter")
+  valid_580213 = validateParameter(valid_580213, JString, required = false,
                                  default = nil)
-  if valid_579188 != nil:
-    section.add "filter", valid_579188
-  var valid_579189 = query.getOrDefault("pageToken")
-  valid_579189 = validateParameter(valid_579189, JString, required = false,
+  if valid_580213 != nil:
+    section.add "filter", valid_580213
+  var valid_580214 = query.getOrDefault("pageToken")
+  valid_580214 = validateParameter(valid_580214, JString, required = false,
                                  default = nil)
-  if valid_579189 != nil:
-    section.add "pageToken", valid_579189
-  var valid_579190 = query.getOrDefault("callback")
-  valid_579190 = validateParameter(valid_579190, JString, required = false,
+  if valid_580214 != nil:
+    section.add "pageToken", valid_580214
+  var valid_580215 = query.getOrDefault("callback")
+  valid_580215 = validateParameter(valid_580215, JString, required = false,
                                  default = nil)
-  if valid_579190 != nil:
-    section.add "callback", valid_579190
-  var valid_579191 = query.getOrDefault("fields")
-  valid_579191 = validateParameter(valid_579191, JString, required = false,
+  if valid_580215 != nil:
+    section.add "callback", valid_580215
+  var valid_580216 = query.getOrDefault("fields")
+  valid_580216 = validateParameter(valid_580216, JString, required = false,
                                  default = nil)
-  if valid_579191 != nil:
-    section.add "fields", valid_579191
-  var valid_579192 = query.getOrDefault("access_token")
-  valid_579192 = validateParameter(valid_579192, JString, required = false,
+  if valid_580216 != nil:
+    section.add "fields", valid_580216
+  var valid_580217 = query.getOrDefault("access_token")
+  valid_580217 = validateParameter(valid_580217, JString, required = false,
                                  default = nil)
-  if valid_579192 != nil:
-    section.add "access_token", valid_579192
-  var valid_579193 = query.getOrDefault("upload_protocol")
-  valid_579193 = validateParameter(valid_579193, JString, required = false,
+  if valid_580217 != nil:
+    section.add "access_token", valid_580217
+  var valid_580218 = query.getOrDefault("upload_protocol")
+  valid_580218 = validateParameter(valid_580218, JString, required = false,
                                  default = nil)
-  if valid_579193 != nil:
-    section.add "upload_protocol", valid_579193
+  if valid_580218 != nil:
+    section.add "upload_protocol", valid_580218
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3537,21 +3618,21 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579175(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579194: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579174;
+proc call*(call_580219: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_580199;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists CryptoKeys.
   ## 
-  let valid = call_579194.validator(path, query, header, formData, body)
-  let scheme = call_579194.pickScheme
+  let valid = call_580219.validator(path, query, header, formData, body)
+  let scheme = call_580219.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579194.url(scheme.get, call_579194.host, call_579194.base,
-                         call_579194.route, valid.getOrDefault("path"),
+  let url = call_580219.url(scheme.get, call_580219.host, call_580219.base,
+                         call_580219.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579194, url, valid)
+  result = hook(call_580219, url, valid)
 
-proc call*(call_579195: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579174;
+proc call*(call_580220: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_580199;
           parent: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = "";
           versionView: string = "CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED";
@@ -3572,7 +3653,7 @@ proc call*(call_579195: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579
   ##   Xgafv: string
   ##        : V1 error format.
   ##   pageSize: int
-  ##           : Optional limit on the number of CryptoKeys to include in the
+  ##           : Optional. Optional limit on the number of CryptoKeys to include in the
   ## response.  Further CryptoKeys can subsequently be obtained by
   ## including the ListCryptoKeysResponse.next_page_token in a subsequent
   ## request.  If unspecified, the server will pick an appropriate default.
@@ -3593,7 +3674,7 @@ proc call*(call_579195: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579
   ## [Sorting and filtering list
   ## results](https://cloud.google.com/kms/docs/sorting-and-filtering).
   ##   pageToken: string
-  ##            : Optional pagination token, returned earlier via
+  ##            : Optional. Optional pagination token, returned earlier via
   ## ListCryptoKeysResponse.next_page_token.
   ##   callback: string
   ##           : JSONP
@@ -3606,37 +3687,37 @@ proc call*(call_579195: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579196 = newJObject()
-  var query_579197 = newJObject()
-  add(query_579197, "key", newJString(key))
-  add(query_579197, "prettyPrint", newJBool(prettyPrint))
-  add(query_579197, "oauth_token", newJString(oauthToken))
-  add(query_579197, "versionView", newJString(versionView))
-  add(query_579197, "$.xgafv", newJString(Xgafv))
-  add(query_579197, "pageSize", newJInt(pageSize))
-  add(query_579197, "alt", newJString(alt))
-  add(query_579197, "uploadType", newJString(uploadType))
-  add(query_579197, "quotaUser", newJString(quotaUser))
-  add(query_579197, "orderBy", newJString(orderBy))
-  add(query_579197, "filter", newJString(filter))
-  add(query_579197, "pageToken", newJString(pageToken))
-  add(query_579197, "callback", newJString(callback))
-  add(path_579196, "parent", newJString(parent))
-  add(query_579197, "fields", newJString(fields))
-  add(query_579197, "access_token", newJString(accessToken))
-  add(query_579197, "upload_protocol", newJString(uploadProtocol))
-  result = call_579195.call(path_579196, query_579197, nil, nil, nil)
+  var path_580221 = newJObject()
+  var query_580222 = newJObject()
+  add(query_580222, "key", newJString(key))
+  add(query_580222, "prettyPrint", newJBool(prettyPrint))
+  add(query_580222, "oauth_token", newJString(oauthToken))
+  add(query_580222, "versionView", newJString(versionView))
+  add(query_580222, "$.xgafv", newJString(Xgafv))
+  add(query_580222, "pageSize", newJInt(pageSize))
+  add(query_580222, "alt", newJString(alt))
+  add(query_580222, "uploadType", newJString(uploadType))
+  add(query_580222, "quotaUser", newJString(quotaUser))
+  add(query_580222, "orderBy", newJString(orderBy))
+  add(query_580222, "filter", newJString(filter))
+  add(query_580222, "pageToken", newJString(pageToken))
+  add(query_580222, "callback", newJString(callback))
+  add(path_580221, "parent", newJString(parent))
+  add(query_580222, "fields", newJString(fields))
+  add(query_580222, "access_token", newJString(accessToken))
+  add(query_580222, "upload_protocol", newJString(uploadProtocol))
+  result = call_580220.call(path_580221, query_580222, nil, nil, nil)
 
-var cloudkmsProjectsLocationsKeyRingsCryptoKeysList* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579174(
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysList* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_580199(
     name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysList",
     meth: HttpMethod.HttpGet, host: "cloudkms.googleapis.com",
     route: "/v1/{parent}/cryptoKeys",
-    validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579175,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_579176,
+    validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_580200,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysList_580201,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_579244 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_579246(
+  Call_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_580269 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_580271(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -3651,9 +3732,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_579246(
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_579245(
+proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_580270(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Create a new ImportJob within a KeyRing.
@@ -3668,11 +3754,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_579245(
   ## ImportJobs.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_579247 = path.getOrDefault("parent")
-  valid_579247 = validateParameter(valid_579247, JString, required = true,
+  var valid_580272 = path.getOrDefault("parent")
+  valid_580272 = validateParameter(valid_580272, JString, required = true,
                                  default = nil)
-  if valid_579247 != nil:
-    section.add "parent", valid_579247
+  if valid_580272 != nil:
+    section.add "parent", valid_580272
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3701,66 +3787,66 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_579245(
   ##              : Required. It must be unique within a KeyRing and match the regular
   ## expression `[a-zA-Z0-9_-]{1,63}`
   section = newJObject()
-  var valid_579248 = query.getOrDefault("key")
-  valid_579248 = validateParameter(valid_579248, JString, required = false,
+  var valid_580273 = query.getOrDefault("key")
+  valid_580273 = validateParameter(valid_580273, JString, required = false,
                                  default = nil)
-  if valid_579248 != nil:
-    section.add "key", valid_579248
-  var valid_579249 = query.getOrDefault("prettyPrint")
-  valid_579249 = validateParameter(valid_579249, JBool, required = false,
+  if valid_580273 != nil:
+    section.add "key", valid_580273
+  var valid_580274 = query.getOrDefault("prettyPrint")
+  valid_580274 = validateParameter(valid_580274, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579249 != nil:
-    section.add "prettyPrint", valid_579249
-  var valid_579250 = query.getOrDefault("oauth_token")
-  valid_579250 = validateParameter(valid_579250, JString, required = false,
+  if valid_580274 != nil:
+    section.add "prettyPrint", valid_580274
+  var valid_580275 = query.getOrDefault("oauth_token")
+  valid_580275 = validateParameter(valid_580275, JString, required = false,
                                  default = nil)
-  if valid_579250 != nil:
-    section.add "oauth_token", valid_579250
-  var valid_579251 = query.getOrDefault("$.xgafv")
-  valid_579251 = validateParameter(valid_579251, JString, required = false,
+  if valid_580275 != nil:
+    section.add "oauth_token", valid_580275
+  var valid_580276 = query.getOrDefault("$.xgafv")
+  valid_580276 = validateParameter(valid_580276, JString, required = false,
                                  default = newJString("1"))
-  if valid_579251 != nil:
-    section.add "$.xgafv", valid_579251
-  var valid_579252 = query.getOrDefault("alt")
-  valid_579252 = validateParameter(valid_579252, JString, required = false,
+  if valid_580276 != nil:
+    section.add "$.xgafv", valid_580276
+  var valid_580277 = query.getOrDefault("alt")
+  valid_580277 = validateParameter(valid_580277, JString, required = false,
                                  default = newJString("json"))
-  if valid_579252 != nil:
-    section.add "alt", valid_579252
-  var valid_579253 = query.getOrDefault("uploadType")
-  valid_579253 = validateParameter(valid_579253, JString, required = false,
+  if valid_580277 != nil:
+    section.add "alt", valid_580277
+  var valid_580278 = query.getOrDefault("uploadType")
+  valid_580278 = validateParameter(valid_580278, JString, required = false,
                                  default = nil)
-  if valid_579253 != nil:
-    section.add "uploadType", valid_579253
-  var valid_579254 = query.getOrDefault("quotaUser")
-  valid_579254 = validateParameter(valid_579254, JString, required = false,
+  if valid_580278 != nil:
+    section.add "uploadType", valid_580278
+  var valid_580279 = query.getOrDefault("quotaUser")
+  valid_580279 = validateParameter(valid_580279, JString, required = false,
                                  default = nil)
-  if valid_579254 != nil:
-    section.add "quotaUser", valid_579254
-  var valid_579255 = query.getOrDefault("callback")
-  valid_579255 = validateParameter(valid_579255, JString, required = false,
+  if valid_580279 != nil:
+    section.add "quotaUser", valid_580279
+  var valid_580280 = query.getOrDefault("callback")
+  valid_580280 = validateParameter(valid_580280, JString, required = false,
                                  default = nil)
-  if valid_579255 != nil:
-    section.add "callback", valid_579255
-  var valid_579256 = query.getOrDefault("fields")
-  valid_579256 = validateParameter(valid_579256, JString, required = false,
+  if valid_580280 != nil:
+    section.add "callback", valid_580280
+  var valid_580281 = query.getOrDefault("fields")
+  valid_580281 = validateParameter(valid_580281, JString, required = false,
                                  default = nil)
-  if valid_579256 != nil:
-    section.add "fields", valid_579256
-  var valid_579257 = query.getOrDefault("access_token")
-  valid_579257 = validateParameter(valid_579257, JString, required = false,
+  if valid_580281 != nil:
+    section.add "fields", valid_580281
+  var valid_580282 = query.getOrDefault("access_token")
+  valid_580282 = validateParameter(valid_580282, JString, required = false,
                                  default = nil)
-  if valid_579257 != nil:
-    section.add "access_token", valid_579257
-  var valid_579258 = query.getOrDefault("upload_protocol")
-  valid_579258 = validateParameter(valid_579258, JString, required = false,
+  if valid_580282 != nil:
+    section.add "access_token", valid_580282
+  var valid_580283 = query.getOrDefault("upload_protocol")
+  valid_580283 = validateParameter(valid_580283, JString, required = false,
                                  default = nil)
-  if valid_579258 != nil:
-    section.add "upload_protocol", valid_579258
-  var valid_579259 = query.getOrDefault("importJobId")
-  valid_579259 = validateParameter(valid_579259, JString, required = false,
+  if valid_580283 != nil:
+    section.add "upload_protocol", valid_580283
+  var valid_580284 = query.getOrDefault("importJobId")
+  valid_580284 = validateParameter(valid_580284, JString, required = false,
                                  default = nil)
-  if valid_579259 != nil:
-    section.add "importJobId", valid_579259
+  if valid_580284 != nil:
+    section.add "importJobId", valid_580284
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -3772,23 +3858,23 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_579245(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579261: Call_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_579244;
+proc call*(call_580286: Call_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_580269;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Create a new ImportJob within a KeyRing.
   ## 
   ## ImportJob.import_method is required.
   ## 
-  let valid = call_579261.validator(path, query, header, formData, body)
-  let scheme = call_579261.pickScheme
+  let valid = call_580286.validator(path, query, header, formData, body)
+  let scheme = call_580286.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579261.url(scheme.get, call_579261.host, call_579261.base,
-                         call_579261.route, valid.getOrDefault("path"),
+  let url = call_580286.url(scheme.get, call_580286.host, call_580286.base,
+                         call_580286.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579261, url, valid)
+  result = hook(call_580286, url, valid)
 
-proc call*(call_579262: Call_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_579244;
+proc call*(call_580287: Call_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_580269;
           parent: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
@@ -3827,36 +3913,36 @@ proc call*(call_579262: Call_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_5
   ##   importJobId: string
   ##              : Required. It must be unique within a KeyRing and match the regular
   ## expression `[a-zA-Z0-9_-]{1,63}`
-  var path_579263 = newJObject()
-  var query_579264 = newJObject()
-  var body_579265 = newJObject()
-  add(query_579264, "key", newJString(key))
-  add(query_579264, "prettyPrint", newJBool(prettyPrint))
-  add(query_579264, "oauth_token", newJString(oauthToken))
-  add(query_579264, "$.xgafv", newJString(Xgafv))
-  add(query_579264, "alt", newJString(alt))
-  add(query_579264, "uploadType", newJString(uploadType))
-  add(query_579264, "quotaUser", newJString(quotaUser))
+  var path_580288 = newJObject()
+  var query_580289 = newJObject()
+  var body_580290 = newJObject()
+  add(query_580289, "key", newJString(key))
+  add(query_580289, "prettyPrint", newJBool(prettyPrint))
+  add(query_580289, "oauth_token", newJString(oauthToken))
+  add(query_580289, "$.xgafv", newJString(Xgafv))
+  add(query_580289, "alt", newJString(alt))
+  add(query_580289, "uploadType", newJString(uploadType))
+  add(query_580289, "quotaUser", newJString(quotaUser))
   if body != nil:
-    body_579265 = body
-  add(query_579264, "callback", newJString(callback))
-  add(path_579263, "parent", newJString(parent))
-  add(query_579264, "fields", newJString(fields))
-  add(query_579264, "access_token", newJString(accessToken))
-  add(query_579264, "upload_protocol", newJString(uploadProtocol))
-  add(query_579264, "importJobId", newJString(importJobId))
-  result = call_579262.call(path_579263, query_579264, nil, nil, body_579265)
+    body_580290 = body
+  add(query_580289, "callback", newJString(callback))
+  add(path_580288, "parent", newJString(parent))
+  add(query_580289, "fields", newJString(fields))
+  add(query_580289, "access_token", newJString(accessToken))
+  add(query_580289, "upload_protocol", newJString(uploadProtocol))
+  add(query_580289, "importJobId", newJString(importJobId))
+  result = call_580287.call(path_580288, query_580289, nil, nil, body_580290)
 
-var cloudkmsProjectsLocationsKeyRingsImportJobsCreate* = Call_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_579244(
+var cloudkmsProjectsLocationsKeyRingsImportJobsCreate* = Call_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_580269(
     name: "cloudkmsProjectsLocationsKeyRingsImportJobsCreate",
     meth: HttpMethod.HttpPost, host: "cloudkms.googleapis.com",
     route: "/v1/{parent}/importJobs",
-    validator: validate_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_579245,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_579246,
+    validator: validate_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_580270,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsImportJobsCreate_580271,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsImportJobsList_579221 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsImportJobsList_579223(protocol: Scheme;
+  Call_CloudkmsProjectsLocationsKeyRingsImportJobsList_580246 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsImportJobsList_580248(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -3870,9 +3956,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsImportJobsList_579223(protocol: Scheme
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsList_579222(
+proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsList_580247(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Lists ImportJobs.
@@ -3885,11 +3976,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsList_579222(
   ## `projects/*/locations/*/keyRings/*`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_579224 = path.getOrDefault("parent")
-  valid_579224 = validateParameter(valid_579224, JString, required = true,
+  var valid_580249 = path.getOrDefault("parent")
+  valid_580249 = validateParameter(valid_580249, JString, required = true,
                                  default = nil)
-  if valid_579224 != nil:
-    section.add "parent", valid_579224
+  if valid_580249 != nil:
+    section.add "parent", valid_580249
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -3901,7 +3992,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsList_579222(
   ##   $.xgafv: JString
   ##          : V1 error format.
   ##   pageSize: JInt
-  ##           : Optional limit on the number of ImportJobs to include in the
+  ##           : Optional. Optional limit on the number of ImportJobs to include in the
   ## response. Further ImportJobs can subsequently be obtained by
   ## including the ListImportJobsResponse.next_page_token in a subsequent
   ## request. If unspecified, the server will pick an appropriate default.
@@ -3922,7 +4013,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsList_579222(
   ## [Sorting and filtering list
   ## results](https://cloud.google.com/kms/docs/sorting-and-filtering).
   ##   pageToken: JString
-  ##            : Optional pagination token, returned earlier via
+  ##            : Optional. Optional pagination token, returned earlier via
   ## ListImportJobsResponse.next_page_token.
   ##   callback: JString
   ##           : JSONP
@@ -3933,80 +4024,80 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsList_579222(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579225 = query.getOrDefault("key")
-  valid_579225 = validateParameter(valid_579225, JString, required = false,
+  var valid_580250 = query.getOrDefault("key")
+  valid_580250 = validateParameter(valid_580250, JString, required = false,
                                  default = nil)
-  if valid_579225 != nil:
-    section.add "key", valid_579225
-  var valid_579226 = query.getOrDefault("prettyPrint")
-  valid_579226 = validateParameter(valid_579226, JBool, required = false,
+  if valid_580250 != nil:
+    section.add "key", valid_580250
+  var valid_580251 = query.getOrDefault("prettyPrint")
+  valid_580251 = validateParameter(valid_580251, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579226 != nil:
-    section.add "prettyPrint", valid_579226
-  var valid_579227 = query.getOrDefault("oauth_token")
-  valid_579227 = validateParameter(valid_579227, JString, required = false,
+  if valid_580251 != nil:
+    section.add "prettyPrint", valid_580251
+  var valid_580252 = query.getOrDefault("oauth_token")
+  valid_580252 = validateParameter(valid_580252, JString, required = false,
                                  default = nil)
-  if valid_579227 != nil:
-    section.add "oauth_token", valid_579227
-  var valid_579228 = query.getOrDefault("$.xgafv")
-  valid_579228 = validateParameter(valid_579228, JString, required = false,
+  if valid_580252 != nil:
+    section.add "oauth_token", valid_580252
+  var valid_580253 = query.getOrDefault("$.xgafv")
+  valid_580253 = validateParameter(valid_580253, JString, required = false,
                                  default = newJString("1"))
-  if valid_579228 != nil:
-    section.add "$.xgafv", valid_579228
-  var valid_579229 = query.getOrDefault("pageSize")
-  valid_579229 = validateParameter(valid_579229, JInt, required = false, default = nil)
-  if valid_579229 != nil:
-    section.add "pageSize", valid_579229
-  var valid_579230 = query.getOrDefault("alt")
-  valid_579230 = validateParameter(valid_579230, JString, required = false,
+  if valid_580253 != nil:
+    section.add "$.xgafv", valid_580253
+  var valid_580254 = query.getOrDefault("pageSize")
+  valid_580254 = validateParameter(valid_580254, JInt, required = false, default = nil)
+  if valid_580254 != nil:
+    section.add "pageSize", valid_580254
+  var valid_580255 = query.getOrDefault("alt")
+  valid_580255 = validateParameter(valid_580255, JString, required = false,
                                  default = newJString("json"))
-  if valid_579230 != nil:
-    section.add "alt", valid_579230
-  var valid_579231 = query.getOrDefault("uploadType")
-  valid_579231 = validateParameter(valid_579231, JString, required = false,
+  if valid_580255 != nil:
+    section.add "alt", valid_580255
+  var valid_580256 = query.getOrDefault("uploadType")
+  valid_580256 = validateParameter(valid_580256, JString, required = false,
                                  default = nil)
-  if valid_579231 != nil:
-    section.add "uploadType", valid_579231
-  var valid_579232 = query.getOrDefault("quotaUser")
-  valid_579232 = validateParameter(valid_579232, JString, required = false,
+  if valid_580256 != nil:
+    section.add "uploadType", valid_580256
+  var valid_580257 = query.getOrDefault("quotaUser")
+  valid_580257 = validateParameter(valid_580257, JString, required = false,
                                  default = nil)
-  if valid_579232 != nil:
-    section.add "quotaUser", valid_579232
-  var valid_579233 = query.getOrDefault("orderBy")
-  valid_579233 = validateParameter(valid_579233, JString, required = false,
+  if valid_580257 != nil:
+    section.add "quotaUser", valid_580257
+  var valid_580258 = query.getOrDefault("orderBy")
+  valid_580258 = validateParameter(valid_580258, JString, required = false,
                                  default = nil)
-  if valid_579233 != nil:
-    section.add "orderBy", valid_579233
-  var valid_579234 = query.getOrDefault("filter")
-  valid_579234 = validateParameter(valid_579234, JString, required = false,
+  if valid_580258 != nil:
+    section.add "orderBy", valid_580258
+  var valid_580259 = query.getOrDefault("filter")
+  valid_580259 = validateParameter(valid_580259, JString, required = false,
                                  default = nil)
-  if valid_579234 != nil:
-    section.add "filter", valid_579234
-  var valid_579235 = query.getOrDefault("pageToken")
-  valid_579235 = validateParameter(valid_579235, JString, required = false,
+  if valid_580259 != nil:
+    section.add "filter", valid_580259
+  var valid_580260 = query.getOrDefault("pageToken")
+  valid_580260 = validateParameter(valid_580260, JString, required = false,
                                  default = nil)
-  if valid_579235 != nil:
-    section.add "pageToken", valid_579235
-  var valid_579236 = query.getOrDefault("callback")
-  valid_579236 = validateParameter(valid_579236, JString, required = false,
+  if valid_580260 != nil:
+    section.add "pageToken", valid_580260
+  var valid_580261 = query.getOrDefault("callback")
+  valid_580261 = validateParameter(valid_580261, JString, required = false,
                                  default = nil)
-  if valid_579236 != nil:
-    section.add "callback", valid_579236
-  var valid_579237 = query.getOrDefault("fields")
-  valid_579237 = validateParameter(valid_579237, JString, required = false,
+  if valid_580261 != nil:
+    section.add "callback", valid_580261
+  var valid_580262 = query.getOrDefault("fields")
+  valid_580262 = validateParameter(valid_580262, JString, required = false,
                                  default = nil)
-  if valid_579237 != nil:
-    section.add "fields", valid_579237
-  var valid_579238 = query.getOrDefault("access_token")
-  valid_579238 = validateParameter(valid_579238, JString, required = false,
+  if valid_580262 != nil:
+    section.add "fields", valid_580262
+  var valid_580263 = query.getOrDefault("access_token")
+  valid_580263 = validateParameter(valid_580263, JString, required = false,
                                  default = nil)
-  if valid_579238 != nil:
-    section.add "access_token", valid_579238
-  var valid_579239 = query.getOrDefault("upload_protocol")
-  valid_579239 = validateParameter(valid_579239, JString, required = false,
+  if valid_580263 != nil:
+    section.add "access_token", valid_580263
+  var valid_580264 = query.getOrDefault("upload_protocol")
+  valid_580264 = validateParameter(valid_580264, JString, required = false,
                                  default = nil)
-  if valid_579239 != nil:
-    section.add "upload_protocol", valid_579239
+  if valid_580264 != nil:
+    section.add "upload_protocol", valid_580264
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4015,21 +4106,21 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsList_579222(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579240: Call_CloudkmsProjectsLocationsKeyRingsImportJobsList_579221;
+proc call*(call_580265: Call_CloudkmsProjectsLocationsKeyRingsImportJobsList_580246;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists ImportJobs.
   ## 
-  let valid = call_579240.validator(path, query, header, formData, body)
-  let scheme = call_579240.pickScheme
+  let valid = call_580265.validator(path, query, header, formData, body)
+  let scheme = call_580265.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579240.url(scheme.get, call_579240.host, call_579240.base,
-                         call_579240.route, valid.getOrDefault("path"),
+  let url = call_580265.url(scheme.get, call_580265.host, call_580265.base,
+                         call_580265.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579240, url, valid)
+  result = hook(call_580265, url, valid)
 
-proc call*(call_579241: Call_CloudkmsProjectsLocationsKeyRingsImportJobsList_579221;
+proc call*(call_580266: Call_CloudkmsProjectsLocationsKeyRingsImportJobsList_580246;
           parent: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; pageSize: int = 0;
           alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
@@ -4047,7 +4138,7 @@ proc call*(call_579241: Call_CloudkmsProjectsLocationsKeyRingsImportJobsList_579
   ##   Xgafv: string
   ##        : V1 error format.
   ##   pageSize: int
-  ##           : Optional limit on the number of ImportJobs to include in the
+  ##           : Optional. Optional limit on the number of ImportJobs to include in the
   ## response. Further ImportJobs can subsequently be obtained by
   ## including the ListImportJobsResponse.next_page_token in a subsequent
   ## request. If unspecified, the server will pick an appropriate default.
@@ -4068,7 +4159,7 @@ proc call*(call_579241: Call_CloudkmsProjectsLocationsKeyRingsImportJobsList_579
   ## [Sorting and filtering list
   ## results](https://cloud.google.com/kms/docs/sorting-and-filtering).
   ##   pageToken: string
-  ##            : Optional pagination token, returned earlier via
+  ##            : Optional. Optional pagination token, returned earlier via
   ## ListImportJobsResponse.next_page_token.
   ##   callback: string
   ##           : JSONP
@@ -4081,36 +4172,36 @@ proc call*(call_579241: Call_CloudkmsProjectsLocationsKeyRingsImportJobsList_579
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579242 = newJObject()
-  var query_579243 = newJObject()
-  add(query_579243, "key", newJString(key))
-  add(query_579243, "prettyPrint", newJBool(prettyPrint))
-  add(query_579243, "oauth_token", newJString(oauthToken))
-  add(query_579243, "$.xgafv", newJString(Xgafv))
-  add(query_579243, "pageSize", newJInt(pageSize))
-  add(query_579243, "alt", newJString(alt))
-  add(query_579243, "uploadType", newJString(uploadType))
-  add(query_579243, "quotaUser", newJString(quotaUser))
-  add(query_579243, "orderBy", newJString(orderBy))
-  add(query_579243, "filter", newJString(filter))
-  add(query_579243, "pageToken", newJString(pageToken))
-  add(query_579243, "callback", newJString(callback))
-  add(path_579242, "parent", newJString(parent))
-  add(query_579243, "fields", newJString(fields))
-  add(query_579243, "access_token", newJString(accessToken))
-  add(query_579243, "upload_protocol", newJString(uploadProtocol))
-  result = call_579241.call(path_579242, query_579243, nil, nil, nil)
+  var path_580267 = newJObject()
+  var query_580268 = newJObject()
+  add(query_580268, "key", newJString(key))
+  add(query_580268, "prettyPrint", newJBool(prettyPrint))
+  add(query_580268, "oauth_token", newJString(oauthToken))
+  add(query_580268, "$.xgafv", newJString(Xgafv))
+  add(query_580268, "pageSize", newJInt(pageSize))
+  add(query_580268, "alt", newJString(alt))
+  add(query_580268, "uploadType", newJString(uploadType))
+  add(query_580268, "quotaUser", newJString(quotaUser))
+  add(query_580268, "orderBy", newJString(orderBy))
+  add(query_580268, "filter", newJString(filter))
+  add(query_580268, "pageToken", newJString(pageToken))
+  add(query_580268, "callback", newJString(callback))
+  add(path_580267, "parent", newJString(parent))
+  add(query_580268, "fields", newJString(fields))
+  add(query_580268, "access_token", newJString(accessToken))
+  add(query_580268, "upload_protocol", newJString(uploadProtocol))
+  result = call_580266.call(path_580267, query_580268, nil, nil, nil)
 
-var cloudkmsProjectsLocationsKeyRingsImportJobsList* = Call_CloudkmsProjectsLocationsKeyRingsImportJobsList_579221(
+var cloudkmsProjectsLocationsKeyRingsImportJobsList* = Call_CloudkmsProjectsLocationsKeyRingsImportJobsList_580246(
     name: "cloudkmsProjectsLocationsKeyRingsImportJobsList",
     meth: HttpMethod.HttpGet, host: "cloudkms.googleapis.com",
     route: "/v1/{parent}/importJobs",
-    validator: validate_CloudkmsProjectsLocationsKeyRingsImportJobsList_579222,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsImportJobsList_579223,
+    validator: validate_CloudkmsProjectsLocationsKeyRingsImportJobsList_580247,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsImportJobsList_580248,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsCreate_579289 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsCreate_579291(protocol: Scheme;
+  Call_CloudkmsProjectsLocationsKeyRingsCreate_580314 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCreate_580316(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4124,9 +4215,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsCreate_579291(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsCreate_579290(path: JsonNode;
+proc validate_CloudkmsProjectsLocationsKeyRingsCreate_580315(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Create a new KeyRing in a given Project and Location.
   ## 
@@ -4138,11 +4234,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCreate_579290(path: JsonNode;
   ## KeyRings, in the format `projects/*/locations/*`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_579292 = path.getOrDefault("parent")
-  valid_579292 = validateParameter(valid_579292, JString, required = true,
+  var valid_580317 = path.getOrDefault("parent")
+  valid_580317 = validateParameter(valid_580317, JString, required = true,
                                  default = nil)
-  if valid_579292 != nil:
-    section.add "parent", valid_579292
+  if valid_580317 != nil:
+    section.add "parent", valid_580317
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -4171,66 +4267,66 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCreate_579290(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579293 = query.getOrDefault("key")
-  valid_579293 = validateParameter(valid_579293, JString, required = false,
+  var valid_580318 = query.getOrDefault("key")
+  valid_580318 = validateParameter(valid_580318, JString, required = false,
                                  default = nil)
-  if valid_579293 != nil:
-    section.add "key", valid_579293
-  var valid_579294 = query.getOrDefault("prettyPrint")
-  valid_579294 = validateParameter(valid_579294, JBool, required = false,
+  if valid_580318 != nil:
+    section.add "key", valid_580318
+  var valid_580319 = query.getOrDefault("prettyPrint")
+  valid_580319 = validateParameter(valid_580319, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579294 != nil:
-    section.add "prettyPrint", valid_579294
-  var valid_579295 = query.getOrDefault("oauth_token")
-  valid_579295 = validateParameter(valid_579295, JString, required = false,
+  if valid_580319 != nil:
+    section.add "prettyPrint", valid_580319
+  var valid_580320 = query.getOrDefault("oauth_token")
+  valid_580320 = validateParameter(valid_580320, JString, required = false,
                                  default = nil)
-  if valid_579295 != nil:
-    section.add "oauth_token", valid_579295
-  var valid_579296 = query.getOrDefault("$.xgafv")
-  valid_579296 = validateParameter(valid_579296, JString, required = false,
+  if valid_580320 != nil:
+    section.add "oauth_token", valid_580320
+  var valid_580321 = query.getOrDefault("$.xgafv")
+  valid_580321 = validateParameter(valid_580321, JString, required = false,
                                  default = newJString("1"))
-  if valid_579296 != nil:
-    section.add "$.xgafv", valid_579296
-  var valid_579297 = query.getOrDefault("alt")
-  valid_579297 = validateParameter(valid_579297, JString, required = false,
+  if valid_580321 != nil:
+    section.add "$.xgafv", valid_580321
+  var valid_580322 = query.getOrDefault("alt")
+  valid_580322 = validateParameter(valid_580322, JString, required = false,
                                  default = newJString("json"))
-  if valid_579297 != nil:
-    section.add "alt", valid_579297
-  var valid_579298 = query.getOrDefault("uploadType")
-  valid_579298 = validateParameter(valid_579298, JString, required = false,
+  if valid_580322 != nil:
+    section.add "alt", valid_580322
+  var valid_580323 = query.getOrDefault("uploadType")
+  valid_580323 = validateParameter(valid_580323, JString, required = false,
                                  default = nil)
-  if valid_579298 != nil:
-    section.add "uploadType", valid_579298
-  var valid_579299 = query.getOrDefault("quotaUser")
-  valid_579299 = validateParameter(valid_579299, JString, required = false,
+  if valid_580323 != nil:
+    section.add "uploadType", valid_580323
+  var valid_580324 = query.getOrDefault("quotaUser")
+  valid_580324 = validateParameter(valid_580324, JString, required = false,
                                  default = nil)
-  if valid_579299 != nil:
-    section.add "quotaUser", valid_579299
-  var valid_579300 = query.getOrDefault("keyRingId")
-  valid_579300 = validateParameter(valid_579300, JString, required = false,
+  if valid_580324 != nil:
+    section.add "quotaUser", valid_580324
+  var valid_580325 = query.getOrDefault("keyRingId")
+  valid_580325 = validateParameter(valid_580325, JString, required = false,
                                  default = nil)
-  if valid_579300 != nil:
-    section.add "keyRingId", valid_579300
-  var valid_579301 = query.getOrDefault("callback")
-  valid_579301 = validateParameter(valid_579301, JString, required = false,
+  if valid_580325 != nil:
+    section.add "keyRingId", valid_580325
+  var valid_580326 = query.getOrDefault("callback")
+  valid_580326 = validateParameter(valid_580326, JString, required = false,
                                  default = nil)
-  if valid_579301 != nil:
-    section.add "callback", valid_579301
-  var valid_579302 = query.getOrDefault("fields")
-  valid_579302 = validateParameter(valid_579302, JString, required = false,
+  if valid_580326 != nil:
+    section.add "callback", valid_580326
+  var valid_580327 = query.getOrDefault("fields")
+  valid_580327 = validateParameter(valid_580327, JString, required = false,
                                  default = nil)
-  if valid_579302 != nil:
-    section.add "fields", valid_579302
-  var valid_579303 = query.getOrDefault("access_token")
-  valid_579303 = validateParameter(valid_579303, JString, required = false,
+  if valid_580327 != nil:
+    section.add "fields", valid_580327
+  var valid_580328 = query.getOrDefault("access_token")
+  valid_580328 = validateParameter(valid_580328, JString, required = false,
                                  default = nil)
-  if valid_579303 != nil:
-    section.add "access_token", valid_579303
-  var valid_579304 = query.getOrDefault("upload_protocol")
-  valid_579304 = validateParameter(valid_579304, JString, required = false,
+  if valid_580328 != nil:
+    section.add "access_token", valid_580328
+  var valid_580329 = query.getOrDefault("upload_protocol")
+  valid_580329 = validateParameter(valid_580329, JString, required = false,
                                  default = nil)
-  if valid_579304 != nil:
-    section.add "upload_protocol", valid_579304
+  if valid_580329 != nil:
+    section.add "upload_protocol", valid_580329
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4242,21 +4338,21 @@ proc validate_CloudkmsProjectsLocationsKeyRingsCreate_579290(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579306: Call_CloudkmsProjectsLocationsKeyRingsCreate_579289;
+proc call*(call_580331: Call_CloudkmsProjectsLocationsKeyRingsCreate_580314;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Create a new KeyRing in a given Project and Location.
   ## 
-  let valid = call_579306.validator(path, query, header, formData, body)
-  let scheme = call_579306.pickScheme
+  let valid = call_580331.validator(path, query, header, formData, body)
+  let scheme = call_580331.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579306.url(scheme.get, call_579306.host, call_579306.base,
-                         call_579306.route, valid.getOrDefault("path"),
+  let url = call_580331.url(scheme.get, call_580331.host, call_580331.base,
+                         call_580331.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579306, url, valid)
+  result = hook(call_580331, url, valid)
 
-proc call*(call_579307: Call_CloudkmsProjectsLocationsKeyRingsCreate_579289;
+proc call*(call_580332: Call_CloudkmsProjectsLocationsKeyRingsCreate_580314;
           parent: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; keyRingId: string = "";
@@ -4293,35 +4389,35 @@ proc call*(call_579307: Call_CloudkmsProjectsLocationsKeyRingsCreate_579289;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579308 = newJObject()
-  var query_579309 = newJObject()
-  var body_579310 = newJObject()
-  add(query_579309, "key", newJString(key))
-  add(query_579309, "prettyPrint", newJBool(prettyPrint))
-  add(query_579309, "oauth_token", newJString(oauthToken))
-  add(query_579309, "$.xgafv", newJString(Xgafv))
-  add(query_579309, "alt", newJString(alt))
-  add(query_579309, "uploadType", newJString(uploadType))
-  add(query_579309, "quotaUser", newJString(quotaUser))
-  add(query_579309, "keyRingId", newJString(keyRingId))
+  var path_580333 = newJObject()
+  var query_580334 = newJObject()
+  var body_580335 = newJObject()
+  add(query_580334, "key", newJString(key))
+  add(query_580334, "prettyPrint", newJBool(prettyPrint))
+  add(query_580334, "oauth_token", newJString(oauthToken))
+  add(query_580334, "$.xgafv", newJString(Xgafv))
+  add(query_580334, "alt", newJString(alt))
+  add(query_580334, "uploadType", newJString(uploadType))
+  add(query_580334, "quotaUser", newJString(quotaUser))
+  add(query_580334, "keyRingId", newJString(keyRingId))
   if body != nil:
-    body_579310 = body
-  add(query_579309, "callback", newJString(callback))
-  add(path_579308, "parent", newJString(parent))
-  add(query_579309, "fields", newJString(fields))
-  add(query_579309, "access_token", newJString(accessToken))
-  add(query_579309, "upload_protocol", newJString(uploadProtocol))
-  result = call_579307.call(path_579308, query_579309, nil, nil, body_579310)
+    body_580335 = body
+  add(query_580334, "callback", newJString(callback))
+  add(path_580333, "parent", newJString(parent))
+  add(query_580334, "fields", newJString(fields))
+  add(query_580334, "access_token", newJString(accessToken))
+  add(query_580334, "upload_protocol", newJString(uploadProtocol))
+  result = call_580332.call(path_580333, query_580334, nil, nil, body_580335)
 
-var cloudkmsProjectsLocationsKeyRingsCreate* = Call_CloudkmsProjectsLocationsKeyRingsCreate_579289(
+var cloudkmsProjectsLocationsKeyRingsCreate* = Call_CloudkmsProjectsLocationsKeyRingsCreate_580314(
     name: "cloudkmsProjectsLocationsKeyRingsCreate", meth: HttpMethod.HttpPost,
     host: "cloudkms.googleapis.com", route: "/v1/{parent}/keyRings",
-    validator: validate_CloudkmsProjectsLocationsKeyRingsCreate_579290, base: "/",
-    url: url_CloudkmsProjectsLocationsKeyRingsCreate_579291,
+    validator: validate_CloudkmsProjectsLocationsKeyRingsCreate_580315, base: "/",
+    url: url_CloudkmsProjectsLocationsKeyRingsCreate_580316,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsList_579266 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsList_579268(protocol: Scheme;
+  Call_CloudkmsProjectsLocationsKeyRingsList_580291 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsList_580293(protocol: Scheme;
     host: string; base: string; route: string; path: JsonNode; query: JsonNode): Uri =
   result.scheme = $protocol
   result.hostname = host
@@ -4335,9 +4431,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsList_579268(protocol: Scheme;
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsList_579267(path: JsonNode;
+proc validate_CloudkmsProjectsLocationsKeyRingsList_580292(path: JsonNode;
     query: JsonNode; header: JsonNode; formData: JsonNode; body: JsonNode): JsonNode =
   ## Lists KeyRings.
   ## 
@@ -4349,11 +4450,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsList_579267(path: JsonNode;
   ## KeyRings, in the format `projects/*/locations/*`.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `parent` field"
-  var valid_579269 = path.getOrDefault("parent")
-  valid_579269 = validateParameter(valid_579269, JString, required = true,
+  var valid_580294 = path.getOrDefault("parent")
+  valid_580294 = validateParameter(valid_580294, JString, required = true,
                                  default = nil)
-  if valid_579269 != nil:
-    section.add "parent", valid_579269
+  if valid_580294 != nil:
+    section.add "parent", valid_580294
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -4365,7 +4466,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsList_579267(path: JsonNode;
   ##   $.xgafv: JString
   ##          : V1 error format.
   ##   pageSize: JInt
-  ##           : Optional limit on the number of KeyRings to include in the
+  ##           : Optional. Optional limit on the number of KeyRings to include in the
   ## response.  Further KeyRings can subsequently be obtained by
   ## including the ListKeyRingsResponse.next_page_token in a subsequent
   ## request.  If unspecified, the server will pick an appropriate default.
@@ -4386,7 +4487,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsList_579267(path: JsonNode;
   ## [Sorting and filtering list
   ## results](https://cloud.google.com/kms/docs/sorting-and-filtering).
   ##   pageToken: JString
-  ##            : Optional pagination token, returned earlier via
+  ##            : Optional. Optional pagination token, returned earlier via
   ## ListKeyRingsResponse.next_page_token.
   ##   callback: JString
   ##           : JSONP
@@ -4397,80 +4498,80 @@ proc validate_CloudkmsProjectsLocationsKeyRingsList_579267(path: JsonNode;
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579270 = query.getOrDefault("key")
-  valid_579270 = validateParameter(valid_579270, JString, required = false,
+  var valid_580295 = query.getOrDefault("key")
+  valid_580295 = validateParameter(valid_580295, JString, required = false,
                                  default = nil)
-  if valid_579270 != nil:
-    section.add "key", valid_579270
-  var valid_579271 = query.getOrDefault("prettyPrint")
-  valid_579271 = validateParameter(valid_579271, JBool, required = false,
+  if valid_580295 != nil:
+    section.add "key", valid_580295
+  var valid_580296 = query.getOrDefault("prettyPrint")
+  valid_580296 = validateParameter(valid_580296, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579271 != nil:
-    section.add "prettyPrint", valid_579271
-  var valid_579272 = query.getOrDefault("oauth_token")
-  valid_579272 = validateParameter(valid_579272, JString, required = false,
+  if valid_580296 != nil:
+    section.add "prettyPrint", valid_580296
+  var valid_580297 = query.getOrDefault("oauth_token")
+  valid_580297 = validateParameter(valid_580297, JString, required = false,
                                  default = nil)
-  if valid_579272 != nil:
-    section.add "oauth_token", valid_579272
-  var valid_579273 = query.getOrDefault("$.xgafv")
-  valid_579273 = validateParameter(valid_579273, JString, required = false,
+  if valid_580297 != nil:
+    section.add "oauth_token", valid_580297
+  var valid_580298 = query.getOrDefault("$.xgafv")
+  valid_580298 = validateParameter(valid_580298, JString, required = false,
                                  default = newJString("1"))
-  if valid_579273 != nil:
-    section.add "$.xgafv", valid_579273
-  var valid_579274 = query.getOrDefault("pageSize")
-  valid_579274 = validateParameter(valid_579274, JInt, required = false, default = nil)
-  if valid_579274 != nil:
-    section.add "pageSize", valid_579274
-  var valid_579275 = query.getOrDefault("alt")
-  valid_579275 = validateParameter(valid_579275, JString, required = false,
+  if valid_580298 != nil:
+    section.add "$.xgafv", valid_580298
+  var valid_580299 = query.getOrDefault("pageSize")
+  valid_580299 = validateParameter(valid_580299, JInt, required = false, default = nil)
+  if valid_580299 != nil:
+    section.add "pageSize", valid_580299
+  var valid_580300 = query.getOrDefault("alt")
+  valid_580300 = validateParameter(valid_580300, JString, required = false,
                                  default = newJString("json"))
-  if valid_579275 != nil:
-    section.add "alt", valid_579275
-  var valid_579276 = query.getOrDefault("uploadType")
-  valid_579276 = validateParameter(valid_579276, JString, required = false,
+  if valid_580300 != nil:
+    section.add "alt", valid_580300
+  var valid_580301 = query.getOrDefault("uploadType")
+  valid_580301 = validateParameter(valid_580301, JString, required = false,
                                  default = nil)
-  if valid_579276 != nil:
-    section.add "uploadType", valid_579276
-  var valid_579277 = query.getOrDefault("quotaUser")
-  valid_579277 = validateParameter(valid_579277, JString, required = false,
+  if valid_580301 != nil:
+    section.add "uploadType", valid_580301
+  var valid_580302 = query.getOrDefault("quotaUser")
+  valid_580302 = validateParameter(valid_580302, JString, required = false,
                                  default = nil)
-  if valid_579277 != nil:
-    section.add "quotaUser", valid_579277
-  var valid_579278 = query.getOrDefault("orderBy")
-  valid_579278 = validateParameter(valid_579278, JString, required = false,
+  if valid_580302 != nil:
+    section.add "quotaUser", valid_580302
+  var valid_580303 = query.getOrDefault("orderBy")
+  valid_580303 = validateParameter(valid_580303, JString, required = false,
                                  default = nil)
-  if valid_579278 != nil:
-    section.add "orderBy", valid_579278
-  var valid_579279 = query.getOrDefault("filter")
-  valid_579279 = validateParameter(valid_579279, JString, required = false,
+  if valid_580303 != nil:
+    section.add "orderBy", valid_580303
+  var valid_580304 = query.getOrDefault("filter")
+  valid_580304 = validateParameter(valid_580304, JString, required = false,
                                  default = nil)
-  if valid_579279 != nil:
-    section.add "filter", valid_579279
-  var valid_579280 = query.getOrDefault("pageToken")
-  valid_579280 = validateParameter(valid_579280, JString, required = false,
+  if valid_580304 != nil:
+    section.add "filter", valid_580304
+  var valid_580305 = query.getOrDefault("pageToken")
+  valid_580305 = validateParameter(valid_580305, JString, required = false,
                                  default = nil)
-  if valid_579280 != nil:
-    section.add "pageToken", valid_579280
-  var valid_579281 = query.getOrDefault("callback")
-  valid_579281 = validateParameter(valid_579281, JString, required = false,
+  if valid_580305 != nil:
+    section.add "pageToken", valid_580305
+  var valid_580306 = query.getOrDefault("callback")
+  valid_580306 = validateParameter(valid_580306, JString, required = false,
                                  default = nil)
-  if valid_579281 != nil:
-    section.add "callback", valid_579281
-  var valid_579282 = query.getOrDefault("fields")
-  valid_579282 = validateParameter(valid_579282, JString, required = false,
+  if valid_580306 != nil:
+    section.add "callback", valid_580306
+  var valid_580307 = query.getOrDefault("fields")
+  valid_580307 = validateParameter(valid_580307, JString, required = false,
                                  default = nil)
-  if valid_579282 != nil:
-    section.add "fields", valid_579282
-  var valid_579283 = query.getOrDefault("access_token")
-  valid_579283 = validateParameter(valid_579283, JString, required = false,
+  if valid_580307 != nil:
+    section.add "fields", valid_580307
+  var valid_580308 = query.getOrDefault("access_token")
+  valid_580308 = validateParameter(valid_580308, JString, required = false,
                                  default = nil)
-  if valid_579283 != nil:
-    section.add "access_token", valid_579283
-  var valid_579284 = query.getOrDefault("upload_protocol")
-  valid_579284 = validateParameter(valid_579284, JString, required = false,
+  if valid_580308 != nil:
+    section.add "access_token", valid_580308
+  var valid_580309 = query.getOrDefault("upload_protocol")
+  valid_580309 = validateParameter(valid_580309, JString, required = false,
                                  default = nil)
-  if valid_579284 != nil:
-    section.add "upload_protocol", valid_579284
+  if valid_580309 != nil:
+    section.add "upload_protocol", valid_580309
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4479,21 +4580,21 @@ proc validate_CloudkmsProjectsLocationsKeyRingsList_579267(path: JsonNode;
   if body != nil:
     result.add "body", body
 
-proc call*(call_579285: Call_CloudkmsProjectsLocationsKeyRingsList_579266;
+proc call*(call_580310: Call_CloudkmsProjectsLocationsKeyRingsList_580291;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Lists KeyRings.
   ## 
-  let valid = call_579285.validator(path, query, header, formData, body)
-  let scheme = call_579285.pickScheme
+  let valid = call_580310.validator(path, query, header, formData, body)
+  let scheme = call_580310.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579285.url(scheme.get, call_579285.host, call_579285.base,
-                         call_579285.route, valid.getOrDefault("path"),
+  let url = call_580310.url(scheme.get, call_580310.host, call_580310.base,
+                         call_580310.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579285, url, valid)
+  result = hook(call_580310, url, valid)
 
-proc call*(call_579286: Call_CloudkmsProjectsLocationsKeyRingsList_579266;
+proc call*(call_580311: Call_CloudkmsProjectsLocationsKeyRingsList_580291;
           parent: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; pageSize: int = 0;
           alt: string = "json"; uploadType: string = ""; quotaUser: string = "";
@@ -4511,7 +4612,7 @@ proc call*(call_579286: Call_CloudkmsProjectsLocationsKeyRingsList_579266;
   ##   Xgafv: string
   ##        : V1 error format.
   ##   pageSize: int
-  ##           : Optional limit on the number of KeyRings to include in the
+  ##           : Optional. Optional limit on the number of KeyRings to include in the
   ## response.  Further KeyRings can subsequently be obtained by
   ## including the ListKeyRingsResponse.next_page_token in a subsequent
   ## request.  If unspecified, the server will pick an appropriate default.
@@ -4532,7 +4633,7 @@ proc call*(call_579286: Call_CloudkmsProjectsLocationsKeyRingsList_579266;
   ## [Sorting and filtering list
   ## results](https://cloud.google.com/kms/docs/sorting-and-filtering).
   ##   pageToken: string
-  ##            : Optional pagination token, returned earlier via
+  ##            : Optional. Optional pagination token, returned earlier via
   ## ListKeyRingsResponse.next_page_token.
   ##   callback: string
   ##           : JSONP
@@ -4545,34 +4646,34 @@ proc call*(call_579286: Call_CloudkmsProjectsLocationsKeyRingsList_579266;
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579287 = newJObject()
-  var query_579288 = newJObject()
-  add(query_579288, "key", newJString(key))
-  add(query_579288, "prettyPrint", newJBool(prettyPrint))
-  add(query_579288, "oauth_token", newJString(oauthToken))
-  add(query_579288, "$.xgafv", newJString(Xgafv))
-  add(query_579288, "pageSize", newJInt(pageSize))
-  add(query_579288, "alt", newJString(alt))
-  add(query_579288, "uploadType", newJString(uploadType))
-  add(query_579288, "quotaUser", newJString(quotaUser))
-  add(query_579288, "orderBy", newJString(orderBy))
-  add(query_579288, "filter", newJString(filter))
-  add(query_579288, "pageToken", newJString(pageToken))
-  add(query_579288, "callback", newJString(callback))
-  add(path_579287, "parent", newJString(parent))
-  add(query_579288, "fields", newJString(fields))
-  add(query_579288, "access_token", newJString(accessToken))
-  add(query_579288, "upload_protocol", newJString(uploadProtocol))
-  result = call_579286.call(path_579287, query_579288, nil, nil, nil)
+  var path_580312 = newJObject()
+  var query_580313 = newJObject()
+  add(query_580313, "key", newJString(key))
+  add(query_580313, "prettyPrint", newJBool(prettyPrint))
+  add(query_580313, "oauth_token", newJString(oauthToken))
+  add(query_580313, "$.xgafv", newJString(Xgafv))
+  add(query_580313, "pageSize", newJInt(pageSize))
+  add(query_580313, "alt", newJString(alt))
+  add(query_580313, "uploadType", newJString(uploadType))
+  add(query_580313, "quotaUser", newJString(quotaUser))
+  add(query_580313, "orderBy", newJString(orderBy))
+  add(query_580313, "filter", newJString(filter))
+  add(query_580313, "pageToken", newJString(pageToken))
+  add(query_580313, "callback", newJString(callback))
+  add(path_580312, "parent", newJString(parent))
+  add(query_580313, "fields", newJString(fields))
+  add(query_580313, "access_token", newJString(accessToken))
+  add(query_580313, "upload_protocol", newJString(uploadProtocol))
+  result = call_580311.call(path_580312, query_580313, nil, nil, nil)
 
-var cloudkmsProjectsLocationsKeyRingsList* = Call_CloudkmsProjectsLocationsKeyRingsList_579266(
+var cloudkmsProjectsLocationsKeyRingsList* = Call_CloudkmsProjectsLocationsKeyRingsList_580291(
     name: "cloudkmsProjectsLocationsKeyRingsList", meth: HttpMethod.HttpGet,
     host: "cloudkms.googleapis.com", route: "/v1/{parent}/keyRings",
-    validator: validate_CloudkmsProjectsLocationsKeyRingsList_579267, base: "/",
-    url: url_CloudkmsProjectsLocationsKeyRingsList_579268, schemes: {Scheme.Https})
+    validator: validate_CloudkmsProjectsLocationsKeyRingsList_580292, base: "/",
+    url: url_CloudkmsProjectsLocationsKeyRingsList_580293, schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy_579311 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy_579313(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicy_580336 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicy_580338(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -4587,9 +4688,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy_579313(
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy_579312(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicy_580337(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Gets the access control policy for a resource.
@@ -4604,11 +4710,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy_579312(
   ## See the operation documentation for the appropriate value for this field.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_579314 = path.getOrDefault("resource")
-  valid_579314 = validateParameter(valid_579314, JString, required = true,
+  var valid_580339 = path.getOrDefault("resource")
+  valid_580339 = validateParameter(valid_580339, JString, required = true,
                                  default = nil)
-  if valid_579314 != nil:
-    section.add "resource", valid_579314
+  if valid_580339 != nil:
+    section.add "resource", valid_580339
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -4643,65 +4749,65 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy_579312(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579315 = query.getOrDefault("key")
-  valid_579315 = validateParameter(valid_579315, JString, required = false,
+  var valid_580340 = query.getOrDefault("key")
+  valid_580340 = validateParameter(valid_580340, JString, required = false,
                                  default = nil)
-  if valid_579315 != nil:
-    section.add "key", valid_579315
-  var valid_579316 = query.getOrDefault("prettyPrint")
-  valid_579316 = validateParameter(valid_579316, JBool, required = false,
+  if valid_580340 != nil:
+    section.add "key", valid_580340
+  var valid_580341 = query.getOrDefault("prettyPrint")
+  valid_580341 = validateParameter(valid_580341, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579316 != nil:
-    section.add "prettyPrint", valid_579316
-  var valid_579317 = query.getOrDefault("oauth_token")
-  valid_579317 = validateParameter(valid_579317, JString, required = false,
+  if valid_580341 != nil:
+    section.add "prettyPrint", valid_580341
+  var valid_580342 = query.getOrDefault("oauth_token")
+  valid_580342 = validateParameter(valid_580342, JString, required = false,
                                  default = nil)
-  if valid_579317 != nil:
-    section.add "oauth_token", valid_579317
-  var valid_579318 = query.getOrDefault("$.xgafv")
-  valid_579318 = validateParameter(valid_579318, JString, required = false,
+  if valid_580342 != nil:
+    section.add "oauth_token", valid_580342
+  var valid_580343 = query.getOrDefault("$.xgafv")
+  valid_580343 = validateParameter(valid_580343, JString, required = false,
                                  default = newJString("1"))
-  if valid_579318 != nil:
-    section.add "$.xgafv", valid_579318
-  var valid_579319 = query.getOrDefault("options.requestedPolicyVersion")
-  valid_579319 = validateParameter(valid_579319, JInt, required = false, default = nil)
-  if valid_579319 != nil:
-    section.add "options.requestedPolicyVersion", valid_579319
-  var valid_579320 = query.getOrDefault("alt")
-  valid_579320 = validateParameter(valid_579320, JString, required = false,
+  if valid_580343 != nil:
+    section.add "$.xgafv", valid_580343
+  var valid_580344 = query.getOrDefault("options.requestedPolicyVersion")
+  valid_580344 = validateParameter(valid_580344, JInt, required = false, default = nil)
+  if valid_580344 != nil:
+    section.add "options.requestedPolicyVersion", valid_580344
+  var valid_580345 = query.getOrDefault("alt")
+  valid_580345 = validateParameter(valid_580345, JString, required = false,
                                  default = newJString("json"))
-  if valid_579320 != nil:
-    section.add "alt", valid_579320
-  var valid_579321 = query.getOrDefault("uploadType")
-  valid_579321 = validateParameter(valid_579321, JString, required = false,
+  if valid_580345 != nil:
+    section.add "alt", valid_580345
+  var valid_580346 = query.getOrDefault("uploadType")
+  valid_580346 = validateParameter(valid_580346, JString, required = false,
                                  default = nil)
-  if valid_579321 != nil:
-    section.add "uploadType", valid_579321
-  var valid_579322 = query.getOrDefault("quotaUser")
-  valid_579322 = validateParameter(valid_579322, JString, required = false,
+  if valid_580346 != nil:
+    section.add "uploadType", valid_580346
+  var valid_580347 = query.getOrDefault("quotaUser")
+  valid_580347 = validateParameter(valid_580347, JString, required = false,
                                  default = nil)
-  if valid_579322 != nil:
-    section.add "quotaUser", valid_579322
-  var valid_579323 = query.getOrDefault("callback")
-  valid_579323 = validateParameter(valid_579323, JString, required = false,
+  if valid_580347 != nil:
+    section.add "quotaUser", valid_580347
+  var valid_580348 = query.getOrDefault("callback")
+  valid_580348 = validateParameter(valid_580348, JString, required = false,
                                  default = nil)
-  if valid_579323 != nil:
-    section.add "callback", valid_579323
-  var valid_579324 = query.getOrDefault("fields")
-  valid_579324 = validateParameter(valid_579324, JString, required = false,
+  if valid_580348 != nil:
+    section.add "callback", valid_580348
+  var valid_580349 = query.getOrDefault("fields")
+  valid_580349 = validateParameter(valid_580349, JString, required = false,
                                  default = nil)
-  if valid_579324 != nil:
-    section.add "fields", valid_579324
-  var valid_579325 = query.getOrDefault("access_token")
-  valid_579325 = validateParameter(valid_579325, JString, required = false,
+  if valid_580349 != nil:
+    section.add "fields", valid_580349
+  var valid_580350 = query.getOrDefault("access_token")
+  valid_580350 = validateParameter(valid_580350, JString, required = false,
                                  default = nil)
-  if valid_579325 != nil:
-    section.add "access_token", valid_579325
-  var valid_579326 = query.getOrDefault("upload_protocol")
-  valid_579326 = validateParameter(valid_579326, JString, required = false,
+  if valid_580350 != nil:
+    section.add "access_token", valid_580350
+  var valid_580351 = query.getOrDefault("upload_protocol")
+  valid_580351 = validateParameter(valid_580351, JString, required = false,
                                  default = nil)
-  if valid_579326 != nil:
-    section.add "upload_protocol", valid_579326
+  if valid_580351 != nil:
+    section.add "upload_protocol", valid_580351
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4710,29 +4816,29 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy_579312(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579327: Call_CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy_579311;
+proc call*(call_580352: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicy_580336;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Gets the access control policy for a resource.
   ## Returns an empty policy if the resource exists and does not have a policy
   ## set.
   ## 
-  let valid = call_579327.validator(path, query, header, formData, body)
-  let scheme = call_579327.pickScheme
+  let valid = call_580352.validator(path, query, header, formData, body)
+  let scheme = call_580352.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579327.url(scheme.get, call_579327.host, call_579327.base,
-                         call_579327.route, valid.getOrDefault("path"),
+  let url = call_580352.url(scheme.get, call_580352.host, call_580352.base,
+                         call_580352.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579327, url, valid)
+  result = hook(call_580352, url, valid)
 
-proc call*(call_579328: Call_CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy_579311;
+proc call*(call_580353: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicy_580336;
           resource: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1";
           optionsRequestedPolicyVersion: int = 0; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; callback: string = "";
           fields: string = ""; accessToken: string = ""; uploadProtocol: string = ""): Recallable =
-  ## cloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy
+  ## cloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicy
   ## Gets the access control policy for a resource.
   ## Returns an empty policy if the resource exists and does not have a policy
   ## set.
@@ -4770,33 +4876,33 @@ proc call*(call_579328: Call_CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPo
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579329 = newJObject()
-  var query_579330 = newJObject()
-  add(query_579330, "key", newJString(key))
-  add(query_579330, "prettyPrint", newJBool(prettyPrint))
-  add(query_579330, "oauth_token", newJString(oauthToken))
-  add(query_579330, "$.xgafv", newJString(Xgafv))
-  add(query_579330, "options.requestedPolicyVersion",
+  var path_580354 = newJObject()
+  var query_580355 = newJObject()
+  add(query_580355, "key", newJString(key))
+  add(query_580355, "prettyPrint", newJBool(prettyPrint))
+  add(query_580355, "oauth_token", newJString(oauthToken))
+  add(query_580355, "$.xgafv", newJString(Xgafv))
+  add(query_580355, "options.requestedPolicyVersion",
       newJInt(optionsRequestedPolicyVersion))
-  add(query_579330, "alt", newJString(alt))
-  add(query_579330, "uploadType", newJString(uploadType))
-  add(query_579330, "quotaUser", newJString(quotaUser))
-  add(path_579329, "resource", newJString(resource))
-  add(query_579330, "callback", newJString(callback))
-  add(query_579330, "fields", newJString(fields))
-  add(query_579330, "access_token", newJString(accessToken))
-  add(query_579330, "upload_protocol", newJString(uploadProtocol))
-  result = call_579328.call(path_579329, query_579330, nil, nil, nil)
+  add(query_580355, "alt", newJString(alt))
+  add(query_580355, "uploadType", newJString(uploadType))
+  add(query_580355, "quotaUser", newJString(quotaUser))
+  add(path_580354, "resource", newJString(resource))
+  add(query_580355, "callback", newJString(callback))
+  add(query_580355, "fields", newJString(fields))
+  add(query_580355, "access_token", newJString(accessToken))
+  add(query_580355, "upload_protocol", newJString(uploadProtocol))
+  result = call_580353.call(path_580354, query_580355, nil, nil, nil)
 
-var cloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy* = Call_CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy_579311(
-    name: "cloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy",
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicy* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicy_580336(
+    name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicy",
     meth: HttpMethod.HttpGet, host: "cloudkms.googleapis.com",
-    route: "/v1/{resource}:getIamPolicy", validator: validate_CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy_579312,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicy_579313,
+    route: "/v1/{resource}:getIamPolicy", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicy_580337,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicy_580338,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy_579331 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy_579333(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicy_580356 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicy_580358(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -4811,13 +4917,20 @@ proc url_CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy_579333(
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy_579332(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicy_580357(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Sets the access control policy on the specified resource. Replaces any
   ## existing policy.
+  ## 
+  ## Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
   ## 
   var section: JsonNode
   result = newJObject()
@@ -4827,11 +4940,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy_579332(
   ## See the operation documentation for the appropriate value for this field.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_579334 = path.getOrDefault("resource")
-  valid_579334 = validateParameter(valid_579334, JString, required = true,
+  var valid_580359 = path.getOrDefault("resource")
+  valid_580359 = validateParameter(valid_580359, JString, required = true,
                                  default = nil)
-  if valid_579334 != nil:
-    section.add "resource", valid_579334
+  if valid_580359 != nil:
+    section.add "resource", valid_580359
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -4857,61 +4970,61 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy_579332(
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579335 = query.getOrDefault("key")
-  valid_579335 = validateParameter(valid_579335, JString, required = false,
+  var valid_580360 = query.getOrDefault("key")
+  valid_580360 = validateParameter(valid_580360, JString, required = false,
                                  default = nil)
-  if valid_579335 != nil:
-    section.add "key", valid_579335
-  var valid_579336 = query.getOrDefault("prettyPrint")
-  valid_579336 = validateParameter(valid_579336, JBool, required = false,
+  if valid_580360 != nil:
+    section.add "key", valid_580360
+  var valid_580361 = query.getOrDefault("prettyPrint")
+  valid_580361 = validateParameter(valid_580361, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579336 != nil:
-    section.add "prettyPrint", valid_579336
-  var valid_579337 = query.getOrDefault("oauth_token")
-  valid_579337 = validateParameter(valid_579337, JString, required = false,
+  if valid_580361 != nil:
+    section.add "prettyPrint", valid_580361
+  var valid_580362 = query.getOrDefault("oauth_token")
+  valid_580362 = validateParameter(valid_580362, JString, required = false,
                                  default = nil)
-  if valid_579337 != nil:
-    section.add "oauth_token", valid_579337
-  var valid_579338 = query.getOrDefault("$.xgafv")
-  valid_579338 = validateParameter(valid_579338, JString, required = false,
+  if valid_580362 != nil:
+    section.add "oauth_token", valid_580362
+  var valid_580363 = query.getOrDefault("$.xgafv")
+  valid_580363 = validateParameter(valid_580363, JString, required = false,
                                  default = newJString("1"))
-  if valid_579338 != nil:
-    section.add "$.xgafv", valid_579338
-  var valid_579339 = query.getOrDefault("alt")
-  valid_579339 = validateParameter(valid_579339, JString, required = false,
+  if valid_580363 != nil:
+    section.add "$.xgafv", valid_580363
+  var valid_580364 = query.getOrDefault("alt")
+  valid_580364 = validateParameter(valid_580364, JString, required = false,
                                  default = newJString("json"))
-  if valid_579339 != nil:
-    section.add "alt", valid_579339
-  var valid_579340 = query.getOrDefault("uploadType")
-  valid_579340 = validateParameter(valid_579340, JString, required = false,
+  if valid_580364 != nil:
+    section.add "alt", valid_580364
+  var valid_580365 = query.getOrDefault("uploadType")
+  valid_580365 = validateParameter(valid_580365, JString, required = false,
                                  default = nil)
-  if valid_579340 != nil:
-    section.add "uploadType", valid_579340
-  var valid_579341 = query.getOrDefault("quotaUser")
-  valid_579341 = validateParameter(valid_579341, JString, required = false,
+  if valid_580365 != nil:
+    section.add "uploadType", valid_580365
+  var valid_580366 = query.getOrDefault("quotaUser")
+  valid_580366 = validateParameter(valid_580366, JString, required = false,
                                  default = nil)
-  if valid_579341 != nil:
-    section.add "quotaUser", valid_579341
-  var valid_579342 = query.getOrDefault("callback")
-  valid_579342 = validateParameter(valid_579342, JString, required = false,
+  if valid_580366 != nil:
+    section.add "quotaUser", valid_580366
+  var valid_580367 = query.getOrDefault("callback")
+  valid_580367 = validateParameter(valid_580367, JString, required = false,
                                  default = nil)
-  if valid_579342 != nil:
-    section.add "callback", valid_579342
-  var valid_579343 = query.getOrDefault("fields")
-  valid_579343 = validateParameter(valid_579343, JString, required = false,
+  if valid_580367 != nil:
+    section.add "callback", valid_580367
+  var valid_580368 = query.getOrDefault("fields")
+  valid_580368 = validateParameter(valid_580368, JString, required = false,
                                  default = nil)
-  if valid_579343 != nil:
-    section.add "fields", valid_579343
-  var valid_579344 = query.getOrDefault("access_token")
-  valid_579344 = validateParameter(valid_579344, JString, required = false,
+  if valid_580368 != nil:
+    section.add "fields", valid_580368
+  var valid_580369 = query.getOrDefault("access_token")
+  valid_580369 = validateParameter(valid_580369, JString, required = false,
                                  default = nil)
-  if valid_579344 != nil:
-    section.add "access_token", valid_579344
-  var valid_579345 = query.getOrDefault("upload_protocol")
-  valid_579345 = validateParameter(valid_579345, JString, required = false,
+  if valid_580369 != nil:
+    section.add "access_token", valid_580369
+  var valid_580370 = query.getOrDefault("upload_protocol")
+  valid_580370 = validateParameter(valid_580370, JString, required = false,
                                  default = nil)
-  if valid_579345 != nil:
-    section.add "upload_protocol", valid_579345
+  if valid_580370 != nil:
+    section.add "upload_protocol", valid_580370
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -4923,30 +5036,34 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy_579332(
   if body != nil:
     result.add "body", body
 
-proc call*(call_579347: Call_CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy_579331;
+proc call*(call_580372: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicy_580356;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Sets the access control policy on the specified resource. Replaces any
   ## existing policy.
   ## 
-  let valid = call_579347.validator(path, query, header, formData, body)
-  let scheme = call_579347.pickScheme
+  ## Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+  ## 
+  let valid = call_580372.validator(path, query, header, formData, body)
+  let scheme = call_580372.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579347.url(scheme.get, call_579347.host, call_579347.base,
-                         call_579347.route, valid.getOrDefault("path"),
+  let url = call_580372.url(scheme.get, call_580372.host, call_580372.base,
+                         call_580372.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579347, url, valid)
+  result = hook(call_580372, url, valid)
 
-proc call*(call_579348: Call_CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy_579331;
+proc call*(call_580373: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicy_580356;
           resource: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
           callback: string = ""; fields: string = ""; accessToken: string = "";
           uploadProtocol: string = ""): Recallable =
-  ## cloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy
+  ## cloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicy
   ## Sets the access control policy on the specified resource. Replaces any
   ## existing policy.
+  ## 
+  ## Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
   ##   key: string
   ##      : API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.
   ##   prettyPrint: bool
@@ -4973,34 +5090,34 @@ proc call*(call_579348: Call_CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPo
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579349 = newJObject()
-  var query_579350 = newJObject()
-  var body_579351 = newJObject()
-  add(query_579350, "key", newJString(key))
-  add(query_579350, "prettyPrint", newJBool(prettyPrint))
-  add(query_579350, "oauth_token", newJString(oauthToken))
-  add(query_579350, "$.xgafv", newJString(Xgafv))
-  add(query_579350, "alt", newJString(alt))
-  add(query_579350, "uploadType", newJString(uploadType))
-  add(query_579350, "quotaUser", newJString(quotaUser))
-  add(path_579349, "resource", newJString(resource))
+  var path_580374 = newJObject()
+  var query_580375 = newJObject()
+  var body_580376 = newJObject()
+  add(query_580375, "key", newJString(key))
+  add(query_580375, "prettyPrint", newJBool(prettyPrint))
+  add(query_580375, "oauth_token", newJString(oauthToken))
+  add(query_580375, "$.xgafv", newJString(Xgafv))
+  add(query_580375, "alt", newJString(alt))
+  add(query_580375, "uploadType", newJString(uploadType))
+  add(query_580375, "quotaUser", newJString(quotaUser))
+  add(path_580374, "resource", newJString(resource))
   if body != nil:
-    body_579351 = body
-  add(query_579350, "callback", newJString(callback))
-  add(query_579350, "fields", newJString(fields))
-  add(query_579350, "access_token", newJString(accessToken))
-  add(query_579350, "upload_protocol", newJString(uploadProtocol))
-  result = call_579348.call(path_579349, query_579350, nil, nil, body_579351)
+    body_580376 = body
+  add(query_580375, "callback", newJString(callback))
+  add(query_580375, "fields", newJString(fields))
+  add(query_580375, "access_token", newJString(accessToken))
+  add(query_580375, "upload_protocol", newJString(uploadProtocol))
+  result = call_580373.call(path_580374, query_580375, nil, nil, body_580376)
 
-var cloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy* = Call_CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy_579331(
-    name: "cloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy",
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicy* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicy_580356(
+    name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicy",
     meth: HttpMethod.HttpPost, host: "cloudkms.googleapis.com",
-    route: "/v1/{resource}:setIamPolicy", validator: validate_CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy_579332,
-    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicy_579333,
+    route: "/v1/{resource}:setIamPolicy", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicy_580357,
+    base: "/", url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicy_580358,
     schemes: {Scheme.Https})
 type
-  Call_CloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions_579352 = ref object of OpenApiRestCall_578339
-proc url_CloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions_579354(
+  Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissions_580377 = ref object of OpenApiRestCall_579364
+proc url_CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissions_580379(
     protocol: Scheme; host: string; base: string; route: string; path: JsonNode;
     query: JsonNode): Uri =
   result.scheme = $protocol
@@ -5015,9 +5132,14 @@ proc url_CloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions_579354(
   var hydrated = hydratePath(path, segments)
   if hydrated.isNone:
     raise newException(ValueError, "unable to fully hydrate path")
-  result.path = base & hydrated.get
+  if base ==
+      "/" and
+      hydrated.get.startsWith "/":
+    result.path = hydrated.get
+  else:
+    result.path = base & hydrated.get
 
-proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions_579353(
+proc validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissions_580378(
     path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
     body: JsonNode): JsonNode =
   ## Returns permissions that a caller has on the specified resource.
@@ -5036,11 +5158,11 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions_5793
   ## See the operation documentation for the appropriate value for this field.
   section = newJObject()
   assert path != nil, "path argument is necessary due to required `resource` field"
-  var valid_579355 = path.getOrDefault("resource")
-  valid_579355 = validateParameter(valid_579355, JString, required = true,
+  var valid_580380 = path.getOrDefault("resource")
+  valid_580380 = validateParameter(valid_580380, JString, required = true,
                                  default = nil)
-  if valid_579355 != nil:
-    section.add "resource", valid_579355
+  if valid_580380 != nil:
+    section.add "resource", valid_580380
   result.add "path", section
   ## parameters in `query` object:
   ##   key: JString
@@ -5066,61 +5188,61 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions_5793
   ##   upload_protocol: JString
   ##                  : Upload protocol for media (e.g. "raw", "multipart").
   section = newJObject()
-  var valid_579356 = query.getOrDefault("key")
-  valid_579356 = validateParameter(valid_579356, JString, required = false,
+  var valid_580381 = query.getOrDefault("key")
+  valid_580381 = validateParameter(valid_580381, JString, required = false,
                                  default = nil)
-  if valid_579356 != nil:
-    section.add "key", valid_579356
-  var valid_579357 = query.getOrDefault("prettyPrint")
-  valid_579357 = validateParameter(valid_579357, JBool, required = false,
+  if valid_580381 != nil:
+    section.add "key", valid_580381
+  var valid_580382 = query.getOrDefault("prettyPrint")
+  valid_580382 = validateParameter(valid_580382, JBool, required = false,
                                  default = newJBool(true))
-  if valid_579357 != nil:
-    section.add "prettyPrint", valid_579357
-  var valid_579358 = query.getOrDefault("oauth_token")
-  valid_579358 = validateParameter(valid_579358, JString, required = false,
+  if valid_580382 != nil:
+    section.add "prettyPrint", valid_580382
+  var valid_580383 = query.getOrDefault("oauth_token")
+  valid_580383 = validateParameter(valid_580383, JString, required = false,
                                  default = nil)
-  if valid_579358 != nil:
-    section.add "oauth_token", valid_579358
-  var valid_579359 = query.getOrDefault("$.xgafv")
-  valid_579359 = validateParameter(valid_579359, JString, required = false,
+  if valid_580383 != nil:
+    section.add "oauth_token", valid_580383
+  var valid_580384 = query.getOrDefault("$.xgafv")
+  valid_580384 = validateParameter(valid_580384, JString, required = false,
                                  default = newJString("1"))
-  if valid_579359 != nil:
-    section.add "$.xgafv", valid_579359
-  var valid_579360 = query.getOrDefault("alt")
-  valid_579360 = validateParameter(valid_579360, JString, required = false,
+  if valid_580384 != nil:
+    section.add "$.xgafv", valid_580384
+  var valid_580385 = query.getOrDefault("alt")
+  valid_580385 = validateParameter(valid_580385, JString, required = false,
                                  default = newJString("json"))
-  if valid_579360 != nil:
-    section.add "alt", valid_579360
-  var valid_579361 = query.getOrDefault("uploadType")
-  valid_579361 = validateParameter(valid_579361, JString, required = false,
+  if valid_580385 != nil:
+    section.add "alt", valid_580385
+  var valid_580386 = query.getOrDefault("uploadType")
+  valid_580386 = validateParameter(valid_580386, JString, required = false,
                                  default = nil)
-  if valid_579361 != nil:
-    section.add "uploadType", valid_579361
-  var valid_579362 = query.getOrDefault("quotaUser")
-  valid_579362 = validateParameter(valid_579362, JString, required = false,
+  if valid_580386 != nil:
+    section.add "uploadType", valid_580386
+  var valid_580387 = query.getOrDefault("quotaUser")
+  valid_580387 = validateParameter(valid_580387, JString, required = false,
                                  default = nil)
-  if valid_579362 != nil:
-    section.add "quotaUser", valid_579362
-  var valid_579363 = query.getOrDefault("callback")
-  valid_579363 = validateParameter(valid_579363, JString, required = false,
+  if valid_580387 != nil:
+    section.add "quotaUser", valid_580387
+  var valid_580388 = query.getOrDefault("callback")
+  valid_580388 = validateParameter(valid_580388, JString, required = false,
                                  default = nil)
-  if valid_579363 != nil:
-    section.add "callback", valid_579363
-  var valid_579364 = query.getOrDefault("fields")
-  valid_579364 = validateParameter(valid_579364, JString, required = false,
+  if valid_580388 != nil:
+    section.add "callback", valid_580388
+  var valid_580389 = query.getOrDefault("fields")
+  valid_580389 = validateParameter(valid_580389, JString, required = false,
                                  default = nil)
-  if valid_579364 != nil:
-    section.add "fields", valid_579364
-  var valid_579365 = query.getOrDefault("access_token")
-  valid_579365 = validateParameter(valid_579365, JString, required = false,
+  if valid_580389 != nil:
+    section.add "fields", valid_580389
+  var valid_580390 = query.getOrDefault("access_token")
+  valid_580390 = validateParameter(valid_580390, JString, required = false,
                                  default = nil)
-  if valid_579365 != nil:
-    section.add "access_token", valid_579365
-  var valid_579366 = query.getOrDefault("upload_protocol")
-  valid_579366 = validateParameter(valid_579366, JString, required = false,
+  if valid_580390 != nil:
+    section.add "access_token", valid_580390
+  var valid_580391 = query.getOrDefault("upload_protocol")
+  valid_580391 = validateParameter(valid_580391, JString, required = false,
                                  default = nil)
-  if valid_579366 != nil:
-    section.add "upload_protocol", valid_579366
+  if valid_580391 != nil:
+    section.add "upload_protocol", valid_580391
   result.add "query", section
   section = newJObject()
   result.add "header", section
@@ -5132,7 +5254,7 @@ proc validate_CloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions_5793
   if body != nil:
     result.add "body", body
 
-proc call*(call_579368: Call_CloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions_579352;
+proc call*(call_580393: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissions_580377;
           path: JsonNode; query: JsonNode; header: JsonNode; formData: JsonNode;
           body: JsonNode): Recallable =
   ## Returns permissions that a caller has on the specified resource.
@@ -5143,22 +5265,22 @@ proc call*(call_579368: Call_CloudkmsProjectsLocationsKeyRingsImportJobsTestIamP
   ## UIs and command-line tools, not for authorization checking. This operation
   ## may "fail open" without warning.
   ## 
-  let valid = call_579368.validator(path, query, header, formData, body)
-  let scheme = call_579368.pickScheme
+  let valid = call_580393.validator(path, query, header, formData, body)
+  let scheme = call_580393.pickScheme
   if scheme.isNone:
     raise newException(IOError, "unable to find a supported scheme")
-  let url = call_579368.url(scheme.get, call_579368.host, call_579368.base,
-                         call_579368.route, valid.getOrDefault("path"),
+  let url = call_580393.url(scheme.get, call_580393.host, call_580393.base,
+                         call_580393.route, valid.getOrDefault("path"),
                          valid.getOrDefault("query"))
-  result = hook(call_579368, url, valid)
+  result = hook(call_580393, url, valid)
 
-proc call*(call_579369: Call_CloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions_579352;
+proc call*(call_580394: Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissions_580377;
           resource: string; key: string = ""; prettyPrint: bool = true;
           oauthToken: string = ""; Xgafv: string = "1"; alt: string = "json";
           uploadType: string = ""; quotaUser: string = ""; body: JsonNode = nil;
           callback: string = ""; fields: string = ""; accessToken: string = "";
           uploadProtocol: string = ""): Recallable =
-  ## cloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions
+  ## cloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissions
   ## Returns permissions that a caller has on the specified resource.
   ## If the resource does not exist, this will return an empty set of
   ## permissions, not a NOT_FOUND error.
@@ -5192,31 +5314,31 @@ proc call*(call_579369: Call_CloudkmsProjectsLocationsKeyRingsImportJobsTestIamP
   ##              : OAuth access token.
   ##   uploadProtocol: string
   ##                 : Upload protocol for media (e.g. "raw", "multipart").
-  var path_579370 = newJObject()
-  var query_579371 = newJObject()
-  var body_579372 = newJObject()
-  add(query_579371, "key", newJString(key))
-  add(query_579371, "prettyPrint", newJBool(prettyPrint))
-  add(query_579371, "oauth_token", newJString(oauthToken))
-  add(query_579371, "$.xgafv", newJString(Xgafv))
-  add(query_579371, "alt", newJString(alt))
-  add(query_579371, "uploadType", newJString(uploadType))
-  add(query_579371, "quotaUser", newJString(quotaUser))
-  add(path_579370, "resource", newJString(resource))
+  var path_580395 = newJObject()
+  var query_580396 = newJObject()
+  var body_580397 = newJObject()
+  add(query_580396, "key", newJString(key))
+  add(query_580396, "prettyPrint", newJBool(prettyPrint))
+  add(query_580396, "oauth_token", newJString(oauthToken))
+  add(query_580396, "$.xgafv", newJString(Xgafv))
+  add(query_580396, "alt", newJString(alt))
+  add(query_580396, "uploadType", newJString(uploadType))
+  add(query_580396, "quotaUser", newJString(quotaUser))
+  add(path_580395, "resource", newJString(resource))
   if body != nil:
-    body_579372 = body
-  add(query_579371, "callback", newJString(callback))
-  add(query_579371, "fields", newJString(fields))
-  add(query_579371, "access_token", newJString(accessToken))
-  add(query_579371, "upload_protocol", newJString(uploadProtocol))
-  result = call_579369.call(path_579370, query_579371, nil, nil, body_579372)
+    body_580397 = body
+  add(query_580396, "callback", newJString(callback))
+  add(query_580396, "fields", newJString(fields))
+  add(query_580396, "access_token", newJString(accessToken))
+  add(query_580396, "upload_protocol", newJString(uploadProtocol))
+  result = call_580394.call(path_580395, query_580396, nil, nil, body_580397)
 
-var cloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions* = Call_CloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions_579352(
-    name: "cloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions",
+var cloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissions* = Call_CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissions_580377(
+    name: "cloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissions",
     meth: HttpMethod.HttpPost, host: "cloudkms.googleapis.com",
-    route: "/v1/{resource}:testIamPermissions", validator: validate_CloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions_579353,
+    route: "/v1/{resource}:testIamPermissions", validator: validate_CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissions_580378,
     base: "/",
-    url: url_CloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissions_579354,
+    url: url_CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissions_580379,
     schemes: {Scheme.Https})
 export
   rest
